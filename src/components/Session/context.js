@@ -1,5 +1,9 @@
-import React from 'react';
+// components/firebase/index.js
+import Firebase from './firebase';
+import FirebaseContext, { useFirebase, withFirebase } from './context';
 
-const AuthUserContext = React.createContext(null);
+// Default: Firebase instance (for legacy)
+export default Firebase;
 
-export default AuthUserContext;
+// Named exports
+export { FirebaseContext, useFirebase, withFirebase };
