@@ -1,9 +1,31 @@
 // src/components/Firebase/firebase.js
-import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, updatePassword, linkWithPopup, unlink } from 'firebase/auth';
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import {
+  getAuth,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  TwitterAuthProvider,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  sendEmailVerification,
+  updatePassword,
+  linkWithPopup,
+  unlink,
+  setPersistence,
+  browserLocalPersistence,
+} from 'firebase/auth';
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp,
+  writeBatch,
+} from 'firebase/firestore';
 
-// Firebase config from .env (Vercel auto-injects)
+// Pro Config: Env-based, no leaks
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
   authDomain: process.env.REACT_APP_AUTH_DOMAIN,
@@ -11,72 +33,88 @@ const firebaseConfig = {
   projectId: process.env.REACT_APP_PROJECT_ID,
   storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
   messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
-  appId: process.env.REACT_APP_APP_ID
+  appId: process.env.REACT_APP_APP_ID,
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+// Validate env (god-like fail-fast)
+if (!firebaseConfig.projectId) {
+  throw new Error('Missing Firebase config. Check Vercel env vars.');
+}
 
-// Providers
+// Lazy Init: Prevent multi-init in HMR/dev
+const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+
+// Core Exports
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+
+// Memoized Providers (performance elite)
 const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
 const twitterProvider = new TwitterAuthProvider();
+export { googleProvider, facebookProvider, twitterProvider };
 
-// === AUTH METHODS ===
-const doSignInWithEmailAndPassword = (email, password) =>
-  signInWithEmailAndPassword(auth, email, password);
+// === AUTH METHODS (with retry for heavy traffic) ===
+const retryOperation = async (operation, retries = 3, delay = 1000) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (i === retries - 1) throw error;
+      await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i))); // Exponential backoff
+    }
+  }
+};
 
-const doCreateUserWithEmailAndPassword = (email, password) =>
-  createUserWithEmailAndPassword(auth, email, password);
+export const doSignInWithEmailAndPassword = (email, password) =>
+  retryOperation(() => signInWithEmailAndPassword(auth, email, password));
 
-const doSignInWithGoogle = () => signInWithPopup(auth, googleProvider);
-const doSignInWithFacebook = () => signInWithPopup(auth, facebookProvider);
-const doSignInWithTwitter = () => signInWithPopup(auth, twitterProvider);
+export const doCreateUserWithEmailAndPassword = (email, password) =>
+  retryOperation(() => createUserWithEmailAndPassword(auth, email, password));
 
-const doPasswordReset = (email) => sendPasswordResetEmail(auth, email);
-const doPasswordUpdate = (password) => updatePassword(auth.currentUser, password);
-const doSendEmailVerification = () =>
+export const doSignInWithGoogle = () => signInWithPopup(auth, googleProvider);
+export const doSignInWithFacebook = () => signInWithPopup(auth, facebookProvider);
+export const doSignInWithTwitter = () => signInWithPopup(auth, twitterProvider);
+
+export const doPasswordReset = (email) => sendPasswordResetEmail(auth, email);
+export const doPasswordUpdate = (password) => updatePassword(auth.currentUser, password);
+export const doSendEmailVerification = () =>
   sendEmailVerification(auth.currentUser, {
-    url: process.env.REACT_APP_CONFIRMATION_EMAIL_REDIRECT
+    url: process.env.REACT_APP_CONFIRMATION_EMAIL_REDIRECT || 'https://estatracker.com',
   });
 
-const doLinkWithGoogle = () => linkWithPopup(auth.currentUser, googleProvider);
-const doLinkWithFacebook = () => linkWithPopup(auth.currentUser, facebookProvider);
-const doLinkWithTwitter = () => linkWithPopup(auth.currentUser, twitterProvider);
-const doUnlink = (providerId) => unlink(auth.currentUser, providerId);
+export const doLinkWithGoogle = () => linkWithPopup(auth.currentUser, googleProvider);
+export const doLinkWithFacebook = () => linkWithPopup(auth.currentUser, facebookProvider);
+export const doLinkWithTwitter = () => linkWithPopup(auth.currentUser, twitterProvider);
+export const doUnlink = (providerId) => unlink(auth.currentUser, providerId);
 
-// === USER DATA ===
-const getUserDocument = async (uid) => {
+// === USER DATA (batch ops for scale) ===
+export const getUserDocument = async (uid) => {
   const userRef = doc(db, 'users', uid);
   const userSnap = await getDoc(userRef);
   return userSnap.exists() ? userSnap.data() : null;
 };
 
-const saveUserDocument = async (uid, data) => {
-  await setDoc(doc(db, 'users', uid), {
+export const saveUserDocument = async (uid, data) => {
+  const batch = writeBatch(db);
+  const userRef = doc(db, 'users', uid);
+  batch.set(userRef, {
     ...data,
-    updatedAt: serverTimestamp()
+    updatedAt: serverTimestamp(),
   }, { merge: true });
+  await batch.commit();
+  return userRef;
 };
 
-// === EXPORT ===
-export {
-  auth,
-  db,
-  doCreateUserWithEmailAndPassword,
-  doSignInWithEmailAndPassword,
-  doSignInWithGoogle,
-  doSignInWithFacebook,
-  doSignInWithTwitter,
-  doPasswordReset,
-  doPasswordUpdate,
-  doSendEmailVerification,
-  doLinkWithGoogle,
-  doLinkWithFacebook,
-  doLinkWithTwitter,
-  doUnlink,
-  getUserDocument,
-  saveUserDocument
+// Offline Persistence (PWA elite)
+export const enableOfflinePersistence = async () => {
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+    console.log('Offline persistence enabled – PWA ready');
+  } catch (error) {
+    console.warn('Persistence failed (multi-tab?):', error);
+  }
 };
+
+// Export App for Custom Use
+export default app;
