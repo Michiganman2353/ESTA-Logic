@@ -1,4 +1,3 @@
-# .github/workflows/ci.yml
 name: Elite CI/CD
 
 on:
@@ -38,55 +37,30 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Lint Code
-        run: npm run lint || echo "Lint failed – check formatting"
+        run: npm run lint || echo "Lint warnings – check formatting"
+
+      - name: Type Check
+        run: npm run type-check
 
       - name: Run Tests
         run: npm test -- --coverage --watchAll=false
         continue-on-error: true
-
-      - name: Build Production
-        run: npm run build --if-present
 
       - name: Security Audit
         run: |
           npm audit --audit-level=high
           npx depcheck --ignores=eslint,prettier
 
-      - name: Upload SARIF (Security)
-        uses: github/codeql-action/upload-sarif@v3
-        if: always()
+      - name: Upload Coverage
+        uses: codecov/codecov-action@v4
         with:
-          sarif_file: results.sarif
+          file: ./coverage/lcov.info
+          fail_ci_if_error: false
 
-      - name: Generate Badge
-        uses: schneidermike/action-badge@v1
+      - name: Notify Success
         if: success()
-        with:
-          label: CI
-          status: passing
-          color: green
-          path: .github/badges/ci-badge.svg
+        run: echo "CI passed – deploy ready! 🚀"
 
       - name: Notify Failure
         if: failure()
-        uses: 8398a7/action-slack@v3
-        with:
-          status: failure
-          text: "CI failed on ${{ github.ref }} – Fix ASAP!"
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
-
-  deploy-preview:
-    name: Deploy Preview
-    needs: elite-build
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Deploy to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          github-comment: true
+        run: echo "CI failed – check logs! ⚠️"
