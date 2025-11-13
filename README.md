@@ -24,7 +24,7 @@ Secure · Fast · Private · PWA-Installable
 | SEO optimized (meta, OG, JSON-LD) | ✅ |
 | Security headers (CSP, HSTS) | ✅ |
 | Vercel edge network + custom domain | ✅ |
-
+ [![Coverage](https://codecov.io/gh/Michiganman2353/esta-tracker-clean/branch/master/graph/badge.svg)](https://codecov.io/gh/Michiganman2353/esta-tracker-clean)
 ---
 
 ## 🛠 Tech Stack
