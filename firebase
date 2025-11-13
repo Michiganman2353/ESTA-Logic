@@ -1,19 +1,82 @@
-import admin from 'firebase-admin';
+// src/components/Firebase/firebase.js
+import { initializeApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification, updatePassword, linkWithPopup, unlink } from 'firebase/auth';
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
-let serviceAccount;
-try {
-  serviceAccount = (await import('../serviceAccountKey.json', { 
-    assert: { type: 'json' } 
-  })).default;
-} catch (error) {
-  console.error('Failed to load service account:', error);
-  process.exit(1);
-}
+// Firebase config from .env (Vercel auto-injects)
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_DATABASE_URL,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID
+};
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// Providers
+const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
+const twitterProvider = new TwitterAuthProvider();
+
+// === AUTH METHODS ===
+const doSignInWithEmailAndPassword = (email, password) =>
+  signInWithEmailAndPassword(auth, email, password);
+
+const doCreateUserWithEmailAndPassword = (email, password) =>
+  createUserWithEmailAndPassword(auth, email, password);
+
+const doSignInWithGoogle = () => signInWithPopup(auth, googleProvider);
+const doSignInWithFacebook = () => signInWithPopup(auth, facebookProvider);
+const doSignInWithTwitter = () => signInWithPopup(auth, twitterProvider);
+
+const doPasswordReset = (email) => sendPasswordResetEmail(auth, email);
+const doPasswordUpdate = (password) => updatePassword(auth.currentUser, password);
+const doSendEmailVerification = () =>
+  sendEmailVerification(auth.currentUser, {
+    url: process.env.REACT_APP_CONFIRMATION_EMAIL_REDIRECT
   });
-}
 
-export default admin;
+const doLinkWithGoogle = () => linkWithPopup(auth.currentUser, googleProvider);
+const doLinkWithFacebook = () => linkWithPopup(auth.currentUser, facebookProvider);
+const doLinkWithTwitter = () => linkWithPopup(auth.currentUser, twitterProvider);
+const doUnlink = (providerId) => unlink(auth.currentUser, providerId);
+
+// === USER DATA ===
+const getUserDocument = async (uid) => {
+  const userRef = doc(db, 'users', uid);
+  const userSnap = await getDoc(userRef);
+  return userSnap.exists() ? userSnap.data() : null;
+};
+
+const saveUserDocument = async (uid, data) => {
+  await setDoc(doc(db, 'users', uid), {
+    ...data,
+    updatedAt: serverTimestamp()
+  }, { merge: true });
+};
+
+// === EXPORT ===
+export {
+  auth,
+  db,
+  doCreateUserWithEmailAndPassword,
+  doSignInWithEmailAndPassword,
+  doSignInWithGoogle,
+  doSignInWithFacebook,
+  doSignInWithTwitter,
+  doPasswordReset,
+  doPasswordUpdate,
+  doSendEmailVerification,
+  doLinkWithGoogle,
+  doLinkWithFacebook,
+  doLinkWithTwitter,
+  doUnlink,
+  getUserDocument,
+  saveUserDocument
+};
