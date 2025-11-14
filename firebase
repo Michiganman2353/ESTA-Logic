@@ -1,5 +1,9 @@
 // src/components/firebase/firebase.js
+
+// --- Core Firebase ---
 import { initializeApp, getApps, getApp } from 'firebase/app';
+
+// --- AUTH ---
 import {
   getAuth,
   GoogleAuthProvider,
@@ -16,6 +20,8 @@ import {
   setPersistence,
   browserLocalPersistence,
 } from 'firebase/auth';
+
+// --- FIRESTORE ---
 import {
   getFirestore,
   doc,
@@ -25,7 +31,10 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 
-// Pro Config: Env-based, no leaks
+// ===========================================================================
+//  CONFIG (Secure, strict, production-safe)
+// ===========================================================================
+
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
   authDomain: process.env.REACT_APP_AUTH_DOMAIN,
@@ -36,85 +45,139 @@ const firebaseConfig = {
   appId: process.env.REACT_APP_APP_ID,
 };
 
-// Validate env (god-like fail-fast)
-if (!firebaseConfig.projectId) {
-  throw new Error('Missing Firebase config. Check Vercel env vars.');
+// Validate required keys immediately
+const REQUIRED_KEYS = ['apiKey', 'authDomain', 'projectId', 'appId'];
+
+for (const key of REQUIRED_KEYS) {
+  if (!firebaseConfig[key]) {
+    throw new Error(
+      `🔒 Firebase config error: Missing "${key}". Check your Vercel environment variables.`
+    );
+  }
 }
 
-// Lazy Init: Prevent multi-init in HMR/dev
-const app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+// Prevent duplicate initialization in dev
+const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
-// Core Exports
+// ===========================================================================
+//  CORE SERVICES
+// ===========================================================================
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
-// Memoized Providers (performance elite)
-const googleProvider = new GoogleAuthProvider();
-const facebookProvider = new FacebookAuthProvider();
-const twitterProvider = new TwitterAuthProvider();
-export { googleProvider, facebookProvider, twitterProvider };
+// ===========================================================================
+//  OAUTH PROVIDERS (memoized + reusable)
+// ===========================================================================
+export const googleProvider = new GoogleAuthProvider();
+export const facebookProvider = new FacebookAuthProvider();
+export const twitterProvider = new TwitterAuthProvider();
 
-// === AUTH METHODS (with retry for heavy traffic) ===
-const retryOperation = async (operation, retries = 3, delay = 1000) => {
-  for (let i = 0; i < retries; i++) {
+// ===========================================================================
+//  RETRY WRAPPER (handles Firebase throttle/429 during high traffic)
+// ===========================================================================
+const retryOperation = async (operation, retries = 3, delay = 800) => {
+  for (let attempt = 0; attempt < retries; attempt++) {
     try {
       return await operation();
     } catch (error) {
-      if (i === retries - 1) throw error;
-      await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i))); // Exponential backoff
+      if (attempt === retries - 1) throw error;
+
+      // exponential backoff
+      const wait = delay * Math.pow(2, attempt);
+      await new Promise((resolve) => setTimeout(resolve, wait));
     }
   }
 };
 
+// ===========================================================================
+//  AUTH ACTIONS
+// ===========================================================================
 export const doSignInWithEmailAndPassword = (email, password) =>
-  retryOperation(() => signInWithEmailAndPassword(auth, email, password));
+  retryOperation(() =>
+    signInWithEmailAndPassword(auth, email, password)
+  );
 
 export const doCreateUserWithEmailAndPassword = (email, password) =>
-  retryOperation(() => createUserWithEmailAndPassword(auth, email, password));
+  retryOperation(() =>
+    createUserWithEmailAndPassword(auth, email, password)
+  );
 
+// OAuth Sign-in
 export const doSignInWithGoogle = () => signInWithPopup(auth, googleProvider);
 export const doSignInWithFacebook = () => signInWithPopup(auth, facebookProvider);
 export const doSignInWithTwitter = () => signInWithPopup(auth, twitterProvider);
 
-export const doPasswordReset = (email) => sendPasswordResetEmail(auth, email);
-export const doPasswordUpdate = (password) => updatePassword(auth.currentUser, password);
-export const doSendEmailVerification = () =>
-  sendEmailVerification(auth.currentUser, {
-    url: process.env.REACT_APP_CONFIRMATION_EMAIL_REDIRECT || 'https://estatracker.com',
+// Password
+export const doPasswordReset = (email) =>
+  sendPasswordResetEmail(auth, email);
+
+export const doPasswordUpdate = async (password) => {
+  if (!auth.currentUser) throw new Error('No authenticated user.');
+  return updatePassword(auth.currentUser, password);
+};
+
+// Email Verification
+export const doSendEmailVerification = () => {
+  if (!auth.currentUser) return;
+
+  return sendEmailVerification(auth.currentUser, {
+    url:
+      process.env.REACT_APP_CONFIRMATION_EMAIL_REDIRECT ||
+      'https://estatracker.com',
   });
+};
 
-export const doLinkWithGoogle = () => linkWithPopup(auth.currentUser, googleProvider);
-export const doLinkWithFacebook = () => linkWithPopup(auth.currentUser, facebookProvider);
-export const doLinkWithTwitter = () => linkWithPopup(auth.currentUser, twitterProvider);
-export const doUnlink = (providerId) => unlink(auth.currentUser, providerId);
+// Account Linking
+export const doLinkWithGoogle = () =>
+  linkWithPopup(auth.currentUser, googleProvider);
+export const doLinkWithFacebook = () =>
+  linkWithPopup(auth.currentUser, facebookProvider);
+export const doLinkWithTwitter = () =>
+  linkWithPopup(auth.currentUser, twitterProvider);
 
-// === USER DATA (batch ops for scale) ===
+export const doUnlink = (providerId) => {
+  if (!auth.currentUser) throw new Error('Cannot unlink: no user authenticated');
+  return unlink(auth.currentUser, providerId);
+};
+
+// ===========================================================================
+//  USER DOCUMENT HELPERS
+// ===========================================================================
+
 export const getUserDocument = async (uid) => {
   const userRef = doc(db, 'users', uid);
-  const userSnap = await getDoc(userRef);
-  return userSnap.exists() ? userSnap.data() : null;
+  const snap = await getDoc(userRef);
+  return snap.exists() ? snap.data() : null;
 };
 
 export const saveUserDocument = async (uid, data) => {
   const batch = writeBatch(db);
   const userRef = doc(db, 'users', uid);
-  batch.set(userRef, {
-    ...data,
-    updatedAt: serverTimestamp(),
-  }, { merge: true });
+
+  batch.set(
+    userRef,
+    {
+      ...data,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+
   await batch.commit();
   return userRef;
 };
 
-// Offline Persistence (PWA elite)
+// ===========================================================================
+//  OFFLINE MODE (safe for multi-tab)
+// ===========================================================================
 export const enableOfflinePersistence = async () => {
   try {
     await setPersistence(auth, browserLocalPersistence);
-    console.log('Offline persistence enabled – PWA ready');
+    console.log('[Firebase] Offline persistence enabled.');
   } catch (error) {
-    console.warn('Persistence failed (multi-tab?):', error);
+    console.warn('[Firebase] Persistence failed:', error);
   }
 };
 
-// Export App for Custom Use
+// Export firebase app
 export default app;
