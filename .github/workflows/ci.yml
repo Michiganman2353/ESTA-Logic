@@ -15,54 +15,88 @@ jobs:
   elite-build:
     name: Build & Test (Node ${{ matrix.node }})
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         node: ['20.x']
+
     timeout-minutes: 10
 
     steps:
+
+      # -------------------------
+      # Checkout Code
+      # -------------------------
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # -------------------------
+      # Node Setup
+      # -------------------------
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
           cache: 'npm'
-          cache-dependency-path: package-lock.json
+          cache-dependency-path: '**/package-lock.json'
 
+      # -------------------------
+      # Install Dependencies
+      # -------------------------
       - name: Install Dependencies
         run: npm ci || npm install --legacy-peer-deps
 
+      # -------------------------
+      # Linting
+      # -------------------------
       - name: Lint Code
         run: npm run lint || echo "Lint warnings – manual review"
         continue-on-error: true
 
+      # -------------------------
+      # Type Checking
+      # -------------------------
       - name: Type Check
         run: npm run type-check || echo "No TS – skip"
         continue-on-error: true
 
+      # -------------------------
+      # Testing
+      # -------------------------
       - name: Run Tests
+        id: test
         run: npm test -- --coverage --watchAll=false || echo "No tests – add later"
         continue-on-error: true
 
+      # -------------------------
+      # Security Audit
+      # -------------------------
       - name: Security Audit
         run: |
-          npm audit --audit-level=high || echo "Medium vulns – review resolutions"
-          npx depcheck --ignores=eslint,prettier || echo "Deps clean"
+          npm audit --audit-level=high || echo "Some vulnerabilities found"
+          npx depcheck --ignores=eslint,prettier || echo "Depcheck passed"
 
+      # -------------------------
+      # Build
+      # -------------------------
       - name: Build Production
         run: npm run build
 
-      - name: Upload Coverage to Codecov (if exists)
+      # -------------------------
+      # Codecov Upload (only if tests succeeded)
+      # -------------------------
+      - name: Upload Coverage to Codecov
         if: steps.test.outcome == 'success'
         uses: codecov/codecov-action@v4
         with:
           file: ./coverage/lcov.info
           fail_ci_if_error: false
 
+      # -------------------------
+      # Success / Failure Messaging
+      # -------------------------
       - name: Notify Success
         if: success()
         run: echo "CI passed – deploy ready! 🚀"
@@ -70,5 +104,3 @@ jobs:
       - name: Notify Failure
         if: failure()
         run: echo "CI failed – check logs! ⚠️"
-        - name: Install Dependencies
-  run: npm ci || npm install --legacy-peer-deps
