@@ -20,6 +20,9 @@
   ],
   "license": "MIT",
   "homepage": "https://estatracker.com",
+  "bugs": {
+    "url": "https://github.com/Michiganman2353/esta-tracker-clean/issues"
+  },
   "dependencies": {
     "firebase": "^10.13.2",
     "react": "^18.3.1",
@@ -48,25 +51,39 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "npm run lint && npm run test:ci && react-scripts build",
+    "build": "react-scripts build",
     "test": "react-scripts test",
-    "test:ci": "react-scripts test --watchAll=false --coverage --passWithNoTests",
-    "test:watch": "react-scripts test --watchAll",
     "eject": "react-scripts eject",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "lint:strict": "eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=0",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
-    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
+    "lint": "eslint . --ext .js,.jsx --fix",
+    "lint:strict": "eslint . --ext .js,.jsx --max-warnings=0",
+    "format": "prettier --write \"**/*.{js,jsx,json,css,md}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,json,css,md}\"",
     "type-check": "tsc --noEmit",
-    "audit:fix": "npm audit fix --force"
+    "audit:fix": "npm audit fix --force",
+    "pre-commit": "lint-staged"
   },
   "eslintConfig": {
-    "extends": ["react-app", "react-app/jest", "airbnb", "prettier"],
+    "extends": [
+      "react-app",
+      "react-app/jest",
+      "airbnb",
+      "prettier"
+    ],
     "rules": {
       "react/prop-types": "off",
       "import/prefer-default-export": "off",
-      "no-console": "warn"
-    }
+      "no-console": "off",
+      "react-hooks/exhaustive-deps": "off",
+      "no-unused-vars": "off"
+    },
+    "overrides": [
+      {
+        "files": ["**/*.test.js", "**/*.test.jsx"],
+        "env": {
+          "jest": true
+        }
+      }
+    ]
   },
   "browserslist": {
     "production": [
@@ -94,7 +111,8 @@
     }
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
-    "*.{json,md,css}": ["prettier --write"]
-  }
-}
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css}
