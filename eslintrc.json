@@ -6,14 +6,17 @@
     "prettier"
   ],
   "rules": {
-    "react/prop-types": "off",  // Hooks era – types via TS or none
-    "import/prefer-default-export": "off",  // Modular named exports
-    "no-console": "warn",  // Dev logs OK
-    "react-hooks/exhaustive-deps": "warn",  // Soft on deps
-    "no-unused-vars": "warn",  // Soft on unused
-    "import/no-unresolved": "off",  // CRA handles
-    "import/extensions": "off",  // JS/JSX implicit
-    "import/order": "off"  // Flexible imports
+    "react/prop-types": "off",
+    "import/prefer-default-export": "off",
+    "no-console": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "no-unused-vars": "warn",
+    "import/no-unresolved": "off",
+    "import/extensions": "off",
+    "import/order": "off",
+    "react/jsx-no-comment-textnodes": "off",
+    "react/jsx-no-target-blank": "off",
+    "react/no-unescaped-entities": "warn"
   },
   "overrides": [
     {
@@ -29,6 +32,11 @@
   "settings": {
     "react": {
       "version": "detect"
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx"]
+      }
     }
   }
 }
