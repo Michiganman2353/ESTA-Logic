@@ -94,6 +94,9 @@ const EmployeeDashboard = () => {
       setLoading(false);
     }
   };
+useEffect(() => {
+  if (user) loadBalance();
+}, [user]);  // Add deps
 
   if (!user) {
     return (
