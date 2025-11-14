@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { onAuthChange, logout } from './lib/firebase'; // Pro Firebase SDK
+import { onAuthChange, logout } from './lib/firebase'; // Pro firebase SDK
 import Home from './components/Home';
 import SignIn from './components/SignIn';
 
