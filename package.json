@@ -1,95 +1,100 @@
 {
-  "extends": [
-    "react-app",
-    "react-app/jest",
-    "airbnb",
-    "airbnb/hooks",
-    "prettier"
+  "name": "esta-tracker-clean",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Real-time U.S. ESTA visa waiver status tracking. Secure, fast, PWA-installable.",
+  "author": "Michiganman2353 <your-email@example.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Michiganman2353/esta-tracker-clean.git"
+  },
+  "keywords": [
+    "esta",
+    "visa",
+    "tracker",
+    "firebase",
+    "react",
+    "pwa",
+    "travel",
+    "auth"
   ],
-  "parser": "@babel/eslint-parser",
-  "plugins": ["@typescript-eslint"],
-  "parserOptions": {
-    "ecmaVersion": "latest",
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "jsx": true
-    },
-    "requireConfigFile": false,
-    "babelOptions": {
-      "presets": ["@babel/preset-react", "@babel/preset-typescript"]
+  "license": "MIT",
+  "homepage": "https://estatracker.com",
+  "dependencies": {
+    "firebase": "^10.13.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "react-scripts": "5.0.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^14.3.1",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.10",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.5.3"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "npm run lint && npm run test:ci && react-scripts build",
+    "test": "react-scripts test",
+    "test:ci": "react-scripts test --watchAll=false --coverage --passWithNoTests",
+    "test:watch": "react-scripts test --watchAll",
+    "eject": "react-scripts eject",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "lint:strict": "eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=0",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
+    "type-check": "tsc --noEmit",
+    "audit:fix": "npm audit fix --force"
+  },
+  "eslintConfig": {
+    "extends": ["react-app", "react-app/jest", "airbnb", "prettier"],
+    "rules": {
+      "react/prop-types": "off",
+      "import/prefer-default-export": "off",
+      "no-console": "warn"
     }
   },
-  "rules": {
-    "react/prop-types": "off",
-    "import/prefer-default-export": "off",
-    "no-console": ["error", { "allow": ["warn", "error"] }],
-    "react-hooks/exhaustive-deps": "warn",
-    "no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
-    "import/no-unresolved": "off",
-    "import/extensions": "off",
-    "import/order": [
-      "warn",
-      {
-        "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
-        "newlines-between": "always",
-        "alphabetize": { "order": "asc", "caseInsensitive": true }
-      }
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all",
+      "not safari < 12"
     ],
-    "react/jsx-no-comment-textnodes": "off",
-    "react/jsx-no-target-blank": ["warn", { "allowReferrer": false, "enforceDynamicLinks": "always" }],
-    "react/no-unescaped-entities": "warn",
-    "react/jsx-props-no-spreading": "off",
-    "react/react-in-jsx-scope": "off",
-    "react/state-in-constructor": "off",
-    "react/function-component-definition": "off",
-    "react/jsx-uses-react": "off",
-    "import/no-named-as-default": "off",
-    "import/no-named-as-default-member": "off"
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   },
-  "overrides": [
-    {
-      "files": ["*.test.js", "*.test.jsx", "*.test.ts", "*.test.tsx"],
-      "env": {
-        "jest": true
-      },
-      "rules": {
-        "import/no-extraneous-dependencies": "off"
-      }
-    },
-    {
-      "files": ["*.stories.js", "*.stories.jsx"],
-      "env": {
-        "storybook": true
-      },
-      "rules": {
-        "import/no-extraneous-dependencies": "off"
-      }
-    },
-    {
-      "files": ["*.ts", "*.tsx"],
-      "parser": "@typescript-eslint/parser",
-      "plugins": ["@typescript-eslint"],
-      "rules": {
-        "@typescript-eslint/no-unused-vars": "warn"
-      }
+  "engines": {
+    "node": ">=20.0.0 <21.0.0",
+    "npm": ">=10.0.0"
+  },
+  "resolutions": {
+    "react-error-overlay": "^6.0.11"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
     }
-  ],
-  "settings": {
-    "react": {
-      "version": "detect"
-    },
-    "import/resolver": {
-      "node": {
-        "extensions": [".js", ".jsx", ".ts", ".tsx", ".json"]
-      },
-      "alias": {
-        "map": [
-          ["@components", "./src/components"],
-          ["@lib", "./src/lib"],
-          ["@constants", "./src/constants"]
-        ],
-        "extensions": [".js", ".jsx", ".ts", ".tsx"]
-      }
-    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": ["eslint --fix", "prettier --write"],
+    "*.{json,md,css}": ["prettier --write"]
   }
 }
