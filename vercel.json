@@ -1,23 +1,8 @@
 {
-  "version": 2,
-
-  "builds": [
-    {
-      "src": "packages/frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist",
-        "buildCommand": "cd ../.. && npm install && npm run build:frontend"
-      }
-    }
-  ],
-
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm install && npm run build:frontend",
+  "outputDirectory": "packages/frontend/dist",
+  "installCommand": "npm install",
 
   "headers": [
     {
@@ -81,6 +66,10 @@
     {
       "source": "/sw.js",
       "destination": "/service-worker.js"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ],
 
