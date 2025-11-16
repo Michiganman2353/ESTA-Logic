@@ -1,45 +1,112 @@
-// src/components/admin/index.js
-import React, { useContext } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { AuthUserContext } from '../Session';
-import { UserList } from '../Users/UserList';
-import { UserItem } from '../Users/UserItem';
-import * as ROLES from '../../constants/roles';
-import * as ROUTES from '../../constants/routes';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { db } from '../../services/firebase';
+import { collection, query, where, getDocs, addDoc, doc, updateDoc } from 'firebase/firestore';
+import { getSickBalance, approveSickRequest } from '../../services/firebase';
 
-const AdminPage = () => {
-  const authUser = useContext(AuthUserContext);
-  
-  if (!authUser || !authUser.roles?.[ROLES.ADMIN]) {
-    return <Navigate to={ROUTES.HOME} replace />;
-  }
+export default function Admin() {
+  const { user, role } = useAuth();
+  const navigate = useNavigate();
+  const [employees, setEmployees] = useState([]);
+  const [requests, setRequests] = useState([]);
+  const [newEmail, setNewEmail] = useState('');
+  const [error, setError] = useState('');
+  const [isSmallEmployer, setIsSmallEmployer] = useState(false); // Toggle for new employees
+
+  useEffect(() => {
+    if (user && role === 'employer') {
+      loadEmployees();
+      loadRequests();
+    } else {
+      navigate('/login');
+    }
+  }, [user, role, navigate]);
+
+  const loadEmployees = async () => {
+    try {
+      const q = query(collection(db, 'users'), where('employerId', '==', user.uid));
+      const snapshot = await getDocs(q);
+      const employeeList = await Promise.all(snapshot.docs.map(async (d) => ({
+        id: d.id,
+        email: d.data().email,
+        balance: await getSickBalance(d.id)
+      })));
+      setEmployees(employeeList);
+    } catch (err) {
+      setError('Error loading employees: ' + err.message);
+    }
+  };
+
+  const loadRequests = async () => {
+    try {
+      const q = query(collection(db, 'sickRequests'), where('employerId', '==', user.uid), where('status', '==', 'pending'));
+      const snapshot = await getDocs(q);
+      const requestList = snapshot.docs.map(d => ({
+        id: d.id,
+        ...d.data()
+      }));
+      setRequests(requestList);
+    } catch (err) {
+      setError('Error loading requests: ' + err.message);
+    }
+  };
+
+  const addEmployee = async () => {
+    try {
+      await addDoc(collection(db, 'users'), {
+        email: newEmail,
+        employerId: user.uid,
+        role: 'employee',
+        isSmallEmployer,
+        totalHours: 0
+      });
+      setNewEmail('');
+      loadEmployees();
+    } catch (err) {
+      setError('Add employee error: ' + err.message);
+    }
+  };
+
+  const handleApprove = async (requestId, status) => {
+    try {
+      await approveSickRequest(requestId, status, user.uid);
+      loadRequests();
+      loadEmployees();
+    } catch (err) {
+      setError('Approval error: ' + err.message);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-              Admin Dashboard
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Manage users and system settings
-            </p>
-          </div>
-
-          <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
-            <Routes>
-              <Route path={ROUTES.ADMIN_DETAILS} element={<UserItem />} />
-              <Route path={ROUTES.ADMIN} element={<UserList />} />
-              <Route path="*" element={<Navigate to={ROUTES.ADMIN} replace />} />
-            </Routes>
-          </div>
-        </div>
-      </div>
+    <div style={{ padding: '2rem', maxWidth: '600px', margin: 'auto' }}>
+      <h1>Employer Admin Dashboard</h1>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <h2>Add Employee</h2>
+      <input placeholder="Employee Email" value={newEmail} onChange={e => setNewEmail(e.target.value)} />
+      <label>
+        Small Employer (40h cap)?
+        <input type="checkbox" checked={isSmallEmployer} onChange={e => setIsSmallEmployer(e.target.checked)} />
+      </label>
+      <button onClick={addEmployee}>Add</button>
+      <h2>Employees</h2>
+      <ul>
+        {employees.map(emp => (
+          <li key={emp.id}>
+            {emp.email} — Balance: {emp.balance} hours
+          </li>
+        ))}
+      </ul>
+      <h2>Pending Requests</h2
+<ul>
+  {requests.map(req => (
+    <li key={req.id}>
+      {req.userId} requests {req.hours}h ({req.reason})
+      <button onClick={() => handleApprove(req.id, 'approved')}>Approve</button>
+      <button onClick={() => handleApprove(req.id, 'denied')}>Deny</button>
+    </li>
+  ))}
+</ul>
     </div>
   );
-};
-// Remove if unused
-// import * as ROLES from '../../constants/roles';
-
-export default AdminPage;
+}
