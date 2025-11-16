@@ -235,3 +235,53 @@ export default function EmployerDashboard() {
     </div>
   );
 }
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+const axios = require('axios');
+
+admin.initializeApp();
+
+// ADP OAuth2 Token (Store in Firebase Secrets)
+const ADP_CLIENT_ID = functions.config().adp.client_id;
+const ADP_CLIENT_SECRET = functions.config().adp.client_secret;
+const ADP_TOKEN = functions.config().adp.access_token; // Refresh via cron
+
+// Cron Job: Pull ADP Payroll Hours (Daily)
+exports.pullADPPayroll = functions.pubsub.schedule('0 2 * * *').onRun(async () => {
+  try {
+    const response = await axios.get(`https://api.adp.com/hr/v2/timesheets`, {
+      headers: {
+        'Authorization': `Bearer ${ADP_TOKEN}`,
+        'Accept': 'application/json'
+      },
+      params: { start_date: new Date(Date.now() - 86400000).toISOString().split('T')[0] } // Last 24h
+    });
+    const timesheets = response.data.timesheets; // Parse ADP response
+    for (const sheet of timesheets) {
+      const userId = sheet.employeeId; // Map ADP employee ID to ESTA userId
+      const hours = parseFloat(sheet.hours);
+      await logWorkHours(userId, hours); // Trigger ESTA accrual
+    }
+  } catch (err) {
+    console.error('ADP Pull Error: ' + err.message);
+  }
+  return null;
+});
+
+// Carryover Logic (Annual Cron: Jan 1)
+exports.carryoverSickTime = functions.pubsub.schedule('0 0 1 1 *').onRun(async () => {
+  const users = await getDocs(collection(db, 'users'));
+  const batch = db.batch();
+  users.forEach(async (userDoc) => {
+    const data = userDoc.data();
+    if (data.role === 'employee') {
+      const balance = await getSickBalance(userDoc.id);
+      const unused = balance - data.used || 0;
+      const cap = data.isSmallEmployer ? 40 : 72;
+      const carryover = Math.min(unused, cap);
+      batch.update(userDoc.ref, { totalHours: 0, used: 0, carryover });
+    }
+  });
+  await batch.commit();
+  return null;
+});
