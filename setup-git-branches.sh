@@ -59,7 +59,8 @@ create_branch_if_needed() {
     print_info "Creating branch: $branch_name (from $source_branch)"
     
     # Store current branch
-    local current_branch=$(git rev-parse --abbrev-ref HEAD)
+    local current_branch
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
     
     # Checkout source branch
     if [ "$source_branch" != "HEAD" ]; then
