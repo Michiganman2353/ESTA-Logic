@@ -1,13 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../lib/api';
-import { User } from '../types';
 
-interface RegisterManagerProps {
-  onRegister: (user: User) => void;
-}
-
-export default function RegisterManager({ onRegister }: RegisterManagerProps) {
+export default function RegisterManager() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -47,7 +42,7 @@ export default function RegisterManager({ onRegister }: RegisterManagerProps) {
     setLoading(true);
 
     try {
-      const response = await apiClient.registerManager({
+      await apiClient.registerManager({
         name,
         email,
         password,
