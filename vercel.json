@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npm install && npm run build:frontend",
-  "outputDirectory": "packages/frontend/dist",
+  "buildCommand": "npm run build:frontend",
   "installCommand": "npm install",
+  "outputDirectory": "packages/frontend/dist",
   "framework": null,
 
   "headers": [
@@ -20,7 +20,6 @@
         }
       ]
     },
-
     {
       "source": "/service-worker.js",
       "headers": [
@@ -28,21 +27,18 @@
         { "key": "Service-Worker-Allowed", "value": "/" }
       ]
     },
-
     {
       "source": "/manifest.json",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=3600, immutable" }
       ]
     },
-
     {
       "source": "/icons/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
       ]
     },
-
     {
       "source": "/(.*)\\.(js|css|png|jpg|svg|ico|woff2|woff|ttf|eot)",
       "headers": [
@@ -76,7 +72,7 @@
 
   "functions": {
     "api/*.js": {
-      "runtime": "nodejs20.x",
+      "runtime": "nodejs20",
       "memory": 1024,
       "maxDuration": 10
     }
