@@ -16,6 +16,7 @@ export default function RegisterManager({ onRegister }: RegisterManagerProps) {
   const [employeeCount, setEmployeeCount] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
@@ -53,8 +54,10 @@ export default function RegisterManager({ onRegister }: RegisterManagerProps) {
         companyName,
         employeeCount: empCount,
       });
-      apiClient.setToken(response.token);
-      onRegister(response.user as User);
+      
+      // Manager registration is now pending approval
+      // Don't set token or log in - just show success message
+      setSuccess(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
     } finally {
@@ -73,10 +76,51 @@ export default function RegisterManager({ onRegister }: RegisterManagerProps) {
             Create your ESTA Tracker manager account
           </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
-              <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+        
+        {success ? (
+          <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-6">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-green-800 dark:text-green-200">
+                  Registration Submitted Successfully!
+                </h3>
+                <div className="mt-2 text-sm text-green-700 dark:text-green-300">
+                  <p>Thank you for registering, {name}!</p>
+                  <p className="mt-2">
+                    Your manager account for <strong>{companyName}</strong> is pending approval. 
+                    You'll receive an email notification once your account has been verified and approved.
+                  </p>
+                  <p className="mt-2">
+                    This typically takes 1-2 business days. Once approved, you'll be able to:
+                  </p>
+                  <ul className="list-disc list-inside mt-1 space-y-1">
+                    <li>Add and manage employees</li>
+                    <li>Track sick time accruals</li>
+                    <li>Approve time-off requests</li>
+                    <li>Generate compliance reports</li>
+                  </ul>
+                </div>
+                <div className="mt-4">
+                  <button
+                    onClick={() => navigate('/login')}
+                    className="btn btn-primary text-sm"
+                  >
+                    Return to Login
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+            {error && (
+              <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
+                <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
             </div>
           )}
           <div className="space-y-4">
@@ -207,6 +251,7 @@ export default function RegisterManager({ onRegister }: RegisterManagerProps) {
             </div>
           </div>
         </form>
+        )}
       </div>
     </div>
   );
