@@ -81,6 +81,26 @@ class ApiClient {
     });
   }
 
+  async registerEmployee(data: { email: string; password: string; name: string }) {
+    return this.request<{ token: string; user: unknown }>('/api/v1/auth/register/employee', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  async registerManager(data: { 
+    email: string; 
+    password: string; 
+    name: string;
+    companyName: string;
+    employeeCount: number;
+  }) {
+    return this.request<{ token: string; user: unknown }>('/api/v1/auth/register/manager', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
   async logout() {
     return this.request('/api/v1/auth/logout', { method: 'POST' });
   }
