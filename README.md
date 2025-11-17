@@ -1,14 +1,12 @@
-# ESTA Tracker - Master Plan v2 🚀
+# <span style="color:#007BFF;">ESTA Tracker - Master Plan v2 🚀</span>
 
-**"ESTA Tracker: The HR Power Small Businesses Deserve – Without the Department."**
+**<span style="color:#28A745;">"ESTA Tracker: The HR Power Small Businesses Deserve – Without the Department."</span>**
 
-**Empower Your Business: Automate Compliance, Slash Risks, and Scale Nationally!**  
+**<span style="color:#FFC107;">Empower Your Business: Automate Compliance, Slash Risks, and Scale Nationally!</span>**  
 A Complete Strategic, Technical, and Operational Blueprint  
 Prepared for Production & Scaffolding Phase
 
-![Our Dynamic Logo: Symbolizing Checked Compliance and Timely Tracking!](https://cdn.x.ai/attachments/7a6f7761f59a4f5fb9d1d5a4d3b1d5e2/1.png)
-
-## Table of Contents
+## <span style="color:#6F42C1;">Table of Contents</span>
 - [Section 1: Vision & Purpose](#section-1-vision--purpose) 💡
 - [Section 2: User Roles & Permissions](#section-2-user-roles--permissions) 🔒
 - [Section 3: Core Features (Powerhouse Set)](#section-3-core-features-powerhouse-set) ⚡
@@ -19,54 +17,48 @@ Prepared for Production & Scaffolding Phase
 - [Section 8: Long Term Roadmap](#section-8-long-term-roadmap) 🗺️
 - [Section 9: Brand & Business Strategy](#section-9-brand--business-strategy) 📈
 
-## SECTION 1: VISION & PURPOSE 💡
+## <span style="color:#007BFF;">SECTION 1: VISION & PURPOSE 💡</span>
 
-![Visualizing HR Automation: Streamlining Compliance for Small Businesses](https://cdn.x.ai/attachments/7a6f7761f59a4f5fb9d1d5a4d3b1d5e2/0.png)
-
-**Ignite Growth: Turn Compliance into a Competitive Edge!**  
+**<span style="color:#28A745;">Ignite Growth: Turn Compliance into a Competitive Edge!</span>**  
 
 ESTA Tracker is a full stack SaaS platform designed to automate compliance with the Michigan Earned Sick Time Act (2025). It empowers small and medium sized businesses - especially those with no HR department - to remain compliant, track employee accruals, manage PTO requests, automate documentation, and reduce legal risk.
 
 The platform acts as a turnkey HR compliance engine: tracking hours, generating audit logs, notifying administrators of issues, integrating with payroll, and maintaining full legal adherence.
 
-**Long term vision:**  
-- **Become the national standard tool** for state specific HR compliance.  
-- **Expand to other states** as laws evolve.  
-- **Integrate deeply** with major payroll providers.  
-- **Provide AI powered HR assistance** for small businesses.
+**<span style="color:#FFC107;">Long term vision:</span>**  
+- **<span style="color:#DC3545;">Become the national standard tool</span>** for state specific HR compliance.  
+- **<span style="color:#DC3545;">Expand to other states</span>** as laws evolve.  
+- **<span style="color:#DC3545;">Integrate deeply</span>** with major payroll providers.  
+- **<span style="color:#DC3545;">Provide AI powered HR assistance</span>** for small businesses.
 
-## SECTION 2: USER ROLES & PERMISSIONS 🔒
+## <span style="color:#007BFF;">SECTION 2: USER ROLES & PERMISSIONS 🔒</span>
 
-![User Roles in Action: Secure and Structured Access Control](https://cdn.x.ai/attachments/7a6f7761f59a4f5fb9d1d5a4d3b1d5e2/2.png)
+**<span style="color:#28A745;">Secure Access: Empower Teams Without Compromising Control!</span>**  
 
-**Secure Access: Empower Teams Without Compromising Control!**  
+**<span style="color:#FFC107;">ROLES:</span>**  
+1. **<span style="color:#6F42C1;">Employer Owner</span>** - full control of company, employees, billing, HR settings.  
+2. **<span style="color:#6F42C1;">Admin / Manager</span>** - delegated control (approvals, editing hours, team access).  
+3. **<span style="color:#6F42C1;">Employee</span>** - can view balances, request paid leave, upload documents.  
+4. **<span style="color:#6F42C1;">Auditor (optional)</span>** - restricted, read-only access.
 
-**ROLES:**  
-1. **Employer Owner** - full control of company, employees, billing, HR settings.  
-2. **Admin / Manager** - delegated control (approvals, editing hours, team access).  
-3. **Employee** - can view balances, request paid leave, upload documents.  
-4. **Auditor (optional)** - restricted, read-only access.
+**<span style="color:#FFC107;">PERMISSION HIGHLIGHTS:</span>**  
+- **<span style="color:#DC3545;">Data isolation</span>** between tenants.  
+- **<span style="color:#DC3545;">Manager level restricted views</span>** (department based).  
+- **<span style="color:#DC3545;">Every edit generates</span>** a time stamped audit record.  
+- **<span style="color:#DC3545;">Critical edits require</span>** confirmation prompts and notifications.
 
-**PERMISSION HIGHLIGHTS:**  
-- **Data isolation** between tenants.  
-- **Manager level restricted views** (department based).  
-- **Every edit generates** a time stamped audit record.  
-- **Critical edits require** confirmation prompts and notifications.
+## <span style="color:#007BFF;">SECTION 3: CORE FEATURES (POWERHOUSE SET) ⚡</span>
 
-## SECTION 3: CORE FEATURES (POWERHOUSE SET) ⚡
+**<span style="color:#28A745;">Unleash Efficiency: The Ultimate Toolkit for HR Mastery!</span>**  
 
-![Core Features Spotlight: PTO and Accrual Management in View](https://cdn.x.ai/attachments/7a6f7761f59a4f5fb9d1d5a4d3b1d5e2/3.png)
-
-**Unleash Efficiency: The Ultimate Toolkit for HR Mastery!**  
-
-**3.1 Sick Time Accrual Engine**  
+**<span style="color:#FFC107;">3.1 Sick Time Accrual Engine</span>**  
 - 1 hour per 30 hours worked (Michigan ESTA default).  
 - Cap: 72 hours for employers with >50 employees.  
 - Cap: 40 hours for small employers (less than 50 employees).  
 - Rule versioning for legal updates.  
 - Accrual simulation tool for forecasting.
 
-**3.2 PTO Request System**  
+**<span style="color:#FFC107;">3.2 PTO Request System</span>**  
 - Employee submits request with:  
   - Date range  
   - ESTA approved reason (dropdown)  
@@ -75,72 +67,70 @@ The platform acts as a turnkey HR compliance engine: tracking hours, generating 
 - Auto deduction from available balance.  
 - Notifications (in app + email + push).
 
-**3.3 Multi Day Absence Documentation**  
+**<span style="color:#FFC107;">3.3 Multi Day Absence Documentation</span>**  
 - Photo upload (doctor s notes, medical documents).  
 - Stored securely under employee profile.  
 - Manager only visibility.
 
-**3.4 Compliance AI Assistant**  
+**<span style="color:#FFC107;">3.4 Compliance AI Assistant</span>**  
 - Reviews employer settings.  
 - Flags possible compliance risks.  
 - Interprets ESTA rules.  
 - Auto suggests corrections.
 
-**3.5 Notice Submission & Final Review System**  
+**<span style="color:#FFC107;">3.5 Notice Submission & Final Review System</span>**  
 - Owner/Admin submits changes or hours.  
 - System validates data, checks for errors.  
 - Employer receives a final approval prompt.  
 - Logs stored for audit protection.
 
-**3.6 Hours Import Options**  
+**<span style="color:#FFC107;">3.6 Hours Import Options</span>**  
 - Manual entry with validation.  
 - CSV upload (bulk import).  
 - QuickBooks Time integration (API).  
 - Homebase integration (API).  
 - Universal payroll API pipeline (expandable).
 
-**3.7 Offboarding Wizard**  
+**<span style="color:#FFC107;">3.7 Offboarding Wizard</span>**  
 - Generates final accrual summary.  
 - Notes that employers do not need to PAY out ESTA for 120 days.  
 - Offers record export for legal compliance.  
 - Handles front loaded policy differences.
 
-**3.8 Document Library**  
+**<span style="color:#FFC107;">3.8 Document Library</span>**  
 - ESTA poster (required by law).  
 - Sick leave policy templates.  
 - Employee handbook inserts.  
 - Compliance checklists.
 
-**3.9 Company Wide Calendar System**  
+**<span style="color:#FFC107;">3.9 Company Wide Calendar System</span>**  
 - Day / week / month views.  
 - Employee availability.  
 - Heatmap showing staffing shortages.  
 - PTO conflicts and overlaps.
 
-**3.10 Advanced Reporting Suite**  
+**<span style="color:#FFC107;">3.10 Advanced Reporting Suite</span>**  
 - Usage reports.  
 - Accrual changes over time.  
 - Compliance audit trail.  
 - Department level analytics.  
 - Export to CSV / PDF / Excel.
 
-**3.11 HR Notes & Incident Logs**  
+**<span style="color:#FFC107;">3.11 HR Notes & Incident Logs</span>**  
 - Private employer-only notes.  
 - Time-stamped entries.  
 - Attachments allowed.  
 - AI summary of employee history (optional future phase).
 
-**3.12 Automated Compliance Certificate**  
+**<span style="color:#FFC107;">3.12 Automated Compliance Certificate</span>**  
 - Year end certificate proving ESTA compliance.  
 - Helps during audits or insurance reviews.
 
-## SECTION 4: SYSTEM ARCHITECTURE 🛠️
+## <span style="color:#007BFF;">SECTION 4: SYSTEM ARCHITECTURE 🛠️</span>
 
-![Architecture Blueprint: Robust SaaS Infrastructure Overview](https://cdn.x.ai/attachments/7a6f7761f59a4f5fb9d1d5a4d3b1d5e2/4.png)
+**<span style="color:#28A745;">Rock-Solid Foundation: Built for Scale, Speed, and Security!</span>**  
 
-**Rock-Solid Foundation: Built for Scale, Speed, and Security!**  
-
-**4.1 Frontend**  
+**<span style="color:#FFC107;">4.1 Frontend</span>**  
 - React + Next.js (Vercel deployment)  
 - Component architecture:  
   - Dashboard  
@@ -151,13 +141,13 @@ The platform acts as a turnkey HR compliance engine: tracking hours, generating 
   - Employee Self-Service Portal  
 - UI goals: simple, clean, employer friendly.
 
-**4.2 Backend**  
+**<span style="color:#FFC107;">4.2 Backend</span>**  
 - Firebase Auth  
 - Firestore database  
 - Firebase Functions  
 - Firebase Storage (documents + uploads)
 
-**4.3 Data Model (Simplified)**  
+**<span style="color:#FFC107;">4.3 Data Model (Simplified)</span>**  
 ```json
 TENANTS collection:  
 - companyName  
@@ -192,33 +182,31 @@ HOUR_IMPORT_LOG:
 - processed records  
 - validation results
 
-4.4 Security & Privacy
-•  Role based Firestore rules.
-•  End to end encryption.
-•  Audit locked logs.
-•  Immutable history of changes.
-SECTION 5: WORKFLOWS 🔄
-[Image]
-Streamlined Processes: From Setup to Automation in Minutes!
-5.1 Employer Setup Wizard
+<span style="color:#FFC107;">4.4 Security & Privacy</span>
+•  <span style="color:#DC3545;">Role based Firestore rules.</span>
+•  <span style="color:#DC3545;">End to end encryption.</span>
+•  <span style="color:#DC3545;">Audit locked logs.</span>
+•  <span style="color:#DC3545;">Immutable history of changes.</span>
+<span style="color:#007BFF;">SECTION 5: WORKFLOWS 🔄</span>
+<span style="color:#28A745;">Streamlined Processes: From Setup to Automation in Minutes!</span>
+<span style="color:#FFC107;">5.1 Employer Setup Wizard</span>
 1.  Enter company details.
 2.  Select size (auto sets accrual rules).
 3.  Install/enable integrations.
 4.  Upload employees via CSV or manual.
 5.  Review compliance settings.
 6.  Confirmation + certificate of setup.
-5.2 Employee Flow
+<span style="color:#FFC107;">5.2 Employee Flow</span>
 •  Login → Dashboard → Request Time Off → Upload note → Track status.
-5.3 Manager Flow
+<span style="color:#FFC107;">5.3 Manager Flow</span>
 •  Review requests → Approve/deny → Edit hours → Confirm changes.
-5.4 Weekly Automation
+<span style="color:#FFC107;">5.4 Weekly Automation</span>
 •  Audit for errors.
 •  Notify employers of missing hours.
 •  Generate compliance reminders.
-SECTION 6: UI/UX DESIGN REQUIREMENTS 🎨
-[Image]
-Intuitive Interface: Delight Users, Boost Productivity!
-Required Screens:
+<span style="color:#007BFF;">SECTION 6: UI/UX DESIGN REQUIREMENTS 🎨</span>
+<span style="color:#28A745;">Intuitive Interface: Delight Users, Boost Productivity!</span>
+<span style="color:#FFC107;">Required Screens:</span>
 •  Login
 •  Company Setup Wizard
 •  Employer Dashboard
@@ -231,69 +219,60 @@ Required Screens:
 •  Compliance Center
 •  Profile Settings
 •  Notification Center
-General UX Goals:
-•  Minimum clicks to perform core actions.
-•  Everything accessible within 3 layers at most.
-•  Mobile optimized for employees.
-SECTION 7: LEGAL COMPLIANCE ⚖️
-[Image]
-Bulletproof Protection: Stay Ahead of Regulations Effortlessly!
+<span style="color:#FFC107;">General UX Goals:</span>
+•  <span style="color:#DC3545;">Minimum clicks</span> to perform core actions.
+•  <span style="color:#DC3545;">Everything accessible</span> within 3 layers at most.
+•  <span style="color:#DC3545;">Mobile optimized</span> for employees.
+<span style="color:#007BFF;">SECTION 7: LEGAL COMPLIANCE ⚖️</span>
+<span style="color:#28A745;">Bulletproof Protection: Stay Ahead of Regulations Effortlessly!</span>
 This platform must satisfy:
-•  Michigan Earned Sick Time Act (2025)
-•  Required employer postings
-•  Record keeping requirements
-•  Document protection for sensitive leave
-•  3 year history retention
-•  Immutable audit trails
-•  Optional evidence/documentation uploads
-Front Loading Consideration:
+•  <span style="color:#6F42C1;">Michigan Earned Sick Time Act (2025)</span>
+•  <span style="color:#6F42C1;">Required employer postings</span>
+•  <span style="color:#6F42C1;">Record keeping requirements</span>
+•  <span style="color:#6F42C1;">Document protection for sensitive leave</span>
+•  <span style="color:#6F42C1;">3 year history retention</span>
+•  <span style="color:#6F42C1;">Immutable audit trails</span>
+•  <span style="color:#6F42C1;">Optional evidence/documentation uploads</span>
+<span style="color:#FFC107;">Front Loading Consideration:</span>
 •  System supports:
-	•  Accrual model (default)
-	•  Front load model (40 or 72 hours)
+	•  <span style="color:#DC3545;">Accrual model (default)</span>
+	•  <span style="color:#DC3545;">Front load model (40 or 72 hours)</span>
 •  Auto adjusts based on employer size.
 •  Still benefits front load employers through:
-	•  PTO request workflow
-	•  Document storage
-	•  Compliance tracking
-	•  Audit-ready logs
-SECTION 8: LONG TERM ROADMAP 🗺️
-[Image]
-Future-Proof Vision: From MVP to National Dominance!
-PHASE 1 (MVP 1.0):
+	•  <span style="color:#DC3545;">PTO request workflow</span>
+	•  <span style="color:#DC3545;">Document storage</span>
+	•  <span style="color:#DC3545;">Compliance tracking</span>
+	•  <span style="color:#DC3545;">Audit-ready logs</span>
+<span style="color:#007BFF;">SECTION 8: LONG TERM ROADMAP 🗺️</span>
+<span style="color:#28A745;">Future-Proof Vision: From MVP to National Dominance!</span>
+<span style="color:#FFC107;">PHASE 1 (MVP 1.0):</span>
 •  Employer onboarding
 •  Accrual engine
 •  PTO workflow
 •  CSV import
 •  Calendar basic version
 •  Reporting v1
-PHASE 2:
+<span style="color:#FFC107;">PHASE 2:</span>
 •  Payroll integrations (QuickBooks Time, Homebase)
 •  Mobile app (employee access)
 •  Advanced reporting
 •  Compliance AI engine
 •  Document library
-PHASE 3:
+<span style="color:#FFC107;">PHASE 3:</span>
 •  Multi state expansion
 •  White label offerings
 •  Full HR suite (performance, scheduling, onboarding)
-PHASE 4:
+<span style="color:#FFC107;">PHASE 4:</span>
 •  National HR compliance engine
 •  Enterprise partnerships
-SECTION 9: BRAND & BUSINESS STRATEGY 📈
-[Image]
-Build an Empire: Monetize Smart, Brand Bold!
-Core Identity:
+<span style="color:#007BFF;">SECTION 9: BRAND & BUSINESS STRATEGY 📈</span>
+<span style="color:#28A745;">Build an Empire: Monetize Smart, Brand Bold!</span>
+<span style="color:#FFC107;">Core Identity:</span>
 ESTA Tracker the HR department small businesses don’t have.
-Monetization:
+<span style="color:#FFC107;">Monetization:</span>
 •  Base subscription
 •  Tiered per employee pricing
 •  Add ons:
 	•  Advanced reports
 	•  Payroll integrations
 	•  White labeling
-Legal Setup:
-•  Form LLC
-•  Copyright software
-•  Trademark name + logo
-•  Draft ToS + privacy policy
-•  Secure insurance coverage
