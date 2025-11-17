@@ -1,17 +1,30 @@
 // pages/api/hello.js
 import { getAuth } from 'firebase-admin/auth';
 import { getFirestore } from 'firebase-admin/firestore';
-import { initializeApp, getApps } from 'firebase-admin/app';
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
 
-// Lazy init Firebase Admin
-const adminApp = getApps().length 
-  ? getApps()[0] 
-  : initializeApp({
-      credential: JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT || '{}'),
-    });
+// Lazy init Firebase Admin with graceful error handling
+let adminApp = null;
+let auth = null;
+let db = null;
 
-const auth = getAuth(adminApp);
-const db = getFirestore(adminApp);
+try {
+  adminApp = getApps().length 
+    ? getApps()[0] 
+    : initializeApp({
+        credential: process.env.FIREBASE_SERVICE_ACCOUNT 
+          ? cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT))
+          : undefined,
+      });
+  
+  if (adminApp) {
+    auth = getAuth(adminApp);
+    db = getFirestore(adminApp);
+  }
+} catch (error) {
+  console.error('Firebase initialization error:', error.message);
+  // Continue without Firebase - graceful degradation
+}
 
 // Rate limiting (in-memory – upgrade to Redis for prod)
 const requests = new Map();
@@ -50,14 +63,22 @@ export default async function handler(req, res) {
   try {
     // Health checks
     const timestamp = new Date().toISOString();
-    const firebaseReady = !!process.env.FIREBASE_PROJECT_ID;
-    const authReady = await auth.listUsers(1).then(() => true).catch(() => false);
-    const dbReady = await db.listCollections().then(() => true).catch(() => false);
+    const firebaseReady = !!process.env.FIREBASE_PROJECT_ID && !!adminApp;
+    let authReady = false;
+    let dbReady = false;
+
+    if (auth) {
+      authReady = await auth.listUsers(1).then(() => true).catch(() => false);
+    }
+    
+    if (db) {
+      dbReady = await db.listCollections().then(() => true).catch(() => false);
+    }
 
     // Optional: Verify token from header
     const authHeader = req.headers.authorization;
     let user = null;
-    if (authHeader?.startsWith('Bearer ')) {
+    if (auth && authHeader?.startsWith('Bearer ')) {
       const idToken = authHeader.split('Bearer ')[1];
       try {
         const decoded = await auth.verifyIdToken(idToken);
