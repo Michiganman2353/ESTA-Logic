@@ -1,0 +1,78 @@
+name: Branch Validation
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  validate-branch:
+    name: Validate Branch Structure
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for all branches
+      
+      - name: Validate branch naming
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          echo "Validating branch: $BRANCH_NAME"
+          
+          # Check if branch follows naming conventions
+          if [[ "$BRANCH_NAME" =~ ^(main|develop|feature/[a-z0-9-]+|bugfix/[a-z0-9-]+|hotfix/[a-z0-9-]+|docs/[a-z0-9-]+|refactor/[a-z0-9-]+)$ ]]; then
+            echo "✅ Branch name '$BRANCH_NAME' follows naming conventions"
+          else
+            echo "⚠️ Branch name '$BRANCH_NAME' does not follow standard naming conventions"
+            echo "Expected format: main, develop, or feature/*, bugfix/*, hotfix/*, docs/*, refactor/*"
+            # Don't fail the build, just warn
+          fi
+      
+      - name: Check branch hierarchy
+        run: |
+          echo "Checking branch hierarchy..."
+          
+          # List all branches
+          git branch -r
+          
+          # Check if main branch exists
+          if git show-ref --verify --quiet refs/remotes/origin/main; then
+            echo "✅ main branch exists"
+          else
+            echo "⚠️ main branch does not exist yet"
+          fi
+          
+          # Check if develop branch exists
+          if git show-ref --verify --quiet refs/remotes/origin/develop; then
+            echo "✅ develop branch exists"
+          else
+            echo "⚠️ develop branch does not exist yet"
+          fi
+          
+          # Check if feature branches exist
+          if git show-ref --verify --quiet refs/remotes/origin/feature/section-1-vision-purpose; then
+            echo "✅ feature/section-1-vision-purpose branch exists"
+          else
+            echo "⚠️ feature/section-1-vision-purpose branch does not exist yet"
+          fi
+          
+          if git show-ref --verify --quiet refs/remotes/origin/feature/section-3-core-features; then
+            echo "✅ feature/section-3-core-features branch exists"
+          else
+            echo "⚠️ feature/section-3-core-features branch does not exist yet"
+          fi
+      
+      - name: Display branch info
+        run: |
+          echo "Current branch: ${GITHUB_REF#refs/heads/}"
+          echo ""
+          echo "Branch structure:"
+          git --no-pager branch -r | grep -E '(main|develop|feature/)' | sort || echo "No matching branches found"

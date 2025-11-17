@@ -1,0 +1,38 @@
+# CODEOWNERS file for ESTA Tracker
+# 
+# This file defines which users or teams are responsible for code in this repository.
+# When a pull request is opened, these users/teams will automatically be requested for review.
+#
+# Format: <file pattern> <@username or @org/team-name>
+# For more information: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global owners (apply to all files unless overridden)
+* @Michiganman2353
+
+# Branch setup and Git configuration
+/scripts/setup-branches.sh @Michiganman2353
+/docs/BRANCHING_STRATEGY.md @Michiganman2353
+/docs/BRANCH_PROTECTION.md @Michiganman2353
+
+# Documentation
+/docs/** @Michiganman2353
+/README.md @Michiganman2353
+/*.md @Michiganman2353
+
+# GitHub configuration
+/.github/** @Michiganman2353
+
+# Scripts and automation
+/scripts/** @Michiganman2353
+
+# Configuration files
+package.json @Michiganman2353
+tsconfig*.json @Michiganman2353
+firebase.json @Michiganman2353
+vercel.json @Michiganman2353
+.gitignore @Michiganman2353
+
+# Core application code (when it exists)
+/packages/backend/** @Michiganman2353
+/packages/frontend/** @Michiganman2353
+/packages/shared/** @Michiganman2353
