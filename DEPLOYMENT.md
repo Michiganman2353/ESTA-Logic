@@ -17,13 +17,14 @@ This guide covers deploying the ESTA Tracker application to Vercel. The project 
 esta-tracker-clean/
 ├── packages/
 │   ├── frontend/          # React + Vite application (builds to dist/)
-│   └── backend/           # Express API (not deployed - for local dev)
-├── api/                   # Vercel Serverless Functions
-│   └── hello.js          # Example API route at /api/hello
+│   └── backend/           # Express API (for local dev and future deployment)
+├── scripts/              # Utility scripts
 ├── vercel.json           # Vercel configuration
 ├── package.json          # Root package with build scripts
 └── .env.example          # Environment variable template
 ```
+
+**Note**: The current deployment configuration is frontend-only. The backend Express API in `packages/backend/` is set up for future deployment or local development.
 
 ## Deployment Configuration
 
@@ -44,10 +45,10 @@ The `vercel.json` file configures these automatically, but verify in your projec
 The project includes a `vercel.json` with:
 
 - ✅ **Security headers** (CSP, X-Frame-Options, HSTS)
-- ✅ **Cache control** for static assets
 - ✅ **SPA routing** (all routes → index.html)
-- ✅ **API rewrites** (/api/* → serverless functions)
-- ✅ **Service worker** support
+- ✅ **Static build** configuration for frontend
+
+**Note**: API routes and service workers are not currently configured. Future updates may add serverless functions.
 
 ## Environment Variables
 
@@ -60,17 +61,21 @@ Configure these in the **Vercel Dashboard** → **Project Settings** → **Envir
 | Variable | Value | Notes |
 |----------|-------|-------|
 | `NODE_ENV` | `production` | Auto-set by vercel.json |
-| `FIREBASE_PROJECT_ID` | Your Firebase project ID | Required for API routes |
-| `FIREBASE_SERVICE_ACCOUNT` | JSON service account | Entire Firebase service account JSON |
-| `ALLOWED_ORIGIN` | `https://your-domain.com` | CORS configuration for API |
-| `VITE_API_URL` | `/api` or full API URL | Frontend API endpoint |
+| `VITE_FIREBASE_API_KEY` | Your Firebase API key | Required for Firebase Auth |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Your Firebase auth domain | Required for Firebase Auth |
+| `VITE_FIREBASE_PROJECT_ID` | Your Firebase project ID | Required for Firebase |
+| `VITE_FIREBASE_STORAGE_BUCKET` | Your Firebase storage bucket | Required for Firebase Storage |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Your messaging sender ID | Required for Firebase |
+| `VITE_FIREBASE_APP_ID` | Your Firebase app ID | Required for Firebase |
+
+**Note**: All frontend environment variables must be prefixed with `VITE_` to be accessible in the Vite build.
 
 #### Development/Preview Environment
 
 | Variable | Value | Notes |
 |----------|-------|-------|
 | `NODE_ENV` | `development` | For preview deployments |
-| `VITE_API_URL` | `/api` | Use relative path for preview |
+| `VITE_FIREBASE_*` | Same as production | Use development Firebase project for testing |
 
 ### Setting Environment Variables in Vercel
 
@@ -158,7 +163,6 @@ The build process defined in `vercel.json`:
 ### Check Deployment Status
 
 1. **Build Logs**: Vercel Dashboard → Deployments → [Your deployment] → View Build Logs
-2. **Function Logs**: Vercel Dashboard → Functions → Select function → View logs
 
 ### Test Endpoints
 
@@ -168,12 +172,8 @@ After deployment:
 # Test frontend
 curl https://your-deployment.vercel.app
 
-# Test API route
-curl https://your-deployment.vercel.app/api/hello
-
-# Test with authentication (if configured)
-curl -H "Authorization: Bearer YOUR_TOKEN" \
-     https://your-deployment.vercel.app/api/hello
+# Visit in browser to test the React app
+open https://your-deployment.vercel.app
 ```
 
 ## Common Issues
@@ -198,28 +198,27 @@ npm run build
 - For Vite variables, must start with `VITE_`
 - Redeploy after adding variables
 
-### Issue 3: API Routes Return 404
+### Issue 3: Firebase Connection Issues
 
-**Cause**: Incorrect API route setup or rewrites not working
+**Cause**: Missing or incorrect Firebase environment variables
 
 **Solution**:
-- Check `vercel.json` rewrites configuration
-- Ensure API files are in `api/` directory at root
-- API files must export default handler function
+- Verify all `VITE_FIREBASE_*` variables are set in Vercel Dashboard
+- Check Firebase console for correct values
+- Ensure variables are prefixed with `VITE_` for Vite access
+- Redeploy after adding/updating variables
 
-### Issue 4: Firebase Admin Initialization Fails
+### Issue 4: Build Fails with TypeScript Errors
 
-**Cause**: Invalid service account JSON or missing project ID
+**Cause**: Type errors in TypeScript code
 
 **Solution**:
 ```bash
-# Validate JSON format
-echo $FIREBASE_SERVICE_ACCOUNT | jq .
+# Run type checking locally
+npm run typecheck
 
-# Check required fields
-- type: "service_account"
-- project_id: "your-project"
-- private_key: "-----BEGIN PRIVATE KEY-----..."
+# Fix any errors, then rebuild
+npm run build
 ```
 
 ### Issue 5: Security Vulnerabilities in Dependencies
@@ -240,26 +239,15 @@ npm update vite vitest
 
 ## Performance Optimization
 
-### 1. Enable Edge Runtime (Optional)
+### 1. Vite Build Optimizations
 
-For faster API responses, use Edge Runtime:
+Vite automatically provides:
+- Code splitting
+- Tree shaking
+- Minification
+- Asset optimization
 
-```javascript
-// In api/hello.js
-export const config = {
-  runtime: 'edge', // Change from nodejs
-};
-```
-
-### 2. Configure Caching
-
-Caching is already configured in `vercel.json`:
-
-- **Static assets**: 1 year cache
-- **Service worker**: No cache (must-revalidate)
-- **HTML**: Handled by SPA routing
-
-### 3. Image Optimization
+### 2. Image Optimization
 
 If using images, leverage Vercel's automatic optimization:
 
@@ -269,22 +257,26 @@ If using images, leverage Vercel's automatic optimization:
 // Vercel automatically optimizes on-demand
 ```
 
+### 3. Caching Strategy
+
+Static assets are automatically cached by Vercel's CDN with optimal cache headers.
+
 ## Monitoring & Debugging
 
 ### Enable Vercel Analytics
 
 1. Dashboard → Project → Analytics
-2. Add `@vercel/analytics` to frontend
+2. Add `@vercel/analytics` to frontend package
 3. Track Web Vitals and performance
 
-### Check Function Logs
+### Check Deployment Logs
 
 ```bash
 # Using Vercel CLI
 vercel logs [deployment-url]
 
 # Or in Dashboard
-Project → Deployments → [Select] → Functions → Logs
+Project → Deployments → [Select] → Logs
 ```
 
 ## Rollback Deployments
@@ -300,7 +292,7 @@ If something goes wrong:
 1. **Add Domain**: Dashboard → Project → Settings → Domains
 2. **Add DNS Records**: Follow Vercel instructions
 3. **SSL**: Automatically provisioned
-4. **Update CORS**: Update `ALLOWED_ORIGIN` environment variable
+4. **Update Firebase**: Update authorized domains in Firebase Console
 
 ## CI/CD with GitHub Actions (Optional)
 
@@ -328,16 +320,15 @@ jobs:
 
 ✅ **CSP Headers**: Configured in vercel.json
 ✅ **HSTS**: Enforces HTTPS
-✅ **Rate Limiting**: Implemented in API routes
-✅ **CORS**: Configured per environment
-✅ **Service Account**: Never committed to git
+✅ **Firebase Auth**: Client-side authentication
+✅ **Environment Variables**: Secured in Vercel Dashboard
 ✅ **Dependencies**: Monitored via npm audit
 
 ## Support & Resources
 
 - [Vercel Documentation](https://vercel.com/docs)
 - [Vite Deployment Guide](https://vitejs.dev/guide/static-deploy.html#vercel)
-- [Firebase Admin Setup](https://firebase.google.com/docs/admin/setup)
+- [Firebase Web Setup](https://firebase.google.com/docs/web/setup)
 - [Project Repository](https://github.com/Michiganman2353/esta-tracker-clean)
 
 ## Quick Reference
@@ -366,3 +357,4 @@ vercel ls
 **Last Updated**: November 2024
 **Vercel Configuration Version**: vercel.json v2
 **Node.js Version**: 20.x (LTS)
+**Architecture**: Frontend-only deployment (static site)
