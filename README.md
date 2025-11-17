@@ -6,7 +6,42 @@
 A Complete Strategic, Technical, and Operational Blueprint  
 Prepared for Production & Scaffolding Phase
 
+## <span style="color:#007BFF;">DEVELOPMENT SETUP 🔧</span>
+
+**<span style="color:#28A745;">Get Started: Set Up Your Development Environment in Minutes!</span>**
+
+### Git Branching Strategy
+
+This project follows a structured branching strategy to ensure organized development and smooth releases.
+
+**Branch Hierarchy:**
+```
+main (production)
+ └── develop (integration)
+      ├── feature/section-1-vision-purpose (vision documents & goals)
+      └── feature/section-3-core-features (core feature development)
+```
+
+**Quick Setup:**
+
+To automatically set up all branches:
+```bash
+chmod +x scripts/setup-branches.sh
+./scripts/setup-branches.sh
+```
+
+For complete branching guidelines, workflow best practices, and troubleshooting:
+- 📖 See [BRANCHING_STRATEGY.md](docs/BRANCHING_STRATEGY.md)
+- 📖 See [scripts/README.md](scripts/README.md)
+
+**Key Development Branches:**
+- **`main`** - Production-ready code (protected)
+- **`develop`** - Integration branch for ongoing development
+- **`feature/section-1-vision-purpose`** - Vision documents, goals, and strategic planning
+- **`feature/section-3-core-features`** - Core application features (accrual engine, PTO system, etc.)
+
 ## <span style="color:#6F42C1;">Table of Contents</span>
+- [Development Setup](#development-setup) 🔧
 - [Section 1: Vision & Purpose](#section-1-vision--purpose) 💡
 - [Section 2: User Roles & Permissions](#section-2-user-roles--permissions) 🔒
 - [Section 3: Core Features (Powerhouse Set)](#section-3-core-features-powerhouse-set) ⚡
