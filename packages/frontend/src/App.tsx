@@ -7,6 +7,8 @@ import { User } from './types';
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import RegisterEmployee from './pages/RegisterEmployee';
+import RegisterManager from './pages/RegisterManager';
 import EmployeeDashboard from './pages/EmployeeDashboard';
 import EmployerDashboard from './pages/EmployerDashboard';
 import AuditLog from './pages/AuditLog';
@@ -42,7 +44,9 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={!user ? <Login onLogin={setUser} /> : <Navigate to="/" />} />
-        <Route path="/register" element={!user ? <Register onRegister={setUser} /> : <Navigate to="/" />} />
+        <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
+        <Route path="/register/employee" element={!user ? <RegisterEmployee onRegister={setUser} /> : <Navigate to="/" />} />
+        <Route path="/register/manager" element={!user ? <RegisterManager onRegister={setUser} /> : <Navigate to="/" />} />
         
         {user ? (
           <>
