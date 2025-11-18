@@ -204,7 +204,8 @@ function convertToCSV(data: any[], headers: string[]): string {
   data.forEach(row => {
     const values = headers.map(header => {
       const value = row[header];
-      const escaped = ('' + value).replace(/"/g, '\\"');
+      // Properly escape both backslashes and quotes for CSV
+      const escaped = ('' + value).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
       return `"${escaped}"`;
     });
     csvRows.push(values.join(','));
