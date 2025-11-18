@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { registerManager } from '../lib/authService';
+import { isFirebaseConfigured } from '../lib/firebase';
 import { apiClient } from '../lib/api';
+import EmailVerification from '../components/EmailVerification';
 
 export default function RegisterManager() {
   const [name, setName] = useState('');
@@ -12,6 +15,7 @@ export default function RegisterManager() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
@@ -42,31 +46,47 @@ export default function RegisterManager() {
     setLoading(true);
 
     try {
-      await apiClient.registerManager({
-        name,
-        email,
-        password,
-        companyName,
-        employeeCount: empCount,
-      });
-      
-      // Manager registration is now pending approval
-      // Don't set token or log in - just show success message
-      setSuccess(true);
+      if (isFirebaseConfigured) {
+        // Use Firebase authentication
+        await registerManager({
+          name,
+          email,
+          password,
+          companyName,
+          employeeCount: empCount,
+        });
+        
+        setShowVerification(true);
+      } else {
+        // Fallback to existing API for local development
+        await apiClient.registerManager({
+          name,
+          email,
+          password,
+          companyName,
+          employeeCount: empCount,
+        });
+        
+        setSuccess(true);
+      }
     } catch (err) {
       console.error('Registration error:', err);
       
-      // Type guard for ApiError
-      const error = err as { status?: number; message?: string; isNetworkError?: boolean };
-      
-      if (error.isNetworkError) {
-        setError('Unable to connect to server. Please check your internet connection and try again.');
-      } else if (error.status === 409) {
-        setError('This email is already registered. Please use a different email or try logging in.');
-      } else if (error.status && error.status >= 400 && error.status < 500) {
-        setError(error.message || 'Registration failed. Please check your information and try again.');
+      if (err instanceof Error) {
+        setError(err.message);
       } else {
-        setError('Registration failed. Please try again later.');
+        // Type guard for ApiError
+        const error = err as { status?: number; message?: string; isNetworkError?: boolean };
+        
+        if (error.isNetworkError) {
+          setError('Unable to connect to server. Please check your internet connection and try again.');
+        } else if (error.status === 409) {
+          setError('This email is already registered. Please use a different email or try logging in.');
+        } else if (error.status && error.status >= 400 && error.status < 500) {
+          setError(error.message || 'Registration failed. Please check your information and try again.');
+        } else {
+          setError('Registration failed. Please try again later.');
+        }
       }
     } finally {
       setLoading(false);
@@ -75,7 +95,15 @@ export default function RegisterManager() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+      {showVerification ? (
+        <EmailVerification
+          email={email}
+          onVerified={() => {
+            navigate('/login?verified=true');
+          }}
+        />
+      ) : (
+        <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
             Manager Registration
@@ -260,7 +288,8 @@ export default function RegisterManager() {
           </div>
         </form>
         )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

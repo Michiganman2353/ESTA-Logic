@@ -1,0 +1,161 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isVerified() {
+      return request.auth.token.emailVerified == true;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isRole(role) {
+      return isAuthenticated() && request.auth.token.role == role;
+    }
+    
+    function belongsToTenant(tenantId) {
+      return isAuthenticated() && request.auth.token.tenantId == tenantId;
+    }
+    
+    function isEmployer() {
+      return isRole('employer') || isRole('admin');
+    }
+    
+    function isEmployee() {
+      return isRole('employee');
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Users can read their own document
+      allow read: if isOwner(userId);
+      
+      // Users can update their own document (limited fields)
+      allow update: if isOwner(userId) && 
+        !request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(['role', 'tenantId', 'employerId', 'status']);
+      
+      // Employers can read users in their tenant
+      allow read: if isEmployer() && 
+        belongsToTenant(resource.data.tenantId);
+      
+      // Only system (via Cloud Functions) can create users
+      allow create: if false;
+      allow delete: if false;
+    }
+    
+    // Tenants collection
+    match /tenants/{tenantId} {
+      // Tenant owner can read/update
+      allow read, update: if isAuthenticated() && 
+        resource.data.ownerId == request.auth.uid;
+      
+      // Employees can read their tenant
+      allow read: if belongsToTenant(tenantId);
+      
+      // Only system can create/delete tenants
+      allow create, delete: if false;
+    }
+    
+    // Work logs
+    match /workLogs/{logId} {
+      // Employers can read all logs in their tenant
+      allow read: if isEmployer() && 
+        belongsToTenant(resource.data.employerId);
+      
+      // Employees can read their own logs
+      allow read: if isEmployee() && 
+        isOwner(resource.data.userId);
+      
+      // Only employers can create/update/delete logs
+      allow create, update, delete: if isEmployer() && 
+        belongsToTenant(resource.data.employerId);
+    }
+    
+    // Sick time requests
+    match /sickTimeRequests/{requestId} {
+      // Employers can read all requests in their tenant
+      allow read: if isEmployer() && 
+        belongsToTenant(resource.data.employerId);
+      
+      // Employees can read their own requests
+      allow read: if isEmployee() && 
+        isOwner(resource.data.userId);
+      
+      // Employees can create requests for themselves
+      allow create: if isEmployee() && 
+        request.resource.data.userId == request.auth.uid &&
+        belongsToTenant(request.resource.data.employerId);
+      
+      // Only employers can update (approve/deny) requests
+      allow update: if isEmployer() && 
+        belongsToTenant(resource.data.employerId);
+      
+      // No one can delete requests
+      allow delete: if false;
+    }
+    
+    // Audit logs (read-only for users)
+    match /auditLogs/{logId} {
+      // Employers can read logs for their tenant
+      allow read: if isEmployer() && 
+        belongsToTenant(resource.data.employerId);
+      
+      // Employees can read logs related to themselves
+      allow read: if isEmployee() && 
+        isOwner(resource.data.userId);
+      
+      // Only system can write audit logs
+      allow write: if false;
+    }
+    
+    // Retaliation reports
+    match /retaliationReports/{reportId} {
+      // Only employers and admins can read reports
+      allow read: if isEmployer() && 
+        belongsToTenant(resource.data.employerId);
+      
+      // Employees can create reports for their tenant
+      allow create: if isEmployee() && 
+        belongsToTenant(request.resource.data.employerId) &&
+        request.resource.data.reporterId == request.auth.uid;
+      
+      // Only employers can update reports
+      allow update: if isEmployer() && 
+        belongsToTenant(resource.data.employerId);
+      
+      // No one can delete reports
+      allow delete: if false;
+    }
+    
+    // Documents/attachments metadata
+    match /documents/{documentId} {
+      // Employers can read all documents in their tenant
+      allow read: if isEmployer() && 
+        belongsToTenant(resource.data.employerId);
+      
+      // Employees can read their own documents
+      allow read: if isEmployee() && 
+        isOwner(resource.data.userId);
+      
+      // Employees can create documents
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid;
+      
+      // Only employers can delete documents
+      allow delete: if isEmployer() && 
+        belongsToTenant(resource.data.employerId);
+    }
+    
+    // Default: deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

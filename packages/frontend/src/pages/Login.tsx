@@ -1,4 +1,7 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { signIn } from '../lib/authService';
+import { isFirebaseConfigured } from '../lib/firebase';
 import { apiClient } from '../lib/api';
 import { User } from '../types';
 
@@ -11,6 +14,9 @@ export default function Login({ onLogin }: LoginProps) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  
+  const verified = searchParams.get('verified') === 'true';
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -18,25 +24,36 @@ export default function Login({ onLogin }: LoginProps) {
     setLoading(true);
 
     try {
-      const response = await apiClient.login(email, password);
-      apiClient.setToken(response.token);
-      onLogin(response.user as User);
+      if (isFirebaseConfigured) {
+        // Use Firebase authentication
+        const user = await signIn(email, password);
+        onLogin(user);
+      } else {
+        // Fallback to existing API for local development
+        const response = await apiClient.login(email, password);
+        apiClient.setToken(response.token);
+        onLogin(response.user as User);
+      }
     } catch (err) {
       console.error('Login error:', err);
       
-      // Type guard for ApiError
-      const error = err as { status?: number; message?: string; isNetworkError?: boolean };
-      
-      if (error.isNetworkError) {
-        setError('Unable to connect to server. Please check your internet connection and try again.');
-      } else if (error.status === 401) {
-        setError('Invalid email or password. Please try again.');
-      } else if (error.status === 403) {
-        setError('Your account is pending approval. Please wait for an administrator to activate your account.');
-      } else if (error.status && error.status >= 400 && error.status < 500) {
-        setError(error.message || 'Login failed. Please check your credentials.');
+      if (err instanceof Error) {
+        setError(err.message);
       } else {
-        setError('Login failed. Please try again later.');
+        // Type guard for ApiError
+        const error = err as { status?: number; message?: string; isNetworkError?: boolean };
+        
+        if (error.isNetworkError) {
+          setError('Unable to connect to server. Please check your internet connection and try again.');
+        } else if (error.status === 401) {
+          setError('Invalid email or password. Please try again.');
+        } else if (error.status === 403) {
+          setError('Your account is pending approval. Please wait for an administrator to activate your account.');
+        } else if (error.status && error.status >= 400 && error.status < 500) {
+          setError(error.message || 'Login failed. Please check your credentials.');
+        } else {
+          setError('Login failed. Please try again later.');
+        }
       }
     } finally {
       setLoading(false);
@@ -55,6 +72,13 @@ export default function Login({ onLogin }: LoginProps) {
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {verified && (
+            <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-4">
+              <p className="text-sm text-green-800 dark:text-green-200">
+                ✓ Email verified successfully! You can now sign in.
+              </p>
+            </div>
+          )}
           {error && (
             <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
               <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
