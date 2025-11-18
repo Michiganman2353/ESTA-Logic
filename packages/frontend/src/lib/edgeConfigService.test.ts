@@ -2,12 +2,12 @@
  * Tests for Edge Config Service
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
 import { EdgeConfigService } from '../lib/edgeConfigService';
 import { DEFAULT_EDGE_CONFIG } from '../types/edgeConfig';
 
 // Mock fetch globally
-global.fetch = vi.fn();
+global.fetch = vi.fn() as Mock;
 
 describe('EdgeConfigService', () => {
   let service: EdgeConfigService;
@@ -22,7 +22,7 @@ describe('EdgeConfigService', () => {
     it('should fetch config from API', async () => {
       const mockConfig = { ...DEFAULT_EDGE_CONFIG, maintenanceMode: true };
       
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
@@ -34,7 +34,7 @@ describe('EdgeConfigService', () => {
     });
 
     it('should return default config if API fails', async () => {
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: false,
         status: 500,
       });
@@ -45,7 +45,7 @@ describe('EdgeConfigService', () => {
     });
 
     it('should return default config on network error', async () => {
-      (global.fetch as any).mockRejectedValueOnce(new Error('Network error'));
+      (global.fetch as Mock).mockRejectedValueOnce(new Error('Network error'));
 
       const config = await service.getConfig();
       
@@ -55,7 +55,7 @@ describe('EdgeConfigService', () => {
     it('should cache config and reuse it', async () => {
       const mockConfig = { ...DEFAULT_EDGE_CONFIG };
       
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
@@ -81,7 +81,7 @@ describe('EdgeConfigService', () => {
         },
       };
       
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
@@ -97,7 +97,7 @@ describe('EdgeConfigService', () => {
         featureFlags: {},
       };
       
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
@@ -115,7 +115,7 @@ describe('EdgeConfigService', () => {
         maintenanceMode: true,
       };
       
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
@@ -131,7 +131,7 @@ describe('EdgeConfigService', () => {
         maintenanceMode: false,
       };
       
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
@@ -152,7 +152,7 @@ describe('EdgeConfigService', () => {
         },
       };
       
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
@@ -171,7 +171,7 @@ describe('EdgeConfigService', () => {
         },
       };
       
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
@@ -194,7 +194,7 @@ describe('EdgeConfigService', () => {
         },
       };
       
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
@@ -215,7 +215,7 @@ describe('EdgeConfigService', () => {
         },
       };
       
-      (global.fetch as any).mockResolvedValueOnce({
+      (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
@@ -230,7 +230,7 @@ describe('EdgeConfigService', () => {
     it('should clear cache and force refetch', async () => {
       const mockConfig = { ...DEFAULT_EDGE_CONFIG };
       
-      (global.fetch as any).mockResolvedValue({
+      (global.fetch as Mock).mockResolvedValue({
         ok: true,
         json: async () => mockConfig,
       });
