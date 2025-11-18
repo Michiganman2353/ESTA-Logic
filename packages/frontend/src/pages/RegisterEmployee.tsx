@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { registerEmployee } from '../lib/authService';
 import { isFirebaseConfigured } from '../lib/firebase';
 import { apiClient } from '../lib/api';
+import { validateEmailFormat } from '../lib/emailValidation';
 import { User } from '../types';
 import EmailVerification from '../components/EmailVerification';
 
@@ -24,6 +25,13 @@ export default function RegisterEmployee({ onRegister }: RegisterEmployeeProps) 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+
+    // Validate email format first
+    const emailValidation = validateEmailFormat(email);
+    if (!emailValidation.valid) {
+      setError(emailValidation.error || 'Invalid email address');
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
