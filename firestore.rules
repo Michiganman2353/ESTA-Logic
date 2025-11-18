@@ -1,0 +1,294 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================================
+    // HELPER FUNCTIONS
+    // ============================================================
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if user's email is verified
+    function isEmailVerified() {
+      return request.auth.token.email_verified == true;
+    }
+    
+    // Check if user is authenticated AND email verified (required for all access)
+    function isAuthenticatedAndVerified() {
+      return isAuthenticated() && isEmailVerified();
+    }
+    
+    // Get the user's tenant ID from custom claims
+    function getTenantId() {
+      return request.auth.token.tenantId;
+    }
+    
+    // Check if user belongs to the specified tenant
+    function belongsToTenant(tenantId) {
+      return isAuthenticatedAndVerified() && getTenantId() == tenantId;
+    }
+    
+    // Check if user has manager role
+    function isManager() {
+      return isAuthenticatedAndVerified() && 
+             request.auth.token.role == 'manager';
+    }
+    
+    // Check if user has employee role
+    function isEmployee() {
+      return isAuthenticatedAndVerified() && 
+             request.auth.token.role == 'employee';
+    }
+    
+    // Check if user has admin role
+    function isAdmin() {
+      return isAuthenticatedAndVerified() && 
+             request.auth.token.role == 'admin';
+    }
+    
+    // Check if user is manager of the specified tenant
+    function isManagerOfTenant(tenantId) {
+      return isManager() && belongsToTenant(tenantId);
+    }
+    
+    // Check if user is the specific employee or manager of their tenant
+    function isEmployeeOrManager(userId, tenantId) {
+      return belongsToTenant(tenantId) && 
+             (request.auth.uid == userId || isManager());
+    }
+    
+    // Prevent clients from setting protected fields
+    function cannotSetProtectedFields() {
+      return !('role' in request.resource.data) &&
+             !('tenantId' in request.resource.data) &&
+             !('status' in request.resource.data) &&
+             !('customClaims' in request.resource.data);
+    }
+    
+    // Check if document is being created (not updated)
+    function isCreating() {
+      return !exists(/databases/$(database)/documents/$(resource.__name__));
+    }
+    
+    // ============================================================
+    // TENANTS COLLECTION
+    // ============================================================
+    match /tenants/{tenantId} {
+      // Managers can read their own tenant data
+      allow read: if isManagerOfTenant(tenantId);
+      
+      // Only backend can create/update tenant data (via admin SDK)
+      // Clients cannot create or update tenants
+      allow create, update: if false;
+      
+      // Only admins can delete tenants (rare operation)
+      allow delete: if isAdmin();
+      
+      // ============================================================
+      // EMPLOYEES SUBCOLLECTION
+      // ============================================================
+      match /employees/{employeeId} {
+        // Managers can read all employees in their tenant
+        // Employees can only read their own data
+        allow read: if isManagerOfTenant(tenantId) || 
+                       (belongsToTenant(tenantId) && request.auth.uid == employeeId);
+        
+        // Managers can create employees in their tenant
+        allow create: if isManagerOfTenant(tenantId) && 
+                         cannotSetProtectedFields();
+        
+        // Managers can update employee data (not sensitive fields)
+        // Employees can update only their own non-sensitive data
+        allow update: if (isManagerOfTenant(tenantId) || 
+                          (belongsToTenant(tenantId) && request.auth.uid == employeeId)) &&
+                         // Cannot modify accrual balances, used hours, or status
+                         !('accruedHours' in request.resource.data) &&
+                         !('usedHours' in request.resource.data) &&
+                         !('paidHoursUsed' in request.resource.data) &&
+                         !('unpaidHoursUsed' in request.resource.data) &&
+                         !('status' in request.resource.data) &&
+                         !('tenantId' in request.resource.data);
+        
+        // Only managers can delete employees
+        allow delete: if isManagerOfTenant(tenantId);
+      }
+      
+      // ============================================================
+      // PTO_REQUESTS SUBCOLLECTION
+      // ============================================================
+      match /pto_requests/{requestId} {
+        // Managers can read all requests in their tenant
+        // Employees can read their own requests
+        allow read: if isManagerOfTenant(tenantId) || 
+                       (belongsToTenant(tenantId) && 
+                        resource.data.userId == request.auth.uid);
+        
+        // Employees can create requests for themselves
+        allow create: if belongsToTenant(tenantId) && 
+                         request.resource.data.userId == request.auth.uid &&
+                         request.resource.data.tenantId == tenantId &&
+                         request.resource.data.status == 'pending' &&
+                         cannotSetProtectedFields();
+        
+        // Managers can update request status (approve/deny)
+        // Employees cannot update their own requests after submission
+        allow update: if isManagerOfTenant(tenantId) &&
+                         // Managers can only change status and add denial reason
+                         request.resource.data.diff(resource.data).affectedKeys()
+                           .hasOnly(['status', 'denialReason', 'reviewedAt', 'reviewedBy']);
+        
+        // Only managers can delete requests
+        allow delete: if isManagerOfTenant(tenantId);
+      }
+      
+      // ============================================================
+      // WORK_LOGS SUBCOLLECTION
+      // ============================================================
+      match /work_logs/{logId} {
+        // Managers can read all work logs in their tenant
+        // Employees can read their own work logs
+        allow read: if isManagerOfTenant(tenantId) || 
+                       (belongsToTenant(tenantId) && 
+                        resource.data.userId == request.auth.uid);
+        
+        // Only managers can create work logs
+        allow create: if isManagerOfTenant(tenantId) &&
+                         request.resource.data.tenantId == tenantId;
+        
+        // Managers can update work logs (corrections)
+        allow update: if isManagerOfTenant(tenantId);
+        
+        // Only managers can delete work logs
+        allow delete: if isManagerOfTenant(tenantId);
+      }
+      
+      // ============================================================
+      // ACCRUAL_LOGS SUBCOLLECTION (Immutable)
+      // ============================================================
+      match /accrual_logs/{logId} {
+        // Managers can read all accrual logs in their tenant
+        // Employees can read their own accrual logs
+        allow read: if isManagerOfTenant(tenantId) || 
+                       (belongsToTenant(tenantId) && 
+                        resource.data.userId == request.auth.uid);
+        
+        // Only backend can create accrual logs (via Cloud Functions)
+        allow create: if false;
+        
+        // Accrual logs are immutable - no updates or deletes allowed
+        allow update, delete: if false;
+      }
+      
+      // ============================================================
+      // AUDIT_LOGS SUBCOLLECTION (Immutable)
+      // ============================================================
+      match /audit_logs/{logId} {
+        // Only managers can read audit logs
+        allow read: if isManagerOfTenant(tenantId);
+        
+        // Only backend can create audit logs (via Cloud Functions)
+        allow create: if false;
+        
+        // Audit logs are immutable - no updates or deletes allowed
+        allow update, delete: if false;
+      }
+      
+      // ============================================================
+      // RETALIATION_REPORTS SUBCOLLECTION
+      // ============================================================
+      match /retaliation_reports/{reportId} {
+        // Managers and admins can read retaliation reports
+        // Employees can read their own reports
+        allow read: if isManagerOfTenant(tenantId) || 
+                       isAdmin() ||
+                       (belongsToTenant(tenantId) && 
+                        resource.data.reporterId == request.auth.uid);
+        
+        // Employees can create retaliation reports
+        allow create: if belongsToTenant(tenantId) &&
+                         request.resource.data.reporterId == request.auth.uid &&
+                         request.resource.data.tenantId == tenantId;
+        
+        // Only managers and admins can update reports (change status, add resolution)
+        allow update: if (isManagerOfTenant(tenantId) || isAdmin()) &&
+                         // Can only change status and resolution
+                         request.resource.data.diff(resource.data).affectedKeys()
+                           .hasOnly(['status', 'resolution', 'updatedAt']);
+        
+        // Only admins can delete retaliation reports
+        allow delete: if isAdmin();
+      }
+      
+      // ============================================================
+      // DOCTOR_NOTES SUBCOLLECTION
+      // ============================================================
+      match /doctor_notes/{noteId} {
+        // Managers can read all doctor notes in their tenant
+        // Employees can read only their own doctor notes
+        allow read: if isManagerOfTenant(tenantId) || 
+                       (belongsToTenant(tenantId) && 
+                        resource.data.employeeId == request.auth.uid);
+        
+        // Only employees can upload doctor notes (for themselves)
+        allow create: if belongsToTenant(tenantId) &&
+                         request.resource.data.employeeId == request.auth.uid &&
+                         request.resource.data.tenantId == tenantId &&
+                         isCreating();
+        
+        // Doctor notes cannot be modified or deleted once uploaded
+        allow update, delete: if false;
+      }
+      
+      // ============================================================
+      // COMPLIANCE_SETTINGS SUBCOLLECTION
+      // ============================================================
+      match /compliance_settings/{settingId} {
+        // Managers can read compliance settings for their tenant
+        allow read: if isManagerOfTenant(tenantId);
+        
+        // Only backend can create/update compliance settings
+        allow create, update: if false;
+        
+        // Only admins can delete compliance settings
+        allow delete: if isAdmin();
+      }
+    }
+    
+    // ============================================================
+    // USER_PROFILES COLLECTION (Top-level for auth management)
+    // ============================================================
+    match /user_profiles/{userId} {
+      // Users can read their own profile
+      allow read: if isAuthenticatedAndVerified() && 
+                     request.auth.uid == userId;
+      
+      // Users can create their own profile during registration
+      allow create: if isAuthenticated() && 
+                       request.auth.uid == userId &&
+                       cannotSetProtectedFields();
+      
+      // Users can update their own basic profile info
+      // Cannot update role, tenantId, or status
+      allow update: if isAuthenticatedAndVerified() && 
+                       request.auth.uid == userId &&
+                       !('role' in request.resource.data) &&
+                       !('tenantId' in request.resource.data) &&
+                       !('status' in request.resource.data);
+      
+      // Only admins can delete user profiles
+      allow delete: if isAdmin();
+    }
+    
+    // ============================================================
+    // DEFAULT DENY ALL
+    // ============================================================
+    // Any path not explicitly allowed above is denied by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

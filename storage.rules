@@ -1,0 +1,243 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // ============================================================
+    // HELPER FUNCTIONS
+    // ============================================================
+    
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Check if user's email is verified
+    function isEmailVerified() {
+      return request.auth.token.email_verified == true;
+    }
+    
+    // Check if user is authenticated AND email verified
+    function isAuthenticatedAndVerified() {
+      return isAuthenticated() && isEmailVerified();
+    }
+    
+    // Get the user's tenant ID from custom claims
+    function getTenantId() {
+      return request.auth.token.tenantId;
+    }
+    
+    // Check if user belongs to the specified tenant
+    function belongsToTenant(tenantId) {
+      return isAuthenticatedAndVerified() && getTenantId() == tenantId;
+    }
+    
+    // Check if user has manager role
+    function isManager() {
+      return isAuthenticatedAndVerified() && 
+             request.auth.token.role == 'manager';
+    }
+    
+    // Check if user has employee role
+    function isEmployee() {
+      return isAuthenticatedAndVerified() && 
+             request.auth.token.role == 'employee';
+    }
+    
+    // Check if user has admin role
+    function isAdmin() {
+      return isAuthenticatedAndVerified() && 
+             request.auth.token.role == 'admin';
+    }
+    
+    // Check if user is manager of the specified tenant
+    function isManagerOfTenant(tenantId) {
+      return isManager() && belongsToTenant(tenantId);
+    }
+    
+    // Validate file is an allowed document type
+    function isAllowedDocumentType() {
+      return request.resource.contentType.matches('image/.*') ||
+             request.resource.contentType == 'application/pdf' ||
+             request.resource.contentType == 'application/msword' ||
+             request.resource.contentType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    }
+    
+    // Validate file size (max 10MB)
+    function isValidFileSize() {
+      return request.resource.size <= 10 * 1024 * 1024;
+    }
+    
+    // Check if file already exists (prevent overwrites)
+    function fileDoesNotExist() {
+      return resource == null;
+    }
+    
+    // ============================================================
+    // TENANT-BASED DOCUMENT STORAGE
+    // ============================================================
+    
+    // Path structure: /tenants/{tenantId}/employees/{employeeId}/documents/{documentId}
+    match /tenants/{tenantId}/employees/{employeeId}/documents/{documentId} {
+      
+      // EMPLOYEE UPLOAD RULES
+      // - Employees can only upload to their own folder
+      // - Must be in their tenant
+      // - Cannot overwrite existing files
+      // - Must be valid document type and size
+      allow create: if belongsToTenant(tenantId) &&
+                       request.auth.uid == employeeId &&
+                       fileDoesNotExist() &&
+                       isAllowedDocumentType() &&
+                       isValidFileSize();
+      
+      // MANAGER READ RULES
+      // - Managers can read all employee documents in their tenant
+      // - Employees can read only their own documents
+      allow read: if isManagerOfTenant(tenantId) ||
+                     (belongsToTenant(tenantId) && request.auth.uid == employeeId);
+      
+      // PREVENT UPDATES
+      // - Once uploaded, documents cannot be modified
+      // - This ensures document integrity for compliance
+      allow update: if false;
+      
+      // DELETE RULES
+      // - Only managers can delete documents
+      // - This allows managers to remove outdated or incorrect documents
+      allow delete: if isManagerOfTenant(tenantId);
+    }
+    
+    // ============================================================
+    // DOCTOR NOTES STORAGE (Multi-day absence documentation)
+    // ============================================================
+    
+    // Path structure: /tenants/{tenantId}/doctor-notes/{employeeId}/{noteId}
+    match /tenants/{tenantId}/doctor-notes/{employeeId}/{noteId} {
+      
+      // EMPLOYEE UPLOAD RULES
+      // - Employees can upload doctor notes for themselves
+      // - Cannot overwrite existing notes
+      // - Must be valid document type and size
+      allow create: if belongsToTenant(tenantId) &&
+                       request.auth.uid == employeeId &&
+                       fileDoesNotExist() &&
+                       isAllowedDocumentType() &&
+                       isValidFileSize();
+      
+      // MANAGER READ RULES
+      // - Managers can view all doctor notes in their tenant
+      // - Employees can view only their own doctor notes
+      allow read: if isManagerOfTenant(tenantId) ||
+                     (belongsToTenant(tenantId) && request.auth.uid == employeeId);
+      
+      // PREVENT MODIFICATIONS
+      // - Doctor notes are immutable for compliance
+      allow update: if false;
+      
+      // PREVENT DELETION
+      // - Doctor notes cannot be deleted (compliance requirement)
+      // - Even managers cannot delete them
+      allow delete: if false;
+    }
+    
+    // ============================================================
+    // COMPLIANCE DOCUMENTS (Company-wide documents)
+    // ============================================================
+    
+    // Path structure: /tenants/{tenantId}/compliance/{documentType}
+    match /tenants/{tenantId}/compliance/{documentType} {
+      
+      // READ RULES
+      // - All users in the tenant can read compliance documents
+      // - These include ESTA posters, policies, handbooks, etc.
+      allow read: if belongsToTenant(tenantId);
+      
+      // WRITE RULES
+      // - Only managers can upload compliance documents
+      allow create, update: if isManagerOfTenant(tenantId) &&
+                               isAllowedDocumentType() &&
+                               isValidFileSize();
+      
+      // DELETE RULES
+      // - Only managers can delete compliance documents
+      allow delete: if isManagerOfTenant(tenantId);
+    }
+    
+    // ============================================================
+    // PROFILE PICTURES
+    // ============================================================
+    
+    // Path structure: /tenants/{tenantId}/profile-pictures/{userId}
+    match /tenants/{tenantId}/profile-pictures/{userId} {
+      
+      // READ RULES
+      // - All users in the tenant can view profile pictures
+      allow read: if belongsToTenant(tenantId);
+      
+      // UPLOAD RULES
+      // - Users can upload/update their own profile picture
+      // - Managers can upload profile pictures for employees
+      allow create, update: if (belongsToTenant(tenantId) && request.auth.uid == userId) ||
+                               isManagerOfTenant(tenantId) &&
+                               request.resource.contentType.matches('image/.*') &&
+                               request.resource.size <= 5 * 1024 * 1024; // 5MB for images
+      
+      // DELETE RULES
+      // - Users can delete their own profile picture
+      // - Managers can delete any profile picture in their tenant
+      allow delete: if (belongsToTenant(tenantId) && request.auth.uid == userId) ||
+                       isManagerOfTenant(tenantId);
+    }
+    
+    // ============================================================
+    // COMPANY LOGOS
+    // ============================================================
+    
+    // Path structure: /tenants/{tenantId}/company-logo
+    match /tenants/{tenantId}/company-logo {
+      
+      // READ RULES
+      // - All users in the tenant can view the company logo
+      allow read: if belongsToTenant(tenantId);
+      
+      // UPLOAD RULES
+      // - Only managers can upload/update company logo
+      allow create, update: if isManagerOfTenant(tenantId) &&
+                               request.resource.contentType.matches('image/.*') &&
+                               request.resource.size <= 5 * 1024 * 1024;
+      
+      // DELETE RULES
+      // - Only managers can delete company logo
+      allow delete: if isManagerOfTenant(tenantId);
+    }
+    
+    // ============================================================
+    // AUDIT EXPORTS (Read-only for employees, write for backend)
+    // ============================================================
+    
+    // Path structure: /tenants/{tenantId}/audit-exports/{exportId}
+    match /tenants/{tenantId}/audit-exports/{exportId} {
+      
+      // READ RULES
+      // - Managers can download audit exports
+      allow read: if isManagerOfTenant(tenantId);
+      
+      // WRITE RULES
+      // - Only backend/admin can create audit exports
+      allow create: if isAdmin();
+      
+      // PREVENT MODIFICATIONS
+      // - Audit exports are immutable
+      allow update, delete: if false;
+    }
+    
+    // ============================================================
+    // DEFAULT DENY ALL
+    // ============================================================
+    // Any path not explicitly allowed above is denied by default
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -7,6 +7,7 @@ A Complete Strategic, Technical, and Operational Blueprint
 Prepared for Production & Scaffolding Phase
 
 ## <span style="color:#6F42C1;">Table of Contents</span>
+- [🔐 Security Features](#security-features) 🔐
 - [Section 1: Vision & Purpose](#section-1-vision--purpose) 💡
 - [Section 2: User Roles & Permissions](#section-2-user-roles--permissions) 🔒
 - [Section 3: Core Features (Powerhouse Set)](#section-3-core-features-powerhouse-set) ⚡
@@ -16,6 +17,30 @@ Prepared for Production & Scaffolding Phase
 - [Section 7: Legal Compliance](#section-7-legal-compliance) ⚖️
 - [Section 8: Long Term Roadmap](#section-8-long-term-roadmap) 🗺️
 - [Section 9: Brand & Business Strategy](#section-9-brand--business-strategy) 📈
+
+## <span style="color:#DC3545;">🔐 SECURITY FEATURES</span>
+
+**<span style="color:#28A745;">Enterprise-Grade Security: Built for Compliance & Trust!</span>**
+
+ESTA Tracker implements comprehensive Firebase security rules ensuring complete data protection:
+
+### ✅ **7 Core Security Features Implemented**
+
+1. **🔐 Tenant Isolation** - Complete data segregation between companies. No user can access data from other organizations.
+2. **👥 Role-Based Access Control** - Managers can write employee data; employees have read-only access to their own data.
+3. **📧 Email Verification Required** - No database access before email verification.
+4. **🛂 Backend-Only Role Assignment** - Clients cannot set their own role, status, or tenantId.
+5. **🩺 Protected Doctor Notes** - Employees upload; managers view; notes are immutable for compliance.
+6. **🔍 Immutable Audit Logs** - Tamper-proof compliance records; users cannot alter logs.
+7. **🛡️ Default-Deny Security** - All paths closed unless explicitly opened.
+
+**📚 Documentation:**
+- **Comprehensive Guide:** [`SECURITY_RULES.md`](./SECURITY_RULES.md)
+- **Quick Reference:** [`SECURITY_QUICK_REFERENCE.md`](./SECURITY_QUICK_REFERENCE.md)
+- **Firestore Rules:** [`firestore.rules`](./firestore.rules)
+- **Storage Rules:** [`storage.rules`](./storage.rules)
+
+---
 
 ## <span style="color:#007BFF;">SECTION 1: VISION & PURPOSE 💡</span>
 
@@ -187,6 +212,11 @@ HOUR_IMPORT_LOG:
 •  <span style="color:#DC3545;">End to end encryption.</span>
 •  <span style="color:#DC3545;">Audit locked logs.</span>
 •  <span style="color:#DC3545;">Immutable history of changes.</span>
+•  <span style="color:#DC3545;">Complete tenant isolation (multi-company data segregation).</span>
+•  <span style="color:#DC3545;">Email verification required for all access.</span>
+•  <span style="color:#DC3545;">Backend-only role and permission assignment.</span>
+•  <span style="color:#DC3545;">Protected doctor notes with immutable storage.</span>
+•  <span style="color:#DC3545;">See `SECURITY_RULES.md` for comprehensive security documentation.</span>
 <span style="color:#007BFF;">SECTION 5: WORKFLOWS 🔄</span>
 <span style="color:#28A745;">Streamlined Processes: From Setup to Automation in Minutes!</span>
 <span style="color:#FFC107;">5.1 Employer Setup Wizard</span>
