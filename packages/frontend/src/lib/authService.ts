@@ -28,10 +28,10 @@ export interface UserData {
   tenantId: string | null;
   status: 'pending' | 'active' | 'rejected';
   emailVerified: boolean;
-  createdAt: any;
-  updatedAt: any;
-  verifiedAt?: any;
-  approvedAt?: any;
+  createdAt: unknown;
+  updatedAt: unknown;
+  verifiedAt?: unknown;
+  approvedAt?: unknown;
 }
 
 export interface TenantData {
@@ -41,8 +41,8 @@ export interface TenantData {
   employeeCount: number;
   employerSize: 'small' | 'large';
   ownerId: string;
-  createdAt: any;
-  updatedAt: any;
+  createdAt: unknown;
+  updatedAt: unknown;
 }
 
 /**
@@ -158,7 +158,7 @@ export async function registerManager(data: {
     await sendEmailVerification(user);
 
     return { user, tenantCode };
-  } catch (error: any) {
+  } catch (error) {
     console.error('Manager registration error:', error);
     
     // Clean up if user was created but something else failed
@@ -234,7 +234,7 @@ export async function registerEmployee(data: {
     await sendEmailVerification(user);
 
     return { user, tenantName: tenantData.name };
-  } catch (error: any) {
+  } catch (error) {
     console.error('Employee registration error:', error);
     
     // Clean up if user was created but something else failed

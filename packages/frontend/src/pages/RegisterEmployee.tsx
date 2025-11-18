@@ -55,20 +55,22 @@ export default function RegisterEmployee() {
       
       // Show email verification screen
       setShowVerification(true);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Registration error:', err);
       
       // Firebase error handling
-      if (err.code === 'auth/email-already-in-use') {
+      const error = err as { code?: string; message?: string };
+      
+      if (error.code === 'auth/email-already-in-use') {
         setError('This email is already registered. Please use a different email or try logging in.');
-      } else if (err.code === 'auth/invalid-email') {
+      } else if (error.code === 'auth/invalid-email') {
         setError('Invalid email address. Please enter a valid email.');
-      } else if (err.code === 'auth/weak-password') {
+      } else if (error.code === 'auth/weak-password') {
         setError('Password is too weak. Please use a stronger password.');
-      } else if (err.message === 'Invalid tenant code. Please check with your employer.') {
+      } else if (error.message === 'Invalid tenant code. Please check with your employer.') {
         setError('Invalid employer code. Please check with your employer and try again.');
-      } else if (err.message) {
-        setError(err.message);
+      } else if (error.message) {
+        setError(error.message);
       } else {
         setError('Registration failed. Please try again later.');
       }

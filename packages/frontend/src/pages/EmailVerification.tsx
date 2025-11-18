@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { checkEmailVerification, resendVerificationEmail, signOutUser } from '../lib/authService';
 
@@ -15,19 +15,7 @@ export default function EmailVerification({ email, onVerified }: EmailVerificati
   const [autoCheckCount, setAutoCheckCount] = useState(0);
   const navigate = useNavigate();
 
-  // Auto-check every 5 seconds for the first 2 minutes
-  useEffect(() => {
-    if (autoCheckCount >= 24) return; // Stop after 2 minutes (24 * 5 seconds)
-
-    const interval = setInterval(async () => {
-      await handleCheckVerification(true);
-      setAutoCheckCount((prev) => prev + 1);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [autoCheckCount]);
-
-  async function handleCheckVerification(isAuto = false) {
+  const handleCheckVerification = useCallback(async (isAuto = false) => {
     if (!isAuto) {
       setChecking(true);
     }
@@ -40,17 +28,34 @@ export default function EmailVerification({ email, onVerified }: EmailVerificati
       } else if (!isAuto) {
         setError('Email not verified yet. Please check your inbox and spam folder.');
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Verification check error:', err);
       if (!isAuto) {
-        setError(err.message || 'Failed to check verification status');
+        const error = err as Error;
+        setError(error.message || 'Failed to check verification status');
       }
     } finally {
       if (!isAuto) {
         setChecking(false);
       }
     }
-  }
+  }, [onVerified]);
+
+  // Auto-check every 5 seconds for the first 2 minutes
+  useEffect(() => {
+    if (autoCheckCount >= 24) return; // Stop after 2 minutes (24 * 5 seconds)
+
+    const handleAutoCheck = async () => {
+      await handleCheckVerification(true);
+      setAutoCheckCount((prev) => prev + 1);
+    };
+
+    const interval = setInterval(() => {
+      void handleAutoCheck();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [autoCheckCount, handleCheckVerification]);
 
   async function handleResendEmail() {
     setResending(true);
@@ -61,9 +66,10 @@ export default function EmailVerification({ email, onVerified }: EmailVerificati
       await resendVerificationEmail();
       setResendSuccess(true);
       setTimeout(() => setResendSuccess(false), 5000);
-    } catch (err: any) {
+    } catch (err) {
       console.error('Resend error:', err);
-      setError(err.message || 'Failed to resend verification email');
+      const error = err as Error;
+      setError(error.message || 'Failed to resend verification email');
     } finally {
       setResending(false);
     }

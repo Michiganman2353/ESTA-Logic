@@ -44,20 +44,22 @@ export default function Login() {
 
       // Successfully logged in - navigate to dashboard
       navigate('/');
-    } catch (err: any) {
+    } catch (err) {
       console.error('Login error:', err);
       
       // Firebase error handling
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+      const error = err as { code?: string; message?: string };
+      
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
         setError('Invalid email or password. Please try again.');
-      } else if (err.code === 'auth/invalid-email') {
+      } else if (error.code === 'auth/invalid-email') {
         setError('Invalid email address.');
-      } else if (err.code === 'auth/too-many-requests') {
+      } else if (error.code === 'auth/too-many-requests') {
         setError('Too many failed attempts. Please try again later.');
-      } else if (err.code === 'auth/user-disabled') {
+      } else if (error.code === 'auth/user-disabled') {
         setError('This account has been disabled. Please contact support.');
-      } else if (err.message) {
-        setError(err.message);
+      } else if (error.message) {
+        setError(error.message);
       } else {
         setError('Login failed. Please try again later.');
       }
