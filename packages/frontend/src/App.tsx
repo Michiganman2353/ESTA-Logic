@@ -1,55 +1,58 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { apiClient } from './lib/api';
-import { User } from './types';
+import { onAuthStateChange, getCurrentUserData, UserData } from './lib/authService';
+import { User as FirebaseUser } from 'firebase/auth';
 
-// Pages (we'll create these)
+// Pages
 import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import RegisterEmployee from './pages/RegisterEmployee';
 import RegisterManager from './pages/RegisterManager';
+import RegisterSuccess from './pages/RegisterSuccess';
 import EmployeeDashboard from './pages/EmployeeDashboard';
 import EmployerDashboard from './pages/EmployerDashboard';
 import AuditLog from './pages/AuditLog';
 
 function App() {
-  const [user, setUser] = useState<User | null>(null);
+  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  async function checkAuth() {
-    try {
-      const response = await apiClient.getCurrentUser();
-      setUser(response.user as User);
-      setError(null);
-    } catch (error) {
-      console.error('Auth check failed:', error);
+    // Listen to Firebase auth state changes
+    const unsubscribe = onAuthStateChange(async (user) => {
+      setFirebaseUser(user);
       
-      // Type guard for ApiError
-      const apiError = error as { status?: number; message?: string; isNetworkError?: boolean };
-      
-      // Only show error if it's not a simple "not authenticated" case
-      if (apiError.status && apiError.status !== 401) {
-        if (apiError.isNetworkError) {
-          setError('Unable to connect to server. Please check your internet connection.');
-        } else {
-          setError(`Error loading application: ${apiError.message || 'Unknown error'}`);
+      if (user) {
+        try {
+          // Get user data from Firestore
+          const data = await getCurrentUserData();
+          
+          if (data) {
+            // Only set userData if email is verified and status is active
+            if (data.emailVerified && data.status === 'active') {
+              setUserData(data);
+            } else {
+              setUserData(null);
+            }
+          } else {
+            setUserData(null);
+          }
+        } catch (err) {
+          console.error('Error fetching user data:', err);
+          setUserData(null);
         }
+      } else {
+        setUserData(null);
       }
       
-      // Clear any invalid token
-      if (apiError.status === 401) {
-        apiClient.setToken(null);
-      }
-    } finally {
       setLoading(false);
-    }
-  }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   if (loading) {
     return (
@@ -78,18 +81,6 @@ function App() {
                   Connection Error
                 </h3>
                 <p className="mt-2 text-sm text-red-700 dark:text-red-300">{error}</p>
-                <div className="mt-4">
-                  <button
-                    onClick={() => {
-                      setError(null);
-                      setLoading(true);
-                      checkAuth();
-                    }}
-                    className="btn btn-primary text-sm"
-                  >
-                    Retry Connection
-                  </button>
-                </div>
               </div>
             </div>
           </div>
@@ -98,20 +89,34 @@ function App() {
     );
   }
 
+  // Convert UserData to User type for compatibility with existing components
+  const legacyUser = userData ? {
+    id: userData.id,
+    email: userData.email,
+    name: userData.name,
+    role: userData.role === 'manager' ? 'employer' as const : userData.role,
+    employerId: userData.tenantId || undefined,
+    employerSize: 'small' as const, // Will be fetched from tenant data when needed
+    status: userData.status,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  } : null;
+
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={!user ? <Login onLogin={setUser} /> : <Navigate to="/" />} />
-        <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
-        <Route path="/register/employee" element={!user ? <RegisterEmployee onRegister={setUser} /> : <Navigate to="/" />} />
-        <Route path="/register/manager" element={!user ? <RegisterManager /> : <Navigate to="/" />} />
+        <Route path="/login" element={!userData ? <Login /> : <Navigate to="/" />} />
+        <Route path="/register" element={!userData ? <Register /> : <Navigate to="/" />} />
+        <Route path="/register/employee" element={!userData ? <RegisterEmployee /> : <Navigate to="/" />} />
+        <Route path="/register/manager" element={!userData ? <RegisterManager /> : <Navigate to="/" />} />
+        <Route path="/register/success" element={<RegisterSuccess />} />
         
-        {user ? (
+        {legacyUser ? (
           <>
-            <Route path="/" element={<Dashboard user={user} />} />
-            <Route path="/employee" element={<EmployeeDashboard user={user} />} />
-            <Route path="/employer" element={<EmployerDashboard user={user} />} />
-            <Route path="/audit" element={<AuditLog user={user} />} />
+            <Route path="/" element={<Dashboard user={legacyUser} />} />
+            <Route path="/employee" element={<EmployeeDashboard user={legacyUser} />} />
+            <Route path="/employer" element={<EmployerDashboard user={legacyUser} />} />
+            <Route path="/audit" element={<AuditLog user={legacyUser} />} />
           </>
         ) : (
           <Route path="*" element={<Navigate to="/login" />} />

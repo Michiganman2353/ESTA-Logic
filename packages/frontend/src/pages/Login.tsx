@@ -1,16 +1,15 @@
 import { useState } from 'react';
-import { apiClient } from '../lib/api';
-import { User } from '../types';
+import { signIn, getCurrentUserData } from '../lib/authService';
+import { useNavigate } from 'react-router-dom';
+import EmailVerification from './EmailVerification';
 
-interface LoginProps {
-  onLogin: (user: User) => void;
-}
-
-export default function Login({ onLogin }: LoginProps) {
+export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
+  const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -18,29 +17,63 @@ export default function Login({ onLogin }: LoginProps) {
     setLoading(true);
 
     try {
-      const response = await apiClient.login(email, password);
-      apiClient.setToken(response.token);
-      onLogin(response.user as User);
-    } catch (err) {
+      const user = await signIn(email.trim().toLowerCase(), password);
+      
+      // Check if email is verified
+      if (!user.emailVerified) {
+        setShowVerification(true);
+        setLoading(false);
+        return;
+      }
+
+      // Get user data from Firestore
+      const userData = await getCurrentUserData();
+      
+      if (!userData) {
+        setError('User account not found. Please contact support.');
+        setLoading(false);
+        return;
+      }
+
+      // Check if account is active
+      if (userData.status !== 'active') {
+        setError('Your account is pending approval. Please check your email or contact support.');
+        setLoading(false);
+        return;
+      }
+
+      // Successfully logged in - navigate to dashboard
+      navigate('/');
+    } catch (err: any) {
       console.error('Login error:', err);
       
-      // Type guard for ApiError
-      const error = err as { status?: number; message?: string; isNetworkError?: boolean };
-      
-      if (error.isNetworkError) {
-        setError('Unable to connect to server. Please check your internet connection and try again.');
-      } else if (error.status === 401) {
+      // Firebase error handling
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
         setError('Invalid email or password. Please try again.');
-      } else if (error.status === 403) {
-        setError('Your account is pending approval. Please wait for an administrator to activate your account.');
-      } else if (error.status && error.status >= 400 && error.status < 500) {
-        setError(error.message || 'Login failed. Please check your credentials.');
+      } else if (err.code === 'auth/invalid-email') {
+        setError('Invalid email address.');
+      } else if (err.code === 'auth/too-many-requests') {
+        setError('Too many failed attempts. Please try again later.');
+      } else if (err.code === 'auth/user-disabled') {
+        setError('This account has been disabled. Please contact support.');
+      } else if (err.message) {
+        setError(err.message);
       } else {
         setError('Login failed. Please try again later.');
       }
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleVerified() {
+    // Reload page to trigger auth check
+    window.location.reload();
+  }
+
+  // Show email verification screen if user hasn't verified email
+  if (showVerification) {
+    return <EmailVerification email={email} onVerified={handleVerified} />;
   }
 
   return (

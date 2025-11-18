@@ -54,6 +54,9 @@ runtimeconfig.json
 firebase-debug.log
 firebase-debug.*
 firebase-emulator-config.json
+functions/lib/
+functions/node_modules/
+functions/.runtimeconfig.json
 
 # Secret keys & certs
 *.key

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiClient } from '../lib/api';
+import { registerManager } from '../lib/authService';
+import EmailVerification from './EmailVerification';
 
 export default function RegisterManager() {
   const [name, setName] = useState('');
@@ -11,12 +12,19 @@ export default function RegisterManager() {
   const [employeeCount, setEmployeeCount] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
+  const [tenantCode, setTenantCode] = useState('');
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+
+    // Validation
+    if (!name.trim()) {
+      setError('Full name is required');
+      return;
+    }
 
     if (password !== confirmPassword) {
       setError('Passwords do not match');
@@ -42,35 +50,54 @@ export default function RegisterManager() {
     setLoading(true);
 
     try {
-      await apiClient.registerManager({
-        name,
-        email,
+      const result = await registerManager({
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
         password,
-        companyName,
+        companyName: companyName.trim(),
         employeeCount: empCount,
       });
+
+      // Store tenant code to display later
+      setTenantCode(result.tenantCode);
       
-      // Manager registration is now pending approval
-      // Don't set token or log in - just show success message
-      setSuccess(true);
-    } catch (err) {
+      // Show email verification screen
+      setShowVerification(true);
+    } catch (err: any) {
       console.error('Registration error:', err);
       
-      // Type guard for ApiError
-      const error = err as { status?: number; message?: string; isNetworkError?: boolean };
-      
-      if (error.isNetworkError) {
-        setError('Unable to connect to server. Please check your internet connection and try again.');
-      } else if (error.status === 409) {
+      // Firebase error handling
+      if (err.code === 'auth/email-already-in-use') {
         setError('This email is already registered. Please use a different email or try logging in.');
-      } else if (error.status && error.status >= 400 && error.status < 500) {
-        setError(error.message || 'Registration failed. Please check your information and try again.');
+      } else if (err.code === 'auth/invalid-email') {
+        setError('Invalid email address. Please enter a valid email.');
+      } else if (err.code === 'auth/weak-password') {
+        setError('Password is too weak. Please use a stronger password.');
+      } else if (err.message) {
+        setError(err.message);
       } else {
         setError('Registration failed. Please try again later.');
       }
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleVerified() {
+    // Redirect to success page with tenant code
+    navigate('/register/success', { 
+      state: { 
+        role: 'manager', 
+        tenantCode, 
+        companyName,
+        email 
+      } 
+    });
+  }
+
+  // Show email verification screen after successful registration
+  if (showVerification) {
+    return <EmailVerification email={email} onVerified={handleVerified} />;
   }
 
   return (
@@ -85,50 +112,10 @@ export default function RegisterManager() {
           </p>
         </div>
         
-        {success ? (
-          <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-6">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-green-800 dark:text-green-200">
-                  Registration Submitted Successfully!
-                </h3>
-                <div className="mt-2 text-sm text-green-700 dark:text-green-300">
-                  <p>Thank you for registering, {name}!</p>
-                  <p className="mt-2">
-                    Your manager account for <strong>{companyName}</strong> is pending approval. 
-                    You'll receive an email notification once your account has been verified and approved.
-                  </p>
-                  <p className="mt-2">
-                    This typically takes 1-2 business days. Once approved, you'll be able to:
-                  </p>
-                  <ul className="list-disc list-inside mt-1 space-y-1">
-                    <li>Add and manage employees</li>
-                    <li>Track sick time accruals</li>
-                    <li>Approve time-off requests</li>
-                    <li>Generate compliance reports</li>
-                  </ul>
-                </div>
-                <div className="mt-4">
-                  <button
-                    onClick={() => navigate('/login')}
-                    className="btn btn-primary text-sm"
-                  >
-                    Return to Login
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-            {error && (
-              <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
-                <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          {error && (
+            <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
+              <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
             </div>
           )}
           <div className="space-y-4">
@@ -259,7 +246,6 @@ export default function RegisterManager() {
             </div>
           </div>
         </form>
-        )}
       </div>
     </div>
   );

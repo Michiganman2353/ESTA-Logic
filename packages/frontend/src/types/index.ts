@@ -7,7 +7,7 @@ export interface User {
   role: 'employee' | 'employer' | 'admin';
   employerId?: string;
   employerSize: 'small' | 'large'; // <10 employees = small, >=10 = large
-  status?: 'pending' | 'approved' | 'rejected'; // For manager/employer approval
+  status?: 'pending' | 'active' | 'rejected'; // Changed 'approved' to 'active'
   createdAt: string;
   updatedAt: string;
 }
