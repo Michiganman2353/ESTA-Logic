@@ -23,5 +23,35 @@
         }
       ]
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/accrual",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/cleanup",
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron/recalculate-pto",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/audit",
+      "schedule": "0 3 * * 0"
+    },
+    {
+      "path": "/api/cron/ruleset-validator",
+      "schedule": "0 3 * * 1"
+    },
+    {
+      "path": "/api/cron/billing-reports",
+      "schedule": "0 4 1 * *"
+    },
+    {
+      "path": "/api/cron/compliance-packet",
+      "schedule": "0 5 1 * *"
+    }
   ]
 }
