@@ -1,8 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { sendEmailVerification, reload } from 'firebase/auth';
+import { sendEmailVerification, reload, ActionCodeSettings } from 'firebase/auth';
 import { httpsCallable } from 'firebase/functions';
 import { auth, functions, isFirebaseConfigured } from '../lib/firebase';
+
+/**
+ * Get action code settings for email verification
+ */
+function getActionCodeSettings(): ActionCodeSettings {
+  const appUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+  
+  return {
+    url: `${appUrl}/login?verified=true`,
+    handleCodeInApp: true,
+  };
+}
 
 interface EmailVerificationProps {
   email: string;
@@ -120,7 +132,7 @@ export default function EmailVerification({ email, onVerified }: EmailVerificati
     setResendMessage('');
 
     try {
-      await sendEmailVerification(auth.currentUser);
+      await sendEmailVerification(auth.currentUser, getActionCodeSettings());
       setResendMessage('Verification email sent! Please check your inbox.');
     } catch (error: unknown) {
       console.error('Error resending verification email:', error);

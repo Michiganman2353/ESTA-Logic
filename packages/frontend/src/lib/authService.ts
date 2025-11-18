@@ -3,6 +3,7 @@ import {
   signInWithEmailAndPassword,
   sendEmailVerification,
   UserCredential,
+  ActionCodeSettings,
 } from 'firebase/auth';
 import {
   doc,
@@ -16,6 +17,18 @@ import {
 } from 'firebase/firestore';
 import { auth, db, isFirebaseConfigured } from './firebase';
 import { User } from '../types';
+
+/**
+ * Get action code settings for email verification
+ */
+function getActionCodeSettings(): ActionCodeSettings {
+  const appUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+  
+  return {
+    url: `${appUrl}/login?verified=true`,
+    handleCodeInApp: true,
+  };
+}
 
 export interface RegisterManagerData {
   name: string;
@@ -121,7 +134,7 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     });
 
     // Send email verification
-    await sendEmailVerification(firebaseUser);
+    await sendEmailVerification(firebaseUser, getActionCodeSettings());
 
     return { user: userData, needsVerification: true };
   } catch (error: unknown) {
@@ -238,7 +251,7 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     });
 
     // Send email verification
-    await sendEmailVerification(firebaseUser);
+    await sendEmailVerification(firebaseUser, getActionCodeSettings());
 
     return { user: userData, needsVerification: true };
   } catch (error: unknown) {
