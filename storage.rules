@@ -1,0 +1,74 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function belongsToTenant(tenantId) {
+      return isAuthenticated() && request.auth.token.tenantId == tenantId;
+    }
+    
+    function isEmployer() {
+      return request.auth.token.role == 'employer' || 
+             request.auth.token.role == 'admin';
+    }
+    
+    function isValidFileType() {
+      return request.resource.contentType.matches('image/.*') ||
+             request.resource.contentType.matches('application/pdf');
+    }
+    
+    function isValidFileSize() {
+      return request.resource.size < 10 * 1024 * 1024; // 10MB max
+    }
+    
+    // User profile pictures
+    match /profile-pictures/{userId}/{fileName} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId) && 
+                      isValidFileType() && 
+                      isValidFileSize();
+    }
+    
+    // Company documents (ESTA posters, policy documents, etc.)
+    match /company-documents/{tenantId}/{fileName} {
+      allow read: if belongsToTenant(tenantId);
+      allow write: if isEmployer() && 
+                      belongsToTenant(tenantId) &&
+                      isValidFileType() &&
+                      isValidFileSize();
+    }
+    
+    // Employee documents (medical notes, proof of illness, etc.)
+    match /employee-documents/{tenantId}/{userId}/{fileName} {
+      // Employees can upload their own documents
+      allow read: if isOwner(userId) || 
+                     (isEmployer() && belongsToTenant(tenantId));
+      allow write: if isOwner(userId) && 
+                      belongsToTenant(tenantId) &&
+                      isValidFileType() &&
+                      isValidFileSize();
+      allow delete: if isEmployer() && belongsToTenant(tenantId);
+    }
+    
+    // Sick time request attachments
+    match /request-attachments/{tenantId}/{requestId}/{fileName} {
+      allow read: if belongsToTenant(tenantId);
+      allow write: if belongsToTenant(tenantId) &&
+                      isValidFileType() &&
+                      isValidFileSize();
+    }
+    
+    // Default: deny all other access
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

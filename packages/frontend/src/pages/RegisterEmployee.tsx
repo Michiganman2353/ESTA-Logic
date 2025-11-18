@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { registerEmployee } from '../lib/authService';
+import { isFirebaseConfigured } from '../lib/firebase';
 import { apiClient } from '../lib/api';
 import { User } from '../types';
+import EmailVerification from '../components/EmailVerification';
 
 interface RegisterEmployeeProps {
   onRegister: (user: User) => void;
@@ -12,8 +15,10 @@ export default function RegisterEmployee({ onRegister }: RegisterEmployeeProps) 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [tenantCode, setTenantCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showVerification, setShowVerification] = useState(false);
   const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
@@ -33,24 +38,45 @@ export default function RegisterEmployee({ onRegister }: RegisterEmployeeProps) 
     setLoading(true);
 
     try {
-      const response = await apiClient.registerEmployee({ name, email, password });
-      apiClient.setToken(response.token);
-      onRegister(response.user as User);
-      // Navigation will happen automatically via App.tsx
+      if (isFirebaseConfigured) {
+        // Use Firebase authentication
+        const { user, needsVerification } = await registerEmployee({
+          name,
+          email,
+          password,
+          tenantCode: tenantCode.trim() || undefined,
+        });
+        
+        if (needsVerification) {
+          setShowVerification(true);
+        } else {
+          // Auto-login for employees if no verification needed (shouldn't happen)
+          onRegister(user);
+        }
+      } else {
+        // Fallback to existing API for local development
+        const response = await apiClient.registerEmployee({ name, email, password });
+        apiClient.setToken(response.token);
+        onRegister(response.user as User);
+      }
     } catch (err) {
       console.error('Registration error:', err);
       
-      // Type guard for ApiError
-      const error = err as { status?: number; message?: string; isNetworkError?: boolean };
-      
-      if (error.isNetworkError) {
-        setError('Unable to connect to server. Please check your internet connection and try again.');
-      } else if (error.status === 409) {
-        setError('This email is already registered. Please use a different email or try logging in.');
-      } else if (error.status && error.status >= 400 && error.status < 500) {
-        setError(error.message || 'Registration failed. Please check your information and try again.');
+      if (err instanceof Error) {
+        setError(err.message);
       } else {
-        setError('Registration failed. Please try again later.');
+        // Type guard for ApiError
+        const error = err as { status?: number; message?: string; isNetworkError?: boolean };
+        
+        if (error.isNetworkError) {
+          setError('Unable to connect to server. Please check your internet connection and try again.');
+        } else if (error.status === 409) {
+          setError('This email is already registered. Please use a different email or try logging in.');
+        } else if (error.status && error.status >= 400 && error.status < 500) {
+          setError(error.message || 'Registration failed. Please check your information and try again.');
+        } else {
+          setError('Registration failed. Please try again later.');
+        }
       }
     } finally {
       setLoading(false);
@@ -59,7 +85,15 @@ export default function RegisterEmployee({ onRegister }: RegisterEmployeeProps) 
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+      {showVerification ? (
+        <EmailVerification
+          email={email}
+          onVerified={() => {
+            navigate('/login?verified=true');
+          }}
+        />
+      ) : (
+        <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
             Employee Registration
@@ -105,6 +139,23 @@ export default function RegisterEmployee({ onRegister }: RegisterEmployeeProps) 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+            </div>
+            <div>
+              <label htmlFor="tenantCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Company Code (Optional)
+              </label>
+              <input
+                id="tenantCode"
+                name="tenantCode"
+                type="text"
+                className="input mt-1 block w-full"
+                placeholder="Enter your company code"
+                value={tenantCode}
+                onChange={(e) => setTenantCode(e.target.value.toUpperCase())}
+              />
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Ask your employer for the company code to link your account
+              </p>
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -168,7 +219,8 @@ export default function RegisterEmployee({ onRegister }: RegisterEmployeeProps) 
             </div>
           </div>
         </form>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
