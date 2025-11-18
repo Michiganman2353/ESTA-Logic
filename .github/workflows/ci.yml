@@ -1,3 +1,14 @@
+# ESTA Tracker CI/CD Pipeline
+#
+# This workflow runs tests, builds, and deploys preview environments for pull requests.
+#
+# Required GitHub Secrets (for deploy-preview job):
+#   - VERCEL_TOKEN: Authentication token from https://vercel.com/account/tokens
+#   - VERCEL_ORG_ID: Organization ID from .vercel/project.json
+#   - VERCEL_PROJECT_ID: Project ID from .vercel/project.json
+#
+# For setup instructions, see: GITHUB_SECRETS_SETUP.md
+
 name: ESTA Tracker CI/CD
 
 on:
@@ -82,6 +93,29 @@ jobs:
     needs: test
     steps:
       - uses: actions/checkout@v4
+
+      - name: Validate Vercel Secrets
+        run: |
+          echo "Checking required Vercel secrets..."
+          if [ -z "${{ secrets.VERCEL_TOKEN }}" ]; then
+            echo "❌ ERROR: VERCEL_TOKEN secret is not set"
+            echo "Please add VERCEL_TOKEN to repository secrets."
+            echo "See GITHUB_SECRETS_SETUP.md for detailed instructions."
+            exit 1
+          fi
+          if [ -z "${{ secrets.VERCEL_ORG_ID }}" ]; then
+            echo "❌ ERROR: VERCEL_ORG_ID secret is not set"
+            echo "Please add VERCEL_ORG_ID to repository secrets."
+            echo "See GITHUB_SECRETS_SETUP.md for detailed instructions."
+            exit 1
+          fi
+          if [ -z "${{ secrets.VERCEL_PROJECT_ID }}" ]; then
+            echo "❌ ERROR: VERCEL_PROJECT_ID secret is not set"
+            echo "Please add VERCEL_PROJECT_ID to repository secrets."
+            echo "See GITHUB_SECRETS_SETUP.md for detailed instructions."
+            exit 1
+          fi
+          echo "✅ All required Vercel secrets are configured"
 
       - name: Deploy to Vercel Preview
         uses: amondnet/vercel-action@v25

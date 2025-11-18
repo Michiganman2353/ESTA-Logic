@@ -4,6 +4,19 @@
 
 This guide covers deploying the ESTA Tracker application to Vercel. The project is a monorepo with a React frontend (Vite) and Node.js backend (Express), configured for Vercel's serverless platform.
 
+## 🔑 Quick Start: GitHub Actions Setup
+
+**For CI/CD deployments (pull request previews), you MUST configure GitHub Secrets first.**
+
+👉 **See [GITHUB_SECRETS_SETUP.md](./GITHUB_SECRETS_SETUP.md) for complete instructions.**
+
+Required secrets:
+- `VERCEL_TOKEN` - Authentication token for Vercel API
+- `VERCEL_ORG_ID` - Your Vercel organization ID
+- `VERCEL_PROJECT_ID` - Your Vercel project ID
+
+Without these secrets, you'll see: `Error: Input required and not supplied: vercel-token`
+
 ## Prerequisites
 
 - [Vercel Account](https://vercel.com/signup)
@@ -57,13 +70,15 @@ The configuration uses the latest Vercel format without deprecated `builds` or `
 
 ### Vercel Token Setup
 
+**⚠️ For complete GitHub Actions setup instructions, see [GITHUB_SECRETS_SETUP.md](./GITHUB_SECRETS_SETUP.md)**
+
 For CLI deployments and CI/CD integration, you'll need a Vercel token:
 
 1. **Generate Token**: Go to [Vercel Account Tokens](https://vercel.com/account/tokens)
 2. **Create New Token**: Click "Create" and give it a descriptive name (e.g., "ESTA Tracker Deployment")
 3. **Copy Token**: Save it securely - you won't be able to see it again
 4. **Configure Token**:
-   - **For GitHub Actions**: Add to repository secrets as `VERCEL_TOKEN`
+   - **For GitHub Actions**: Add to repository secrets as `VERCEL_TOKEN` ([setup guide](./GITHUB_SECRETS_SETUP.md))
    - **For Local CLI**: Add to `.env.local` as `VERCEL_TOKEN=your-token-here`
    - **Never commit**: The token should never be committed to git
 

@@ -148,21 +148,14 @@ For Vercel preview deployments, the following secrets must be configured in GitH
 - `VERCEL_ORG_ID`: Vercel organization ID
 - `VERCEL_PROJECT_ID`: Vercel project ID
 
-To get these values:
+**📖 Complete Setup Guide**: See [GITHUB_SECRETS_SETUP.md](./GITHUB_SECRETS_SETUP.md) for detailed step-by-step instructions.
 
-1. **Install Vercel CLI**: `npm i -g vercel`
-2. **Login to Vercel**: `vercel login`
-3. **Link Project**: `vercel link` in your project directory
-4. **Find IDs**: Check `.vercel/project.json` for `orgId` and `projectId`
-5. **Generate Token**: 
-   - Visit [Vercel Account Tokens](https://vercel.com/account/tokens)
-   - Click "Create" and name it appropriately
-   - Set expiration (optional, recommended for security)
-   - Copy the token immediately (can't be viewed again)
-6. **Add to GitHub Secrets**:
-   - Go to repository Settings → Secrets and variables → Actions
-   - Add each secret with the exact names above
-   - Paste the token value for `VERCEL_TOKEN`
+**Quick Setup**:
+
+1. **Generate Token**: Visit [Vercel Account Tokens](https://vercel.com/account/tokens)
+2. **Get IDs**: Run `vercel link` and check `.vercel/project.json`
+3. **Add to GitHub**: Go to Settings → Secrets and variables → Actions
+4. **Validate**: Run `./scripts/validate-secrets.sh` to verify setup
 
 **Security Note**: Never commit tokens or IDs directly to the repository. Always use GitHub Secrets for CI/CD or local `.env.local` files (gitignored) for development.
 
