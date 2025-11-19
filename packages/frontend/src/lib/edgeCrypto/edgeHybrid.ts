@@ -248,10 +248,13 @@ async function edgeDecryptWithAES(
   aesKey: CryptoKey,
   iv: Uint8Array
 ): Promise<ArrayBuffer> {
+  // Create a new Uint8Array to satisfy TypeScript's strict typing
+  const ivBuffer = new Uint8Array(iv);
+  
   return crypto.subtle.decrypt(
     {
       name: 'AES-GCM',
-      iv: iv
+      iv: ivBuffer
     },
     aesKey,
     encryptedData
@@ -396,7 +399,7 @@ export async function edgeEncryptHybrid(
   return {
     encryptedData: arrayBufferToBase64(aesResult.encryptedData),
     encryptedAESKey: arrayBufferToBase64(encryptedAESKey),
-    iv: arrayBufferToBase64(aesResult.iv.buffer)
+    iv: arrayBufferToBase64(aesResult.iv.buffer as ArrayBuffer)
   };
 }
 
