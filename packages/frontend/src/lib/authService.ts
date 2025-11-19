@@ -53,7 +53,14 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     throw new Error('Firebase not configured. Please check your environment variables.');
   }
 
+  // Validate window.location is available (for action code URL)
+  if (typeof window === 'undefined' || !window.location) {
+    throw new Error('Window location not available. Please try again.');
+  }
+
   try {
+    console.log('Starting manager registration for:', data.email);
+    
     // Create Firebase Auth user
     const userCredential: UserCredential = await createUserWithEmailAndPassword(
       auth,
@@ -62,6 +69,7 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     );
 
     const { user: firebaseUser } = userCredential;
+    console.log('Firebase user created:', firebaseUser.uid);
 
     // Generate unique tenant code
     const tenantCode = generateTenantCode();
@@ -71,6 +79,7 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
 
     // Create tenant/company document
     const tenantId = `tenant_${firebaseUser.uid}`;
+    console.log('Creating tenant document:', tenantId);
     await setDoc(doc(db, 'tenants', tenantId), {
       id: tenantId,
       companyName: data.companyName,
@@ -84,6 +93,7 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     });
 
     // Create user document in Firestore
+    console.log('Creating user document in Firestore');
     const userData: User = {
       id: firebaseUser.uid,
       email: data.email,
@@ -121,10 +131,14 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     });
 
     // Send email verification with action code settings
-    await sendEmailVerification(firebaseUser, {
+    console.log('Sending email verification to:', data.email);
+    const actionCodeSettings = {
       url: window.location.origin + '/login?verified=true',
       handleCodeInApp: false,
-    });
+    };
+    console.log('Action code settings:', actionCodeSettings);
+    await sendEmailVerification(firebaseUser, actionCodeSettings);
+    console.log('Email verification sent successfully');
 
     return { user: userData, needsVerification: true };
   } catch (error: unknown) {
@@ -155,13 +169,21 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     throw new Error('Firebase not configured. Please check your environment variables.');
   }
 
+  // Validate window.location is available (for action code URL)
+  if (typeof window === 'undefined' || !window.location) {
+    throw new Error('Window location not available. Please try again.');
+  }
+
   try {
+    console.log('Starting employee registration for:', data.email);
+    
     // Validate tenant code or employer email
     let tenantId = '';
     let employerSize: 'small' | 'large' = 'small';
     let companyName = '';
 
     if (data.tenantCode) {
+      console.log('Looking up tenant by code:', data.tenantCode);
       // Find tenant by code
       const tenantsQuery = query(
         collection(db, 'tenants'),
@@ -178,6 +200,7 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
       const tenantData = tenantDoc.data();
       employerSize = tenantData.size;
       companyName = tenantData.companyName;
+      console.log('Found tenant:', tenantId, companyName);
     } else if (data.employerEmail) {
       // Find tenant by employer email domain
       const emailDomain = data.employerEmail.split('@')[1];
@@ -201,6 +224,7 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     }
 
     // Create Firebase Auth user
+    console.log('Creating Firebase auth user for employee');
     const userCredential: UserCredential = await createUserWithEmailAndPassword(
       auth,
       data.email,
@@ -208,6 +232,7 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     );
 
     const { user: firebaseUser } = userCredential;
+    console.log('Firebase user created:', firebaseUser.uid);
 
     // Create user document in Firestore
     const userData: User = {
@@ -245,10 +270,14 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     });
 
     // Send email verification with action code settings
-    await sendEmailVerification(firebaseUser, {
+    console.log('Sending email verification to:', data.email);
+    const actionCodeSettings = {
       url: window.location.origin + '/login?verified=true',
       handleCodeInApp: false,
-    });
+    };
+    console.log('Action code settings:', actionCodeSettings);
+    await sendEmailVerification(firebaseUser, actionCodeSettings);
+    console.log('Email verification sent successfully');
 
     return { user: userData, needsVerification: true };
   } catch (error: unknown) {
