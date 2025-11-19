@@ -49,12 +49,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // TODO: Add authentication check here
-  // Example:
-  // const token = req.headers.authorization?.replace('Bearer ', '');
-  // if (!token || !verifyToken(token)) {
-  //   return res.status(401).json({ error: 'Unauthorized' });
-  // }
+  const jwt = require('jsonwebtoken');
+
+// ...
+
+const token = req.headers.authorization?.replace('Bearer ', '');
+if (!token) {
+  return res.status(401).json({ error: 'Unauthorized: No token provided' });
+}
+
+try {
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  req.user = decoded; // Optionally attach user info for downstream use
+} catch (err) {
+  return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+}
+
+// Continue with decryption logic here
 
   try {
     // Initialize KMS
