@@ -15,9 +15,7 @@ import {
   encryptHybrid,
   decryptHybrid,
   encryptFileData,
-  decryptFileData,
-  type RSAKeyPair,
-  type HybridEncryptionResult
+  decryptFileData
 } from '../hybridEncryption';
 
 describe('Hybrid Encryption Module', () => {
