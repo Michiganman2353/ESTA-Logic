@@ -120,8 +120,11 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
       timestamp: serverTimestamp(),
     });
 
-    // Send email verification
-    await sendEmailVerification(firebaseUser);
+    // Send email verification with action code settings
+    await sendEmailVerification(firebaseUser, {
+      url: window.location.origin + '/login?verified=true',
+      handleCodeInApp: false,
+    });
 
     return { user: userData, needsVerification: true };
   } catch (error: unknown) {
@@ -134,6 +137,10 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
       throw new Error('Invalid email address format.');
     } else if (err.code === 'auth/weak-password') {
       throw new Error('Password is too weak. Please use at least 8 characters.');
+    } else if (err.code === 'auth/configuration-not-found') {
+      throw new Error('Firebase authentication is not properly configured. Please contact support.');
+    } else if (err.code === 'auth/network-request-failed') {
+      throw new Error('Network error. Please check your internet connection and try again.');
     } else {
       throw new Error(err.message || 'Registration failed. Please try again.');
     }
@@ -237,8 +244,11 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
       timestamp: serverTimestamp(),
     });
 
-    // Send email verification
-    await sendEmailVerification(firebaseUser);
+    // Send email verification with action code settings
+    await sendEmailVerification(firebaseUser, {
+      url: window.location.origin + '/login?verified=true',
+      handleCodeInApp: false,
+    });
 
     return { user: userData, needsVerification: true };
   } catch (error: unknown) {
@@ -251,6 +261,10 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
       throw new Error('Invalid email address format.');
     } else if (err.code === 'auth/weak-password') {
       throw new Error('Password is too weak. Please use at least 8 characters.');
+    } else if (err.code === 'auth/configuration-not-found') {
+      throw new Error('Firebase authentication is not properly configured. Please contact support.');
+    } else if (err.code === 'auth/network-request-failed') {
+      throw new Error('Network error. Please check your internet connection and try again.');
     } else {
       throw new Error(err.message || 'Registration failed. Please try again.');
     }

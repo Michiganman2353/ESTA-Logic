@@ -120,7 +120,10 @@ export default function EmailVerification({ email, onVerified }: EmailVerificati
     setResendMessage('');
 
     try {
-      await sendEmailVerification(auth.currentUser);
+      await sendEmailVerification(auth.currentUser, {
+        url: window.location.origin + '/login?verified=true',
+        handleCodeInApp: false,
+      });
       setResendMessage('Verification email sent! Please check your inbox.');
     } catch (error: unknown) {
       console.error('Error resending verification email:', error);
