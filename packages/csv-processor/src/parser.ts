@@ -3,7 +3,12 @@
  * 
  * Parse CSV text into structured data
  * 
- * TODO: Migrate to Rust/WASM for 10x+ performance improvement
+ * NOTE: This is a basic CSV parser for simple use cases.
+ * It handles quoted fields and basic escaping but may not handle
+ * all edge cases (e.g., quoted newlines in cells, complex escaping).
+ * 
+ * TODO: Migrate to Rust/WASM for 10x+ performance improvement on large files
+ * TODO: Consider using a battle-tested library (papaparse) as temporary solution
  */
 
 export interface CSVParseResult {

@@ -57,13 +57,19 @@ export function isValidHoursPerWeek(hours: number): boolean {
 }
 
 /**
- * Sanitize string input (remove dangerous characters)
+ * Sanitize string input for safe display
+ * 
+ * NOTE: This is a basic sanitizer for display purposes only.
+ * For HTML context, use a proper HTML sanitizer like DOMPurify.
+ * For SQL context, use parameterized queries.
+ * For shell context, use proper escaping.
+ * 
+ * This function only removes obviously dangerous characters.
  */
 export function sanitizeString(input: string): string {
   return input
     .trim()
-    .replace(/[<>]/g, '') // Remove potential HTML tags
-    .replace(/[^\w\s@.,'-]/gi, ''); // Allow common safe characters
+    .replace(/[<>]/g, ''); // Remove HTML tag markers only
 }
 
 /**

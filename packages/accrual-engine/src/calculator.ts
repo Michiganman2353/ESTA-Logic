@@ -27,8 +27,10 @@ export function calculateAccrual(
   const cap = rules.maxPaidHoursPerYear;
 
   if (employerSize === 'small') {
-    // Small employers: 40 hours per year, granted annually (not per work period)
-    // Return 0 for ongoing accrual (handle separately in annual grant)
+    // Small employers grant 40 hours annually, not based on hours worked.
+    // This function is used for per-period accrual tracking only.
+    // For small employers, use calculateAnnualGrant() instead to get the
+    // 40-hour annual allocation at the start of the year or on hire date.
     return {
       accrued: 0,
       cap,

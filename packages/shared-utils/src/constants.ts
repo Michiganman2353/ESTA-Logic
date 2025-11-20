@@ -5,11 +5,17 @@
  */
 
 /**
+ * Michigan ESTA accrual rate denominator
+ * Large employers accrue 1 hour per this many hours worked
+ */
+export const ACCRUAL_RATE_DENOMINATOR = 30;
+
+/**
  * Michigan ESTA Rules for Large Employers (≥10 employees)
  */
 export const LARGE_EMPLOYER_RULES = {
   employerSize: 'large' as const,
-  accrualRate: 1 / 30, // 1 hour per 30 hours worked
+  accrualRate: 1 / ACCRUAL_RATE_DENOMINATOR,
   maxPaidHoursPerYear: 72,
   maxUnpaidHoursPerYear: 0,
   carryoverCap: 72,
