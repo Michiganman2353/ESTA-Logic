@@ -1,6 +1,6 @@
 # ADR 001: Monorepo Strategy - Nx vs Turborepo
 
-**Status**: Proposed  
+**Status**: Implemented  
 **Date**: 2025-11-20  
 **Decision Makers**: Engineering Team  
 **Consulted**: DevOps, Security Team  
