@@ -94,10 +94,11 @@ authRouter.post('/register/manager', (req, res) => {
   
   // Manager registration requires approval before access is granted
   // Return token so user can be logged in immediately after registration
+  // NOTE: In production, use cryptographically secure JWT tokens instead of mock tokens
   res.json({ 
     success: true,
     message: 'Registration submitted successfully. Your account is pending approval.',
-    token: 'mock-token-manager-' + Date.now(),
+    token: 'mock-token-manager-' + Date.now(), // Mock token for development only
     user: { 
       id: 'mgr-' + Date.now(), 
       email, 
@@ -133,7 +134,8 @@ authRouter.get('/me', (req, res) => {
   }
   
   // Extract user info from token (in a real app, you would decode JWT)
-  // For mock purposes, check if it's a manager or employee token
+  // NOTE: This is mock token parsing for development only
+  // In production, use proper JWT decoding and validation
   if (token.startsWith('mock-token-manager')) {
     res.json({ 
       user: { 

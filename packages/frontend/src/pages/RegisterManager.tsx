@@ -14,7 +14,8 @@ export default function RegisterManager({ onRegister }: RegisterManagerProps) {
   const handleRegisterSuccess = (user: { id: string; email: string; name: string; role: string; [key: string]: unknown }) => {
     if (onRegister) {
       // Call the parent callback to update App state and navigate to dashboard
-      // Type assertion is safe here because we're getting this from the backend API
+      // Double assertion is needed because backend response includes additional fields
+      // that aren't in the strict User type definition, but are compatible
       onRegister(user as unknown as User);
     } else {
       // Fallback: navigate to login

@@ -158,6 +158,7 @@ export function OnboardingWizard({ onRegisterSuccess }: OnboardingWizardProps = 
           apiClient.setToken(response.token);
           
           // Call the callback to update App state with the logged-in user
+          // Type assertion is needed because backend response may include extra fields
           if (onRegisterSuccess) {
             onRegisterSuccess(response.user as { id: string; email: string; name: string; role: string; [key: string]: unknown });
           } else {
