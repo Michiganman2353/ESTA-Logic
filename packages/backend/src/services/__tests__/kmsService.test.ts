@@ -5,19 +5,27 @@
  * Basic unit tests that don't require actual GCP credentials.
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { KMSService } from '../kmsService';
 
-// Mock environment variables
-beforeEach(() => {
-  process.env.GCP_PROJECT_ID = 'test-project';
-  process.env.KMS_LOCATION = 'us-central1';
-  process.env.KMS_KEYRING_NAME = 'test-keyring';
-  process.env.KMS_ENCRYPTION_KEY_NAME = 'test-key';
-  process.env.KMS_KEY_VERSION = '1';
-});
-
 describe('KMSService Configuration', () => {
+  let originalEnv: NodeJS.ProcessEnv;
+
+  beforeEach(() => {
+    // Save original environment
+    originalEnv = { ...process.env };
+    // Set test environment
+    process.env.GCP_PROJECT_ID = 'test-project';
+    process.env.KMS_LOCATION = 'us-central1';
+    process.env.KMS_KEYRING_NAME = 'test-keyring';
+    process.env.KMS_ENCRYPTION_KEY_NAME = 'test-key';
+    process.env.KMS_KEY_VERSION = '1';
+  });
+
+  afterEach(() => {
+    // Restore original environment
+    process.env = originalEnv;
+  });
   it('should load configuration from environment', () => {
     const service = new KMSService();
     const keyPath = service.getKeyPath();
