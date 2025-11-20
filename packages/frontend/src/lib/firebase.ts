@@ -6,15 +6,16 @@ import { getFunctions, Functions } from 'firebase/functions';
 import { getAnalytics, Analytics } from 'firebase/analytics';
 
 // Firebase configuration
-// Uses environment variables if available, falls back to production config
+// SECURITY: All Firebase credentials MUST come from environment variables
+// No hardcoded fallback values to prevent credential exposure
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCWoqaXUc6ChNLQDBofkml_FgQsCmvAd-g",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "esta-tracker.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "esta-tracker",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "esta-tracker.firebasestorage.app",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "718800554935",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:718800554935:web:44e0da9f10c748848af632",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-MRE9DR9ZPF"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || ""
 };
 
 // Initialize Firebase only if configuration is present

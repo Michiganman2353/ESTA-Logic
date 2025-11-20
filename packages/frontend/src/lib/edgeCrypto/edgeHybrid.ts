@@ -210,10 +210,11 @@ async function edgeEncryptWithAES(
   // Generate random IV (12 bytes is recommended for GCM)
   const iv = crypto.getRandomValues(new Uint8Array(12));
 
-  // Convert string to ArrayBuffer if needed
+  // Convert to Uint8Array for compatibility with Node.js crypto
+  // This ensures the data is in the correct format for both browser and Node environments
   const dataBuffer = typeof data === 'string'
     ? new TextEncoder().encode(data)
-    : data;
+    : new Uint8Array(data);
 
   // Encrypt data
   const encryptedData = await crypto.subtle.encrypt(
@@ -251,13 +252,17 @@ async function edgeDecryptWithAES(
   // Create a new Uint8Array to satisfy TypeScript's strict typing
   const ivBuffer = new Uint8Array(iv);
   
+  // Convert encryptedData to Uint8Array for compatibility with Node.js crypto
+  // This ensures the data is in the correct format for both browser and Node environments
+  const encryptedBuffer = new Uint8Array(encryptedData);
+  
   return crypto.subtle.decrypt(
     {
       name: 'AES-GCM',
       iv: ivBuffer
     },
     aesKey,
-    encryptedData
+    encryptedBuffer
   );
 }
 
@@ -351,11 +356,9 @@ function base64ToArrayBuffer(base64: string): ArrayBuffer {
   for (let i = 0; i < binary.length; i++) {
     bytes[i] = binary.charCodeAt(i);
   }
-  // Create a new ArrayBuffer to ensure it's properly formatted
-  const buffer = new ArrayBuffer(bytes.byteLength);
-  const view = new Uint8Array(buffer);
-  view.set(bytes);
-  return buffer;
+  // Ensure we return a proper ArrayBuffer by slicing to create a new buffer
+  // This handles both browser and Node.js environments correctly
+  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
 }
 
 /**
