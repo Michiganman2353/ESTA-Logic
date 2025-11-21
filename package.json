@@ -15,6 +15,9 @@
     "test": "turbo run test",
     "test:frontend": "turbo run test --filter=@esta-tracker/frontend",
     "test:backend": "turbo run test --filter=@esta-tracker/backend",
+
+    "test:coverage": "turbo run test:coverage",
+
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
