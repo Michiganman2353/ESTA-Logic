@@ -18,8 +18,8 @@ ESTA Tracker is a full-stack SaaS platform that automates compliance with the Mi
 ## Quick Start
 
 ### Prerequisites
-- Node.js ≥18.0.0
-- npm ≥9.0.0
+- Node.js 20.x (see `.nvmrc`)
+- npm ≥10.0.0
 - Firebase account
 - Vercel account (for deployment)
 

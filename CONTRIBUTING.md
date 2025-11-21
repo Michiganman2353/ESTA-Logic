@@ -18,8 +18,8 @@ ESTA Tracker is a Michigan-specific compliance and workforce-management applicat
 
 ### Prerequisites
 
-- Node.js ≥18.0.0
-- npm ≥9.0.0
+- Node.js 20.x (see `.nvmrc`)
+- npm ≥10.0.0
 - Git
 - A GitHub account
 

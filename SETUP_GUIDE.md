@@ -3,8 +3,8 @@
 ## 🎯 Quick Start (5 Minutes)
 
 ### Prerequisites
-- Node.js ≥18.0.0
-- npm ≥9.0.0
+- Node.js 20.x (see `.nvmrc`)
+- npm ≥10.0.0
 - Firebase account (free tier works)
 - Git
 
