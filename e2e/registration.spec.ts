@@ -37,22 +37,26 @@ test.describe('Manager Registration Flow', () => {
     // Step 4: Review & Complete - Click "Complete Registration" using data-testid
     await page.getByTestId('complete-registration-button').click();
     
-    // Wait for either success or error
-    // The test will pass if the form was submitted, regardless of backend availability
-    // In a real scenario with backend, this would redirect to dashboard
-    // Without backend, it may show an error or stay on the page
-    await page.waitForTimeout(2000);
+    // Wait for the UI to respond to the submission
+    // Either: button becomes disabled/loading, error appears, or navigation occurs
+    const submitButton = page.getByTestId('complete-registration-button');
+    
+    // Wait for one of these conditions to be true
+    await Promise.race([
+      submitButton.waitFor({ state: 'disabled', timeout: 5000 }).catch(() => {}),
+      page.locator('text=/Creating Account|error|failed|unable/i').waitFor({ state: 'visible', timeout: 5000 }).catch(() => {}),
+      page.waitForURL(url => !url.includes('/register/manager'), { timeout: 5000 }).catch(() => {}),
+    ]);
     
     // Verify submission was attempted (button should be disabled or show loading state)
     // This validates the UI behavior without requiring backend
-    const submitButton = page.getByTestId('complete-registration-button');
     const isDisabled = await submitButton.isDisabled().catch(() => false);
     const hasLoadingText = await submitButton.textContent().then(text => 
       text?.includes('Creating') || text?.includes('...')
     ).catch(() => false);
     
     // Either the button should be disabled/loading, OR we should see an error message, OR we navigated away
-    const hasError = await page.locator('text=/error|failed|unable/i').isVisible({ timeout: 5000 }).catch(() => false);
+    const hasError = await page.locator('text=/error|failed|unable/i').isVisible({ timeout: 1000 }).catch(() => false);
     const navigatedAway = !page.url().includes('/register/manager');
     
     // Test passes if any of these conditions are met (UI responded to submission)
@@ -104,19 +108,25 @@ test.describe('Employee Registration Flow', () => {
     // Submit the form using data-testid for more specific targeting
     await page.getByTestId('register-employee-submit').click();
     
-    // Wait for either success or error
-    // The test will pass if the form was submitted, regardless of backend availability
-    await page.waitForTimeout(2000);
+    // Wait for the UI to respond to the submission
+    // Either: button becomes disabled/loading, error appears, or navigation occurs
+    const submitButton = page.getByTestId('register-employee-submit');
+    
+    // Wait for one of these conditions to be true
+    await Promise.race([
+      submitButton.waitFor({ state: 'disabled', timeout: 5000 }).catch(() => {}),
+      page.locator('text=/Creating account|error|failed|unable/i').waitFor({ state: 'visible', timeout: 5000 }).catch(() => {}),
+      page.waitForURL(url => !url.includes('/register/employee'), { timeout: 5000 }).catch(() => {}),
+    ]);
     
     // Verify submission was attempted (button should be disabled or show loading state)
-    const submitButton = page.getByTestId('register-employee-submit');
     const isDisabled = await submitButton.isDisabled().catch(() => false);
     const hasLoadingText = await submitButton.textContent().then(text => 
       text?.includes('Creating') || text?.includes('...')
     ).catch(() => false);
     
     // Either the button should be disabled/loading, OR we should see an error message, OR we navigated away
-    const hasError = await page.locator('text=/error|failed|unable/i').isVisible({ timeout: 5000 }).catch(() => false);
+    const hasError = await page.locator('text=/error|failed|unable/i').isVisible({ timeout: 1000 }).catch(() => false);
     const navigatedAway = !page.url().includes('/register/employee');
     
     // Test passes if any of these conditions are met (UI responded to submission)
