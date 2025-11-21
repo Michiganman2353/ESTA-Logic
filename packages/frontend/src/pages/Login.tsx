@@ -25,10 +25,20 @@ export default function Login() {
       if (isFirebaseConfigured) {
         // Use Firebase authentication
         await signIn(email, password);
-        // Refresh user data in AuthContext
-        await refreshUserData();
-        // Navigation will happen automatically via AuthContext
-        navigate('/');
+        try {
+    // Attempt to refresh user data
+    await refreshUserData();
+    
+    // If successful, navigate
+    navigate('/');
+} catch (error) {
+    console.error("Failed to refresh user data:", error);
+
+    // Optionally, display user feedback (e.g., a toast, alert, etc.)
+    showErrorToUser("Unable to refresh user data. Please try again.");
+    
+    // Navigation remains halted in case of error
+}
       } else {
         // Fallback to existing API for local development
         const response = await apiClient.login(email, password);
