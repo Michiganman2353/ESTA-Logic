@@ -3,19 +3,6 @@
  * 
  * This is the root component for the ESTA Tracker web application.
  * It manages authentication state, routes, and global error handling.
- * 
- * Features:
- * - Uses AuthContext for Firebase authentication state management
- * - Provides public routes for login, registration, and pricing
- * - Provides protected routes for authenticated users with role-based access
- * - Implements proper route guards via ProtectedRoute component
- * - Integrates maintenance mode notification
- * 
- * Uses:
- * - React Router for client-side navigation
- * - AuthProvider for Firebase authentication
- * - ProtectedRoute for securing authenticated routes
- * - Design system components for consistent UI feedback
  */
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
@@ -36,10 +23,6 @@ import AuditLog from './pages/AuditLog';
 import Settings from './pages/Settings';
 import Pricing from './pages/Pricing';
 
-/**
- * AppRoutes component - handles all routing logic
- * Separated from App to allow useAuth hook access
- */
 function AppRoutes() {
   const { currentUser, userData, loading } = useAuth();
 
@@ -72,54 +55,58 @@ function AppRoutes() {
           element={!currentUser ? <RegisterEmployee /> : <Navigate to="/" replace />} 
         />
         <Route 
-          path="/register/manager" 
-          element={!currentUser ? <RegisterManager /> : <Navigate to="/" replace />} 
+          path="/register/manager"
+          element={!currentUser ? <RegisterManager /> : <Navigate to="/" replace />}
         />
         <Route path="/pricing" element={<Pricing />} />
-        
-        {/* Protected routes */}
+
+        {/* Protected routes (no null assertions) */}
         <Route 
           path="/" 
           element={
             <ProtectedRoute>
-              <Dashboard user={userData!} />
+              <Dashboard />
             </ProtectedRoute>
-          } 
+          }
         />
+
         <Route 
           path="/employee" 
           element={
             <ProtectedRoute allowedRoles={['employee']}>
-              <EmployeeDashboard user={userData!} />
+              <EmployeeDashboard />
             </ProtectedRoute>
-          } 
+          }
         />
+
         <Route 
           path="/employer" 
           element={
             <ProtectedRoute allowedRoles={['employer', 'admin']}>
-              <EmployerDashboard user={userData!} />
+              <EmployerDashboard />
             </ProtectedRoute>
-          } 
+          }
         />
+
         <Route 
           path="/audit" 
           element={
             <ProtectedRoute>
-              <AuditLog user={userData!} />
+              <AuditLog />
             </ProtectedRoute>
-          } 
+          }
         />
+
         <Route 
           path="/settings" 
           element={
             <ProtectedRoute>
-              <Settings user={userData!} />
+              <Settings />
             </ProtectedRoute>
-          } 
+          }
         />
-        
-        {/* Catch all - redirect to login or home based on auth state */}
+
+        {/* Catch-all */}
         <Route 
           path="*" 
           element={<Navigate to={currentUser ? "/" : "/login"} replace />} 
