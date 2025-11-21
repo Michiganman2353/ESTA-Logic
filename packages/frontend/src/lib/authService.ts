@@ -388,11 +388,11 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
       }
 
       const tenantDoc = tenantSnapshot.docs[0];
-      if (!tenantDoc) {
-        throw new Error('No company found with this email domain. Please use a company code instead or contact your employer.');
-      }
+      
+      
       tenantId = tenantDoc.id;
       const tenantData = tenantDoc.data();
+      
       employerSize = tenantData.size;
       companyName = tenantData.companyName;
     } else {
