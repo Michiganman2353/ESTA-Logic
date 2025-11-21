@@ -58,15 +58,16 @@ documentsRouter.get('/:documentId', async (req: Request, res: Response) => {
  * POST /api/v1/documents/upload-url
  * Body: { requestId, fileName, contentType }
  */
-documentsRouter.post('/upload-url', async (req: Request, res: Response) => {
+documentsRouter.post('/upload-url', async (req: Request, res: Response): Promise<void> => {
   try {
     const { requestId, fileName, contentType } = req.body;
     
     if (!requestId || !fileName || !contentType) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
         error: 'Missing required fields: requestId, fileName, contentType',
       });
+      return;
     }
     
     // TODO: Add authentication middleware

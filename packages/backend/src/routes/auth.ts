@@ -91,22 +91,25 @@ authRouter.post('/register', (req, res) => {
 });
 
 // Employee registration endpoint
-authRouter.post('/register/employee', (req, res) => {
+authRouter.post('/register/employee', (req, res): void => {
   const { name, email, password } = req.body;
   
   // Basic validation
   if (!name || !email || !password) {
-    return res.status(400).json({ message: 'Name, email, and password are required' });
+    res.status(400).json({ message: 'Name, email, and password are required' });
+    return;
   }
 
   if (password.length < 8) {
-    return res.status(400).json({ message: 'Password must be at least 8 characters' });
+    res.status(400).json({ message: 'Password must be at least 8 characters' });
+    return;
   }
 
   // Check if email already exists
   for (const [, user] of users) {
     if (user.email === email) {
-      return res.status(409).json({ message: 'Email already registered' });
+      res.status(409).json({ message: 'Email already registered' });
+      return;
     }
   }
 
@@ -139,28 +142,32 @@ authRouter.post('/register/employee', (req, res) => {
 });
 
 // Manager registration endpoint
-authRouter.post('/register/manager', (req, res) => {
+authRouter.post('/register/manager', (req, res): void => {
   const { name, email, password, companyName, employeeCount } = req.body;
   
   // Basic validation
   if (!name || !email || !password || !companyName || !employeeCount) {
-    return res.status(400).json({ 
+    res.status(400).json({ 
       message: 'Name, email, password, company name, and employee count are required' 
     });
+    return;
   }
 
   if (password.length < 8) {
-    return res.status(400).json({ message: 'Password must be at least 8 characters' });
+    res.status(400).json({ message: 'Password must be at least 8 characters' });
+    return;
   }
 
   if (employeeCount < 1) {
-    return res.status(400).json({ message: 'Employee count must be at least 1' });
+    res.status(400).json({ message: 'Employee count must be at least 1' });
+    return;
   }
 
   // Check if email already exists
   for (const [, user] of users) {
     if (user.email === email) {
-      return res.status(409).json({ message: 'Email already registered' });
+      res.status(409).json({ message: 'Email already registered' });
+      return;
     }
   }
 
@@ -212,32 +219,36 @@ authRouter.post('/logout', (_req, res) => {
   res.json({ success: true });
 });
 
-authRouter.get('/me', (req, res) => {
+authRouter.get('/me', (req, res): void => {
   // Check for Authorization header
   const authHeader = req.headers.authorization;
   
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    res.status(401).json({ message: 'Unauthorized' });
+    return;
   }
   
   const token = authHeader.split(' ')[1];
   
   if (!token || token === 'null') {
-    return res.status(401).json({ message: 'Unauthorized' });
+    res.status(401).json({ message: 'Unauthorized' });
+    return;
   }
   
   // Get user ID from token
   const userId = tokenToUserId.get(token);
   
   if (!userId) {
-    return res.status(401).json({ message: 'Invalid or expired token' });
+    res.status(401).json({ message: 'Invalid or expired token' });
+    return;
   }
   
   // Get user data
   const user = users.get(userId);
   
   if (!user) {
-    return res.status(401).json({ message: 'User not found' });
+    res.status(401).json({ message: 'User not found' });
+    return;
   }
   
   res.json({ user });
