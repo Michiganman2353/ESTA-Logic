@@ -6,6 +6,7 @@ import { apiClient } from '../lib/api';
 import { User } from '../types';
 import EmailVerification from '../components/EmailVerification';
 import { useRegistrationStatus } from '../hooks/useEdgeConfig';
+import { PasswordField } from '../components/PasswordField';
 
 interface RegisterEmployeeProps {
   onRegister: (user: User) => void;
@@ -186,35 +187,26 @@ export default function RegisterEmployee({ onRegister }: RegisterEmployeeProps) 
               </p>
             </div>
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Password
-              </label>
-              <input
+              <PasswordField
                 id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                className="input mt-1 block w-full"
-                placeholder="Minimum 8 characters"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                label="Password"
+                placeholder="Minimum 8 characters"
+                autoComplete="new-password"
+                required
+                showStrengthIndicator
               />
             </div>
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Confirm Password
-              </label>
-              <input
+              <PasswordField
                 id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                required
-                className="input mt-1 block w-full"
-                placeholder="Re-enter password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
+                label="Confirm Password"
+                placeholder="Re-enter password"
+                autoComplete="new-password"
+                required
               />
             </div>
           </div>
