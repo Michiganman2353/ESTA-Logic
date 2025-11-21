@@ -5,7 +5,6 @@ import { registerManager, registerEmployee } from '../authService';
 vi.mock('firebase/auth', () => ({
   createUserWithEmailAndPassword: vi.fn(),
   signInWithEmailAndPassword: vi.fn(),
-  sendEmailVerification: vi.fn(),
 }));
 
 vi.mock('firebase/firestore', () => ({
