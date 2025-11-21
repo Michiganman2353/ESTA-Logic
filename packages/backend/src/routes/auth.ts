@@ -70,20 +70,16 @@ authRouter.post('/login', authenticate, async (req: AuthenticatedRequest, res) =
     
     const userData = userDoc.data();
     
-    // Check if user is approved
-    if (userData?.status === 'pending') {
-      return res.status(403).json({
-        success: false,
-        error: 'Your account is pending approval',
-      });
-    }
-    
-    if (userData?.status === 'rejected') {
-      return res.status(403).json({
-        success: false,
-        error: 'Your account has been rejected. Please contact support.',
-      });
-    }
+    // Allow pending users to log in
+if (userData?.status === 'rejected') {
+  return res.status(403).json({
+    success: false,
+    error: 'Your account has been rejected. Please contact support.',
+  });
+}
+
+// Do NOT block pending users here
+// Pending users can log in but may have restricted features
     
     res.json({
       success: true,
