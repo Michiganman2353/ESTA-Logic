@@ -7,32 +7,36 @@ service cloud.firestore {
       return request.auth != null;
     }
     
-    function isVerified() {
-      return request.auth.token.emailVerified == true;
-    }
-    
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
     
+    // FIXED: Check role from Firestore document instead of custom claims
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
     function isRole(role) {
-      return isAuthenticated() && request.auth.token.role == role;
+      return isAuthenticated() && getUserData().role == role;
     }
     
     function belongsToTenant(tenantId) {
-      return isAuthenticated() && request.auth.token.tenantId == tenantId;
+      return isAuthenticated() && getUserData().tenantId == tenantId;
     }
     
     function isEmployer() {
-      return isRole('employer') || isRole('admin');
+      return isAuthenticated() && (getUserData().role == 'employer' || getUserData().role == 'admin');
     }
     
     function isEmployee() {
-      return isRole('employee');
+      return isAuthenticated() && getUserData().role == 'employee';
     }
     
     // Users collection
     match /users/{userId} {
+      // FIXED: Allow authenticated users to create their own document during registration
+      allow create: if isAuthenticated() && request.auth.uid == userId;
+      
       // Users can read their own document
       allow read: if isOwner(userId);
       
@@ -45,22 +49,24 @@ service cloud.firestore {
       allow read: if isEmployer() && 
         belongsToTenant(resource.data.tenantId);
       
-      // Only system (via Cloud Functions) can create users
-      allow create: if false;
+      // No one can delete user documents
       allow delete: if false;
     }
     
     // Tenants collection
     match /tenants/{tenantId} {
+      // FIXED: Allow authenticated users to create tenant during registration
+      allow create: if isAuthenticated() && request.resource.data.ownerId == request.auth.uid;
+      
       // Tenant owner can read/update
       allow read, update: if isAuthenticated() && 
         resource.data.ownerId == request.auth.uid;
       
       // Employees can read their tenant
-      allow read: if belongsToTenant(tenantId);
+      allow read: if isAuthenticated() && belongsToTenant(tenantId);
       
-      // Only system can create/delete tenants
-      allow create, delete: if false;
+      // No one can delete tenants
+      allow delete: if false;
     }
     
     // Work logs
@@ -75,7 +81,7 @@ service cloud.firestore {
       
       // Only employers can create/update/delete logs
       allow create, update, delete: if isEmployer() && 
-        belongsToTenant(resource.data.employerId);
+        belongsToTenant(request.resource.data.employerId);
     }
     
     // Sick time requests
@@ -103,6 +109,9 @@ service cloud.firestore {
     
     // Audit logs (read-only for users)
     match /auditLogs/{logId} {
+      // FIXED: Allow authenticated users to create audit logs during registration
+      allow create: if isAuthenticated();
+      
       // Employers can read logs for their tenant
       allow read: if isEmployer() && 
         belongsToTenant(resource.data.employerId);
@@ -111,8 +120,8 @@ service cloud.firestore {
       allow read: if isEmployee() && 
         isOwner(resource.data.userId);
       
-      // Only system can write audit logs
-      allow write: if false;
+      // No updates or deletes allowed
+      allow update, delete: if false;
     }
     
     // Retaliation reports

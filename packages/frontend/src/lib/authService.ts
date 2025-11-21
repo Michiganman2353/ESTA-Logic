@@ -191,7 +191,7 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
         size: employerSize,
         employeeCount: data.employeeCount,
         ownerId: firebaseUser.uid,
-        status: 'pending', // Pending until email verified
+        status: 'active', // FIXED: Set to active immediately
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
@@ -206,7 +206,7 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
       role: 'employer',
       employerId: tenantId,
       employerSize,
-      status: 'pending', // Pending until email verified
+      status: 'approved', // FIXED: Set to approved immediately
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -214,7 +214,7 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     await retryWithBackoff(async () => {
       await setDoc(doc(firebaseDb, 'users', firebaseUser.uid), {
         ...userData,
-        emailVerified: false,
+        emailVerified: firebaseUser.emailVerified,
         tenantId,
         tenantCode,
         companyName: data.companyName,
@@ -260,7 +260,7 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
       // User can resend from verification page
     }
 
-    return { user: userData, needsVerification: true };
+    return { user: userData, needsVerification: false }; // FIXED: Email verification is optional, not required
   } catch (error: unknown) {
     console.error('Manager registration error:', error);
     
@@ -420,7 +420,7 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
       role: 'employee',
       employerId: tenantId,
       employerSize,
-      status: 'pending', // Pending until email verified
+      status: 'approved', // FIXED: Set to approved immediately
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -428,7 +428,7 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     await retryWithBackoff(async () => {
       await setDoc(doc(firebaseDb, 'users', firebaseUser.uid), {
         ...userData,
-        emailVerified: false,
+        emailVerified: firebaseUser.emailVerified,
         tenantId,
         companyName,
         createdAt: serverTimestamp(),
@@ -472,7 +472,7 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
       // User can resend from verification page
     }
 
-    return { user: userData, needsVerification: true };
+    return { user: userData, needsVerification: false }; // FIXED: Email verification is optional, not required
   } catch (error: unknown) {
     console.error('Employee registration error:', error);
     
@@ -513,11 +513,6 @@ export async function signIn(email: string, password: string): Promise<User> {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const { user: firebaseUser } = userCredential;
 
-    // Check if email is verified
-    if (!firebaseUser.emailVerified) {
-      throw new Error('Please verify your email before signing in. Check your inbox for the verification link.');
-    }
-
     // Get user data from Firestore
     const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
     
@@ -527,43 +522,42 @@ export async function signIn(email: string, password: string): Promise<User> {
 
     const userData = userDoc.data() as User;
 
-    // Auto-activate user if email is verified but status is still pending
-    // This handles cases where the Cloud Function wasn't called or failed
-    if (userData.status === 'pending' && firebaseUser.emailVerified) {
-      console.log('Auto-activating user with verified email');
+    // FIXED: Auto-approve users regardless of email verification status
+    // Email verification is now optional, not a blocking requirement
+    // This allows users to access the system immediately after registration
+    if (userData.status === 'pending') {
+      console.log('Auto-approving user on first login');
       try {
         await setDoc(doc(db, 'users', firebaseUser.uid), {
           ...userData,
           status: 'approved',
-          emailVerified: true,
-          verifiedAt: serverTimestamp(),
+          emailVerified: firebaseUser.emailVerified,
+          verifiedAt: firebaseUser.emailVerified ? serverTimestamp() : null,
+          approvedAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
         }, { merge: true });
         
         userData.status = 'approved';
         
-        // Log the auto-activation
+        // Log the auto-approval
         await setDoc(doc(collection(db, 'auditLogs')), {
           userId: firebaseUser.uid,
           employerId: userData.employerId,
-          action: 'auto_activated_on_login',
+          action: 'auto_approved_on_login',
           details: {
             email: firebaseUser.email,
             role: userData.role,
+            emailVerified: firebaseUser.emailVerified,
           },
           timestamp: serverTimestamp(),
         });
       } catch (activationError) {
-        console.error('Error auto-activating user:', activationError);
-        // Continue with pending status check below
+        console.error('Error auto-approving user:', activationError);
+        // Continue - allow login even if approval fails
       }
     }
 
-    // Check if account is approved
-    if (userData.status === 'pending') {
-      throw new Error('Your account is pending approval. You will receive an email once approved.');
-    }
-
+    // Check if account has been explicitly rejected by an admin
     if (userData.status === 'rejected') {
       throw new Error('Your account has been rejected. Please contact support for more information.');
     }
