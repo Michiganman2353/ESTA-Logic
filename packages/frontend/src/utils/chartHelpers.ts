@@ -160,9 +160,7 @@ export function calculateMovingAverage(data: number[], windowSize: number): numb
   for (let i = 0; i < data.length; i++) {
     if (i < windowSize - 1) {
       const value = data[i];
-      if (value !== undefined) {
-        result.push(value); // Not enough data for average yet
-      }
+      result.push(value); // Not enough data for average yet
     } else {
       const window = data.slice(i - windowSize + 1, i + 1);
       const average = window.reduce((sum, val) => sum + val, 0) / windowSize;
