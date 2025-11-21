@@ -558,18 +558,7 @@ export async function signIn(email: string, password: string): Promise<User> {
     
     if (needsClaimsUpdate && isfirebaseconfigured) {
       console.log('Custom claims missing or incomplete, attempting to set via Cloud Function');
-      try {
-        // Call the Cloud Function to set claims
-        const setClaimsFunction = httpsCallable(functions, 'approveUserAfterVerification');
-        await setClaimsFunction({});
-        console.log('Custom claims set successfully');
-        
-        // Force token refresh to get new claims
-        await firebaseUser.getIdToken(true);
-      } catch (claimsError) {
-        console.error('Error setting custom claims (will continue):', claimsError);
-        // Continue even if claims setting fails - user can still access basic functionality
-      }
+      
     }
 
     // Auto-activate user if email is verified but status is still pending
