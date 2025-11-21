@@ -1,180 +1,229 @@
 import { Router } from 'express';
+import { authenticate, AuthenticatedRequest } from '../middleware/auth.js';
+import { getAuth, getFirestore } from '../services/firebase.js';
 
 export const authRouter = Router();
 
-// Mock authentication endpoints
-authRouter.post('/login', (req, res) => {
-  const { email } = req.body;
-  
-  // In a real app, check database for user status
-  // For now, we'll return a standard employee user
-  // Pending manager accounts won't be able to login until approved
-  
-  res.json({ 
-    token: 'mock-token', 
-    user: { 
-      id: '1', 
-      email: email, 
-      name: 'Test User', 
-      role: 'employee',
+/**
+ * Get current user information
+ * Requires valid Firebase ID token
+ */
+authRouter.get('/me', authenticate, async (req: AuthenticatedRequest, res) => {
+  try {
+    const { uid } = req.user!;
+    
+    // Get user document from Firestore
+    const db = getFirestore();
+    const userDoc = await db.collection('users').doc(uid).get();
+    
+    if (!userDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        error: 'User document not found',
+      });
+    }
+    
+    const userData = userDoc.data();
+    
+    res.json({
+      success: true,
+      user: {
+        id: uid,
+        email: userData?.email,
+        name: userData?.name,
+        role: userData?.role,
+        status: userData?.status,
+        employerId: userData?.employerId || userData?.tenantId,
+        employerSize: userData?.employerSize,
+        createdAt: userData?.createdAt?.toDate?.()?.toISOString() || userData?.createdAt,
+        updatedAt: userData?.updatedAt?.toDate?.()?.toISOString() || userData?.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch user information',
+    });
+  }
+});
+
+/**
+ * Login endpoint
+ * Note: Actual authentication is handled by Firebase Auth on the client
+ * This endpoint validates the token and returns user data
+ */
+authRouter.post('/login', authenticate, async (req: AuthenticatedRequest, res) => {
+  try {
+    const { uid, email } = req.user!;
+    
+    // Get user document from Firestore
+    const db = getFirestore();
+    const userDoc = await db.collection('users').doc(uid).get();
+    
+    if (!userDoc.exists) {
+      return res.status(404).json({
+        success: false,
+        error: 'User document not found',
+      });
+    }
+    
+    const userData = userDoc.data();
+    
+    // Check if user is approved
+    if (userData?.status === 'pending') {
+      return res.status(403).json({
+        success: false,
+        error: 'Your account is pending approval',
+      });
+    }
+    
+    if (userData?.status === 'rejected') {
+      return res.status(403).json({
+        success: false,
+        error: 'Your account has been rejected. Please contact support.',
+      });
+    }
+    
+    res.json({
+      success: true,
+      user: {
+        id: uid,
+        email: email || userData?.email,
+        name: userData?.name,
+        role: userData?.role,
+        status: userData?.status,
+        employerId: userData?.employerId || userData?.tenantId,
+        employerSize: userData?.employerSize,
+        createdAt: userData?.createdAt?.toDate?.()?.toISOString() || userData?.createdAt,
+        updatedAt: userData?.updatedAt?.toDate?.()?.toISOString() || userData?.updatedAt,
+      },
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Login failed',
+    });
+  }
+});
+
+/**
+ * Register endpoint
+ * Note: User registration should be handled on the client with Firebase Auth
+ * This endpoint can be used for additional server-side validation or setup
+ */
+authRouter.post('/register', async (req, res) => {
+  res.status(400).json({
+    success: false,
+    error: 'Please use Firebase Authentication for registration',
+    message: 'Registration should be performed through Firebase Auth client SDK',
+  });
+});
+
+/**
+ * Employee registration endpoint
+ * Legacy endpoint - registration should use Firebase Auth
+ */
+authRouter.post('/register/employee', async (req, res) => {
+  res.status(400).json({
+    success: false,
+    error: 'Please use Firebase Authentication for registration',
+    message: 'Registration should be performed through Firebase Auth client SDK',
+  });
+});
+
+/**
+ * Manager registration endpoint
+ * Legacy endpoint - registration should use Firebase Auth
+ */
+authRouter.post('/register/manager', async (req, res) => {
+  res.status(400).json({
+    success: false,
+    error: 'Please use Firebase Authentication for registration',
+    message: 'Registration should be performed through Firebase Auth client SDK',
+  });
+});
+
+/**
+ * Logout endpoint
+ * Note: Actual logout is handled on the client
+ * This is a placeholder for any server-side cleanup
+ */
+authRouter.post('/logout', authenticate, async (req: AuthenticatedRequest, res) => {
+  try {
+    // Server-side logout logic (if any)
+    // For example: invalidate refresh tokens, clear sessions, etc.
+    
+    res.json({
+      success: true,
+      message: 'Logged out successfully',
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Logout failed',
+    });
+  }
+});
+
+/**
+ * Admin endpoint to manually set user custom claims
+ * Requires admin role
+ */
+authRouter.post('/admin/set-claims', authenticate, async (req: AuthenticatedRequest, res) => {
+  try {
+    const { role: adminRole } = req.user!;
+    
+    // Check if user is admin
+    if (adminRole !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        error: 'Only administrators can set custom claims',
+      });
+    }
+    
+    const { uid, claims } = req.body;
+    
+    if (!uid || !claims) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing uid or claims in request body',
+      });
+    }
+    
+    // Set custom claims
+    const auth = getAuth();
+    await auth.setCustomUserClaims(uid, claims);
+    
+    // Update Firestore document
+    const db = getFirestore();
+    await db.collection('users').doc(uid).update({
       status: 'approved',
-      employerSize: 'small',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    } 
-  });
-});
-
-authRouter.post('/register', (req, res) => {
-  res.json({ token: 'mock-token', user: { id: '1', email: req.body.email, name: req.body.name, role: 'employee' } });
-});
-
-// Employee registration endpoint
-authRouter.post('/register/employee', (req, res) => {
-  const { name, email, password } = req.body;
-  
-  // Basic validation
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: 'Name, email, and password are required' });
-  }
-
-  if (password.length < 8) {
-    return res.status(400).json({ message: 'Password must be at least 8 characters' });
-  }
-
-  // In a real app, you would:
-  // 1. Hash the password
-  // 2. Save to database
-  // 3. Generate real JWT token
-  
-  res.json({ 
-    token: 'mock-token-employee', 
-    user: { 
-      id: 'emp-' + Date.now(), 
-      email, 
-      name, 
-      role: 'employee',
-      employerSize: 'small',
-      status: 'approved', // Employees are auto-approved
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    } 
-  });
-});
-
-// Manager registration endpoint
-authRouter.post('/register/manager', (req, res) => {
-  const { name, email, password, companyName, employeeCount } = req.body;
-  
-  // Basic validation
-  if (!name || !email || !password || !companyName || !employeeCount) {
-    return res.status(400).json({ 
-      message: 'Name, email, password, company name, and employee count are required' 
+      updatedAt: new Date(),
     });
-  }
-
-  if (password.length < 8) {
-    return res.status(400).json({ message: 'Password must be at least 8 characters' });
-  }
-
-  if (employeeCount < 1) {
-    return res.status(400).json({ message: 'Employee count must be at least 1' });
-  }
-
-  // Determine employer size based on Michigan ESTA law
-  // Small employers: < 10 employees (40 hours max paid, 32 hours unpaid)
-  // Large employers: >= 10 employees (72 hours max paid)
-  const employerSize = employeeCount < 10 ? 'small' : 'large';
-
-  // In a real app, you would:
-  // 1. Hash the password
-  // 2. Save user and company info to database
-  // 3. Send notification to admin for approval
-  // 4. Create employer settings record after approval
-  
-  // Manager registration requires approval before access is granted
-  // Return token so user can be logged in immediately after registration
-  // NOTE: In production, use cryptographically secure JWT tokens instead of mock tokens
-  res.json({ 
-    success: true,
-    message: 'Registration submitted successfully. Your account is pending approval.',
-    token: 'mock-token-manager-' + Date.now(), // Mock token for development only
-    user: { 
-      id: 'mgr-' + Date.now(), 
-      email, 
-      name, 
-      role: 'employer',
-      employerId: 'company-' + Date.now(),
-      employerSize,
-      companyName,
-      employeeCount,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    } 
-  });
-});
-
-authRouter.post('/logout', (_req, res) => {
-  res.json({ success: true });
-});
-
-authRouter.get('/me', (req, res) => {
-  // Check for Authorization header
-  const authHeader = req.headers.authorization;
-  
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-  
-  const token = authHeader.split(' ')[1];
-  
-  if (!token || token === 'null') {
-    return res.status(401).json({ message: 'Unauthorized' });
-  }
-  
-  // Extract user info from token (in a real app, you would decode JWT)
-  // NOTE: This is mock token parsing for development only
-  // In production, use proper JWT decoding and validation
-  if (token.startsWith('mock-token-manager')) {
-    res.json({ 
-      user: { 
-        id: 'mgr-' + Date.now(), 
-        email: 'manager@example.com', 
-        name: 'Test Manager', 
-        role: 'employer',
-        status: 'pending',
-        employerSize: 'small',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      } 
+    
+    // Create audit log
+    await db.collection('auditLogs').add({
+      userId: uid,
+      action: 'claims_updated_by_admin',
+      details: {
+        claims,
+        performedBy: req.user!.uid,
+      },
+      timestamp: new Date(),
     });
-  } else if (token.startsWith('mock-token-employee')) {
-    res.json({ 
-      user: { 
-        id: 'emp-' + Date.now(), 
-        email: 'employee@example.com', 
-        name: 'Test Employee', 
-        role: 'employee',
-        status: 'approved',
-        employerSize: 'small',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      } 
+    
+    res.json({
+      success: true,
+      message: 'Custom claims set successfully',
     });
-  } else {
-    // Default fallback
-    res.json({ 
-      user: { 
-        id: '1', 
-        email: 'test@example.com', 
-        name: 'Test User', 
-        role: 'employee',
-        status: 'approved',
-        employerSize: 'small',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      } 
+  } catch (error) {
+    console.error('Error setting claims:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to set custom claims',
     });
   }
 });

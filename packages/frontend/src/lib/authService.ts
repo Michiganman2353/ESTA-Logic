@@ -34,6 +34,17 @@ export interface RegisterEmployeeData {
 }
 
 /**
+ * Sanitize string input to prevent XSS and injection attacks
+ * Removes potentially dangerous characters and trims whitespace
+ */
+function sanitizeInput(input: string): string {
+  return input
+    .trim()
+    .replace(/[<>'"]/g, '') // Remove common XSS characters
+    .replace(/[\x00-\x1F\x7F]/g, ''); // Remove control characters
+}
+
+/**
  * Validate email format
  */
 function validateEmail(email: string): boolean {
@@ -141,11 +152,16 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     throw new Error(passwordValidation.message || 'Invalid password');
   }
 
-  if (!data.name || data.name.trim().length < 2) {
+  // Sanitize inputs
+  const sanitizedName = sanitizeInput(data.name);
+  const sanitizedCompanyName = sanitizeInput(data.companyName);
+  const sanitizedEmail = data.email.toLowerCase().trim();
+
+  if (!sanitizedName || sanitizedName.length < 2) {
     throw new Error('Please enter your full name (at least 2 characters)');
   }
 
-  if (!data.companyName || data.companyName.trim().length < 2) {
+  if (!sanitizedCompanyName || sanitizedCompanyName.length < 2) {
     throw new Error('Please enter a valid company name (at least 2 characters)');
   }
 
@@ -165,7 +181,7 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     const userCredential: UserCredential = await retryWithBackoff(async () => {
       return await createUserWithEmailAndPassword(
         firebaseAuth,
-        data.email,
+        sanitizedEmail,
         data.password
       );
     });
@@ -186,7 +202,7 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     await retryWithBackoff(async () => {
       await setDoc(doc(firebaseDb, 'tenants', tenantId), {
         id: tenantId,
-        companyName: data.companyName,
+        companyName: sanitizedCompanyName,
         tenantCode,
         size: employerSize,
         employeeCount: data.employeeCount,
@@ -201,8 +217,8 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     console.log('Creating user document in Firestore');
     const userData: User = {
       id: firebaseUser.uid,
-      email: data.email,
-      name: data.name,
+      email: sanitizedEmail,
+      name: sanitizedName,
       role: 'employer',
       employerId: tenantId,
       employerSize,
@@ -217,7 +233,7 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
         emailVerified: false,
         tenantId,
         tenantCode,
-        companyName: data.companyName,
+        companyName: sanitizedCompanyName,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
@@ -322,11 +338,17 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     throw new Error(passwordValidation.message || 'Invalid password');
   }
 
-  if (!data.name || data.name.trim().length < 2) {
+  // Sanitize inputs
+  const sanitizedName = sanitizeInput(data.name);
+  const sanitizedEmail = data.email.toLowerCase().trim();
+  const sanitizedTenantCode = data.tenantCode ? sanitizeInput(data.tenantCode).toUpperCase() : undefined;
+  const sanitizedEmployerEmail = data.employerEmail ? data.employerEmail.toLowerCase().trim() : undefined;
+
+  if (!sanitizedName || sanitizedName.length < 2) {
     throw new Error('Please enter your full name (at least 2 characters)');
   }
 
-  if (!data.tenantCode && !data.employerEmail) {
+  if (!sanitizedTenantCode && !sanitizedEmployerEmail) {
     throw new Error('Please provide either a company code or employer email');
   }
 
@@ -343,13 +365,13 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     let employerSize: 'small' | 'large' = 'small';
     let companyName = '';
 
-    if (data.tenantCode) {
-      console.log('Looking up tenant by code:', data.tenantCode);
+    if (sanitizedTenantCode) {
+      console.log('Looking up tenant by code:', sanitizedTenantCode);
       // Find tenant by code with retry
       const tenantSnapshot = await retryWithBackoff(async () => {
         const tenantsQuery = query(
           collection(firebaseDb, 'tenants'),
-          where('tenantCode', '==', data.tenantCode!.toUpperCase())
+          where('tenantCode', '==', sanitizedTenantCode)
         );
         return await getDocs(tenantsQuery);
       });
@@ -364,9 +386,9 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
       employerSize = tenantData.size;
       companyName = tenantData.companyName;
       console.log('Found tenant:', tenantId, companyName);
-    } else if (data.employerEmail) {
+    } else if (sanitizedEmployerEmail) {
       // Find tenant by employer email domain with retry
-      const emailDomain = data.employerEmail.split('@')[1];
+      const emailDomain = sanitizedEmployerEmail.split('@')[1];
       
       if (!emailDomain) {
         throw new Error('Invalid employer email format');
@@ -398,7 +420,7 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     const userCredential: UserCredential = await retryWithBackoff(async () => {
       return await createUserWithEmailAndPassword(
         firebaseAuth,
-        data.email,
+        sanitizedEmail,
         data.password
       );
     });
@@ -409,8 +431,8 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     // Create user document in Firestore with retry
     const userData: User = {
       id: firebaseUser.uid,
-      email: data.email,
-      name: data.name,
+      email: sanitizedEmail,
+      name: sanitizedName,
       role: 'employee',
       employerId: tenantId,
       employerSize,
@@ -503,8 +525,15 @@ export async function signIn(email: string, password: string): Promise<User> {
     throw new Error('Firebase not configured. Please check your environment variables.');
   }
 
+  // Sanitize and validate inputs
+  const sanitizedEmail = email.toLowerCase().trim();
+  
+  if (!validateEmail(sanitizedEmail)) {
+    throw new Error('Invalid email address format.');
+  }
+
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(auth, sanitizedEmail, password);
     const { user: firebaseUser } = userCredential;
 
     // Get user data from Firestore
