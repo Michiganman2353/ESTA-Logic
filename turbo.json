@@ -8,39 +8,53 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", "build/**", ".next/**", "out/**"],
+      "outputs": ["dist/**", "build/**", ".next/**", "out/**", "lib/**"],
+      "inputs": ["src/**", "package.json", "tsconfig.json", "tsconfig.*.json"],
       "env": [
         "NODE_ENV",
         "VITE_*",
         "FIREBASE_*",
-        "VERCEL_*"
+        "VERCEL_*",
+        "GCP_*",
+        "KMS_*"
       ]
     },
     "test": {
+      "outputs": ["coverage/**"],
+      "inputs": ["src/**", "**/*.test.ts", "**/*.test.tsx", "vitest.config.ts"],
+      "cache": true
+    },
+    "test:integration": {
       "dependsOn": ["^build"],
       "outputs": ["coverage/**"],
       "cache": true
     },
     "test:coverage": {
-      "dependsOn": ["^build"],
       "outputs": ["coverage/**"],
+      "inputs": ["src/**", "**/*.test.ts", "**/*.test.tsx", "vitest.config.ts"],
       "cache": true
     },
     "lint": {
       "outputs": [],
+      "inputs": ["src/**", ".eslintrc.*", "package.json"],
       "cache": true
     },
     "typecheck": {
       "dependsOn": ["^build"],
-      "outputs": [],
+      "outputs": ["*.tsbuildinfo"],
+      "inputs": ["src/**", "tsconfig.json", "tsconfig.*.json"],
       "cache": true
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "env": ["PORT", "VITE_*", "FIREBASE_*"]
     },
     "clean": {
       "cache": false
     }
+  },
+  "remoteCache": {
+    "enabled": true
   }
 }
