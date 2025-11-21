@@ -1,30 +1,13 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
-
-// Initialize Firebase Admin SDK
-if (getApps().length === 0) {
-  const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
-    ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-    : undefined;
-
-  if (serviceAccount) {
-    initializeApp({
-      credential: cert(serviceAccount),
-      projectId: process.env.FIREBASE_PROJECT_ID,
-    });
-  } else {
-    // For local development, use default credentials
-    initializeApp({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-    });
-  }
-}
+import { getFirebaseAuth, getFirebaseDb } from '../../lib/firebase';
+import { setCorsHeaders, handlePreflight } from '../../lib/cors';
 
 /**
  * Employee Registration API Endpoint
  * POST /api/v1/auth/register/employee
+ * 
+ * Note: Employee registration creates a basic account.
+ * Employees must be associated with an employer through the employer's invite system.
  */
 export default async function handler(
   req: VercelRequest,
@@ -32,24 +15,11 @@ export default async function handler(
 ) {
   // Set CORS headers
   const origin = req.headers.origin || '';
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://estatracker.com',
-    'https://www.estatracker.com',
-  ];
-
-  if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  setCorsHeaders(res, origin);
 
   // Handle preflight
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return handlePreflight(res, origin);
   }
 
   // Only allow POST requests
@@ -74,7 +44,7 @@ export default async function handler(
     }
 
     // Create Firebase Auth user
-    const auth = getAuth();
+    const auth = getFirebaseAuth();
     const userRecord = await auth.createUser({
       email,
       password,
@@ -86,14 +56,15 @@ export default async function handler(
     const customToken = await auth.createCustomToken(userRecord.uid);
 
     // Store user data in Firestore
-    const db = getFirestore();
+    const db = getFirebaseDb();
     
+    // Note: employerSize will be updated when employee is associated with an employer
     const userData = {
       id: userRecord.uid,
       email,
       name,
       role: 'employee',
-      employerSize: 'small',
+      employerSize: null, // Will be set when associated with employer
       status: 'approved',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

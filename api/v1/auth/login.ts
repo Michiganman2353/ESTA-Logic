@@ -1,30 +1,13 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
-
-// Initialize Firebase Admin SDK
-if (getApps().length === 0) {
-  const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
-    ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-    : undefined;
-
-  if (serviceAccount) {
-    initializeApp({
-      credential: cert(serviceAccount),
-      projectId: process.env.FIREBASE_PROJECT_ID,
-    });
-  } else {
-    // For local development, use default credentials
-    initializeApp({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-    });
-  }
-}
+import { getFirebaseAuth, getFirebaseDb } from '../../lib/firebase';
+import { setCorsHeaders, handlePreflight } from '../../lib/cors';
 
 /**
  * Login API Endpoint
  * POST /api/v1/auth/login
+ * 
+ * Production: Uses Firebase ID token from client-side authentication
+ * Development: Supports email/password for testing (should be disabled in production)
  */
 export default async function handler(
   req: VercelRequest,
@@ -32,24 +15,11 @@ export default async function handler(
 ) {
   // Set CORS headers
   const origin = req.headers.origin || '';
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://estatracker.com',
-    'https://www.estatracker.com',
-  ];
-
-  if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  setCorsHeaders(res, origin);
 
   // Handle preflight
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return handlePreflight(res, origin);
   }
 
   // Only allow POST requests
@@ -67,22 +37,28 @@ export default async function handler(
       });
     }
 
-    const auth = getAuth();
+    const auth = getFirebaseAuth();
+    const db = getFirebaseDb();
     let uid: string;
 
     if (idToken) {
-      // Verify Firebase ID token from client-side auth
+      // Production path: Verify Firebase ID token from client-side auth
       const decodedToken = await auth.verifyIdToken(idToken);
       uid = decodedToken.uid;
     } else {
-      // For development/testing: lookup user by email
-      // In production, clients should use Firebase Auth client SDK
+      // Development path: Lookup user by email
+      // WARNING: This bypasses Firebase Auth's security and should NOT be used in production
+      if (process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production') {
+        return res.status(400).json({
+          message: 'Email/password login is not supported in production. Please use the Firebase Auth client SDK.',
+        });
+      }
+      
       const userRecord = await auth.getUserByEmail(email);
       uid = userRecord.uid;
     }
 
     // Get user data from Firestore
-    const db = getFirestore();
     const userDoc = await db.collection('users').doc(uid).get();
 
     if (!userDoc.exists) {

@@ -1,26 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
-import { getAuth } from 'firebase-admin/auth';
-import { getFirestore } from 'firebase-admin/firestore';
-
-// Initialize Firebase Admin SDK
-if (getApps().length === 0) {
-  const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT
-    ? JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
-    : undefined;
-
-  if (serviceAccount) {
-    initializeApp({
-      credential: cert(serviceAccount),
-      projectId: process.env.FIREBASE_PROJECT_ID,
-    });
-  } else {
-    // For local development, use default credentials
-    initializeApp({
-      projectId: process.env.FIREBASE_PROJECT_ID,
-    });
-  }
-}
+import { getFirebaseAuth, getFirebaseDb } from '../../lib/firebase';
+import { setCorsHeaders, handlePreflight } from '../../lib/cors';
 
 /**
  * Get Current User API Endpoint
@@ -32,24 +12,11 @@ export default async function handler(
 ) {
   // Set CORS headers
   const origin = req.headers.origin || '';
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://estatracker.com',
-    'https://www.estatracker.com',
-  ];
-
-  if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  setCorsHeaders(res, origin);
 
   // Handle preflight
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return handlePreflight(res, origin);
   }
 
   // Only allow GET requests
@@ -76,12 +43,12 @@ export default async function handler(
     }
 
     // Verify the Firebase ID token
-    const auth = getAuth();
+    const auth = getFirebaseAuth();
     const decodedToken = await auth.verifyIdToken(token);
     const uid = decodedToken.uid;
 
     // Get user data from Firestore
-    const db = getFirestore();
+    const db = getFirebaseDb();
     const userDoc = await db.collection('users').doc(uid).get();
 
     if (!userDoc.exists) {

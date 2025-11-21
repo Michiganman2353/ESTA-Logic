@@ -1,4 +1,5 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import { setCorsHeaders, handlePreflight } from '../../lib/cors';
 
 /**
  * Logout API Endpoint
@@ -13,24 +14,11 @@ export default async function handler(
 ) {
   // Set CORS headers
   const origin = req.headers.origin || '';
-  const allowedOrigins = [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://estatracker.com',
-    'https://www.estatracker.com',
-  ];
-
-  if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  setCorsHeaders(res, origin);
 
   // Handle preflight
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return handlePreflight(res, origin);
   }
 
   // Only allow POST requests
