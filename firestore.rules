@@ -46,13 +46,37 @@ service cloud.firestore {
       
       // Allow authenticated users to create their own user document on first registration
       // Validates: correct UID, required fields, email matches auth email, document doesn't exist
-      allow create: if isAuthenticated() 
-        && request.auth.uid == userId
-        && request.resource.data.keys().hasAll(['email', 'name', 'role'])
-        && request.resource.data.email == request.auth.token.email
-        && !exists(/databases/$(database)/documents/users/$(userId))
-        && request.resource.data.role in ['employer', 'employee'];
-      
+      function hasRoleClaim() {
+  return request.auth.token.role != null;
+}
+
+function isRole(role) {
+  return request.auth.token.role == role;
+}
+
+// Users can create their own doc BEFORE custom claims exist
+allow create: if request.auth != null
+              && request.auth.uid == userId
+              && request.resource.data.keys().hasAll(['email', 'name', 'role'])
+              && request.resource.data.role in ['employer', 'employee']
+              && request.resource.data.email == request.auth.token.email
+              && !exists(/databases/$(database)/documents/users/$(userId));
+
+// Once created, users MUST have claims to do anything else
+allow read, update, delete: if false;
+
+// Privileged rules
+match /employerData/{doc} {
+  allow read, write: if hasRoleClaim() && isRole("employer");
+}
+
+match /adminData/{doc} {
+  allow read, write: if hasRoleClaim() && isRole("admin");
+}
+
+match /employeeData/{doc} {
+  allow read, write: if hasRoleClaim() && isRole("employee");
+}
       allow delete: if false;
     }
     
