@@ -16,6 +16,13 @@ import {
 } from 'firebase/firestore';
 import { auth, db, isFirebaseConfigured } from './firebase';
 import { User } from '../types';
+import { 
+  isValidEmail, 
+  validatePassword, 
+  sanitizeInput,
+  checkRateLimit,
+  sanitizeForLogging 
+} from '../utils/security';
 
 export interface RegisterManagerData {
   name: string;
@@ -31,28 +38,6 @@ export interface RegisterEmployeeData {
   password: string;
   tenantCode?: string;
   employerEmail?: string;
-}
-
-/**
- * Validate email format
- */
-function validateEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
-
-/**
- * Validate password strength
- */
-function validatePassword(password: string): { valid: boolean; message?: string } {
-  if (password.length < 8) {
-    return { valid: false, message: 'Password must be at least 8 characters long' };
-  }
-  // Add more robust password validation
-  if (!/[A-Z]/.test(password) && !/[a-z]/.test(password)) {
-    return { valid: false, message: 'Password must contain letters' };
-  }
-  return { valid: true };
 }
 
 /**
@@ -112,13 +97,20 @@ async function retryWithBackoff<T>(
  * Register a new manager/employer account
  */
 export async function registerManager(data: RegisterManagerData): Promise<{ user: User; needsVerification: boolean }> {
+  // Rate limiting check
+  const rateCheck = checkRateLimit('manager_registration', 3, 300000); // 3 attempts per 5 minutes
+  if (!rateCheck.allowed) {
+    const waitMinutes = Math.ceil((rateCheck.resetTime - Date.now()) / 60000);
+    throw new Error(`Too many registration attempts. Please wait ${waitMinutes} minutes and try again.`);
+  }
+
   // Pre-flight validation checks
   if (!auth || !db || !isFirebaseConfigured) {
-    console.error('Firebase configuration check failed:', {
+    console.error('Firebase configuration check failed:', sanitizeForLogging({
       auth: !!auth,
       db: !!db,
       isFirebaseConfigured,
-    });
+    }));
     throw new Error('Firebase not configured. Please check your environment variables or contact support.');
   }
 
@@ -131,8 +123,9 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     throw new Error('Window location not available. Please try again.');
   }
 
-  // Validate input data
-  if (!validateEmail(data.email)) {
+  // Validate and sanitize input data
+  const sanitizedEmail = sanitizeInput(data.email, 254).toLowerCase();
+  if (!isValidEmail(sanitizedEmail)) {
     throw new Error('Invalid email address format. Please enter a valid email.');
   }
 
@@ -141,11 +134,13 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     throw new Error(passwordValidation.message || 'Invalid password');
   }
 
-  if (!data.name || data.name.trim().length < 2) {
+  const sanitizedName = sanitizeInput(data.name, 100);
+  if (!sanitizedName || sanitizedName.length < 2) {
     throw new Error('Please enter your full name (at least 2 characters)');
   }
 
-  if (!data.companyName || data.companyName.trim().length < 2) {
+  const sanitizedCompanyName = sanitizeInput(data.companyName, 200);
+  if (!sanitizedCompanyName || sanitizedCompanyName.length < 2) {
     throw new Error('Please enter a valid company name (at least 2 characters)');
   }
 
@@ -154,18 +149,18 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
   }
 
   try {
-    console.log('Starting manager registration for:', data.email);
-    console.log('Registration environment:', {
+    console.log('Starting manager registration for:', sanitizedEmail);
+    console.log('Registration environment:', sanitizeForLogging({
       origin: window.location.origin,
       isFirebaseConfigured,
       timestamp: new Date().toISOString(),
-    });
+    }));
     
     // Create Firebase Auth user with retry logic
     const userCredential: UserCredential = await retryWithBackoff(async () => {
       return await createUserWithEmailAndPassword(
         firebaseAuth,
-        data.email,
+        sanitizedEmail,
         data.password
       );
     });
@@ -186,7 +181,7 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     await retryWithBackoff(async () => {
       await setDoc(doc(firebaseDb, 'tenants', tenantId), {
         id: tenantId,
-        companyName: data.companyName,
+        companyName: sanitizedCompanyName,
         tenantCode,
         size: employerSize,
         employeeCount: data.employeeCount,
@@ -201,8 +196,8 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     console.log('Creating user document in Firestore');
     const userData: User = {
       id: firebaseUser.uid,
-      email: data.email,
-      name: data.name,
+      email: sanitizedEmail,
+      name: sanitizedName,
       role: 'employer',
       employerId: tenantId,
       employerSize,
@@ -217,7 +212,7 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
         emailVerified: firebaseUser.emailVerified,
         tenantId,
         tenantCode,
-        companyName: data.companyName,
+        companyName: sanitizedCompanyName,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
@@ -293,13 +288,20 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
  * Register a new employee account
  */
 export async function registerEmployee(data: RegisterEmployeeData): Promise<{ user: User; needsVerification: boolean }> {
+  // Rate limiting check
+  const rateCheck = checkRateLimit('employee_registration', 5, 300000); // 5 attempts per 5 minutes
+  if (!rateCheck.allowed) {
+    const waitMinutes = Math.ceil((rateCheck.resetTime - Date.now()) / 60000);
+    throw new Error(`Too many registration attempts. Please wait ${waitMinutes} minutes and try again.`);
+  }
+
   // Pre-flight validation checks
   if (!auth || !db || !isFirebaseConfigured) {
-    console.error('Firebase configuration check failed:', {
+    console.error('Firebase configuration check failed:', sanitizeForLogging({
       auth: !!auth,
       db: !!db,
       isFirebaseConfigured,
-    });
+    }));
     throw new Error('Firebase not configured. Please check your environment variables or contact support.');
   }
 
@@ -312,8 +314,9 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     throw new Error('Window location not available. Please try again.');
   }
 
-  // Validate input data
-  if (!validateEmail(data.email)) {
+  // Validate and sanitize input data
+  const sanitizedEmail = sanitizeInput(data.email, 254).toLowerCase();
+  if (!isValidEmail(sanitizedEmail)) {
     throw new Error('Invalid email address format. Please enter a valid email.');
   }
 
@@ -322,7 +325,8 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     throw new Error(passwordValidation.message || 'Invalid password');
   }
 
-  if (!data.name || data.name.trim().length < 2) {
+  const sanitizedName = sanitizeInput(data.name, 100);
+  if (!sanitizedName || sanitizedName.length < 2) {
     throw new Error('Please enter your full name (at least 2 characters)');
   }
 
@@ -331,12 +335,12 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
   }
 
   try {
-    console.log('Starting employee registration for:', data.email);
-    console.log('Registration environment:', {
+    console.log('Starting employee registration for:', sanitizedEmail);
+    console.log('Registration environment:', sanitizeForLogging({
       origin: window.location.origin,
       isFirebaseConfigured,
       timestamp: new Date().toISOString(),
-    });
+    }));
     
     // Validate tenant code or employer email
     let tenantId = '';
@@ -404,7 +408,7 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     const userCredential: UserCredential = await retryWithBackoff(async () => {
       return await createUserWithEmailAndPassword(
         firebaseAuth,
-        data.email,
+        sanitizedEmail,
         data.password
       );
     });
@@ -415,8 +419,8 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     // Create user document in Firestore with retry
     const userData: User = {
       id: firebaseUser.uid,
-      email: data.email,
-      name: data.name,
+      email: sanitizedEmail,
+      name: sanitizedName,
       role: 'employee',
       employerId: tenantId,
       employerSize,
@@ -505,12 +509,25 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
  * Sign in with email and password
  */
 export async function signIn(email: string, password: string): Promise<User> {
+  // Rate limiting check
+  const rateCheck = checkRateLimit('login', 10, 300000); // 10 attempts per 5 minutes
+  if (!rateCheck.allowed) {
+    const waitMinutes = Math.ceil((rateCheck.resetTime - Date.now()) / 60000);
+    throw new Error(`Too many login attempts. Please wait ${waitMinutes} minutes and try again.`);
+  }
+
   if (!auth || !db || !isFirebaseConfigured) {
     throw new Error('Firebase not configured. Please check your environment variables.');
   }
 
+  // Validate and sanitize input
+  const sanitizedEmail = sanitizeInput(email, 254).toLowerCase();
+  if (!isValidEmail(sanitizedEmail)) {
+    throw new Error('Invalid email address format.');
+  }
+
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const userCredential = await signInWithEmailAndPassword(auth, sanitizedEmail, password);
     const { user: firebaseUser } = userCredential;
 
     // Get user data from Firestore
@@ -564,7 +581,7 @@ export async function signIn(email: string, password: string): Promise<User> {
 
     return userData;
   } catch (error: unknown) {
-    console.error('Sign in error:', error);
+    console.error('Sign in error:', sanitizeForLogging(error));
     
     const err = error as { code?: string; message?: string };
     if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
