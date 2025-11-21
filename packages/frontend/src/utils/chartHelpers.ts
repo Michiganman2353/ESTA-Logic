@@ -116,10 +116,7 @@ export function generateColorPalette(
   const colors: string[] = [];
 
   for (let i = 0; i < count; i++) {
-    const color = palette[i % palette.length];
-    if (color) {
-      colors.push(color);
-    }
+    colors.push(palette[i % palette.length]);
   }
 
   return colors;
