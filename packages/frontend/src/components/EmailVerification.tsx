@@ -29,7 +29,7 @@ export default function EmailVerification({ email, onVerified }: EmailVerificati
         await reload(auth.currentUser);
         
         if (auth.currentUser.emailVerified) {
-          // Email is verified! Now activate the account
+          // Email is verified! Try to activate the account via function
           try {
             if (functions) {
               console.log('Calling approveUserAfterVerification function');
@@ -37,12 +37,12 @@ export default function EmailVerification({ email, onVerified }: EmailVerificati
               const result = await approveUser({});
               console.log('User approved successfully:', result);
             } else {
-              console.warn('Firebase functions not available - continuing without activation');
+              console.warn('Firebase functions not available - user will be auto-activated on login');
             }
           } catch (activationError) {
-            console.error('Error activating account:', activationError);
-            // Continue anyway - they might be able to login even without custom claims
-            // The user document status was already set to active during registration
+            console.error('Error activating account (non-fatal):', activationError);
+            // Continue anyway - user will be auto-activated on login
+            // The signIn function handles this case
           }
 
           if (onVerified) {
@@ -93,7 +93,7 @@ export default function EmailVerification({ email, onVerified }: EmailVerificati
       }
       
       if (auth.currentUser.emailVerified) {
-        // Email is verified! Now activate the account
+        // Email is verified! Try to activate the account via function
         try {
           if (functions) {
             console.log('Calling approveUserAfterVerification function');
@@ -101,15 +101,15 @@ export default function EmailVerification({ email, onVerified }: EmailVerificati
             const result = await approveUser({});
             console.log('User approved successfully:', result);
           } else {
-            console.warn('Firebase functions not available - continuing without activation');
+            console.warn('Firebase functions not available - user will be auto-activated on login');
           }
         } catch (activationError) {
-          console.error('Error activating account:', activationError);
-          // Continue anyway - they might be able to login even without custom claims
-          // The user document status was already set to active during registration
+          console.error('Error activating account (non-fatal):', activationError);
+          // Continue anyway - user will be auto-activated on login
+          // The signIn function handles this case
         }
 
-        // Email is verified and account activated!
+        // Email is verified and account activated (or will be on login)!
         if (onVerified) {
           onVerified();
         } else {
@@ -320,11 +320,21 @@ export default function EmailVerification({ email, onVerified }: EmailVerificati
             >
               {resending ? 'Sending...' : 'Resend Verification Email'}
             </button>
+            
+            <button
+              onClick={() => navigate('/login')}
+              className="btn btn-secondary w-full"
+            >
+              Continue to Login
+            </button>
           </div>
 
           <div className="text-center pt-4 border-t border-gray-200 dark:border-gray-700">
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
               Didn't receive the email? Check your spam folder or click resend.
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              You can verify your email later by clicking the link in the email.
             </p>
           </div>
         </div>

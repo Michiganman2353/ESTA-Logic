@@ -240,6 +240,7 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     });
 
     // Send email verification with action code settings and retry
+    // Don't fail registration if email sending fails - user can resend later
     console.log('Sending email verification to:', data.email);
     const actionCodeSettings = {
       url: window.location.origin + '/login?verified=true',
@@ -247,11 +248,17 @@ export async function registerManager(data: RegisterManagerData): Promise<{ user
     };
     console.log('Action code settings:', actionCodeSettings);
     
-    await retryWithBackoff(async () => {
-      await sendEmailVerification(firebaseUser, actionCodeSettings);
-    }, 2, 2000); // Fewer retries for email, shorter delay
-    
-    console.log('Email verification sent successfully');
+    try {
+      await retryWithBackoff(async () => {
+        await sendEmailVerification(firebaseUser, actionCodeSettings);
+      }, 2, 2000); // Fewer retries for email, shorter delay
+      
+      console.log('Email verification sent successfully');
+    } catch (emailError) {
+      // Log the error but don't fail registration
+      console.error('Failed to send verification email (non-fatal):', emailError);
+      // User can resend from verification page
+    }
 
     return { user: userData, needsVerification: true };
   } catch (error: unknown) {
@@ -439,6 +446,7 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     });
 
     // Send email verification with action code settings and retry
+    // Don't fail registration if email sending fails - user can resend later
     console.log('Sending email verification to:', data.email);
     const actionCodeSettings = {
       url: window.location.origin + '/login?verified=true',
@@ -446,11 +454,17 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
     };
     console.log('Action code settings:', actionCodeSettings);
     
-    await retryWithBackoff(async () => {
-      await sendEmailVerification(firebaseUser, actionCodeSettings);
-    }, 2, 2000); // Fewer retries for email, shorter delay
-    
-    console.log('Email verification sent successfully');
+    try {
+      await retryWithBackoff(async () => {
+        await sendEmailVerification(firebaseUser, actionCodeSettings);
+      }, 2, 2000); // Fewer retries for email, shorter delay
+      
+      console.log('Email verification sent successfully');
+    } catch (emailError) {
+      // Log the error but don't fail registration
+      console.error('Failed to send verification email (non-fatal):', emailError);
+      // User can resend from verification page
+    }
 
     return { user: userData, needsVerification: true };
   } catch (error: unknown) {
