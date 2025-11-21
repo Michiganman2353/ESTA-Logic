@@ -111,7 +111,8 @@ export default function RegisterEmployee({ onRegister }: RegisterEmployeeProps) 
           </div>
         </div>
       ) : (
-        <div className="max-w-md w-full space-y-8">{/* Email verification bypassed - users auto-login after registration */}
+        // Email verification bypassed - users auto-login after registration
+        <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
             Employee Registration

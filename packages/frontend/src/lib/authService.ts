@@ -1,6 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  // sendEmailVerification, // Temporarily disabled for development
   UserCredential,
 } from 'firebase/auth';
 import {
