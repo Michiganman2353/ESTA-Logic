@@ -1,32 +1,93 @@
 import { Router } from 'express';
+import { randomUUID } from 'crypto';
 
 export const authRouter = Router();
+
+// In-memory user storage for development
+// In production, this would be a database
+interface StoredUser {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  status: string;
+  employerSize: string;
+  employerId?: string;
+  companyName?: string;
+  employeeCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+const users = new Map<string, StoredUser>();
+const tokenToUserId = new Map<string, string>();
 
 // Mock authentication endpoints
 authRouter.post('/login', (req, res) => {
   const { email } = req.body;
   
-  // In a real app, check database for user status
-  // For now, we'll return a standard employee user
-  // Pending manager accounts won't be able to login until approved
+  // Find user by email
+  let user: StoredUser | undefined;
+  for (const [, u] of users) {
+    if (u.email === email) {
+      user = u;
+      break;
+    }
+  }
   
-  res.json({ 
-    token: 'mock-token', 
-    user: { 
-      id: '1', 
-      email: email, 
-      name: 'Test User', 
+  if (user) {
+    // Generate token and store mapping
+    const token = `mock-token-${user.role}-${user.id}`;
+    tokenToUserId.set(token, user.id);
+    
+    res.json({ 
+      token, 
+      user
+    });
+  } else {
+    // For testing, create a default employee user
+    const defaultUser: StoredUser = {
+      id: '1',
+      email: email,
+      name: 'Test User',
       role: 'employee',
       status: 'approved',
       employerSize: 'small',
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
-    } 
-  });
+    };
+    
+    const token = 'mock-token-employee-1';
+    users.set('1', defaultUser);
+    tokenToUserId.set(token, '1');
+    
+    res.json({ 
+      token, 
+      user: defaultUser 
+    });
+  }
 });
 
 authRouter.post('/register', (req, res) => {
-  res.json({ token: 'mock-token', user: { id: '1', email: req.body.email, name: req.body.name, role: 'employee' } });
+  const { email, name } = req.body;
+  const userId = 'user-' + randomUUID();
+  const token = `mock-token-employee-${userId}`;
+  
+  const user: StoredUser = {
+    id: userId,
+    email,
+    name,
+    role: 'employee',
+    status: 'approved',
+    employerSize: 'small',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  users.set(userId, user);
+  tokenToUserId.set(token, userId);
+  
+  res.json({ token, user });
 });
 
 // Employee registration endpoint
@@ -42,23 +103,38 @@ authRouter.post('/register/employee', (req, res) => {
     return res.status(400).json({ message: 'Password must be at least 8 characters' });
   }
 
+  // Check if email already exists
+  for (const [, user] of users) {
+    if (user.email === email) {
+      return res.status(409).json({ message: 'Email already registered' });
+    }
+  }
+
   // In a real app, you would:
   // 1. Hash the password
   // 2. Save to database
   // 3. Generate real JWT token
   
+  const userId = 'emp-' + randomUUID();
+  const token = `mock-token-employee-${userId}`;
+  
+  const user: StoredUser = {
+    id: userId,
+    email,
+    name,
+    role: 'employee',
+    employerSize: 'small',
+    status: 'approved', // Employees are auto-approved
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  users.set(userId, user);
+  tokenToUserId.set(token, userId);
+  
   res.json({ 
-    token: 'mock-token-employee', 
-    user: { 
-      id: 'emp-' + Date.now(), 
-      email, 
-      name, 
-      role: 'employee',
-      employerSize: 'small',
-      status: 'approved', // Employees are auto-approved
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    } 
+    token, 
+    user
   });
 });
 
@@ -81,6 +157,13 @@ authRouter.post('/register/manager', (req, res) => {
     return res.status(400).json({ message: 'Employee count must be at least 1' });
   }
 
+  // Check if email already exists
+  for (const [, user] of users) {
+    if (user.email === email) {
+      return res.status(409).json({ message: 'Email already registered' });
+    }
+  }
+
   // Determine employer size based on Michigan ESTA law
   // Small employers: < 10 employees (40 hours max paid, 32 hours unpaid)
   // Large employers: >= 10 employees (72 hours max paid)
@@ -95,23 +178,33 @@ authRouter.post('/register/manager', (req, res) => {
   // Manager registration requires approval before access is granted
   // Return token so user can be logged in immediately after registration
   // NOTE: In production, use cryptographically secure JWT tokens instead of mock tokens
+  
+  const userId = 'mgr-' + randomUUID();
+  const employerId = 'company-' + randomUUID();
+  const token = `mock-token-manager-${userId}`;
+  
+  const user: StoredUser = {
+    id: userId,
+    email,
+    name,
+    role: 'employer',
+    employerId,
+    employerSize,
+    companyName,
+    employeeCount,
+    status: 'approved', // Changed to 'approved' for immediate access during development
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+  
+  users.set(userId, user);
+  tokenToUserId.set(token, userId);
+  
   res.json({ 
     success: true,
-    message: 'Registration submitted successfully. Your account is pending approval.',
-    token: 'mock-token-manager-' + Date.now(), // Mock token for development only
-    user: { 
-      id: 'mgr-' + Date.now(), 
-      email, 
-      name, 
-      role: 'employer',
-      employerId: 'company-' + Date.now(),
-      employerSize,
-      companyName,
-      employeeCount,
-      status: 'pending',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    } 
+    message: 'Registration completed successfully.',
+    token,
+    user
   });
 });
 
@@ -133,48 +226,19 @@ authRouter.get('/me', (req, res) => {
     return res.status(401).json({ message: 'Unauthorized' });
   }
   
-  // Extract user info from token (in a real app, you would decode JWT)
-  // NOTE: This is mock token parsing for development only
-  // In production, use proper JWT decoding and validation
-  if (token.startsWith('mock-token-manager')) {
-    res.json({ 
-      user: { 
-        id: 'mgr-' + Date.now(), 
-        email: 'manager@example.com', 
-        name: 'Test Manager', 
-        role: 'employer',
-        status: 'pending',
-        employerSize: 'small',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      } 
-    });
-  } else if (token.startsWith('mock-token-employee')) {
-    res.json({ 
-      user: { 
-        id: 'emp-' + Date.now(), 
-        email: 'employee@example.com', 
-        name: 'Test Employee', 
-        role: 'employee',
-        status: 'approved',
-        employerSize: 'small',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      } 
-    });
-  } else {
-    // Default fallback
-    res.json({ 
-      user: { 
-        id: '1', 
-        email: 'test@example.com', 
-        name: 'Test User', 
-        role: 'employee',
-        status: 'approved',
-        employerSize: 'small',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      } 
-    });
+  // Get user ID from token
+  const userId = tokenToUserId.get(token);
+  
+  if (!userId) {
+    return res.status(401).json({ message: 'Invalid or expired token' });
   }
+  
+  // Get user data
+  const user = users.get(userId);
+  
+  if (!user) {
+    return res.status(401).json({ message: 'User not found' });
+  }
+  
+  res.json({ user });
 });
