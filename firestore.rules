@@ -12,9 +12,7 @@ service cloud.firestore {
     }
     
     function isRole(role) {
-      return isAuthenticated() && 
-        (request.auth.token.role == role || 
-         (request.auth.token.role == null && resource != null && resource.data.role == role));
+      return isAuthenticated() && request.auth.token.role == role;
     }
     
     function belongsToTenant(tenantId) {
