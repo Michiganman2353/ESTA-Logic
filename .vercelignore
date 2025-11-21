@@ -3,7 +3,6 @@
 # ==================== #
 # Source files (only need built output)
 packages/*/src
-!packages/frontend/dist
 
 # Test files
 **/*.test.ts
@@ -38,8 +37,11 @@ playwright.config.ts
 # Build artifacts (non-frontend)
 # ==================== #
 packages/backend/dist
-packages/*/build
-!packages/frontend/dist
+packages/backend/build
+packages/shared-*/dist
+packages/shared-*/build
+packages/accrual-engine/dist
+packages/csv-processor/dist
 .turbo/
 *.tsbuildinfo
 
