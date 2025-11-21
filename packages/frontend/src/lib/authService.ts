@@ -14,7 +14,8 @@ import {
   getDocs,
   serverTimestamp,
 } from 'firebase/firestore';
-import { auth, db, isFirebaseConfigured } from './firebase';
+import { httpsCallable } from 'firebase/functions';
+import { auth, db, isFirebaseConfigured, functions } from './firebase';
 import { User } from '../types';
 
 export interface RegisterManagerData {
@@ -36,12 +37,17 @@ export interface RegisterEmployeeData {
 /**
  * Sanitize string input to prevent XSS and injection attacks
  * Removes potentially dangerous characters and trims whitespace
+ * 
+ * Note: For HTML contexts, consider using DOMPurify for more comprehensive protection.
+ * This provides basic sanitization for stored data that will be displayed as plain text.
  */
 function sanitizeInput(input: string): string {
   return input
     .trim()
-    .replace(/[<>'"]/g, '') // Remove common XSS characters
-    .replace(/[\x00-\x1F\x7F]/g, ''); // Remove control characters
+    .replace(/[<>'"`;()\[\]{}]/g, '') // Remove common XSS and script injection characters
+    .replace(/[\x00-\x1F\x7F]/g, '') // Remove control characters
+    .replace(/javascript:/gi, '') // Remove javascript: protocol
+    .replace(/on\w+\s*=/gi, ''); // Remove inline event handlers
 }
 
 /**
@@ -554,7 +560,6 @@ export async function signIn(email: string, password: string): Promise<User> {
       console.log('Custom claims missing or incomplete, attempting to set via Cloud Function');
       try {
         // Call the Cloud Function to set claims
-        const { httpsCallable } = await import('firebase/functions');
         const setClaimsFunction = httpsCallable(functions, 'approveUserAfterVerification');
         await setClaimsFunction({});
         console.log('Custom claims set successfully');

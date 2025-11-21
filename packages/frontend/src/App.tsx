@@ -61,7 +61,7 @@ function AppRoutes() {
         {/* Public routes */}
         <Route 
           path="/login" 
-          element={!currentUser ? <Login onLogin={() => {}} /> : <Navigate to="/" replace />} 
+          element={!currentUser ? <Login /> : <Navigate to="/" replace />} 
         />
         <Route 
           path="/register" 
@@ -69,11 +69,11 @@ function AppRoutes() {
         />
         <Route 
           path="/register/employee" 
-          element={!currentUser ? <RegisterEmployee onRegister={() => {}} /> : <Navigate to="/" replace />} 
+          element={!currentUser ? <RegisterEmployee /> : <Navigate to="/" replace />} 
         />
         <Route 
           path="/register/manager" 
-          element={!currentUser ? <RegisterManager onRegister={() => {}} /> : <Navigate to="/" replace />} 
+          element={!currentUser ? <RegisterManager /> : <Navigate to="/" replace />} 
         />
         <Route path="/pricing" element={<Pricing />} />
         
