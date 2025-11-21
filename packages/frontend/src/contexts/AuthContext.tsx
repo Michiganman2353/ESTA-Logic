@@ -35,9 +35,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     try {
+      // Force token refresh to get updated custom claims
+      await firebaseUser.getIdToken(true);
+      
       const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
       if (userDoc.exists()) {
-        return userDoc.data() as User;
+        const data = userDoc.data() as User;
+        
+        // Ensure user data is current by merging with any updates
+        if (data.status === 'pending') {
+          console.log('User still shows as pending, this should have been updated');
+        }
+        
+        return data;
       }
       return null;
     } catch (error) {
@@ -48,8 +58,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   async function refreshUserData() {
     if (currentUser) {
-      const data = await fetchUserData(currentUser);
-      setUserData(data);
+      try {
+        // Force token refresh to get updated custom claims
+        await currentUser.getIdToken(true);
+        
+        const data = await fetchUserData(currentUser);
+        setUserData(data);
+      } catch (error) {
+        console.error('Error refreshing user data:', error);
+      }
     }
   }
 
@@ -64,8 +81,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setCurrentUser(user);
       
       if (user) {
+        // Fetch user data from Firestore
         const data = await fetchUserData(user);
         setUserData(data);
+        
+        // Log for debugging
+        console.log('Auth state changed:', {
+          uid: user.uid,
+          email: user.email,
+          emailVerified: user.emailVerified,
+          userData: data,
+        });
       } else {
         setUserData(null);
       }

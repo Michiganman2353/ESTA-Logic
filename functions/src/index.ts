@@ -9,24 +9,64 @@ const auth = admin.auth();
 const storage = admin.storage();
 
 /**
- * Cloud Function triggered when a user's email is verified
- * Automatically approves the user and sets custom claims
+ * Cloud Function triggered when a new user is created in Firebase Auth
+ * Automatically sets custom claims for role-based access control
  */
-export const onEmailVerified = functions.auth.user().onCreate(async (user) => {
-  const { uid, email, emailVerified } = user;
+export const onUserCreate = functions.auth.user().onCreate(async (user) => {
+  const { uid, email } = user;
 
-  console.log(`New user created: ${uid}, email: ${email}, verified: ${emailVerified}`);
+  console.log(`New user created: ${uid}, email: ${email}`);
 
-  // Note: onCreate fires when user is created, not when email is verified
-  // We'll use a separate scheduled function or client-side trigger for verification
-  return null;
+  try {
+    // Wait a bit for Firestore document to be created by the client
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Get user document from Firestore
+    const userDocRef = db.collection('users').doc(uid);
+    const userDoc = await userDocRef.get();
+
+    if (!userDoc.exists) {
+      console.warn(`User document not found for ${uid}. Will be set when available.`);
+      return null;
+    }
+
+    const userData = userDoc.data();
+    
+    // Set custom claims based on role
+    const claims: { [key: string]: any } = {
+      role: userData?.role || 'employee',
+      tenantId: userData?.tenantId || userData?.employerId,
+    };
+
+    await auth.setCustomUserClaims(uid, claims);
+
+    console.log(`Custom claims set for user ${uid}:`, claims);
+    
+    // Create audit log
+    await db.collection('auditLogs').add({
+      userId: uid,
+      employerId: userData?.employerId || userData?.tenantId,
+      action: 'user_created',
+      details: {
+        email: email,
+        role: userData?.role,
+        claimsSet: true,
+      },
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    return null;
+  } catch (error) {
+    console.error('Error in onUserCreate:', error);
+    return null;
+  }
 });
 
 /**
- * HTTP Function to check and approve user after email verification
- * Called by the client after email verification is detected
+ * HTTP Function to refresh user custom claims
+ * Called by the client after login to ensure claims are up to date
  */
-export const approveUserAfterVerification = functions.https.onCall(
+export const refreshUserClaims = functions.https.onCall(
   async (data, context) => {
     // Verify the user is authenticated
     if (!context.auth) {
@@ -39,16 +79,6 @@ export const approveUserAfterVerification = functions.https.onCall(
     const uid = context.auth.uid;
 
     try {
-      // Get the current user's auth record
-      const userRecord = await auth.getUser(uid);
-
-      if (!userRecord.emailVerified) {
-        throw new functions.https.HttpsError(
-          'failed-precondition',
-          'Email is not verified yet. Please verify your email first.'
-        );
-      }
-
       // Get user document from Firestore
       const userDocRef = db.collection('users').doc(uid);
       const userDoc = await userDocRef.get();
@@ -62,53 +92,34 @@ export const approveUserAfterVerification = functions.https.onCall(
 
       const userData = userDoc.data();
 
-      // Update user status to approved (matches frontend User type)
-      await userDocRef.update({
-        status: 'approved',
-        emailVerified: true,
-        verifiedAt: admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-
       // Set custom claims based on role
       const claims: { [key: string]: any } = {
         role: userData?.role || 'employee',
         tenantId: userData?.tenantId || userData?.employerId,
-        emailVerified: true,
       };
 
       await auth.setCustomUserClaims(uid, claims);
 
-      // Create audit log
-      await db.collection('auditLogs').add({
-        userId: uid,
-        employerId: userData?.employerId || userData?.tenantId,
-        action: 'email_verified',
-        details: {
-          email: userRecord.email,
-          role: userData?.role,
-          approvedAt: new Date().toISOString(),
-        },
-        timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      });
+      // Get the current user's auth record
+      const userRecord = await auth.getUser(uid);
 
-      console.log(`User ${uid} approved and custom claims set`);
+      console.log(`User ${uid} claims refreshed`);
 
       return {
         success: true,
-        message: 'Account activated successfully',
+        message: 'Claims refreshed successfully',
         user: {
           id: uid,
           email: userRecord.email,
           role: userData?.role,
-          status: 'approved',
+          status: userData?.status,
         },
       };
     } catch (error) {
-      console.error('Error approving user:', error);
+      console.error('Error refreshing user claims:', error);
       throw new functions.https.HttpsError(
         'internal',
-        'Failed to approve user account',
+        'Failed to refresh user claims',
         error
       );
     }
