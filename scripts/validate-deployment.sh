@@ -36,8 +36,11 @@ fi
 # Check for Node.js version
 echo ""
 echo "📦 Checking Node.js version..."
-NODE_VERSION=$(node -v | cut -d'v' -f2 | cut -d'.' -f1)
-if [ "$NODE_VERSION" -lt 18 ]; then
+NODE_VERSION=$(node -v 2>/dev/null | grep -oE '[0-9]+' | head -1)
+if [ -z "$NODE_VERSION" ]; then
+    echo -e "${RED}❌ Error: Could not determine Node.js version${NC}"
+    ERRORS=$((ERRORS + 1))
+elif [ "$NODE_VERSION" -lt 18 ]; then
     echo -e "${RED}❌ Error: Node.js version must be 18 or higher (found: $(node -v))${NC}"
     ERRORS=$((ERRORS + 1))
 else
@@ -98,6 +101,10 @@ if command -v jq &> /dev/null; then
     else
         echo -e "${GREEN}✅ outputDirectory correctly configured${NC}"
     fi
+else
+    echo ""
+    echo -e "${YELLOW}ℹ️  Note: jq not installed, skipping vercel.json JSON validation${NC}"
+    echo "   Install jq for complete validation: sudo apt-get install jq"
 fi
 
 # Check if api directory exists

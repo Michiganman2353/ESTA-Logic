@@ -132,7 +132,12 @@ jobs:
       - name: Deploy to Vercel Preview
         id: deploy
         run: |
+          set -e
           url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          if [ -z "$url" ]; then
+            echo "Error: Deployment failed - no URL returned"
+            exit 1
+          fi
           echo "url=$url" >> $GITHUB_OUTPUT
           echo "Preview URL: $url"
         env:
@@ -218,7 +223,12 @@ jobs:
 
       - name: Deploy to Vercel Production
         run: |
+          set -e
           url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          if [ -z "$url" ]; then
+            echo "Error: Deployment failed - no URL returned"
+            exit 1
+          fi
           echo "Production URL: $url"
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}

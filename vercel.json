@@ -2,7 +2,7 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build:frontend",
   "outputDirectory": "packages/frontend/dist",
-  "installCommand": "npm ci",
+  "installCommand": "npm ci && cd api && npm ci && cd ..",
   "devCommand": "npm run dev:frontend",
   "framework": null,
   "functions": {
