@@ -22,17 +22,19 @@ interface CSVImportData {
  * POST /api/v1/import/validate
  * Validate CSV data before import
  */
-router.post('/validate', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/validate', authenticate, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { type, data, metadata } = req.body as CSVImportData;
     const { tenantId } = req.user || {};
 
     if (!tenantId) {
-      return res.status(400).json({ error: 'Tenant ID required' });
+      res.status(400).json({ error: 'Tenant ID required' });
+      return;
     }
 
     if (!type || !data || !Array.isArray(data)) {
-      return res.status(400).json({ error: 'Invalid import data' });
+      res.status(400).json({ error: 'Invalid import data' });
+      return;
     }
 
     // Additional server-side validation
@@ -81,6 +83,7 @@ router.post('/validate', authenticate, async (req: AuthenticatedRequest, res: Re
   } catch (error) {
     console.error('Error validating import:', error);
     res.status(500).json({ error: 'Failed to validate import' });
+      return;
   }
 });
 
@@ -88,17 +91,19 @@ router.post('/validate', authenticate, async (req: AuthenticatedRequest, res: Re
  * POST /api/v1/import/employees
  * Import employee data
  */
-router.post('/employees', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/employees', authenticate, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { data, metadata } = req.body as CSVImportData;
     const { tenantId, uid: userId } = req.user || {};
 
     if (!tenantId || !userId) {
-      return res.status(400).json({ error: 'Authentication required' });
+      res.status(400).json({ error: 'Authentication required' });
+      return;
     }
 
     if (!data || !Array.isArray(data)) {
-      return res.status(400).json({ error: 'Invalid import data' });
+      res.status(400).json({ error: 'Invalid import data' });
+      return;
     }
 
     const batch = db.batch();
@@ -132,6 +137,9 @@ router.post('/employees', authenticate, async (req: AuthenticatedRequest, res: R
         if (!existingEmployees.empty) {
           // Update existing employee
           const existingDoc = existingEmployees.docs[0];
+          if (!existingDoc) {
+            throw new Error(`Employee document not found for email: ${row.email as string}`);
+          }
           batch.update(existingDoc.ref, employeeData);
           updated.push(row.email as string);
         } else {
@@ -179,6 +187,7 @@ router.post('/employees', authenticate, async (req: AuthenticatedRequest, res: R
   } catch (error) {
     console.error('Error importing employees:', error);
     res.status(500).json({ error: 'Failed to import employees' });
+      return;
   }
 });
 
@@ -186,17 +195,19 @@ router.post('/employees', authenticate, async (req: AuthenticatedRequest, res: R
  * POST /api/v1/import/hours
  * Import hours data
  */
-router.post('/hours', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/hours', authenticate, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { data, metadata } = req.body as CSVImportData;
     const { tenantId, uid: userId } = req.user || {};
 
     if (!tenantId || !userId) {
-      return res.status(400).json({ error: 'Authentication required' });
+      res.status(400).json({ error: 'Authentication required' });
+      return;
     }
 
     if (!data || !Array.isArray(data)) {
-      return res.status(400).json({ error: 'Invalid import data' });
+      res.status(400).json({ error: 'Invalid import data' });
+      return;
     }
 
     // Get employee mapping
@@ -278,6 +289,7 @@ router.post('/hours', authenticate, async (req: AuthenticatedRequest, res: Respo
   } catch (error) {
     console.error('Error importing hours:', error);
     res.status(500).json({ error: 'Failed to import hours' });
+      return;
   }
 });
 
@@ -285,13 +297,14 @@ router.post('/hours', authenticate, async (req: AuthenticatedRequest, res: Respo
  * GET /api/v1/import/history
  * Get import history for tenant
  */
-router.get('/history', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/history', authenticate, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { tenantId } = req.user || {};
     const { limit = 50 } = req.query;
 
     if (!tenantId) {
-      return res.status(400).json({ error: 'Tenant ID required' });
+      res.status(400).json({ error: 'Tenant ID required' });
+      return;
     }
 
     const importsSnapshot = await db
@@ -308,9 +321,11 @@ router.get('/history', authenticate, async (req: AuthenticatedRequest, res: Resp
     }));
 
     res.json({ imports });
+      return;
   } catch (error) {
     console.error('Error fetching import history:', error);
     res.status(500).json({ error: 'Failed to fetch import history' });
+      return;
   }
 });
 

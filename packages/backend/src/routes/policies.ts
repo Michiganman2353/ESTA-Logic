@@ -39,13 +39,14 @@ interface TenantPolicyConfig {
  * GET /api/v1/policies
  * Get all available policies for tenant
  */
-router.get('/', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/', authenticate, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { tenantId } = req.user || {};
     const { employerSize } = req.query;
 
     if (!tenantId) {
-      return res.status(400).json({ error: 'Tenant ID required' });
+      res.status(400).json({ error: 'Tenant ID required' });
+      return;
     }
 
     // Get default policies
@@ -73,13 +74,18 @@ router.get('/', authenticate, async (req: AuthenticatedRequest, res: Response) =
  * GET /api/v1/policies/:id
  * Get a specific policy by ID
  */
-router.get('/:id', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/:id', authenticate, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
+    if (!id) {
+      res.status(400).json({ error: 'Policy ID is required' });
+      return;
+    }
     const policyDoc = await db.collection('policies').doc(id).get();
 
     if (!policyDoc.exists) {
-      return res.status(404).json({ error: 'Policy not found' });
+      res.status(404).json({ error: 'Policy not found' });
+      return;
     }
 
     res.json({
@@ -98,23 +104,26 @@ router.get('/:id', authenticate, async (req: AuthenticatedRequest, res: Response
  * POST /api/v1/policies
  * Create a new custom policy
  */
-router.post('/', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+router.post('/', authenticate, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { tenantId, uid: userId } = req.user || {};
     const { basePolicyId, customizations } = req.body;
 
     if (!tenantId || !userId) {
-      return res.status(400).json({ error: 'Authentication required' });
+      res.status(400).json({ error: 'Authentication required' });
+      return;
     }
 
     if (!basePolicyId || !customizations) {
-      return res.status(400).json({ error: 'Base policy ID and customizations required' });
+      res.status(400).json({ error: 'Base policy ID and customizations required' });
+      return;
     }
 
     // Get base policy
     const basePolicyDoc = await db.collection('policies').doc(basePolicyId).get();
     if (!basePolicyDoc.exists) {
-      return res.status(404).json({ error: 'Base policy not found' });
+      res.status(404).json({ error: 'Base policy not found' });
+      return;
     }
 
     const basePolicy = basePolicyDoc.data() as PolicyData;
@@ -159,23 +168,26 @@ router.post('/', authenticate, async (req: AuthenticatedRequest, res: Response) 
  * PUT /api/v1/policies/active
  * Set active policy for tenant
  */
-router.put('/active', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+router.put('/active', authenticate, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { tenantId, uid: userId } = req.user || {};
     const { policyId, customizations } = req.body;
 
     if (!tenantId || !userId) {
-      return res.status(400).json({ error: 'Authentication required' });
+      res.status(400).json({ error: 'Authentication required' });
+      return;
     }
 
     if (!policyId) {
-      return res.status(400).json({ error: 'Policy ID required' });
+      res.status(400).json({ error: 'Policy ID required' });
+      return;
     }
 
     // Verify policy exists
     const policyDoc = await db.collection('policies').doc(policyId).get();
     if (!policyDoc.exists) {
-      return res.status(404).json({ error: 'Policy not found' });
+      res.status(404).json({ error: 'Policy not found' });
+      return;
     }
 
     // Get or create tenant configuration
@@ -188,11 +200,15 @@ router.put('/active', authenticate, async (req: AuthenticatedRequest, res: Respo
     if (configDoc.exists) {
       const existingConfig = configDoc.data() as TenantPolicyConfig;
       // Deactivate previous policy
-      if (existingConfig.policyHistory && existingConfig.policyHistory.length > 0) {
+      if (existingConfig?.policyHistory && existingConfig.policyHistory.length > 0) {
         const lastIndex = existingConfig.policyHistory.length - 1;
-        existingConfig.policyHistory[lastIndex].deactivatedAt = now;
+        const lastPolicy = existingConfig.policyHistory[lastIndex];
+        if (lastPolicy) {
+          lastPolicy.deactivatedAt = now;
+        }
       }
       // Add new policy to history
+      existingConfig.policyHistory = existingConfig.policyHistory || [];
       existingConfig.policyHistory.push({
         policyId,
         activatedAt: now,
@@ -242,12 +258,13 @@ router.put('/active', authenticate, async (req: AuthenticatedRequest, res: Respo
  * GET /api/v1/policies/active
  * Get active policy for tenant
  */
-router.get('/active/current', authenticate, async (req: AuthenticatedRequest, res: Response) => {
+router.get('/active/current', authenticate, async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
     const { tenantId } = req.user || {};
 
     if (!tenantId) {
-      return res.status(400).json({ error: 'Tenant ID required' });
+      res.status(400).json({ error: 'Tenant ID required' });
+      return;
     }
 
     // Get tenant configuration
@@ -257,7 +274,8 @@ router.get('/active/current', authenticate, async (req: AuthenticatedRequest, re
       .get();
 
     if (!configDoc.exists) {
-      return res.status(404).json({ error: 'No active policy found' });
+      res.status(404).json({ error: 'No active policy found' });
+      return;
     }
 
     const config = configDoc.data();
@@ -267,7 +285,8 @@ router.get('/active/current', authenticate, async (req: AuthenticatedRequest, re
       .get();
 
     if (!policyDoc.exists) {
-      return res.status(404).json({ error: 'Active policy not found' });
+      res.status(404).json({ error: 'Active policy not found' });
+      return;
     }
 
     res.json({

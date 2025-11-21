@@ -73,7 +73,7 @@ export function parseCSV(csvText: string): CSVParseResult {
     }
   }
 
-  const headers = rows.length > 0 ? rows[0].map(h => h.trim()) : [];
+  const headers = rows.length > 0 && rows[0] ? rows[0].map(h => h.trim()) : [];
   const dataRows = rows.slice(1);
 
   return {

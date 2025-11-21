@@ -55,7 +55,7 @@ export function serverTimestamp(): admin.firestore.FieldValue {
  * @param elements - Elements to add to array
  * @returns FieldValue for array union
  */
-export function arrayUnion(...elements: any[]): admin.firestore.FieldValue {
+export function arrayUnion(...elements: unknown[]): admin.firestore.FieldValue {
   return admin.firestore.FieldValue.arrayUnion(...elements);
 }
 
@@ -65,7 +65,7 @@ export function arrayUnion(...elements: any[]): admin.firestore.FieldValue {
  * @param elements - Elements to remove from array
  * @returns FieldValue for array remove
  */
-export function arrayRemove(...elements: any[]): admin.firestore.FieldValue {
+export function arrayRemove(...elements: unknown[]): admin.firestore.FieldValue {
   return admin.firestore.FieldValue.arrayRemove(...elements);
 }
 

@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Login from '../Login';
 import * as authService from '../../lib/authService';
-import * as api from '../../lib/api';
+import type { User } from '../../types';
 
 // Mock modules
 vi.mock('../../lib/authService');
@@ -109,8 +109,16 @@ describe('Login Page', () => {
 
   describe('Firebase Authentication', () => {
     it('should call signIn when Firebase is configured', async () => {
-      const mockUser = { id: '1', email: 'test@example.com', role: 'employee' };
-      vi.mocked(authService.signIn).mockResolvedValue(mockUser as any);
+      const mockUser: User = { 
+        id: '1', 
+        email: 'test@example.com', 
+        name: 'Test User',
+        role: 'employee',
+        employerSize: 'large',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      vi.mocked(authService.signIn).mockResolvedValue(mockUser);
       
       renderLogin();
       
@@ -130,8 +138,17 @@ describe('Login Page', () => {
     });
 
     it('should show loading state during authentication', async () => {
+      const mockUser: User = { 
+        id: '1', 
+        email: 'test@example.com', 
+        name: 'Test User',
+        role: 'employee',
+        employerSize: 'large',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
       vi.mocked(authService.signIn).mockImplementation(() => 
-        new Promise(resolve => setTimeout(() => resolve({} as any), 100))
+        new Promise(resolve => setTimeout(() => resolve(mockUser), 100))
       );
       
       renderLogin();
@@ -276,7 +293,16 @@ describe('Login Page', () => {
       });
       
       // Second submission should clear error first
-      vi.mocked(authService.signIn).mockResolvedValue({ id: '1' } as any);
+      const mockUser: User = { 
+        id: '1', 
+        email: 'test@example.com', 
+        name: 'Test User',
+        role: 'employee',
+        employerSize: 'large',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      vi.mocked(authService.signIn).mockResolvedValue(mockUser);
       fireEvent.click(submitButton);
       
       // Error should be cleared immediately
