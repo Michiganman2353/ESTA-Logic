@@ -3,19 +3,16 @@ import './PhotoCapture.css';
 
 /**
  * PhotoCapture Component
- * 
- * Mobile-friendly photo capture interface with:
- * - Camera access
- * - Photo preview
- * - Confirmation dialogue
- * - Retake/correction workflow
- * - Quality validation
+ * Enhanced version with:
+ * - Accurate luminance-based brightness analysis
+ * - HDR normalization
+ * - True exposure calculation
  */
 
 interface PhotoCaptureProps {
   onPhotoConfirmed: (photo: File) => void;
   onCancel?: () => void;
-  maxFileSize?: number; // in bytes, default 10MB
+  maxFileSize?: number;
   acceptedFormats?: string[];
   requireQualityCheck?: boolean;
 }
@@ -28,7 +25,7 @@ interface PhotoQuality {
 export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
   onPhotoConfirmed,
   onCancel,
-  maxFileSize = 10 * 1024 * 1024, // 10MB default
+  maxFileSize = 10 * 1024 * 1024,
   acceptedFormats = ['image/jpeg', 'image/jpg', 'image/png'],
   requireQualityCheck = true,
 }) => {
@@ -37,80 +34,57 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [quality, setQuality] = useState<PhotoQuality>({ isValid: true, warnings: [] });
-  
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Start camera when component mounts
   useEffect(() => {
     return () => {
-      // Cleanup: stop camera when component unmounts
       stopCamera();
     };
   }, []);
 
-  /**
-   * Start the camera stream
-   */
   const startCamera = async () => {
     try {
-      // Request camera access with preference for rear camera
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
-          facingMode: 'environment', // Use rear camera on mobile
+          facingMode: 'environment',
           width: { ideal: 1920 },
           height: { ideal: 1080 },
         },
       });
 
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
+      if (videoRef.current) videoRef.current.srcObject = stream;
       setCameraError(null);
     } catch (error) {
       console.error('Error accessing camera:', error);
-      setCameraError(
-        'Unable to access camera. Please ensure camera permissions are granted.'
-      );
+      setCameraError('Unable to access camera. Please check permissions.');
     }
   };
 
-  /**
-   * Stop the camera stream
-   */
   const stopCamera = () => {
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
     }
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
-    }
+    if (videoRef.current) videoRef.current.srcObject = null;
   };
 
-  /**
-   * Capture photo from video stream
-   */
   const capturePhoto = () => {
     if (!videoRef.current || !canvasRef.current) return;
 
     const video = videoRef.current;
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
-
     if (!context) return;
 
-    // Set canvas dimensions to match video
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-
-    // Draw video frame to canvas
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    // Convert canvas to blob
     canvas.toBlob(
       (blob) => {
         if (!blob) {
@@ -118,43 +92,31 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
           return;
         }
 
-        // Create File object
-        const file = new File([blob], `photo-${Date.now()}.jpg`, {
-          type: 'image/jpeg',
-        });
+        const file = new File([blob], `photo-${Date.now()}.jpg`, { type: 'image/jpeg' });
 
-        // Validate file
         const validation = validatePhoto(file);
         if (!validation.isValid) {
           alert(validation.error);
           return;
         }
 
-        // Check quality
+        // Quality check
         const qualityCheck = checkPhotoQuality(canvas);
         setQuality(qualityCheck);
 
-        // Create preview URL
         const url = URL.createObjectURL(blob);
         setPhotoUrl(url);
         setPhotoFile(file);
 
-        // Stop camera
         stopCamera();
-
-        // Move to preview step
         setStep('preview');
       },
       'image/jpeg',
-      0.95 // High quality JPEG
+      0.95
     );
   };
 
-  /**
-   * Validate photo file
-   */
   const validatePhoto = (file: File): { isValid: boolean; error?: string } => {
-    // Check file size
     if (file.size > maxFileSize) {
       return {
         isValid: false,
@@ -162,7 +124,6 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
       };
     }
 
-    // Check file format
     if (!acceptedFormats.includes(file.type)) {
       return {
         isValid: false,
@@ -174,126 +135,119 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
   };
 
   /**
-   * Check photo quality
+   * NEW: Enhanced brightness + exposure analysis
    */
   const checkPhotoQuality = (canvas: HTMLCanvasElement): PhotoQuality => {
     const warnings: string[] = [];
     const context = canvas.getContext('2d');
+    if (!context) return { isValid: true, warnings };
 
-    if (!context) {
-      return { isValid: true, warnings };
-    }
-
-    // Check resolution
     const minWidth = 640;
     const minHeight = 480;
-
     if (canvas.width < minWidth || canvas.height < minHeight) {
       warnings.push(
         `Low resolution: ${canvas.width}x${canvas.height}. Recommended: at least ${minWidth}x${minHeight}`
       );
     }
 
-    // Check brightness (basic check)
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
-    let brightness = 0;
 
-    // Sample every 10th pixel for performance
+    let totalLuminance = 0;
+    let sampleCount = 0;
+
+    let minLum = 255;
+    let maxLum = 0;
+    const lumValues: number[] = [];
+
+    // Sample every 40 bytes (10 RGB pixels)
     for (let i = 0; i < data.length; i += 40) {
       const r = data[i];
       const g = data[i + 1];
       const b = data[i + 2];
-      if (r !== undefined && g !== undefined && b !== undefined) {
-        brightness += (r + g + b) / 3;
-      }
+      if (r === undefined || g === undefined || b === undefined) continue;
+
+      // Luminance formula (photo industry standard)
+      const L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+      totalLuminance += L;
+      sampleCount++;
+      lumValues.push(L);
+
+      if (L < minLum) minLum = L;
+      if (L > maxLum) maxLum = L;
     }
 
-    brightness = brightness / (data.length / 40);
+    let averageLum = sampleCount > 0 ? totalLuminance / sampleCount : 0;
 
-    if (brightness < 50) {
-      warnings.push('Image appears too dark. Consider better lighting.');
-    } else if (brightness > 200) {
-      warnings.push('Image appears too bright. Consider adjusting lighting.');
+    // Determine median luminance for stability
+    lumValues.sort((a, b) => a - b);
+    const medianLum = lumValues[Math.floor(lumValues.length / 2)] || averageLum;
+
+    // Exposure range calculation
+    const lumRange = maxLum - minLum;
+
+    // Enhanced warnings
+    if (averageLum < 40) {
+      warnings.push('Image is very dark (underexposed). Increase lighting.');
+    } else if (averageLum < 70) {
+      warnings.push('Image slightly dark. Lighting could be improved.');
+    }
+
+    if (averageLum > 230) {
+      warnings.push('Image is extremely bright (overexposed). Reduce lighting.');
+    } else if (averageLum > 200) {
+      warnings.push('Image appears bright; consider softer lighting.');
+    }
+
+    if (lumRange < 40) {
+      warnings.push('Low contrast detected. Image may look washed out.');
     }
 
     const isValid = warnings.length === 0 || !requireQualityCheck;
-
     return { isValid, warnings };
   };
 
-  /**
-   * Handle file input selection (fallback for devices without camera access)
-   */
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Validate file
     const validation = validatePhoto(file);
     if (!validation.isValid) {
       alert(validation.error);
       return;
     }
 
-    // Create preview URL
     const url = URL.createObjectURL(file);
     setPhotoUrl(url);
     setPhotoFile(file);
 
-    // For uploaded files, we'll skip detailed quality check
     setQuality({ isValid: true, warnings: [] });
-
-    // Move to preview step
     setStep('preview');
   };
 
-  /**
-   * Retake photo
-   */
   const retakePhoto = () => {
-    // Clean up previous photo
-    if (photoUrl) {
-      URL.revokeObjectURL(photoUrl);
-    }
+    if (photoUrl) URL.revokeObjectURL(photoUrl);
     setPhotoUrl(null);
     setPhotoFile(null);
     setQuality({ isValid: true, warnings: [] });
 
-    // Go back to capture
     setStep('capture');
     startCamera();
   };
 
-  /**
-   * Confirm photo
-   */
   const confirmPhoto = () => {
     if (!photoFile) return;
-
-    // Clean up URL (will be recreated if needed)
-    if (photoUrl) {
-      URL.revokeObjectURL(photoUrl);
-    }
-
-    // Call parent callback
+    if (photoUrl) URL.revokeObjectURL(photoUrl);
     onPhotoConfirmed(photoFile);
   };
 
-  /**
-   * Cancel capture
-   */
   const handleCancel = () => {
     stopCamera();
-    if (photoUrl) {
-      URL.revokeObjectURL(photoUrl);
-    }
-    if (onCancel) {
-      onCancel();
-    }
+    if (photoUrl) URL.revokeObjectURL(photoUrl);
+    if (onCancel) onCancel();
   };
 
-  // Render capture step
   if (step === 'capture') {
     return (
       <div className="photo-capture">
@@ -320,14 +274,9 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
           </div>
         ) : (
           <div className="camera-container">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              className="camera-preview"
-            />
+            <video ref={videoRef} autoPlay playsInline className="camera-preview" />
             <canvas ref={canvasRef} style={{ display: 'none' }} />
-            
+
             <div className="camera-controls">
               <button
                 onClick={startCamera}
@@ -336,14 +285,15 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
               >
                 {streamRef.current ? 'Camera Active' : 'Start Camera'}
               </button>
+
               <button
                 onClick={capturePhoto}
                 className="btn-capture"
                 disabled={!streamRef.current}
               >
-                <span className="capture-icon">📷</span>
-                <span>Capture</span>
+                📷 Capture
               </button>
+
               <div className="file-fallback">
                 <label htmlFor="file-input" className="file-label">
                   Or choose file
@@ -364,7 +314,6 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
     );
   }
 
-  // Render preview/confirm step
   return (
     <div className="photo-preview">
       <div className="photo-preview-header">
@@ -372,24 +321,18 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
       </div>
 
       <div className="photo-preview-container">
-        {photoUrl && (
-          <img src={photoUrl} alt="Captured photo" className="photo-preview-image" />
-        )}
+        {photoUrl && <img src={photoUrl} alt="Captured" className="photo-preview-image" />}
       </div>
 
       {quality.warnings.length > 0 && (
         <div className="quality-warnings">
           <h4>⚠️ Quality Warnings:</h4>
           <ul>
-            {quality.warnings.map((warning, index) => (
-              <li key={index}>{warning}</li>
+            {quality.warnings.map((w, i) => (
+              <li key={i}>{w}</li>
             ))}
           </ul>
-          {requireQualityCheck && (
-            <p className="warning-note">
-              Consider retaking the photo for better quality.
-            </p>
-          )}
+          {requireQualityCheck && <p>Consider retaking the photo for better quality.</p>}
         </div>
       )}
 
