@@ -21,7 +21,7 @@ import {
   sanitizeInput,
   checkRateLimit,
   sanitizeForLogging 
-} from '../utils/security';
+} from '@/utils/security';
 
 export interface RegisterManagerData {
   name: string;
