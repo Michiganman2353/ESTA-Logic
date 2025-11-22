@@ -27,24 +27,23 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { apiClient } from './lib/api';
-import { isFirebaseConfigured } from './lib/firebase';
-import { useAuth } from './contexts/useAuth';
-import { User } from './types';
-import { MaintenanceMode } from './components/MaintenanceMode';
-import { DebugPanel } from './components/DebugPanel';
+import { apiClient } from '@/lib/api';
+import { useAuth } from '@/contexts/useAuth';
+import { User } from '@/types';
+import { MaintenanceMode } from '@/components/MaintenanceMode';
+import { DebugPanel } from '@/components/DebugPanel';
 
 // Pages
-import Dashboard from './pages/Dashboard';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import RegisterEmployee from './pages/RegisterEmployee';
-import RegisterManager from './pages/RegisterManager';
-import EmployeeDashboard from './pages/EmployeeDashboard';
-import EmployerDashboard from './pages/EmployerDashboard';
-import AuditLog from './pages/AuditLog';
-import Settings from './pages/Settings';
-import Pricing from './pages/Pricing';
+import Dashboard from '@/pages/Dashboard';
+import Login from '@/pages/Login';
+import Register from '@/pages/Register';
+import RegisterEmployee from '@/pages/RegisterEmployee';
+import RegisterManager from '@/pages/RegisterManager';
+import EmployeeDashboard from '@/pages/EmployeeDashboard';
+import EmployerDashboard from '@/pages/EmployerDashboard';
+import AuditLog from '@/pages/AuditLog';
+import Settings from '@/pages/Settings';
+import Pricing from '@/pages/Pricing';
 
 function App() {
   const { userData, currentUser, loading: authLoading } = useAuth();
@@ -56,7 +55,6 @@ function App() {
   // Log authentication state changes for debugging
   useEffect(() => {
     console.log('=== Auth State Change ===');
-    console.log('Firebase Configured:', isFirebaseConfigured);
     console.log('Firebase User:', currentUser?.email);
     console.log('User Data:', userData?.email, userData?.role, userData?.status);
     console.log('Auth Loading:', authLoading);
@@ -69,8 +67,8 @@ function App() {
       return;
     }
 
-    // If Firebase is configured and we have user data, use it
-    if (isFirebaseConfigured && userData) {
+    // If we have user data, use it
+    if (userData) {
       console.log('Using Firebase user data:', userData);
       setUser(userData);
       setLoading(false);
@@ -78,8 +76,8 @@ function App() {
       return;
     }
 
-    // If Firebase is configured but no user, clear state and stop loading
-    if (isFirebaseConfigured && !userData && !currentUser) {
+    // If no user, clear state and stop loading
+    if (!userData && !currentUser) {
       console.log('No Firebase user, showing login');
       setUser(null);
       setLoading(false);
@@ -87,13 +85,7 @@ function App() {
       return;
     }
 
-    // Fallback to API-based auth check if Firebase is not configured
-    if (!isFirebaseConfigured) {
-      console.log('Firebase not configured, checking API auth');
-      checkAuth();
-    } else {
-      setLoading(false);
-    }
+    setLoading(false);
   }, [currentUser, userData, authLoading]);
 
   async function checkAuth() {
@@ -200,12 +192,8 @@ function App() {
                       setError(null);
                       setLoading(true);
                       setRetryCount(retryCount + 1);
-                      if (isFirebaseConfigured) {
-                        // Retry will happen via useEffect
-                        setLoading(false);
-                      } else {
-                        checkAuth();
-                      }
+                      // Retry will happen via useEffect
+                      setLoading(false);
                     }}
                     className="btn btn-primary text-sm"
                   >
