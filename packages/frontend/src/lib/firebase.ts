@@ -22,7 +22,7 @@ const requiredEnvVars = [
 // Check for missing or empty environment variables
 const missingVars = requiredEnvVars.filter(key => {
   const value = import.meta.env[key];
-  return !value || value.trim() === '';
+  return !value || (typeof value === 'string' && value.trim() === '');
 });
 
 if (missingVars.length > 0) {
