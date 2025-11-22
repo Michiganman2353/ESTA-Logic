@@ -36,7 +36,7 @@
       "cache": true
     },
     "test": {
-      "outputs": ["coverage/**"],
+      "outputs": [],
       "inputs": ["src/**", "**/*.test.ts", "**/*.test.tsx", "vitest.config.ts"],
       "cache": true
     },
@@ -57,7 +57,7 @@
     },
     "typecheck": {
       "dependsOn": ["^build"],
-      "outputs": ["*.tsbuildinfo"],
+      "outputs": [],
       "inputs": ["src/**", "tsconfig.json", "tsconfig.*.json"],
       "cache": true
     },
