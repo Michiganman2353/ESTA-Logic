@@ -42,4 +42,6 @@ if (!getApps().length) {
 
 export const auth = getAuth();
 export const db = getFirestore();
+// Note: isFirebaseConfigured is always true because this module throws if vars are missing
+// This export is kept for backward compatibility with existing code
 export const isFirebaseConfigured = true;
