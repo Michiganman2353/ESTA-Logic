@@ -18,8 +18,8 @@ ESTA Tracker is a full-stack SaaS platform that automates compliance with the Mi
 ## Quick Start
 
 ### Prerequisites
-- Node.js ≥18.0.0
-- npm ≥9.0.0
+- Node.js 20.x (see `.nvmrc`)
+- npm ≥10.0.0
 - Firebase account
 - Vercel account (for deployment)
 
@@ -103,7 +103,7 @@ For architectural details, see [Architecture Documentation](./docs/architecture/
 ### 🔧 Setup Guides
 - [Firebase Setup](./docs/setup/FIREBASE_SETUP.md) - Configure Firebase services
 - [KMS Setup](./docs/setup/KMS_SETUP_GUIDE.md) - Google Cloud KMS configuration
-- [Vercel Deployment](./docs/setup/VERCEL_QUICK_START.md) - Vercel deployment setup
+- [Vercel Deployment](./docs/deployment/deployment.md) - Vercel deployment and CI/CD setup
 - [Edge Config](./docs/setup/EDGE_CONFIG_SETUP.md) - Edge configuration for Vercel
 
 ### 🔒 Security Documentation
