@@ -22,7 +22,8 @@ const requiredEnvVars = [
 // Check for missing or empty environment variables
 const missingVars = requiredEnvVars.filter(key => {
   const value = import.meta.env[key];
-  return !value || (typeof value === 'string' && value.trim() === '');
+  // Vite env vars are always strings, so we can directly check trim()
+  return !value || value.trim() === '';
 });
 
 if (missingVars.length > 0) {
@@ -70,17 +71,16 @@ try {
     }
     
     // Initialize Firebase services
-    if (!app) {
-      throw new Error('Firebase app initialization failed');
-    }
-    auth = getAuth(app);
-    db = getFirestore(app);
-    storage = getStorage(app);
-    functions = getFunctions(app);
+    // TypeScript assertion: app is guaranteed to be defined here
+    // Either from existingApps[0] or initializeApp (which throws on failure)
+    auth = getAuth(app!);
+    db = getFirestore(app!);
+    storage = getStorage(app!);
+    functions = getFunctions(app!);
     
     // Initialize Analytics only in browser environment (not in SSR)
     if (typeof window !== 'undefined' && firebaseConfig.measurementId) {
-      analytics = getAnalytics(app);
+      analytics = getAnalytics(app!);
     }
   } else {
     console.warn('Firebase configuration incomplete. Running in mock mode. Missing:', missingVars.join(', '));
