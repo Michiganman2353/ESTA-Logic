@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { signIn } from '@/lib/authService';
-import { apiClient } from '@/lib/api';
 import { User } from '@/types';
 import { PasswordField } from '@/components/PasswordField';
 import { LoadingButton } from '@/components/LoadingButton';
@@ -111,7 +110,6 @@ export default function Login({ onLogin }: LoginProps) {
                           <li>Check your internet connection</li>
                           <li>Make sure you're not behind a restrictive firewall</li>
                           <li>Try refreshing the page</li>
-                          {!isFirebaseConfigured && <li>Ensure the backend server is running</li>}
                         </ul>
                       </div>
                     ) : null}

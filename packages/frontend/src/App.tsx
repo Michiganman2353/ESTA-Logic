@@ -27,7 +27,6 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { apiClient } from '@/lib/api';
 import { useAuth } from '@/contexts/useAuth';
 import { User } from '@/types';
 import { MaintenanceMode } from '@/components/MaintenanceMode';
@@ -88,41 +87,6 @@ function App() {
     setLoading(false);
   }, [currentUser, userData, authLoading]);
 
-  async function checkAuth() {
-    try {
-      console.log('Checking auth via API...');
-      const response = await apiClient.getCurrentUser();
-      console.log('API auth check successful:', response.user);
-      setUser(response.user as User);
-      setError(null);
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      
-      // Type guard for ApiError
-      const apiError = error as { status?: number; message?: string; isNetworkError?: boolean };
-      
-      // Only show error if it's not a simple "not authenticated" case
-      if (apiError.status && apiError.status !== 401) {
-        if (apiError.isNetworkError) {
-          setError('Unable to connect to server. Please check your internet connection.');
-        } else {
-          setError(`Error loading application: ${apiError.message || 'Unknown error'}`);
-        }
-      } else {
-        // Not authenticated - this is normal, just clear the user
-        console.log('User not authenticated via API');
-        setUser(null);
-      }
-      
-      // Clear any invalid token
-      if (apiError.status === 401) {
-        apiClient.setToken(null);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
-
   // Enhanced loading screen with progress indicator
   if (loading) {
     return (
@@ -180,9 +144,6 @@ function App() {
                     <li>Refresh your browser</li>
                     <li>Clear your browser cache</li>
                     <li>Try a different browser</li>
-                    {!isFirebaseConfigured && (
-                      <li>Ensure the backend server is running</li>
-                    )}
                   </ul>
                 </div>
 

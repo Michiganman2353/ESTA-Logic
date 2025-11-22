@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerEmployee } from '@/lib/authService';
-import { apiClient } from '@/lib/api';
 import { User } from '@/types';
 import { useRegistrationStatus } from '@/hooks/useEdgeConfig';
 import { PasswordField } from '@/components/PasswordField';
