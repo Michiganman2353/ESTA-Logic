@@ -14,6 +14,47 @@
  * a clear, fatal error message indicating which variable is missing.
  */
 
+const fs = require('fs');
+const path = require('path');
+
+/**
+ * Load environment variables from .env files
+ * Loads in order: .env, .env.local (local overrides default)
+ * This mimics Vite's behavior for environment variable loading
+ */
+function loadEnvFiles() {
+  const rootDir = path.resolve(__dirname, '../../..');
+  const envFiles = [
+    path.join(rootDir, '.env'),
+    path.join(rootDir, '.env.local'),
+  ];
+  
+  envFiles.forEach(filePath => {
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, 'utf8');
+      content.split('\n').forEach(line => {
+        // Skip comments and empty lines
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith('#')) return;
+        
+        // Parse KEY=VALUE format
+        const match = trimmed.match(/^([^=]+)=(.*)$/);
+        if (match) {
+          const key = match[1].trim();
+          const value = match[2].trim();
+          // Only set if not already in process.env (allow override from actual env vars)
+          if (!process.env[key]) {
+            process.env[key] = value;
+          }
+        }
+      });
+    }
+  });
+}
+
+// Load environment variables from .env files
+loadEnvFiles();
+
 /**
  * Required Firebase environment variable keys.
  * These can be provided with either REACT_APP_ or VITE_ prefix.
