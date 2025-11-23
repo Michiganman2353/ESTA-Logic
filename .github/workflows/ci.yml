@@ -26,6 +26,46 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Validate Environment Secrets
+        run: |
+          # Fail fast if any required secret is missing
+          REQUIRED_SECRETS=(
+            "VITE_FIREBASE_API_KEY:${{ secrets.VITE_FIREBASE_API_KEY }}"
+            "VITE_FIREBASE_AUTH_DOMAIN:${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}"
+            "VITE_FIREBASE_PROJECT_ID:${{ secrets.VITE_FIREBASE_PROJECT_ID }}"
+            "VITE_FIREBASE_STORAGE_BUCKET:${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}"
+            "VITE_FIREBASE_MESSAGING_SENDER_ID:${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}"
+            "VITE_FIREBASE_APP_ID:${{ secrets.VITE_FIREBASE_APP_ID }}"
+          )
+          
+          MISSING_SECRETS=()
+          for SECRET in "${REQUIRED_SECRETS[@]}"; do
+            SECRET_NAME="${SECRET%%:*}"
+            SECRET_VALUE="${SECRET#*:}"
+            if [ -z "$SECRET_VALUE" ]; then
+              MISSING_SECRETS+=("$SECRET_NAME")
+            fi
+          done
+          
+          if [ ${#MISSING_SECRETS[@]} -ne 0 ]; then
+            echo "❌ ERROR: Missing required GitHub secrets:"
+            printf '  - %s\n' "${MISSING_SECRETS[@]}"
+            echo ""
+            echo "Please configure all required secrets in:"
+            echo "GitHub Repository → Settings → Secrets and variables → Actions"
+            echo ""
+            echo "Required secrets:"
+            echo "  - VITE_FIREBASE_API_KEY"
+            echo "  - VITE_FIREBASE_AUTH_DOMAIN"
+            echo "  - VITE_FIREBASE_PROJECT_ID"
+            echo "  - VITE_FIREBASE_STORAGE_BUCKET"
+            echo "  - VITE_FIREBASE_MESSAGING_SENDER_ID"
+            echo "  - VITE_FIREBASE_APP_ID"
+            exit 1
+          fi
+          
+          echo "✅ All required secrets are configured"
+
       - name: Cache Nx
         uses: actions/cache@v4
         with:
@@ -52,6 +92,13 @@ jobs:
         run: npm run typecheck
 
       - name: Run Unit Tests
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
         run: npm run test
 
       - name: Check Environment Variables
@@ -102,6 +149,13 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run E2E Tests
+        env:
+          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
+          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
+          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
         run: npm run test:e2e
 
       - name: Upload Playwright Report
