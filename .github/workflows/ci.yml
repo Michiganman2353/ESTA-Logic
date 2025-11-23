@@ -29,26 +29,23 @@ jobs:
       - name: Validate Environment Secrets
         run: |
           # Fail fast if any required secret is missing
-          MISSING_SECRETS=()
+          REQUIRED_SECRETS=(
+            "VITE_FIREBASE_API_KEY:${{ secrets.VITE_FIREBASE_API_KEY }}"
+            "VITE_FIREBASE_AUTH_DOMAIN:${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}"
+            "VITE_FIREBASE_PROJECT_ID:${{ secrets.VITE_FIREBASE_PROJECT_ID }}"
+            "VITE_FIREBASE_STORAGE_BUCKET:${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}"
+            "VITE_FIREBASE_MESSAGING_SENDER_ID:${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}"
+            "VITE_FIREBASE_APP_ID:${{ secrets.VITE_FIREBASE_APP_ID }}"
+          )
           
-          if [ -z "${{ secrets.VITE_FIREBASE_API_KEY }}" ]; then
-            MISSING_SECRETS+=("VITE_FIREBASE_API_KEY")
-          fi
-          if [ -z "${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}" ]; then
-            MISSING_SECRETS+=("VITE_FIREBASE_AUTH_DOMAIN")
-          fi
-          if [ -z "${{ secrets.VITE_FIREBASE_PROJECT_ID }}" ]; then
-            MISSING_SECRETS+=("VITE_FIREBASE_PROJECT_ID")
-          fi
-          if [ -z "${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}" ]; then
-            MISSING_SECRETS+=("VITE_FIREBASE_STORAGE_BUCKET")
-          fi
-          if [ -z "${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}" ]; then
-            MISSING_SECRETS+=("VITE_FIREBASE_MESSAGING_SENDER_ID")
-          fi
-          if [ -z "${{ secrets.VITE_FIREBASE_APP_ID }}" ]; then
-            MISSING_SECRETS+=("VITE_FIREBASE_APP_ID")
-          fi
+          MISSING_SECRETS=()
+          for SECRET in "${REQUIRED_SECRETS[@]}"; do
+            SECRET_NAME="${SECRET%%:*}"
+            SECRET_VALUE="${SECRET#*:}"
+            if [ -z "$SECRET_VALUE" ]; then
+              MISSING_SECRETS+=("$SECRET_NAME")
+            fi
+          done
           
           if [ ${#MISSING_SECRETS[@]} -ne 0 ]; then
             echo "❌ ERROR: Missing required GitHub secrets:"

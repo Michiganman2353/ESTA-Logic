@@ -71,8 +71,8 @@ Add all 6 variables as **repository secrets**:
 ### Important Notes
 
 - ✅ **VITE_** prefix is **required** for all frontend environment variables
-- ❌ **REACT_APP_*** variables are **NOT supported**
-- ❌ **Unprefixed FIREBASE_*** variables are **NOT supported** for frontend
+- ❌ **REACT_APP_** variables are **NOT supported**
+- ❌ **Unprefixed FIREBASE_** variables are **NOT supported** for frontend
 - ⚠️ All workflows, builds, and tests require these variables to succeed
 
 ### Installation
