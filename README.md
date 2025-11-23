@@ -25,6 +25,56 @@ ESTA Tracker is a full-stack SaaS platform that automates compliance with the Mi
 
 > ⚠️ **Important**: This project requires Node.js 22.x. Earlier versions are not supported.
 
+## ⚠️ Environment Configuration (MANDATORY)
+
+**This section is critical for all environments. The application will not build or run without proper environment configuration.**
+
+### Required Environment Variables
+
+The following **6 Firebase configuration variables** are **MANDATORY** and must be configured in **ALL environments**:
+
+```bash
+VITE_FIREBASE_API_KEY=
+VITE_FIREBASE_AUTH_DOMAIN=
+VITE_FIREBASE_PROJECT_ID=
+VITE_FIREBASE_STORAGE_BUCKET=
+VITE_FIREBASE_MESSAGING_SENDER_ID=
+VITE_FIREBASE_APP_ID=
+```
+
+### Where to Configure
+
+#### 🔹 Local Development
+1. Copy `.env.example` to `.env`
+2. Fill in all 6 `VITE_FIREBASE_*` variables with your Firebase project credentials
+3. Get credentials from [Firebase Console](https://console.firebase.google.com/) → Project Settings → Web App
+
+#### 🔹 Vercel Deployment
+Configure all 6 variables in Vercel Dashboard for **ALL** environments:
+- Production environment
+- Preview environment  
+- Development environment
+
+**Path:** Vercel Dashboard → Project Settings → Environment Variables
+
+#### 🔹 GitHub Actions (CI/CD)
+Add all 6 variables as **repository secrets**:
+- `VITE_FIREBASE_API_KEY`
+- `VITE_FIREBASE_AUTH_DOMAIN`
+- `VITE_FIREBASE_PROJECT_ID`
+- `VITE_FIREBASE_STORAGE_BUCKET`
+- `VITE_FIREBASE_MESSAGING_SENDER_ID`
+- `VITE_FIREBASE_APP_ID`
+
+**Path:** GitHub Repository → Settings → Secrets and variables → Actions
+
+### Important Notes
+
+- ✅ **VITE_** prefix is **required** for all frontend environment variables
+- ❌ **REACT_APP_*** variables are **NOT supported**
+- ❌ **Unprefixed FIREBASE_*** variables are **NOT supported** for frontend
+- ⚠️ All workflows, builds, and tests require these variables to succeed
+
 ### Installation
 
 1. **Clone the repository**
