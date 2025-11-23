@@ -15,32 +15,59 @@
  */
 
 /**
- * Strict list of required environment variables.
- * ALL of these MUST be set for the build to proceed.
- * There are NO optional environment variables.
+ * Required Firebase environment variable keys.
+ * These can be provided with either REACT_APP_ or VITE_ prefix.
+ * The script checks for both prefixes to support different deployment environments.
  * 
- * Note: VITE_FIREBASE_MEASUREMENT_ID is intentionally NOT included.
+ * Note: MEASUREMENT_ID is intentionally NOT included.
  * It is used for Firebase Analytics (Google Analytics) which is optional.
  * The app functions correctly without it - analytics just won't be tracked.
- * Per the requirements, ALL variables must be explicitly required with no optionals.
  */
-const REQUIRED_ENV_VARS = [
-  'VITE_FIREBASE_API_KEY',
-  'VITE_FIREBASE_AUTH_DOMAIN',
-  'VITE_FIREBASE_PROJECT_ID',
-  'VITE_FIREBASE_STORAGE_BUCKET',
-  'VITE_FIREBASE_MESSAGING_SENDER_ID',
-  'VITE_FIREBASE_APP_ID',
+const REQUIRED_FIREBASE_KEYS = [
+  'API_KEY',
+  'AUTH_DOMAIN',
+  'PROJECT_ID',
+  'STORAGE_BUCKET',
+  'MESSAGING_SENDER_ID',
+  'APP_ID',
 ];
 
 /**
+ * Build the list of environment variable names to check.
+ * Supports both REACT_APP_ and VITE_ prefixes.
+ */
+const VITE_ENV_VARS = REQUIRED_FIREBASE_KEYS.map(key => `VITE_FIREBASE_${key}`);
+const REACT_APP_ENV_VARS = REQUIRED_FIREBASE_KEYS.map(key => `REACT_APP_FIREBASE_${key}`);
+
+/**
  * Validate that all required environment variables are set.
- * @returns {Object} { isValid: boolean, missingVars: string[] }
+ * Checks for either REACT_APP_ or VITE_ prefix for each Firebase config key.
+ * @returns {Object} { isValid: boolean, missingVars: string[], foundPrefix: string }
  */
 function validateEnvironmentVariables() {
   const missingVars = [];
+  let foundPrefix = null;
   
-  for (const varName of REQUIRED_ENV_VARS) {
+  // First, determine which prefix is being used
+  const hasVite = VITE_ENV_VARS.some(varName => process.env[varName]);
+  const hasReactApp = REACT_APP_ENV_VARS.some(varName => process.env[varName]);
+  
+  if (hasVite && hasReactApp) {
+    // Both prefixes found - this is OK, we'll use VITE_ as primary
+    foundPrefix = 'VITE_';
+  } else if (hasVite) {
+    foundPrefix = 'VITE_';
+  } else if (hasReactApp) {
+    foundPrefix = 'REACT_APP_';
+  } else {
+    // No variables found with either prefix
+    foundPrefix = 'VITE_'; // default for error reporting
+  }
+  
+  // Check for required variables with the appropriate prefix
+  const varsToCheck = foundPrefix === 'REACT_APP_' ? REACT_APP_ENV_VARS : VITE_ENV_VARS;
+  
+  for (const varName of varsToCheck) {
     const value = process.env[varName];
     
     // Check if variable is missing or empty
@@ -51,7 +78,8 @@ function validateEnvironmentVariables() {
   
   return {
     isValid: missingVars.length === 0,
-    missingVars
+    missingVars,
+    foundPrefix
   };
 }
 
@@ -96,7 +124,7 @@ function exitWithError(missingVars) {
 function main() {
   console.log('\n🔍 Validating Frontend Environment Variables...\n');
   
-  const { isValid, missingVars } = validateEnvironmentVariables();
+  const { isValid, missingVars, foundPrefix } = validateEnvironmentVariables();
   
   if (!isValid) {
     // Fatal error - missing required variables
@@ -105,11 +133,13 @@ function main() {
   
   // Success - all required variables are set
   console.log('✅ All required environment variables are properly set');
-  console.log(`✅ Validated ${REQUIRED_ENV_VARS.length} environment variables\n`);
+  console.log(`✅ Using ${foundPrefix}FIREBASE_* prefix`);
+  console.log(`✅ Validated ${REQUIRED_FIREBASE_KEYS.length} environment variables\n`);
   
   // List validated variables for transparency
   console.log('Validated variables:');
-  REQUIRED_ENV_VARS.forEach((varName) => {
+  const varsToCheck = foundPrefix === 'REACT_APP_' ? REACT_APP_ENV_VARS : VITE_ENV_VARS;
+  varsToCheck.forEach((varName) => {
     console.log(`  ✓ ${varName}`);
   });
   
