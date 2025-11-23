@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [22.x]
     steps:
       - uses: actions/checkout@v4
 
@@ -26,6 +26,14 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Cache Nx
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-
+
       - name: Validate Frontend Entry Point
         run: |
           if [ ! -f "packages/frontend/src/main.tsx" ]; then
@@ -34,11 +42,8 @@ jobs:
           fi
           echo "✓ Frontend entry point validated successfully"
 
-      - name: Setup Turborepo Remote Cache
-        run: |
-          echo "TURBO_TOKEN=${{ secrets.TURBO_TOKEN }}" >> $GITHUB_ENV
-          echo "TURBO_TEAM=${{ secrets.TURBO_TEAM }}" >> $GITHUB_ENV
-        continue-on-error: true
+      - name: Verify Nx Installation
+        run: npx nx --version
 
       - name: Lint
         run: npm run lint
@@ -69,7 +74,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
@@ -101,12 +106,20 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Cache Nx
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-
 
       - name: Validate Frontend Entry Point
         run: |
@@ -201,12 +214,20 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
       - name: Install Dependencies
         run: npm ci
+
+      - name: Cache Nx
+        uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nx-
 
       - name: Validate Frontend Entry Point
         run: |

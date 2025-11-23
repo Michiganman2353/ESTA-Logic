@@ -1,0 +1,92 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "extends": "nx/presets/npm.json",
+  "affected": {
+    "defaultBase": "master"
+  },
+  "targetDefaults": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["{projectRoot}/dist", "{projectRoot}/build"],
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/src/**",
+        "{projectRoot}/package.json",
+        "{projectRoot}/tsconfig.json",
+        "{projectRoot}/tsconfig.*.json",
+        "{projectRoot}/vite.config.ts",
+        "{projectRoot}/index.html",
+        "{workspaceRoot}/tsconfig.base.json"
+      ]
+    },
+    "test": {
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/src/**",
+        "{projectRoot}/**/*.test.ts",
+        "{projectRoot}/**/*.test.tsx",
+        "{projectRoot}/vitest.config.ts"
+      ]
+    },
+    "test:coverage": {
+      "cache": true,
+      "outputs": ["{projectRoot}/coverage"],
+      "inputs": [
+        "{projectRoot}/src/**",
+        "{projectRoot}/**/*.test.ts",
+        "{projectRoot}/**/*.test.tsx",
+        "{projectRoot}/vitest.config.ts"
+      ]
+    },
+    "lint": {
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/src/**",
+        "{projectRoot}/.eslintrc.*",
+        "{projectRoot}/eslint.config.js",
+        "{projectRoot}/package.json"
+      ]
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "cache": true,
+      "inputs": [
+        "{projectRoot}/src/**",
+        "{projectRoot}/tsconfig.json",
+        "{projectRoot}/tsconfig.*.json",
+        "{workspaceRoot}/tsconfig.base.json"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
+      "cache": false
+    }
+  },
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*"],
+    "production": [
+      "!{projectRoot}/**/*.test.ts",
+      "!{projectRoot}/**/*.test.tsx",
+      "!{projectRoot}/**/*.spec.ts",
+      "!{projectRoot}/**/*.spec.tsx",
+      "!{projectRoot}/vitest.config.ts",
+      "!{projectRoot}/.eslintrc.*",
+      "!{projectRoot}/eslint.config.js"
+    ]
+  },
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["build", "test", "test:coverage", "lint", "typecheck"]
+      }
+    }
+  },
+  "workspaceLayout": {
+    "appsDir": "packages",
+    "libsDir": "packages"
+  }
+}
