@@ -30,20 +30,35 @@ export default async function handler(
   try {
     const { name, email, password } = req.body;
 
+    console.log('[DEBUG] Employee registration request received');
+    console.log('[DEBUG] Request body (sanitized):', {
+      name,
+      email,
+      hasPassword: !!password,
+      passwordLength: password?.length,
+    });
+
     // Validation
     if (!name || !email || !password) {
+      console.error('[DEBUG] Validation failed: Missing required fields', {
+        hasName: !!name,
+        hasEmail: !!email,
+        hasPassword: !!password,
+      });
       return res.status(400).json({
         message: 'Name, email, and password are required',
       });
     }
 
     if (password.length < 8) {
+      console.error('[DEBUG] Validation failed: Password too short');
       return res.status(400).json({
         message: 'Password must be at least 8 characters',
       });
     }
 
     // Create Firebase Auth user
+    console.log('[DEBUG] Creating Firebase Auth user');
     const auth = getFirebaseAuth();
     const userRecord = await auth.createUser({
       email,
@@ -51,9 +66,12 @@ export default async function handler(
       displayName: name,
       emailVerified: false,
     });
+    console.log('[DEBUG] Firebase Auth user created:', userRecord.uid);
 
     // Generate custom token for immediate login
+    console.log('[DEBUG] Generating custom token');
     const customToken = await auth.createCustomToken(userRecord.uid);
+    console.log('[DEBUG] Custom token generated successfully');
 
     // Store user data in Firestore
     const db = getFirebaseDb();
@@ -70,8 +88,22 @@ export default async function handler(
       updatedAt: new Date().toISOString(),
     };
 
-    await db.collection('users').doc(userRecord.uid).set(userData);
+    // Defensive check: Ensure all required fields are present
+    if (!userData.id || !userData.email || !userData.name || !userData.role) {
+      console.error('[DEBUG] Critical error: Missing required user data fields', {
+        hasId: !!userData.id,
+        hasEmail: !!userData.email,
+        hasName: !!userData.name,
+        hasRole: !!userData.role,
+      });
+      throw new Error('Failed to construct user data: missing required fields');
+    }
 
+    console.log('[DEBUG] Saving user data to Firestore');
+    await db.collection('users').doc(userRecord.uid).set(userData);
+    console.log('[DEBUG] User data saved successfully');
+
+    console.log('[DEBUG] Employee registration completed successfully');
     return res.status(200).json({
       success: true,
       message: 'Registration completed successfully.',
@@ -79,27 +111,36 @@ export default async function handler(
       user: userData,
     });
   } catch (error: any) {
-    console.error('Employee registration error:', error);
+    console.error('[DEBUG] Employee registration error:', error);
+    console.error('[DEBUG] Error details:', {
+      code: error.code,
+      message: error.message,
+      stack: error.stack,
+    });
 
     // Handle Firebase Auth errors
     if (error.code === 'auth/email-already-exists') {
+      console.error('[DEBUG] Error: Email already exists');
       return res.status(409).json({
         message: 'Email already registered',
       });
     }
 
     if (error.code === 'auth/invalid-email') {
+      console.error('[DEBUG] Error: Invalid email');
       return res.status(400).json({
         message: 'Invalid email address',
       });
     }
 
     if (error.code === 'auth/weak-password') {
+      console.error('[DEBUG] Error: Weak password');
       return res.status(400).json({
         message: 'Password is too weak',
       });
     }
 
+    console.error('[DEBUG] Unhandled error, returning 500');
     return res.status(500).json({
       message: 'Registration failed. Please try again later.',
       error: error.message,
