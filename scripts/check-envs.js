@@ -7,7 +7,7 @@ const path = require('path');
 try {
   const dotenvPath = path.resolve(process.cwd(), '.env');
   if (fs.existsSync(dotenvPath)) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line import/no-dynamic-require
     require('dotenv').config({ path: dotenvPath });
   }
 } catch (err) {
@@ -49,5 +49,5 @@ if (missing.length > 0) {
 }
 
 console.log('✅ Firebase environment variables check passed. Found the following keys:');
-console.log(Array.from(new Set(present)).join(', '));
+console.log(present.join(', '));
 process.exit(0);
