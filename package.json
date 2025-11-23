@@ -30,7 +30,7 @@
     "postinstall": "npm run postinstall --workspaces --if-present",
     "setup:kms": "node scripts/setup-kms.js",
     "validate:deployment": "bash scripts/validate-deployment.sh",
-    "ci:validate": "npm run lint && npm run typecheck && npm run test && npm run build"
+    "ci:validate": "npm run lint && npm run typecheck && npm run test && npm run build && npm run validate:deployment"
   },
   "dependencies": {
     "firebase-admin": "^12.0.0"
