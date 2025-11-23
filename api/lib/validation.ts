@@ -14,11 +14,12 @@ export function validateRequiredFields(
   requiredFields: string[],
   context: string
 ): void {
-  const missingFields = requiredFields.filter(field => !data[field]);
+  // Use strict null/undefined checks to avoid false positives with falsy values like 0, false, or empty strings
+  const missingFields = requiredFields.filter(field => data[field] == null);
   
   if (missingFields.length > 0) {
     const fieldStatus = requiredFields.reduce((acc, field) => {
-      acc[`has${field.charAt(0).toUpperCase()}${field.slice(1)}`] = !!data[field];
+      acc[`has${field.charAt(0).toUpperCase()}${field.slice(1)}`] = data[field] != null;
       return acc;
     }, {} as Record<string, boolean>);
     
