@@ -38,17 +38,17 @@ export default async function handler(
       passwordLength: password?.length,
     });
 
-    // Validation
-    if (!name || !email || !password || !companyName || !employeeCount) {
-      console.error('[DEBUG] Validation failed: Missing required fields', {
-        hasName: !!name,
-        hasEmail: !!email,
-        hasPassword: !!password,
-        hasCompanyName: !!companyName,
-        hasEmployeeCount: !!employeeCount,
-      });
+    // Validation - use defensive check utility for consistency
+    const requestData = { name, email, password, companyName, employeeCount };
+    try {
+      validateRequiredFields(
+        requestData,
+        ['name', 'email', 'password', 'companyName', 'employeeCount'],
+        'request data'
+      );
+    } catch (error) {
       return res.status(400).json({
-        message: 'Name, email, password, company name, and employee count are required',
+        message: error instanceof Error ? error.message : 'Missing required fields',
       });
     }
 

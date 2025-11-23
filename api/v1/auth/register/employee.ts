@@ -39,15 +39,17 @@ export default async function handler(
       passwordLength: password?.length,
     });
 
-    // Validation
-    if (!name || !email || !password) {
-      console.error('[DEBUG] Validation failed: Missing required fields', {
-        hasName: !!name,
-        hasEmail: !!email,
-        hasPassword: !!password,
-      });
+    // Validation - use defensive check utility for consistency
+    const requestData = { name, email, password };
+    try {
+      validateRequiredFields(
+        requestData,
+        ['name', 'email', 'password'],
+        'request data'
+      );
+    } catch (error) {
       return res.status(400).json({
-        message: 'Name, email, and password are required',
+        message: error instanceof Error ? error.message : 'Missing required fields',
       });
     }
 
