@@ -239,11 +239,19 @@ For detailed information, see [Employer Profile Documentation](./docs/employer-p
 ## Documentation
 
 ### 📖 Essential Documentation
+
+**Core Guides:**
+- **[Workspace Architecture](./docs/WORKSPACE_ARCHITECTURE.md)** - Monorepo structure, Nx commands, development workflow
 - **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute to the project
 - **[Architecture Overview](./docs/architecture/architecture.md)** - System design and technical decisions
 - **[Testing Guide](./docs/architecture/testing.md)** - Testing strategies and procedures
+- **[Security Best Practices](./docs/SECURITY.md)** - Comprehensive security documentation
+- **[Performance Guide](./docs/PERFORMANCE.md)** - Performance optimization strategies
+
+**Application Documentation:**
+- **[Apps Directory](./apps/README.md)** - Frontend and backend application documentation
+- **[Libs Directory](./libs/README.md)** - Shared libraries documentation
 - **[Deployment Guide](./docs/deployment/deployment.md)** - Production deployment instructions
-- **[Security Summary](./docs/security/security-summary.md)** - Security architecture and practices
 
 ### 🔧 Setup Guides
 - [Firebase Setup](./docs/setup/FIREBASE_SETUP.md) - Configure Firebase services
@@ -252,13 +260,18 @@ For detailed information, see [Employer Profile Documentation](./docs/employer-p
 - [Edge Config](./docs/setup/EDGE_CONFIG_SETUP.md) - Edge configuration for Vercel
 
 ### 🔒 Security Documentation
+- [Security Best Practices](./docs/SECURITY.md) - Environment variables, backend/frontend security
 - [KMS Security](./docs/security/KMS_SECURITY_SUMMARY.md) - Key management security
 - [Security Checklist](./docs/security/SECURITY_CHECKLIST.md) - Pre-deployment security review
 - [Encryption Design](./docs/design/hybrid-encryption-design.md) - Hybrid encryption architecture
 
+### ⚡ Performance & Optimization
+- [Performance Guide](./docs/PERFORMANCE.md) - Code splitting, caching, monitoring
+- [Dependencies Audit](./docs/architecture/dependencies.md) - Dependency management
+
 ### 📚 Additional Resources
 - [Complete Documentation Index](./docs/README.md) - Full documentation map
-- [Dependencies Audit](./docs/architecture/dependencies.md) - Dependency management
+- [Security Summary](./docs/security/security-summary.md) - Security architecture overview
 - [Audit Findings](./docs/archive/audit-findings.md) - Historical audit reports
 
 ## Vision & Roadmap
