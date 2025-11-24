@@ -11,7 +11,8 @@
         "command": "tsc",
         "cwd": "libs/accrual-engine"
       },
-      "outputs": ["{projectRoot}/dist"]
+      "outputs": ["{projectRoot}/dist"],
+      "dependsOn": ["shared-types:build", "shared-utils:build"]
     },
     "typecheck": {
       "executor": "nx:run-commands",

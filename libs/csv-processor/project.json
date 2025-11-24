@@ -11,7 +11,8 @@
         "command": "tsc",
         "cwd": "libs/csv-processor"
       },
-      "outputs": ["{projectRoot}/dist"]
+      "outputs": ["{projectRoot}/dist"],
+      "dependsOn": ["shared-types:build"]
     },
     "typecheck": {
       "executor": "nx:run-commands",
