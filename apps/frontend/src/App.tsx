@@ -15,34 +15,59 @@
  * - Implements conditional navigation based on user authentication
  * - Integrates maintenance mode notification
  * - Includes debug panel for development
+ * - Uses React lazy loading for optimal performance
  * 
  * Uses:
  * - React Router for client-side navigation
  * - AuthContext for Firebase authentication state
  * - API client for backend authentication fallback
  * - Design system components for consistent UI feedback
+ * - React.lazy and Suspense for code splitting
  * 
  * All application pages and layout are controlled from here.
  */
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { useAuth } from '@/contexts/useAuth';
 import { User } from '@/types';
 import { MaintenanceMode } from '@/components/MaintenanceMode';
 import { DebugPanel } from '@/components/DebugPanel';
 
-// Pages
-import Dashboard from '@/pages/Dashboard';
+// Eagerly load critical components that appear on first render
 import Login from '@/pages/Login';
-import Register from '@/pages/Register';
-import RegisterEmployee from '@/pages/RegisterEmployee';
-import RegisterManager from '@/pages/RegisterManager';
-import EmployeeDashboard from '@/pages/EmployeeDashboard';
-import EmployerDashboard from '@/pages/EmployerDashboard';
-import AuditLog from '@/pages/AuditLog';
-import Settings from '@/pages/Settings';
-import Pricing from '@/pages/Pricing';
+
+// Lazy load other pages for better performance
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const Register = lazy(() => import('@/pages/Register'));
+const RegisterEmployee = lazy(() => import('@/pages/RegisterEmployee'));
+const RegisterManager = lazy(() => import('@/pages/RegisterManager'));
+const EmployeeDashboard = lazy(() => import('@/pages/EmployeeDashboard'));
+const EmployerDashboard = lazy(() => import('@/pages/EmployerDashboard'));
+const AuditLog = lazy(() => import('@/pages/AuditLog'));
+const Settings = lazy(() => import('@/pages/Settings'));
+const Pricing = lazy(() => import('@/pages/Pricing'));
+
+/**
+ * Loading fallback component for lazy-loaded routes
+ */
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <div className="text-center space-y-4">
+      <div className="relative">
+        <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary-200 border-t-primary-600 mx-auto"></div>
+      </div>
+      <div>
+        <div className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+          Loading...
+        </div>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
+          Please wait while we load the page
+        </p>
+      </div>
+    </div>
+  </div>
+);
 
 function App() {
   const { userData, currentUser, loading: authLoading } = useAuth();
@@ -184,27 +209,29 @@ function App() {
     <BrowserRouter>
       <MaintenanceMode />
       <DebugPanel />
-      <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={!user ? <Login onLogin={setUser} /> : <Navigate to="/" />} />
-        <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
-        <Route path="/register/employee" element={!user ? <RegisterEmployee onRegister={setUser} /> : <Navigate to="/" />} />
-        <Route path="/register/manager" element={!user ? <RegisterManager onRegister={setUser} /> : <Navigate to="/" />} />
-        <Route path="/pricing" element={<Pricing />} />
-        
-        {/* Protected routes */}
-        {user ? (
-          <>
-            <Route path="/" element={<Dashboard user={user} />} />
-            <Route path="/employee" element={<EmployeeDashboard user={user} />} />
-            <Route path="/employer" element={<EmployerDashboard user={user} />} />
-            <Route path="/audit" element={<AuditLog user={user} />} />
-            <Route path="/settings" element={<Settings user={user} />} />
-          </>
-        ) : (
-          <Route path="*" element={<Navigate to="/login" />} />
-        )}
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {/* Public routes */}
+          <Route path="/login" element={!user ? <Login onLogin={setUser} /> : <Navigate to="/" />} />
+          <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
+          <Route path="/register/employee" element={!user ? <RegisterEmployee onRegister={setUser} /> : <Navigate to="/" />} />
+          <Route path="/register/manager" element={!user ? <RegisterManager onRegister={setUser} /> : <Navigate to="/" />} />
+          <Route path="/pricing" element={<Pricing />} />
+          
+          {/* Protected routes */}
+          {user ? (
+            <>
+              <Route path="/" element={<Dashboard user={user} />} />
+              <Route path="/employee" element={<EmployeeDashboard user={user} />} />
+              <Route path="/employer" element={<EmployerDashboard user={user} />} />
+              <Route path="/audit" element={<AuditLog user={user} />} />
+              <Route path="/settings" element={<Settings user={user} />} />
+            </>
+          ) : (
+            <Route path="*" element={<Navigate to="/login" />} />
+          )}
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }
