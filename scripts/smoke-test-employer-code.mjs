@@ -4,6 +4,9 @@
  * 
  * Verifies that employer code generation logic works correctly.
  * This is a fast, dependency-free test that can run in CI without Firebase.
+ * 
+ * NOTE: This test requires the shared-types package to be built first.
+ * Run `npm run build` or `npx nx build shared-types` before running this test.
  */
 
 import { generateRandomEmployerCode, isValidEmployerCode, EMPLOYER_CODE_MIN, EMPLOYER_CODE_MAX } from '../packages/shared-types/dist/employer-profile.js';

@@ -84,7 +84,7 @@ export const CreateEmployerProfileInputSchema = z.object({
   contactEmail: z.string().email(),
   contactPhone: z.string().optional(),
   logoUrl: z.string().url().optional(),
-  brandColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+  brandColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Brand color must be a valid hex color').optional(),
 });
 
 /**
@@ -99,7 +99,7 @@ export interface UpdateEmployerBrandingInput {
 export const UpdateEmployerBrandingInputSchema = z.object({
   displayName: z.string().min(2).max(200).optional(),
   logoUrl: z.string().url().optional(),
-  brandColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/).optional(),
+  brandColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Brand color must be a valid hex color').optional(),
 });
 
 /**

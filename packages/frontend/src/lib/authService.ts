@@ -350,7 +350,7 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
   }
 
   if (!data.tenantCode && !data.employerEmail) {
-    throw new Error('Please provide a 4-digit employer code');
+    throw new Error('Please provide an employer code');
   }
 
   try {
@@ -485,8 +485,11 @@ export async function registerEmployee(data: RegisterEmployeeData): Promise<{ us
       });
       console.log('Employee linked to employer successfully');
     } catch (linkError) {
-      console.error('Failed to link employee to employer profile (non-fatal):', linkError);
-      // Don't fail registration if linking fails - can be done later
+      console.error('Failed to link employee to employer profile:', linkError);
+      // Log to monitoring but don't fail registration
+      // The employerId is set in the user document, so basic linking is complete
+      // The subcollection link can be recreated later if needed
+      console.error('Employee registration completed but subcollection link failed - employerId is set in user document');
     }
 
     // Create audit log with retry

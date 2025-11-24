@@ -157,12 +157,12 @@ export async function createEmployerProfile(
   const profileData = {
     employerCode,
     displayName: input.displayName,
-    logoUrl: input.logoUrl || null,
-    brandColor: input.brandColor || null,
+    logoUrl: input.logoUrl ?? null,
+    brandColor: input.brandColor ?? null,
     size,
     employeeCount: input.employeeCount,
     contactEmail: input.contactEmail,
-    contactPhone: input.contactPhone || null,
+    contactPhone: input.contactPhone ?? null,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
