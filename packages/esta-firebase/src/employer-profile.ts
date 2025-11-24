@@ -15,18 +15,17 @@ import {
   getDocs,
   serverTimestamp,
   runTransaction,
-  DocumentReference,
 } from 'firebase/firestore';
 import type { Firestore } from 'firebase/firestore';
-import {
+import type {
   EmployerProfile,
   CreateEmployerProfileInput,
   UpdateEmployerBrandingInput,
   EmployerEmployee,
+} from '@esta/shared-types';
+import {
   generateRandomEmployerCode,
   isValidEmployerCode,
-  EMPLOYER_CODE_MIN,
-  EMPLOYER_CODE_MAX,
 } from '@esta/shared-types';
 
 /**
@@ -81,6 +80,10 @@ export async function getEmployerProfileByCode(
   }
   
   const docSnap = querySnapshot.docs[0];
+  if (!docSnap) {
+    return null;
+  }
+  
   const data = docSnap.data();
   
   return {
