@@ -14,8 +14,10 @@
     "dev:frontend": "nx dev frontend",
     "dev:backend": "nx dev backend",
     "build": "nx run-many --target=build --all",
+    "build:all": "nx run-many --target=build --all --parallel=3",
     "build:frontend": "nx build frontend",
     "build:backend": "nx build backend",
+    "build:libs": "nx run-many --target=build --projects=shared-types,shared-utils,accrual-engine,esta-firebase,csv-processor",
     "test": "nx run-many --target=test --all",
     "test:frontend": "nx test frontend",
     "test:backend": "nx test backend",
@@ -25,12 +27,20 @@
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
     "lint": "nx run-many --target=lint --all",
+    "lint:fix": "nx run-many --target=lint --all -- --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore",
     "typecheck": "nx run-many --target=typecheck --all",
     "clean": "nx run-many --target=clean --all && rm -rf node_modules packages/*/node_modules .nx",
+    "clean:all": "npm run clean && rm -rf apps/*/dist libs/*/dist packages/*/dist functions/dist api/dist .nx/cache",
     "postinstall": "npm run postinstall --workspaces --if-present",
+    "prepare": "husky || echo 'Husky not available (CI environment)'",
     "setup:kms": "node scripts/setup-kms.js",
     "validate:deployment": "bash scripts/validate-deployment.sh",
+    "validate:tsconfig": "node scripts/validate-tsconfig-paths.js",
     "ci:validate": "npm run lint && npm run typecheck && npm run test && npm run build && npm run validate:deployment",
+    "docs": "echo 'Install typedoc with: npm install -D typedoc && npx typedoc'",
+    "health:check": "node scripts/health-check.js",
     "sbom": "bash scripts/generate-sbom.sh"
   },
   "dependencies": {
@@ -45,10 +55,19 @@
     "@playwright/test": "^1.56.1",
     "concurrently": "^9.2.1",
     "dotenv": "^17.2.3",
+    "husky": "^9.0.0",
     "lerna": "^8.1.8",
+    "lint-staged": "^15.0.0",
     "nx": "^20.3.2",
     "playwright": "^1.56.1",
+    "prettier": "^3.2.0",
+    "prettier-plugin-tailwindcss": "^0.6.0",
     "typescript": "^5.3.3"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,json,md,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "overrides": {
     "react": "^18.2.0",

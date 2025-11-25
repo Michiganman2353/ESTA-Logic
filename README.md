@@ -4,10 +4,15 @@
 
 ESTA Tracker is a full-stack SaaS platform that automates compliance with the Michigan Earned Sick Time Act (ESTA) of 2025, helping employers track, calculate, and document paid sick time without the complexity.
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/Michiganman2353/ESTA-Logic/ci.yml?branch=main)](https://github.com/Michiganman2353/ESTA-Logic/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/Michiganman2353/ESTA-Logic/ci.yml?branch=master)](https://github.com/Michiganman2353/ESTA-Logic/actions)
+[![CI Status](https://github.com/Michiganman2353/ESTA-Logic/actions/workflows/ci.yml/badge.svg)](https://github.com/Michiganman2353/ESTA-Logic/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Michiganman2353/ESTA-Logic/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/Michiganman2353/ESTA-Logic/actions/workflows/codeql-analysis.yml)
 [![License](https://img.shields.io/github/license/Michiganman2353/ESTA-Logic)](./LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-22.x-green?logo=node.js)](https://nodejs.org/)
 
 ## Table of Contents
+
 - [Quick Start](#quick-start)
 - [Features](#features)
 - [Technology Stack](#technology-stack)
@@ -20,6 +25,7 @@ ESTA Tracker is a full-stack SaaS platform that automates compliance with the Mi
 ## Quick Start
 
 ### Prerequisites
+
 - **Node.js 22.x** (required - see `.nvmrc`)
 - npm ≥10.0.0
 - Firebase account
@@ -47,20 +53,25 @@ VITE_FIREBASE_APP_ID=
 ### Where to Configure
 
 #### 🔹 Local Development
+
 1. Copy `.env.example` to `.env`
 2. Fill in all 6 `VITE_FIREBASE_*` variables with your Firebase project credentials
 3. Get credentials from [Firebase Console](https://console.firebase.google.com/) → Project Settings → Web App
 
 #### 🔹 Vercel Deployment
+
 Configure all 6 variables in Vercel Dashboard for **ALL** environments:
+
 - Production environment
-- Preview environment  
+- Preview environment
 - Development environment
 
 **Path:** Vercel Dashboard → Project Settings → Environment Variables
 
 #### 🔹 GitHub Actions (CI/CD)
+
 Add all 6 variables as **repository secrets**:
+
 - `VITE_FIREBASE_API_KEY`
 - `VITE_FIREBASE_AUTH_DOMAIN`
 - `VITE_FIREBASE_PROJECT_ID`
@@ -72,51 +83,57 @@ Add all 6 variables as **repository secrets**:
 
 ### Important Notes
 
-- ✅ **VITE_** prefix is **required** for all frontend environment variables
-- ❌ **REACT_APP_** variables are **NOT supported**
-- ❌ **Unprefixed FIREBASE_** variables are **NOT supported** for frontend
+- ✅ **VITE\_** prefix is **required** for all frontend environment variables
+- ❌ **REACT*APP*** variables are **NOT supported**
+- ❌ **Unprefixed FIREBASE\_** variables are **NOT supported** for frontend
 - ⚠️ All workflows, builds, and tests require these variables to succeed
 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/Michiganman2353/ESTA-Logic.git
    cd ESTA-Logic
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
    ```
 
 4. **Start development server**
+
    ```bash
    # Start all packages in dev mode
    npm run dev
-   
+
    # Or start individual packages:
    npm run dev:frontend  # Frontend only
    npm run dev:backend   # Backend only
    ```
 
 5. **Build for production**
+
    ```bash
    # Build all packages
    npm run build
-   
+
    # Or build individual packages:
    npm run build:frontend
    npm run build:backend
    ```
 
 For detailed setup instructions, see:
+
 - [Firebase Setup Guide](./docs/setup/FIREBASE_SETUP.md)
 - [Deployment Guide](./docs/deployment/deployment.md)
 - [KMS Security Setup](./docs/setup/KMS_SETUP_GUIDE.md)
@@ -124,6 +141,7 @@ For detailed setup instructions, see:
 ### Monorepo Architecture
 
 This project uses a modern monorepo structure powered by:
+
 - **Nx** - Build orchestration and task running
 - **Lerna** - Package management
 - **npm Workspaces** - Dependency management
@@ -173,6 +191,7 @@ packages/
 ## Features
 
 ### Core Capabilities
+
 - ✅ **Automated Sick Time Accrual** - 1 hour per 30 hours worked, Michigan ESTA compliant
 - ✅ **Employer Profile System** - Unique 4-digit codes for easy employee onboarding
 - ✅ **White-Label Branding** - Employers can customize with logo, company name, and colors
@@ -186,6 +205,7 @@ packages/
 - ✅ **Multi-Tenant Architecture** - Complete data isolation between employers
 
 ### Security
+
 - 🔐 **Google Cloud KMS Encryption** - Hardware-backed security for sensitive data
 - 🔐 **AES-256-GCM + RSA-OAEP** - Industry-standard hybrid encryption
 - 🔐 **Signed URLs** - Secure direct-to-storage uploads
@@ -196,6 +216,7 @@ See [Security Documentation](./docs/security/) for complete security details.
 ## Technology Stack
 
 ### Core Technologies
+
 - **Frontend**: React + Vite + TypeScript
 - **Backend**: Node.js + Express + TypeScript
 - **Database**: Firebase Firestore
@@ -207,6 +228,7 @@ See [Security Documentation](./docs/security/) for complete security details.
 - **Testing**: Vitest (Unit), Playwright (E2E)
 
 ### Build & Development Tools
+
 - **Monorepo Management**: Nx + Lerna + npm Workspaces
 - **Build Orchestration**: Nx (v20+)
 - **Package Management**: Lerna (v8+) with Nx integration
@@ -220,18 +242,21 @@ For architectural details, see [Architecture Documentation](./docs/architecture/
 ESTA Tracker uses a centralized employer profile system with unique 4-digit codes for easy employee onboarding:
 
 ### For Employers
+
 - **Unique 4-Digit Code**: Upon registration, employers receive a unique code (e.g., "1234")
 - **White-Label Branding**: Customize with company logo, name, and brand colors
 - **Employee Management**: View and manage all employees linked to your account
 - **Code Regeneration**: Request a new code if needed (old code becomes invalid)
 
-### For Employees  
+### For Employees
+
 - **Simple Onboarding**: Register using your employer's 4-digit code
 - **Automatic Linking**: Instantly connected to your employer's account
 - **Branded Experience**: See your employer's logo and company name
 - **Secure Access**: View only your own data and your employer's profile
 
 ### Security Features
+
 - **Data Isolation**: Employers can only access their own employees' data
 - **Role-Based Access**: Strict Firestore rules enforce access controls
 - **Audit Trail**: All registration and linking events are logged
@@ -243,6 +268,7 @@ For detailed information, see [Employer Profile Documentation](./docs/employer-p
 ### 📖 Essential Documentation
 
 **Core Guides:**
+
 - **[Workspace Architecture](./docs/WORKSPACE_ARCHITECTURE.md)** - Monorepo structure, Nx commands, development workflow
 - **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute to the project
 - **[Architecture Overview](./docs/architecture/architecture.md)** - System design and technical decisions
@@ -251,27 +277,32 @@ For detailed information, see [Employer Profile Documentation](./docs/employer-p
 - **[Performance Guide](./docs/PERFORMANCE.md)** - Performance optimization strategies
 
 **Application Documentation:**
+
 - **[Apps Directory](./apps/README.md)** - Frontend and backend application documentation
 - **[Libs Directory](./libs/README.md)** - Shared libraries documentation
 - **[Deployment Guide](./docs/deployment/deployment.md)** - Production deployment instructions
 
 ### 🔧 Setup Guides
+
 - [Firebase Setup](./docs/setup/FIREBASE_SETUP.md) - Configure Firebase services
 - [KMS Setup](./docs/setup/KMS_SETUP_GUIDE.md) - Google Cloud KMS configuration
 - [Vercel Deployment](./docs/deployment/deployment.md) - Vercel deployment and CI/CD setup
 - [Edge Config](./docs/setup/EDGE_CONFIG_SETUP.md) - Edge configuration for Vercel
 
 ### 🔒 Security Documentation
+
 - [Security Best Practices](./docs/SECURITY.md) - Environment variables, backend/frontend security
 - [KMS Security](./docs/security/KMS_SECURITY_SUMMARY.md) - Key management security
 - [Security Checklist](./docs/security/SECURITY_CHECKLIST.md) - Pre-deployment security review
 - [Encryption Design](./docs/design/hybrid-encryption-design.md) - Hybrid encryption architecture
 
 ### ⚡ Performance & Optimization
+
 - [Performance Guide](./docs/PERFORMANCE.md) - Code splitting, caching, monitoring
 - [Dependencies Audit](./docs/architecture/dependencies.md) - Dependency management
 
 ### 📚 Additional Resources
+
 - [Complete Documentation Index](./docs/README.md) - Full documentation map
 - [Security Summary](./docs/security/security-summary.md) - Security architecture overview
 - [Audit Findings](./docs/archive/audit-findings.md) - Historical audit reports
@@ -279,6 +310,7 @@ For detailed information, see [Employer Profile Documentation](./docs/employer-p
 ## Vision & Roadmap
 
 ### Current Focus: MVP 1.0
+
 - ✅ Employer onboarding and setup
 - ✅ Automated sick time accrual engine
 - ✅ PTO request and approval workflow
@@ -288,6 +320,7 @@ For detailed information, see [Employer Profile Documentation](./docs/employer-p
 - 🚧 Mobile-responsive design
 
 ### Future Phases
+
 - **Phase 2**: Payroll integrations (QuickBooks Time, Homebase), Mobile app, Advanced reporting
 - **Phase 3**: Multi-state expansion, White-label offerings, Full HR suite
 - **Phase 4**: National HR compliance engine, Enterprise partnerships
@@ -306,11 +339,11 @@ The Enterprise Subscription System is the financial backbone of ESTA Tracker, en
 
 #### Design Principles
 
-| Principle | Description |
-|-----------|-------------|
-| **Failure Is Not An Option** | Every component engineered with financial-grade reliability and zero-tolerance for revenue leakage |
-| **Scale Is Assumed** | Architected for 10,000 concurrent subscriptions from day one, designed for 100x growth |
-| **Compliance Is Non-Negotiable** | PCI DSS, SOC 2, GDPR, and global tax compliance are foundational requirements |
+| Principle                        | Description                                                                                        |
+| -------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Failure Is Not An Option**     | Every component engineered with financial-grade reliability and zero-tolerance for revenue leakage |
+| **Scale Is Assumed**             | Architected for 10,000 concurrent subscriptions from day one, designed for 100x growth             |
+| **Compliance Is Non-Negotiable** | PCI DSS, SOC 2, GDPR, and global tax compliance are foundational requirements                      |
 
 #### System-Wide Non-Negotiables
 
@@ -329,12 +362,12 @@ The Enterprise Subscription System is the financial backbone of ESTA Tracker, en
 
 #### Four-Tier Enterprise Model
 
-| Tier | Description | Target Audience |
-|------|-------------|-----------------|
-| **FREE** | Acquisition funnel with hard limits, designed to convert | Individual users, trial |
-| **PRO** | Premium individual offering with 10x value over free | Power users, small teams |
-| **AGENCY** | Multi-seat B2B with white-labeling and bulk operations | Agencies, mid-size businesses |
-| **ENTERPRISE** | Custom contracts with SLA guarantees | Large organizations |
+| Tier           | Description                                              | Target Audience               |
+| -------------- | -------------------------------------------------------- | ----------------------------- |
+| **FREE**       | Acquisition funnel with hard limits, designed to convert | Individual users, trial       |
+| **PRO**        | Premium individual offering with 10x value over free     | Power users, small teams      |
+| **AGENCY**     | Multi-seat B2B with white-labeling and bulk operations   | Agencies, mid-size businesses |
+| **ENTERPRISE** | Custom contracts with SLA guarantees                     | Large organizations           |
 
 #### Pricing Engine Capabilities
 
@@ -378,12 +411,12 @@ The Enterprise Subscription System is the financial backbone of ESTA Tracker, en
 
 #### Security Implementation
 
-| Standard | Description |
-|----------|-------------|
-| **PCI DSS Level 1** | Certified card data handling with zero plaintext card data |
-| **SOC 2 Type II** | Comprehensive financial controls with third-party audits |
-| **GDPR/CCPA** | Full data subject rights including right to erasure and portability |
-| **Financial Audit Trail** | Immutable log of every financial event with tamper-evident sealing |
+| Standard                  | Description                                                         |
+| ------------------------- | ------------------------------------------------------------------- |
+| **PCI DSS Level 1**       | Certified card data handling with zero plaintext card data          |
+| **SOC 2 Type II**         | Comprehensive financial controls with third-party audits            |
+| **GDPR/CCPA**             | Full data subject rights including right to erasure and portability |
+| **Financial Audit Trail** | Immutable log of every financial event with tamper-evident sealing  |
 
 #### Fraud Prevention
 
@@ -418,12 +451,12 @@ The Enterprise Subscription System is the financial backbone of ESTA Tracker, en
 
 #### Third-party Integrations
 
-| Category | Integrations |
-|----------|-------------|
-| **Accounting** | QuickBooks, Xero, NetSuite |
-| **CRM** | Salesforce, HubSpot, Zoho |
-| **Analytics** | Business intelligence tools |
-| **Support** | Zendesk, Intercom, Freshdesk |
+| Category       | Integrations                 |
+| -------------- | ---------------------------- |
+| **Accounting** | QuickBooks, Xero, NetSuite   |
+| **CRM**        | Salesforce, HubSpot, Zoho    |
+| **Analytics**  | Business intelligence tools  |
+| **Support**    | Zendesk, Intercom, Freshdesk |
 
 ### 🚀 Scalability & Reliability
 
@@ -443,38 +476,39 @@ The Enterprise Subscription System is the financial backbone of ESTA Tracker, en
 
 ### 📅 Implementation Phases
 
-| Phase | Timeline | Scope |
-|-------|----------|-------|
-| **Phase 1: Foundation** | Weeks 1-4 | Core subscription engine, single payment processor, basic tier structure |
-| **Phase 2: Scale** | Weeks 5-8 | Multi-processor architecture, usage-based billing, advanced dunning, basic analytics |
-| **Phase 3: Enterprise** | Weeks 9-12 | Complex pricing models, contract management, security compliance |
-| **Phase 4: Optimization** | Weeks 13-16 | Performance tuning, advanced analytics, security audit preparation |
+| Phase                     | Timeline    | Scope                                                                                |
+| ------------------------- | ----------- | ------------------------------------------------------------------------------------ |
+| **Phase 1: Foundation**   | Weeks 1-4   | Core subscription engine, single payment processor, basic tier structure             |
+| **Phase 2: Scale**        | Weeks 5-8   | Multi-processor architecture, usage-based billing, advanced dunning, basic analytics |
+| **Phase 3: Enterprise**   | Weeks 9-12  | Complex pricing models, contract management, security compliance                     |
+| **Phase 4: Optimization** | Weeks 13-16 | Performance tuning, advanced analytics, security audit preparation                   |
 
 ### 🎯 Success Criteria
 
 #### Technical Excellence
 
-| Metric | Target |
-|--------|--------|
-| **Uptime** | 99.95% for payment processing operations |
+| Metric            | Target                                        |
+| ----------------- | --------------------------------------------- |
+| **Uptime**        | 99.95% for payment processing operations      |
 | **Response Time** | Sub-2-second for 95th percentile API requests |
-| **Data Loss** | Zero in financial transactions |
-| **Error Rate** | Less than 0.1% in payment processing |
+| **Data Loss**     | Zero in financial transactions                |
+| **Error Rate**    | Less than 0.1% in payment processing          |
 
 #### Business Impact
 
-| Metric | Target |
-|--------|--------|
-| **Payment Failure Rate** | Less than 1% after recovery attempts |
-| **Free to Paid Conversion** | Greater than 20% |
-| **Monthly Voluntary Churn** | Less than 5% |
-| **Automated Revenue Collection** | Over 90% of total revenue |
+| Metric                           | Target                               |
+| -------------------------------- | ------------------------------------ |
+| **Payment Failure Rate**         | Less than 1% after recovery attempts |
+| **Free to Paid Conversion**      | Greater than 20%                     |
+| **Monthly Voluntary Churn**      | Less than 5%                         |
+| **Automated Revenue Collection** | Over 90% of total revenue            |
 
 ---
 
 ## Contributing
 
 We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md) for details on:
+
 - Setting up your development environment
 - Code style guidelines
 - Testing requirements
