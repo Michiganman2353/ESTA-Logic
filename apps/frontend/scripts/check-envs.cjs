@@ -81,8 +81,8 @@ loadEnvFiles();
 
 /**
  * Required Firebase environment variable keys.
- * These can be provided with either REACT_APP_ or VITE_ prefix.
- * The script checks for both prefixes to support different deployment environments.
+ * This monorepo ONLY supports VITE_ prefixed variables.
+ * REACT_APP_* variables are NOT supported.
  * 
  * Note: MEASUREMENT_ID is intentionally NOT included.
  * It is used for Firebase Analytics (Google Analytics) which is optional.
@@ -99,42 +99,19 @@ const REQUIRED_FIREBASE_KEYS = [
 
 /**
  * Build the list of environment variable names to check.
- * Supports both REACT_APP_ and VITE_ prefixes.
+ * Only VITE_ prefix is supported.
  */
 const VITE_ENV_VARS = REQUIRED_FIREBASE_KEYS.map(key => `VITE_FIREBASE_${key}`);
-const REACT_APP_ENV_VARS = REQUIRED_FIREBASE_KEYS.map(key => `REACT_APP_FIREBASE_${key}`);
 
 /**
  * Validate that all required environment variables are set.
- * Checks for either REACT_APP_ or VITE_ prefix for each Firebase config key.
- * @returns {Object} { isValid: boolean, missingVars: string[], foundPrefix: string }
+ * Only VITE_ prefix is supported.
+ * @returns {Object} { isValid: boolean, missingVars: string[] }
  */
 function validateEnvironmentVariables() {
   const missingVars = [];
-  let foundPrefix = null;
   
-  // First, determine which prefix is being used
-  const hasVite = VITE_ENV_VARS.some(varName => process.env[varName]);
-  const hasReactApp = REACT_APP_ENV_VARS.some(varName => process.env[varName]);
-  
-  if (hasVite && hasReactApp) {
-    // Both prefixes found - use VITE_ as primary, but log this for transparency
-    console.log('ℹ️  Note: Found both VITE_ and REACT_APP_ prefixed variables');
-    console.log('   Using VITE_ prefix as primary (standard for Vite builds)');
-    foundPrefix = 'VITE_';
-  } else if (hasVite) {
-    foundPrefix = 'VITE_';
-  } else if (hasReactApp) {
-    foundPrefix = 'REACT_APP_';
-  } else {
-    // No variables found with either prefix
-    foundPrefix = 'VITE_'; // default for error reporting
-  }
-  
-  // Check for required variables with the appropriate prefix
-  const varsToCheck = foundPrefix === 'REACT_APP_' ? REACT_APP_ENV_VARS : VITE_ENV_VARS;
-  
-  for (const varName of varsToCheck) {
+  for (const varName of VITE_ENV_VARS) {
     const value = process.env[varName];
     
     // Check if variable is missing or empty
@@ -145,8 +122,7 @@ function validateEnvironmentVariables() {
   
   return {
     isValid: missingVars.length === 0,
-    missingVars,
-    foundPrefix
+    missingVars
   };
 }
 
@@ -195,7 +171,7 @@ function exitWithError(missingVars) {
 function main() {
   console.log('\n🔍 Validating Frontend Environment Variables...\n');
   
-  const { isValid, missingVars, foundPrefix } = validateEnvironmentVariables();
+  const { isValid, missingVars } = validateEnvironmentVariables();
   
   if (!isValid) {
     // Fatal error - missing required variables
@@ -204,13 +180,12 @@ function main() {
   
   // Success - all required variables are set
   console.log('✅ All required environment variables are properly set');
-  console.log(`✅ Using ${foundPrefix}FIREBASE_* prefix`);
+  console.log('✅ Using VITE_FIREBASE_* prefix (standard for this monorepo)');
   console.log(`✅ Validated ${REQUIRED_FIREBASE_KEYS.length} environment variables\n`);
   
   // List validated variables for transparency
   console.log('Validated variables:');
-  const varsToCheck = foundPrefix === 'REACT_APP_' ? REACT_APP_ENV_VARS : VITE_ENV_VARS;
-  varsToCheck.forEach((varName) => {
+  VITE_ENV_VARS.forEach((varName) => {
     console.log(`  ✓ ${varName}`);
   });
   
