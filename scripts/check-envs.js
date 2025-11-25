@@ -14,7 +14,7 @@ try {
   // ignore errors loading .env
 }
 
-// VITE_ prefix is the only supported prefix for frontend Firebase configuration
+// VITE_FIREBASE prefix is the only supported prefix for frontend Firebase configuration
 const requiredVars = [
   'VITE_FIREBASE_API_KEY',
   'VITE_FIREBASE_AUTH_DOMAIN',
