@@ -454,7 +454,8 @@ export function createAnnualCertification(params: {
   preparedBy: string;
 }): AnnualCertification {
   const now = new Date();
-  const dueDate = new Date(params.certificationYear, 2, 31); // March 31st of certification year
+  // Use April 1st and subtract one day to always get March 31st correctly
+  const dueDate = new Date(params.certificationYear, 3, 0); // Last day of March
   
   return {
     id: randomUUID(),

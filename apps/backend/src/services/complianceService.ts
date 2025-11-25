@@ -438,14 +438,34 @@ export function releaseLegalHold(metadata: RetentionMetadata): RetentionMetadata
 // ============================================================================
 
 /**
- * Audit entry sequence counter (in production, use distributed counter)
+ * Audit entry sequence counter.
+ * 
+ * NOTE: In production, this should be replaced with a distributed counter
+ * (e.g., Redis INCR, database sequence, or Cloud Firestore counter).
+ * The in-memory counter is suitable for single-instance deployments
+ * and testing scenarios.
+ * 
+ * @see https://firebase.google.com/docs/firestore/solutions/counters
  */
 let auditSequenceCounter = 0;
 
 /**
- * Last audit entry hash for chain integrity
+ * Last audit entry hash for chain integrity.
+ * 
+ * NOTE: In production, this should be stored in a persistent store
+ * (e.g., database, Redis) to maintain chain integrity across restarts
+ * and multiple instances. The chain should be initialized by reading
+ * the most recent audit entry's hash from the database.
  */
 let lastAuditEntryHash: string | undefined;
+
+/**
+ * Reset audit state (for testing only)
+ */
+export function _resetAuditState(): void {
+  auditSequenceCounter = 0;
+  lastAuditEntryHash = undefined;
+}
 
 /**
  * Generate integrity hash for audit entry
