@@ -1,0 +1,32 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "libs/shared-types/src/index.ts",
+    "libs/shared-utils/src/index.ts",
+    "libs/accrual-engine/src/index.ts",
+    "packages/esta-core/src/index.ts"
+  ],
+  "out": "docs/api",
+  "name": "ESTA-Logic API Documentation",
+  "readme": "README.md",
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "excludeExternals": true,
+  "includeVersion": true,
+  "categorizeByGroup": true,
+  "categoryOrder": ["Core", "Types", "Utilities", "*"],
+  "navigationLinks": {
+    "GitHub": "https://github.com/Michiganman2353/ESTA-Logic",
+    "Documentation": "https://github.com/Michiganman2353/ESTA-Logic#documentation"
+  },
+  "plugin": [],
+  "theme": "default",
+  "hideGenerator": false,
+  "searchInComments": true,
+  "cleanOutputDir": true,
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": false
+  }
+}

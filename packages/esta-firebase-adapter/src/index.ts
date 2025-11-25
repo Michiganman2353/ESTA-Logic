@@ -4,16 +4,95 @@
  * This package provides Firebase integration for the ESTA core library.
  * It isolates all Firebase/Firestore interactions from the pure business logic,
  * making the core logic testable and the system boundaries clear.
+ *
+ * Uses dependency injection pattern for easier testing and future scaling.
  */
 
 import * as admin from 'firebase-admin';
 import { calculateAccruedHours, calculateCappedAccrual } from '@esta/core';
 
 /**
- * Initialize Firebase Admin SDK.
+ * Firebase service interface for dependency injection
+ */
+export interface FirebaseService {
+  getFirestore(): admin.firestore.Firestore;
+  getAuth(): admin.auth.Auth;
+}
+
+/**
+ * Default Firebase service implementation
+ */
+class DefaultFirebaseService implements FirebaseService {
+  private app: admin.app.App;
+
+  constructor(app: admin.app.App) {
+    this.app = app;
+  }
+
+  getFirestore(): admin.firestore.Firestore {
+    return this.app.firestore();
+  }
+
+  getAuth(): admin.auth.Auth {
+    return this.app.auth();
+  }
+}
+
+// Singleton service instance
+let firebaseService: FirebaseService | null = null;
+
+/**
+ * Initialize Firebase Admin SDK with dependency injection support.
  * Call this once at application startup.
  *
  * @param appOptions - Optional Firebase app configuration
+ * @param customService - Optional custom FirebaseService for testing
+ * @returns The Firebase service instance
+ */
+export function initFirebase(
+  appOptions?: admin.AppOptions,
+  customService?: FirebaseService
+): FirebaseService {
+  if (customService) {
+    firebaseService = customService;
+    return firebaseService;
+  }
+
+  let app: admin.app.App;
+  if (!admin.apps.length) {
+    app = admin.initializeApp(appOptions || {});
+  } else {
+    app = admin.apps[0] as admin.app.App;
+  }
+
+  firebaseService = new DefaultFirebaseService(app);
+  return firebaseService;
+}
+
+/**
+ * Get the current Firebase service instance.
+ * Throws if not initialized.
+ */
+export function getFirebaseService(): FirebaseService {
+  if (!firebaseService) {
+    throw new Error('Firebase not initialized. Call initFirebase() first.');
+  }
+  return firebaseService;
+}
+
+/**
+ * Reset the Firebase service (useful for testing)
+ */
+export function resetFirebaseService(): void {
+  firebaseService = null;
+}
+
+/**
+ * Initialize Firebase Admin SDK (legacy API - kept for backward compatibility).
+ * Call this once at application startup.
+ *
+ * @param appOptions - Optional Firebase app configuration
+ * @deprecated Use initFirebase() instead
  */
 export function initAdmin(appOptions?: admin.AppOptions): admin.app.App {
   if (!admin.apps.length) {
@@ -26,6 +105,9 @@ export function initAdmin(appOptions?: admin.AppOptions): admin.app.App {
  * Get the Firestore database instance.
  */
 export function getFirestore(): admin.firestore.Firestore {
+  if (firebaseService) {
+    return firebaseService.getFirestore();
+  }
   return admin.firestore();
 }
 
