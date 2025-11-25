@@ -114,7 +114,6 @@ Check that all Firebase env vars are set in Vercel:
 - `VITE_FIREBASE_STORAGE_BUCKET`
 - `VITE_FIREBASE_MESSAGING_SENDER_ID`
 - `VITE_FIREBASE_APP_ID`
-- `VITE_FIREBASE_MEASUREMENT_ID`
 
 **Setting in Vercel:**
 1. Go to Vercel Dashboard → Project → Settings → Environment Variables
@@ -160,7 +159,6 @@ VITE_FIREBASE_PROJECT_ID
 VITE_FIREBASE_STORAGE_BUCKET
 VITE_FIREBASE_MESSAGING_SENDER_ID
 VITE_FIREBASE_APP_ID
-VITE_FIREBASE_MEASUREMENT_ID
 
 # Optional but recommended
 EDGE_CONFIG (for feature flags)
