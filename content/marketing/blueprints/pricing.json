@@ -1,0 +1,118 @@
+{
+  "schemaVersion": "1.0.0",
+  "slug": "pricing",
+  "title": "Pricing - ESTA Tracker",
+  "meta": {
+    "description": "Simple, transparent pricing for Michigan ESTA compliance. Pay per employee, no hidden fees. Start with a free trial.",
+    "ogImage": "/images/og-pricing.png"
+  },
+  "blocks": [
+    {
+      "type": "Hero",
+      "props": {
+        "headline": "Simple, Transparent Pricing",
+        "subheadline": "No hidden fees. No long-term contracts. Just straightforward pricing that scales with your team.",
+        "variant": "compact"
+      }
+    },
+    {
+      "type": "PricingTable",
+      "props": {
+        "headline": "Choose Your Plan",
+        "plans": [
+          {
+            "name": "Starter",
+            "price": 0,
+            "period": "month",
+            "description": "Perfect for trying out ESTA Tracker",
+            "features": [
+              "Up to 5 employees",
+              "Basic accrual tracking",
+              "Employee portal access",
+              "Email support",
+              "14-day trial"
+            ],
+            "ctaText": "Start Free Trial",
+            "ctaLink": "/signup?plan=starter",
+            "highlighted": false
+          },
+          {
+            "name": "Professional",
+            "price": 4.99,
+            "period": "employee/month",
+            "description": "For growing Michigan businesses",
+            "features": [
+              "Unlimited employees",
+              "Advanced accrual engine",
+              "Custom policies",
+              "Audit-ready reports",
+              "Priority email support",
+              "Payroll integrations",
+              "Multi-location support"
+            ],
+            "ctaText": "Get Started",
+            "ctaLink": "/signup?plan=professional",
+            "highlighted": true
+          },
+          {
+            "name": "Enterprise",
+            "price": null,
+            "period": null,
+            "description": "For large organizations with complex needs",
+            "features": [
+              "Everything in Professional",
+              "Dedicated account manager",
+              "Custom integrations",
+              "SSO/SAML support",
+              "SLA guarantee",
+              "On-site training",
+              "API access"
+            ],
+            "ctaText": "Contact Sales",
+            "ctaLink": "/contact?plan=enterprise",
+            "highlighted": false
+          }
+        ]
+      }
+    },
+    {
+      "type": "FeatureGrid",
+      "props": {
+        "headline": "All Plans Include",
+        "columns": 4,
+        "features": [
+          {
+            "icon": "check",
+            "title": "ESTA Compliance",
+            "description": "Built for Michigan law"
+          },
+          {
+            "icon": "check",
+            "title": "Employee Portal",
+            "description": "Self-service access"
+          },
+          {
+            "icon": "check",
+            "title": "Secure Storage",
+            "description": "Encrypted data"
+          },
+          {
+            "icon": "check",
+            "title": "Updates Included",
+            "description": "Always current"
+          }
+        ]
+      }
+    },
+    {
+      "type": "CTA",
+      "props": {
+        "headline": "Questions about pricing?",
+        "subheadline": "Our team is happy to help you find the right plan for your business.",
+        "ctaText": "Contact Us",
+        "ctaLink": "/contact",
+        "variant": "tertiary"
+      }
+    }
+  ]
+}

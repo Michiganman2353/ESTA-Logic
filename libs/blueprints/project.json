@@ -1,0 +1,31 @@
+{
+  "name": "blueprints",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/blueprints",
+  "projectType": "library",
+  "tags": ["type:lib", "scope:marketing"],
+  "targets": {
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+        "cwd": "libs/blueprints"
+      }
+    },
+    "test:coverage": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+        "cwd": "libs/blueprints"
+      },
+      "outputs": ["{projectRoot}/coverage"]
+    },
+    "validate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node validateAll.js",
+        "cwd": "libs/blueprints"
+      }
+    }
+  }
+}
