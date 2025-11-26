@@ -8,23 +8,28 @@ This guide covers deploying the ESTA Tracker application to Vercel. The project 
 
 - [Vercel Account](https://vercel.com/signup)
 - [Vercel CLI](https://vercel.com/docs/cli) (optional, for local testing)
-- Node.js 20.x (see `.nvmrc`)
+- Node.js 22.x (see `.nvmrc`)
 - npm ≥10.0.0
 
 ## Project Structure
 
 ```
 ESTA-Logic/
-├── packages/
+├── apps/
 │   ├── frontend/          # React + Vite application (builds to dist/)
-│   └── backend/           # Express API (for local dev and future deployment)
+│   ├── backend/           # Express API (for local dev and future deployment)
+│   └── marketing/         # Marketing website
+├── packages/
+│   ├── esta-core/         # Core ESTA logic
+│   └── esta-firebase-adapter/  # Firebase adapter
+├── libs/                  # Shared libraries
 ├── scripts/              # Utility scripts
 ├── vercel.json           # Vercel configuration
 ├── package.json          # Root package with build scripts
 └── .env.example          # Environment variable template
 ```
 
-**Note**: The current deployment configuration is frontend-only. The backend Express API in `packages/backend/` is set up for future deployment or local development.
+**Note**: The current deployment configuration is frontend-only. The backend Express API in `apps/backend/` is set up for future deployment or local development.
 
 ## Deployment Configuration
 
@@ -32,13 +37,13 @@ ESTA-Logic/
 
 The `vercel.json` file configures these automatically, but verify in your project settings:
 
-| Setting | Value |
-|---------|-------|
-| **Framework Preset** | Other (or Vite) |
-| **Build Command** | `npm install && npm run build:frontend` |
-| **Output Directory** | `packages/frontend/dist` |
-| **Install Command** | `npm install` |
-| **Node.js Version** | 20.x (specified in .nvmrc) |
+| Setting              | Value                      |
+| -------------------- | -------------------------- |
+| **Framework Preset** | Other (or Vite)            |
+| **Build Command**    | `npm run build:frontend`   |
+| **Output Directory** | `apps/frontend/dist`       |
+| **Install Command**  | `npm ci --prefer-offline`  |
+| **Node.js Version**  | 22.x (specified in .nvmrc) |
 
 ### vercel.json Configuration
 
@@ -47,7 +52,7 @@ The project uses a modern `vercel.json` configuration with:
 - ✅ **Security headers** (CSP, X-Frame-Options, HSTS)
 - ✅ **SPA routing** (rewrites all routes → index.html)
 - ✅ **Build settings** explicitly defined
-- ✅ **Output directory** pointing to `packages/frontend/dist`
+- ✅ **Output directory** pointing to `apps/frontend/dist`
 
 The configuration uses the latest Vercel format without deprecated `builds` or `routes` properties.
 
@@ -93,23 +98,23 @@ Configure these in the **Vercel Dashboard** → **Project Settings** → **Envir
 
 #### Production Environment
 
-| Variable | Value | Notes |
-|----------|-------|-------|
-| `NODE_ENV` | `production` | Auto-set by vercel.json |
-| `VITE_FIREBASE_API_KEY` | Your Firebase API key | Required for Firebase Auth |
-| `VITE_FIREBASE_AUTH_DOMAIN` | Your Firebase auth domain | Required for Firebase Auth |
-| `VITE_FIREBASE_PROJECT_ID` | Your Firebase project ID | Required for Firebase |
-| `VITE_FIREBASE_STORAGE_BUCKET` | Your Firebase storage bucket | Required for Firebase Storage |
-| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Your messaging sender ID | Required for Firebase |
-| `VITE_FIREBASE_APP_ID` | Your Firebase app ID | Required for Firebase |
+| Variable                            | Value                        | Notes                         |
+| ----------------------------------- | ---------------------------- | ----------------------------- |
+| `NODE_ENV`                          | `production`                 | Auto-set by vercel.json       |
+| `VITE_FIREBASE_API_KEY`             | Your Firebase API key        | Required for Firebase Auth    |
+| `VITE_FIREBASE_AUTH_DOMAIN`         | Your Firebase auth domain    | Required for Firebase Auth    |
+| `VITE_FIREBASE_PROJECT_ID`          | Your Firebase project ID     | Required for Firebase         |
+| `VITE_FIREBASE_STORAGE_BUCKET`      | Your Firebase storage bucket | Required for Firebase Storage |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Your messaging sender ID     | Required for Firebase         |
+| `VITE_FIREBASE_APP_ID`              | Your Firebase app ID         | Required for Firebase         |
 
 **Note**: All frontend environment variables must be prefixed with `VITE_` to be accessible in the Vite build.
 
 #### Development/Preview Environment
 
-| Variable | Value | Notes |
-|----------|-------|-------|
-| `NODE_ENV` | `development` | For preview deployments |
+| Variable          | Value              | Notes                                        |
+| ----------------- | ------------------ | -------------------------------------------- |
+| `NODE_ENV`        | `development`      | For preview deployments                      |
 | `VITE_FIREBASE_*` | Same as production | Use development Firebase project for testing |
 
 ### Setting Environment Variables in Vercel
@@ -139,6 +144,7 @@ For `FIREBASE_SERVICE_ACCOUNT`:
 ### Option 1: Deploy via GitHub Integration (Recommended)
 
 1. **Connect Repository**
+
    ```bash
    # Push your code to GitHub
    git push origin main
@@ -180,17 +186,17 @@ The build process defined in `vercel.json`:
 
 ```json
 {
-  "buildCommand": "npm install && npm run build:frontend",
-  "outputDirectory": "packages/frontend/dist"
+  "buildCommand": "npm run build:frontend",
+  "outputDirectory": "apps/frontend/dist"
 }
 ```
 
 **What happens:**
 
-1. `npm install` - Installs all dependencies (root + workspaces)
-2. `npm run build:frontend` - Runs `npm run build --workspace=packages/frontend`
+1. `npm ci --prefer-offline` - Installs all dependencies deterministically (root + workspaces)
+2. `npm run build:frontend` - Runs `nx build frontend`
 3. Frontend build: `tsc && vite build`
-4. Output: Static files in `packages/frontend/dist`
+4. Output: Static files in `apps/frontend/dist`
 5. Vercel serves these files with configured security headers and SPA routing
 
 ## Verifying Deployment
@@ -216,12 +222,14 @@ open https://your-deployment.vercel.app
 ### Issue 1: "Could not parse File as JSON: vercel.json"
 
 **Cause**: The `vercel.json` file contains invalid JSON syntax, such as:
+
 - JavaScript-style comments (`//` or `/* */`)
 - Trailing commas after the last item in objects/arrays
 - Unquoted keys or values
 - Single quotes instead of double quotes
 
 **Solution**:
+
 ```bash
 # Validate the JSON syntax locally
 node -e "JSON.parse(require('fs').readFileSync('vercel.json', 'utf-8'))"
@@ -240,6 +248,7 @@ node -e "JSON.parse(require('fs').readFileSync('vercel.json', 'utf-8'))"
 **Cause**: Missing dependencies or incorrect workspace setup
 
 **Solution**:
+
 ```bash
 # Ensure all dependencies are in package.json
 npm install
@@ -251,6 +260,7 @@ npm run build
 **Cause**: Variables not set in Vercel Dashboard or incorrect naming
 
 **Solution**:
+
 - Verify variable names match exactly (case-sensitive)
 - For Vite variables, must start with `VITE_`
 - Redeploy after adding variables
@@ -260,6 +270,7 @@ npm run build
 **Cause**: Missing or incorrect Firebase environment variables
 
 **Solution**:
+
 - Verify all `VITE_FIREBASE_*` variables are set in Vercel Dashboard
 - Check Firebase console for correct values
 - Ensure variables are prefixed with `VITE_` for Vite access
@@ -270,6 +281,7 @@ npm run build
 **Cause**: Type errors in TypeScript code
 
 **Solution**:
+
 ```bash
 # Run type checking locally
 npm run typecheck
@@ -283,6 +295,7 @@ npm run build
 **Current Status**: 5 moderate vulnerabilities in esbuild/vite (dev dependencies)
 
 **Solution**:
+
 ```bash
 # These are dev dependencies and don't affect production
 # Monitor for updates:
@@ -299,6 +312,7 @@ npm update vite vitest
 ### 1. Vite Build Optimizations
 
 Vite automatically provides:
+
 - Code splitting
 - Tree shaking
 - Minification
@@ -376,32 +390,36 @@ For automated deployments to work, configure these secrets in your GitHub reposi
 1. Navigate to: `Repository Settings > Secrets and variables > Actions`
 2. Add the following secrets:
 
-| Secret Name | Purpose | Where to Get It |
-|------------|---------|-----------------|
-| `VERCEL_TOKEN` | Vercel authentication token | [Vercel Account Tokens](https://vercel.com/account/tokens) |
-| `VERCEL_ORG_ID` | Your Vercel organization ID | Run `vercel link` and check `.vercel/project.json` |
-| `VERCEL_PROJECT_ID` | Your Vercel project ID | Run `vercel link` and check `.vercel/project.json` |
+| Secret Name         | Purpose                     | Where to Get It                                            |
+| ------------------- | --------------------------- | ---------------------------------------------------------- |
+| `VERCEL_TOKEN`      | Vercel authentication token | [Vercel Account Tokens](https://vercel.com/account/tokens) |
+| `VERCEL_ORG_ID`     | Your Vercel organization ID | Run `vercel link` and check `.vercel/project.json`         |
+| `VERCEL_PROJECT_ID` | Your Vercel project ID      | Run `vercel link` and check `.vercel/project.json`         |
 
 #### How to Obtain Vercel Organization and Project IDs
 
 **Prerequisites:**
+
 - Install Vercel CLI: `npm install -g vercel`
 - Have a Vercel account with access to the project
 
 **Step-by-Step Instructions:**
 
 1. **Login to Vercel**
+
    ```bash
    vercel login
    ```
+
    Follow the prompts to authenticate.
 
 2. **Link Your Project**
+
    ```bash
    cd /path/to/ESTA-Logic
    vercel link
    ```
-   
+
    You'll be prompted:
    - **Set up and deploy?** → Yes
    - **Which scope?** → Select your team/account
@@ -410,12 +428,13 @@ For automated deployments to work, configure these secrets in your GitHub reposi
 
 3. **Extract the IDs**
    After linking, a `.vercel/project.json` file is created:
-   
+
    ```bash
    cat .vercel/project.json
    ```
-   
+
    Example output:
+
    ```json
    {
      "orgId": "team_abc123xyz789",
@@ -425,14 +444,14 @@ For automated deployments to work, configure these secrets in your GitHub reposi
 
 4. **Add to GitHub Secrets**
    Go to your repository and add these values:
-   
    - Navigate to: `https://github.com/Michiganman2353/ESTA-Logic/settings/secrets/actions`
    - Click "New repository secret" for each:
      - Name: `VERCEL_ORG_ID`, Value: the orgId from project.json
      - Name: `VERCEL_PROJECT_ID`, Value: the projectId from project.json
      - Name: `VERCEL_TOKEN`, Value: your Vercel authentication token
 
-**Important Notes**: 
+**Important Notes**:
+
 - The CI/CD workflow automatically sanitizes the `VERCEL_TOKEN` to remove any invalid characters (newlines, spaces, hyphens, periods, slashes) that might cause deployment failures.
 - The `.vercel/` directory is gitignored and should never be committed
 - For detailed token setup instructions and troubleshooting, see [VERCEL_TOKEN_SETUP.md](VERCEL_TOKEN_SETUP.md).
@@ -449,6 +468,7 @@ When code is pushed to the `master` branch:
 6. Deployment URL is available in the GitHub Actions logs
 
 **Security Notes**:
+
 - Secrets are never exposed in logs or code
 - The workflow has minimal permissions (`contents: read`)
 - Setup is not considered complete until verified working in CI/CD pipeline
@@ -489,7 +509,7 @@ npm run dev
 
 # Test build locally
 npm run build
-cd packages/frontend/dist && python3 -m http.server 8080
+cd apps/frontend/dist && python3 -m http.server 8080
 
 # Deploy to Vercel
 vercel --prod
@@ -503,7 +523,7 @@ vercel ls
 
 ---
 
-**Last Updated**: November 2024
+**Last Updated**: November 2025
 **Vercel Configuration Version**: vercel.json v2
-**Node.js Version**: 20.x (LTS)
+**Node.js Version**: 22.x (LTS)
 **Architecture**: Frontend-only deployment (static site)
