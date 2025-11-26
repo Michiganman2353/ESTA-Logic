@@ -233,13 +233,8 @@ jobs:
       - name: Set SHAs for Nx
         uses: nrwl/nx-set-shas@v4
 
-      - name: Cache Nx
-        uses: actions/cache@v4
-        with:
-          path: .nx/cache
-          key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json', '**/project.json', 'nx.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nx-
+      - name: Clean Nx Cache
+        run: rm -rf .nx/cache .nx/workspace-data
 
       - name: Lint Affected Projects
         run: npx nx affected --target=lint --parallel=3
@@ -267,13 +262,8 @@ jobs:
       - name: Set SHAs for Nx
         uses: nrwl/nx-set-shas@v4
 
-      - name: Cache Nx
-        uses: actions/cache@v4
-        with:
-          path: .nx/cache
-          key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json', '**/project.json', 'nx.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nx-
+      - name: Clean Nx Cache
+        run: rm -rf .nx/cache .nx/workspace-data
 
       - name: Type Check Affected Projects
         run: npx nx affected --target=typecheck --parallel=3
@@ -301,13 +291,8 @@ jobs:
       - name: Set SHAs for Nx
         uses: nrwl/nx-set-shas@v4
 
-      - name: Cache Nx
-        uses: actions/cache@v4
-        with:
-          path: .nx/cache
-          key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json', '**/project.json', 'nx.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nx-
+      - name: Clean Nx Cache
+        run: rm -rf .nx/cache .nx/workspace-data
 
       - name: Run Tests on Affected Projects
         env:
@@ -342,13 +327,8 @@ jobs:
       - name: Set SHAs for Nx
         uses: nrwl/nx-set-shas@v4
 
-      - name: Cache Nx
-        uses: actions/cache@v4
-        with:
-          path: .nx/cache
-          key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json', '**/project.json', 'nx.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nx-
+      - name: Clean Nx Cache
+        run: rm -rf .nx/cache .nx/workspace-data
 
       - name: Build Affected Projects
         env:
@@ -449,13 +429,8 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Cache Nx
-        uses: actions/cache@v4
-        with:
-          path: .nx/cache
-          key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json', '**/project.json', 'nx.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nx-
+      - name: Clean Nx Cache
+        run: rm -rf .nx/cache .nx/workspace-data
 
       - name: Build for Production
         run: npx nx build frontend
@@ -533,13 +508,8 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Cache Nx
-        uses: actions/cache@v4
-        with:
-          path: .nx/cache
-          key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json', '**/project.json', 'nx.json') }}
-          restore-keys: |
-            ${{ runner.os }}-nx-
+      - name: Clean Nx Cache
+        run: rm -rf .nx/cache .nx/workspace-data
 
       - name: Build for Production
         run: npx nx build frontend
