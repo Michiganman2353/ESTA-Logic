@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "buildCommand": "npx nx build frontend",
+  "buildCommand": "rm -rf .nx/cache .nx/workspace-data && npx nx build frontend",
   "outputDirectory": "apps/frontend/dist",
   "installCommand": "npm install",
   "devCommand": "npm run dev:frontend",
