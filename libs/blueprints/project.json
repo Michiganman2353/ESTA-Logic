@@ -8,14 +8,14 @@
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+        "command": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js",
         "cwd": "libs/blueprints"
       }
     },
     "test:coverage": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage",
+        "command": "node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --coverage",
         "cwd": "libs/blueprints"
       },
       "outputs": ["{projectRoot}/coverage"]
