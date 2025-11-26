@@ -29,10 +29,10 @@
       }
     },
     "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
+      "executor": "nx:run-commands",
       "options": {
-        "lintFilePatterns": ["apps/marketing/**/*.{ts,tsx,js,jsx}"]
+        "command": "npx eslint . --max-warnings 0",
+        "cwd": "apps/marketing"
       }
     },
     "test:e2e": {
