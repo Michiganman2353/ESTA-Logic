@@ -32,7 +32,7 @@
       "executor": "nx:run-commands",
       "outputs": [],
       "options": {
-        "command": "npx eslint . --ext .ts,.tsx,.js,.jsx --max-warnings 0",
+        "command": "eslint . --ext .ts,.tsx,.js,.jsx --report-unused-disable-directives --max-warnings 0",
         "cwd": "apps/marketing"
       }
     },
