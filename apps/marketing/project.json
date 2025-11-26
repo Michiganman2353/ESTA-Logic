@@ -30,8 +30,9 @@
     },
     "lint": {
       "executor": "nx:run-commands",
+      "outputs": [],
       "options": {
-        "command": "npx eslint pages components lib --ext .ts,.tsx,.js,.jsx --max-warnings 0",
+        "command": "npx eslint . --ext .ts,.tsx,.js,.jsx --max-warnings 0",
         "cwd": "apps/marketing"
       }
     },
