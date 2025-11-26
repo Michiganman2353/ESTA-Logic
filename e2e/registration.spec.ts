@@ -88,10 +88,10 @@ test.describe('Manager Registration Flow', () => {
         .locator('text=/creating account|error|failed|unable/i')
         .waitFor({ state: 'visible', timeout: 5000 })
         .catch(() => {
-          /* ignore */
+          // Expected: form submission may not show visible loading/error text in all environments
         }),
       page.waitForURL('/', { timeout: 5000 }).catch(() => {
-        /* ignore */
+        // Expected: navigation may not occur if Firebase is not configured or auth fails
       }),
       page.waitForTimeout(5000), // Fallback timeout
     ]);
@@ -257,10 +257,10 @@ test.describe('Employee Registration Flow', () => {
         .locator('text=/creating account|error|failed|unable/i')
         .waitFor({ state: 'visible', timeout: 5000 })
         .catch(() => {
-          /* ignore */
+          // Expected: form submission may not show visible loading/error text in all environments
         }),
       page.waitForURL('/', { timeout: 5000 }).catch(() => {
-        /* ignore */
+        // Expected: navigation may not occur if Firebase is not configured or auth fails
       }),
       page.waitForTimeout(5000), // Fallback timeout
     ]);
