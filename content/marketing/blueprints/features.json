@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "1.0.0",
+  "slug": "features",
+  "title": "Features - ESTA Tracker",
+  "meta": {
+    "description": "Explore all the features that make ESTA Tracker the best Michigan ESTA compliance solution: automatic calculations, employee portals, audit reports, and more.",
+    "ogImage": "/images/og-features.png"
+  },
+  "blocks": [
+    {
+      "type": "Hero",
+      "props": {
+        "headline": "Everything You Need for ESTA Compliance",
+        "subheadline": "From automatic tracking to audit-ready reports, ESTA Tracker handles it all.",
+        "ctaText": "Start Free Trial",
+        "ctaLink": "/signup",
+        "variant": "compact"
+      }
+    },
+    {
+      "type": "FeatureGrid",
+      "props": {
+        "headline": "Core Features",
+        "columns": 3,
+        "features": [
+          {
+            "icon": "clock",
+            "title": "Automatic Time Tracking",
+            "description": "Connect to your existing payroll or time tracking system. Hours worked are imported automatically."
+          },
+          {
+            "icon": "calculator",
+            "title": "Smart Accrual Engine",
+            "description": "Our engine calculates accruals based on Michigan ESTA law: 1 hour for every 30 hours worked."
+          },
+          {
+            "icon": "refresh",
+            "title": "Carryover Management",
+            "description": "Automatically handles year-end carryover rules based on your employer size tier."
+          },
+          {
+            "icon": "chart",
+            "title": "Usage Caps & Limits",
+            "description": "Enforces maximum usage limits so employees never exceed their available balance."
+          },
+          {
+            "icon": "bell",
+            "title": "Notifications & Alerts",
+            "description": "Get notified of important deadlines, policy changes, and employee requests."
+          },
+          {
+            "icon": "lock",
+            "title": "Secure Data Storage",
+            "description": "Enterprise-grade security protects your employee data with encryption at rest and in transit."
+          }
+        ]
+      }
+    },
+    {
+      "type": "FeatureGrid",
+      "props": {
+        "headline": "For Employers",
+        "columns": 2,
+        "features": [
+          {
+            "icon": "dashboard",
+            "title": "Employer Dashboard",
+            "description": "See all your employees' sick time balances at a glance. Filter, sort, and export as needed."
+          },
+          {
+            "icon": "document",
+            "title": "Compliance Reports",
+            "description": "Generate PDF reports for state audits with a single click. All required fields are included."
+          },
+          {
+            "icon": "settings",
+            "title": "Policy Configuration",
+            "description": "Set your company policies once. The system adapts to your specific accrual and usage rules."
+          },
+          {
+            "icon": "users",
+            "title": "Multi-Location Support",
+            "description": "Manage employees across multiple Michigan locations from one central account."
+          }
+        ]
+      }
+    },
+    {
+      "type": "FeatureGrid",
+      "props": {
+        "headline": "For Employees",
+        "columns": 2,
+        "features": [
+          {
+            "icon": "mobile",
+            "title": "Mobile-Friendly Portal",
+            "description": "Employees access their balances from any device, anytime."
+          },
+          {
+            "icon": "history",
+            "title": "Full History View",
+            "description": "See every accrual, usage, and adjustment with clear timestamps."
+          },
+          {
+            "icon": "download",
+            "title": "Export Records",
+            "description": "Employees can download their own records for personal recordkeeping."
+          },
+          {
+            "icon": "support",
+            "title": "Self-Service Requests",
+            "description": "Submit time-off requests directly through the portal."
+          }
+        ]
+      }
+    },
+    {
+      "type": "CTA",
+      "props": {
+        "headline": "See these features in action",
+        "subheadline": "Start your free trial and experience effortless ESTA compliance.",
+        "ctaText": "Start Free Trial",
+        "ctaLink": "/signup",
+        "variant": "secondary"
+      }
+    }
+  ]
+}

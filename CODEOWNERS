@@ -10,6 +10,9 @@
 /apps/frontend/src/components/ @Michiganman2353
 /apps/frontend/src/pages/ @Michiganman2353
 
+# Marketing Application
+/apps/marketing/ @Michiganman2353
+
 # Backend Application
 /apps/backend/ @Michiganman2353
 /apps/backend/src/services/ @Michiganman2353
@@ -23,6 +26,12 @@
 # Domain Libraries
 /libs/accrual-engine/ @Michiganman2353
 /libs/csv-processor/ @Michiganman2353
+
+# Marketing Blueprints Library
+/libs/blueprints/ @Michiganman2353
+
+# Marketing Content Blueprints
+/content/marketing/blueprints/ @Michiganman2353
 
 # CI/CD and Infrastructure
 /.github/workflows/ @Michiganman2353

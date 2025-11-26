@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "1.0.0",
+  "slug": "home",
+  "title": "ESTA Tracker - Michigan Employee Earned Sick Time Compliance",
+  "meta": {
+    "description": "Simplify Michigan ESTA compliance with automated sick time tracking, accurate calculations, and audit-ready documentation for employers of all sizes.",
+    "ogImage": "/images/og-home.png"
+  },
+  "blocks": [
+    {
+      "type": "Hero",
+      "props": {
+        "headline": "Effortless Michigan ESTA Compliance",
+        "subheadline": "Stop worrying about sick time calculations. ESTA Tracker automates everything so you stay compliant without the headache.",
+        "ctaText": "Start Free Trial",
+        "ctaLink": "/signup",
+        "secondaryCtaText": "See How It Works",
+        "secondaryCtaLink": "/features",
+        "backgroundImage": "/images/hero-bg.jpg"
+      }
+    },
+    {
+      "type": "FeatureGrid",
+      "props": {
+        "headline": "Built for Michigan Employers",
+        "features": [
+          {
+            "icon": "calculator",
+            "title": "Automatic Accrual Calculations",
+            "description": "Earn 1 hour of sick time for every 30 hours worked. We handle the math automatically."
+          },
+          {
+            "icon": "shield",
+            "title": "Employer-Size Policies",
+            "description": "Rules adapt based on your workforce size - whether you have 10 employees or 500."
+          },
+          {
+            "icon": "document",
+            "title": "Audit-Ready Records",
+            "description": "Generate compliant documentation instantly when you need it."
+          },
+          {
+            "icon": "users",
+            "title": "Employee Self-Service",
+            "description": "Employees check their own balances. No more HR phone calls."
+          }
+        ]
+      }
+    },
+    {
+      "type": "CTA",
+      "props": {
+        "headline": "Ready to simplify ESTA compliance?",
+        "subheadline": "Join hundreds of Michigan employers who trust ESTA Tracker.",
+        "ctaText": "Get Started Today",
+        "ctaLink": "/signup",
+        "variant": "primary"
+      }
+    }
+  ]
+}
