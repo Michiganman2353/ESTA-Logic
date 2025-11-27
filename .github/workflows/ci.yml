@@ -23,6 +23,10 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
+      - name: Validate Lockfile Sync
+        run: |
+          npm ci --dry-run || (echo "Lockfile desync detected – run 'npm install' locally" && exit 1)
+
       - name: Install Dependencies
         run: npm ci
 
@@ -186,6 +190,10 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
+      - name: Validate Lockfile Sync
+        run: |
+          npm ci --dry-run || (echo "Lockfile desync detected – run 'npm install' locally" && exit 1)
+
       - name: Install Dependencies
         run: npm ci
 
@@ -233,6 +241,10 @@ jobs:
           fi
           echo "✅ Node version verified: $(node -v)"
 
+      - name: Validate Lockfile Sync
+        run: |
+          npm ci --dry-run || (echo "Lockfile desync detected – run 'npm install' locally" && exit 1)
+
       - name: Install Dependencies
         run: npm ci
 
@@ -264,6 +276,10 @@ jobs:
           node-version: 22.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
+
+      - name: Validate Lockfile Sync
+        run: |
+          npm ci --dry-run || (echo "Lockfile desync detected – run 'npm install' locally" && exit 1)
 
       - name: Install Dependencies
         run: npm ci
@@ -310,6 +326,10 @@ jobs:
           node-version: 22.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
+
+      - name: Validate Lockfile Sync
+        run: |
+          npm ci --dry-run || (echo "Lockfile desync detected – run 'npm install' locally" && exit 1)
 
       - name: Install Dependencies
         run: npm ci
@@ -463,6 +483,10 @@ jobs:
           node-version: 22.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
+
+      - name: Validate Lockfile Sync
+        run: |
+          npm ci --dry-run || (echo "Lockfile desync detected – run 'npm install' locally" && exit 1)
 
       - name: Install Dependencies
         run: npm ci
