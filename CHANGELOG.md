@@ -63,8 +63,7 @@ This release converts ESTA-Logic from prototype to production-grade platform wit
   - Both ci.yml and ci-elite.yml follow same deterministic patterns
 - **Package Standardization**:
   - `functions/package.json`: Added `type: module` and `exports`
-  - `api/package.json`: Added explicit `exports` field
-  - Application packages (`frontend`, `backend`, `marketing`): Ensured `type: module` is set (exports removed as these are standalone applications, not importable libraries)
+  - Private application packages (`frontend`, `backend`, `marketing`, `api`): Ensured `type: module` is set (exports removed as these are standalone applications/serverless functions, not importable libraries)
 
 ### Architecture
 
