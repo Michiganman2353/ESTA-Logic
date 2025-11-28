@@ -91,16 +91,16 @@ function evaluateCondition(
   // Simple truthy check for {{variableName}}
   const match = condition.match(/^\{\{(\w+)\}\}$/);
   if (match) {
-    const varName = match[1];
-    if (varName === undefined) return true;
+    const [, varName] = match;
+    if (!varName) return true;
     const value = variables[varName];
     return Boolean(value);
   }
   // Simple negative check for !{{variableName}}
   const negMatch = condition.match(/^!\{\{(\w+)\}\}$/);
   if (negMatch) {
-    const varName = negMatch[1];
-    if (varName === undefined) return true;
+    const [, varName] = negMatch;
+    if (!varName) return true;
     const value = variables[varName];
     return !value;
   }
