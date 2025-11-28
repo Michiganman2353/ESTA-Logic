@@ -27,8 +27,11 @@ export const authLimiter = rateLimit({
     'Too many authentication attempts, please try again after 15 minutes',
   standardHeaders: true,
   legacyHeaders: false,
-  // Disable validation for custom keyGenerator since we handle edge cases gracefully
-  // The keyGenerator uses email/username when available, falling back to IP
+  // Disable express-rate-limit's built-in validation for the custom keyGenerator.
+  // The library throws ERR_ERL_KEY_GEN_IPV6 warning when using custom keyGenerator with req.ip
+  // because IPv6 addresses may not be normalized consistently. Our implementation handles this
+  // by preferring email/username identifiers and falling back to 'unknown' when IP is undefined.
+  // See: https://express-rate-limit.github.io/ERR_ERL_KEY_GEN_IPV6/
   validate: false,
   keyGenerator: (req) => {
     // Try to use email/username from body if available, otherwise use IP
