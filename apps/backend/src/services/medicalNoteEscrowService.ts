@@ -232,7 +232,15 @@ export interface ReconstructionResult {
 }
 
 /**
- * In-memory escrow storage (would be Firestore in production)
+ * In-memory escrow storage
+ *
+ * SECURITY NOTE: This in-memory storage is for development/testing only.
+ * In production, implement with:
+ * - Encrypted Firestore/database storage
+ * - KMS-managed encryption keys (Google Cloud KMS)
+ * - Access control and audit logging
+ * - Automatic key rotation
+ * - Secure deletion/expiration
  */
 const escrowStorage = new Map<string, MedicalNoteEscrow>();
 const keyStorage = new Map<string, Kyber768KeyPair>();

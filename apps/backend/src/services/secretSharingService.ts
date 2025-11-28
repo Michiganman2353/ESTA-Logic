@@ -23,7 +23,7 @@
  * @module secretSharingService
  */
 
-import { randomBytes, createHash } from 'crypto';
+import { randomBytes, createHash, timingSafeEqual } from 'crypto';
 
 /**
  * Individual secret share from Shamir's Secret Sharing scheme
@@ -327,11 +327,10 @@ export function secureCompareCommitments(a: string, b: string): boolean {
   const bufA = Buffer.from(a, 'hex');
   const bufB = Buffer.from(b, 'hex');
 
-  // Timing-safe comparison
-  let result = 0;
-  for (let i = 0; i < bufA.length; i++) {
-    result |= bufA[i]! ^ bufB[i]!;
+  if (bufA.length !== bufB.length) {
+    return false;
   }
 
-  return result === 0;
+  // Use Node.js built-in timing-safe comparison
+  return timingSafeEqual(bufA, bufB);
 }

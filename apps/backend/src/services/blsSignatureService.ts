@@ -100,8 +100,23 @@ export const BLS_KEY_SIZES = {
 /**
  * Key registry for signature verification (simulation only)
  * In production, verification would use cryptographic pairing.
+ *
+ * SECURITY NOTE: This in-memory storage is for development/testing only.
+ * In production, use a secure key store (e.g., HSM, Cloud KMS) with:
+ * - Encryption at rest
+ * - Access control and audit logging
+ * - Automatic key cleanup/rotation
+ * - Memory protection
  */
 const keyRegistry = new Map<string, Buffer>();
+
+/**
+ * Clear key registry (for testing cleanup)
+ * Should be called after tests to prevent key accumulation
+ */
+export function _clearKeyRegistry(): void {
+  keyRegistry.clear();
+}
 
 /**
  * Generate a BLS key pair
