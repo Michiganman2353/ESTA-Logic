@@ -37,6 +37,9 @@ const pLimit = require('p-limit');
 // Rate limiting configuration
 const RPM_LIMIT = 10; // Requests per minute cap
 const TPM_BUFFER = 50000; // Tokens per minute buffer
+const TPM_WARNING_DIVISOR = 10; // Warn when single request uses > TPM_BUFFER/TPM_WARNING_DIVISOR tokens
+const DEFAULT_RETRY_DELAY_SECONDS = 60; // Default delay when rate limited (if no retry-after header)
+const MAX_RETRY_ATTEMPTS = 3; // Maximum number of retry attempts for rate-limited requests
 const limit = pLimit(RPM_LIMIT);
 
 // Colors for console output
@@ -244,21 +247,29 @@ async function callXAIRaw(prompt, model, apiKey) {
 }
 
 // Rate-limited API call with retry logic for 429 responses
-async function safeApiCall(prompt, model, apiKey) {
+async function safeApiCall(prompt, model, apiKey, retryCount = 0) {
   const response = await callXAIRaw(prompt, model, apiKey);
 
   if (response.statusCode === 429) {
-    const retryAfter = response.headers['retry-after'] || 60;
-    logWarning(`Rate limited. Waiting ${retryAfter}s...`);
+    if (retryCount >= MAX_RETRY_ATTEMPTS) {
+      throw new Error(
+        `Rate limit exceeded after ${MAX_RETRY_ATTEMPTS} retry attempts`
+      );
+    }
+    const retryAfter =
+      response.headers['retry-after'] || DEFAULT_RETRY_DELAY_SECONDS;
+    logWarning(
+      `Rate limited. Waiting ${retryAfter}s... (attempt ${retryCount + 1}/${MAX_RETRY_ATTEMPTS})`
+    );
     await new Promise((r) => setTimeout(r, retryAfter * 1000));
-    return safeApiCall(prompt, model, apiKey); // Retry
+    return safeApiCall(prompt, model, apiKey, retryCount + 1); // Retry with incremented count
   }
 
   if (response.statusCode >= 200 && response.statusCode < 300) {
     try {
       const data = JSON.parse(response.body);
       const tokensUsed = data.usage?.total_tokens || 0;
-      if (tokensUsed > TPM_BUFFER / 10) {
+      if (tokensUsed > TPM_BUFFER / TPM_WARNING_DIVISOR) {
         logWarning('High TPM usage — consider optimizing prompt');
       }
       return data;
@@ -501,17 +512,17 @@ async function runSentinel() {
       `Processing ${attackPrompts.length} targets with rate-limited API calls (RPM: ${RPM_LIMIT})`
     );
 
-    const apiCalls = attackPrompts.map(({ targetKey, target, prompt }) =>
+    const apiCalls = attackPrompts.map(({ target, prompt }) =>
       limit(async () => {
         logInfo(`Analyzing: ${target.name}`);
         try {
           const response = await safeApiCall(prompt, args.model, apiKey);
           const content = response.choices?.[0]?.message?.content || '';
           const attacks = parseAttacks(content);
-          return { targetKey, target, attacks, error: null };
+          return { target, attacks, error: null };
         } catch (err) {
           logError(`API call failed for ${target.name}: ${err.message}`);
-          return { targetKey, target, attacks: [], error: err.message };
+          return { target, attacks: [], error: err.message };
         }
       })
     );
