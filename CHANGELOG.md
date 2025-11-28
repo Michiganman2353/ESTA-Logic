@@ -53,7 +53,8 @@ This release converts ESTA-Logic from prototype to production-grade platform wit
   - Updated `.gitignore` to allow `project.json` while excluding credentials
 - **Contract-Driven Monorepo (2025 ESM Standard)**:
   - Explicit `exports` field added to Cloud Functions package with TypeScript declarations
-  - Unified `type: module` across all workspaces
+  - `type: module` set across frontend workspaces (frontend, backend, marketing apps)
+  - Cloud Functions remain CommonJS-compatible for Firebase runtime
 
 ### Changed
 
@@ -62,7 +63,8 @@ This release converts ESTA-Logic from prototype to production-grade platform wit
   - Added Zero-Entropy Build comments for clarity
   - Both ci.yml and ci-elite.yml follow same deterministic patterns
 - **Package Standardization**:
-  - `functions/package.json`: Added `type: module` and `exports`
+  - `functions/package.json`: Added `exports` and TypeScript declarations (CommonJS for Firebase compatibility)
+  - `functions/tsconfig.json`: Added `declaration: true` for proper exports
   - Private application packages (`frontend`, `backend`, `marketing`, `api`): Ensured `type: module` is set (exports removed as these are standalone applications/serverless functions, not importable libraries)
 
 ### Architecture
