@@ -50,6 +50,26 @@ const RISK_THRESHOLDS = {
 };
 
 /**
+ * Accrual utilization thresholds for pattern analysis
+ */
+const ACCRUAL_UTILIZATION_THRESHOLDS = {
+  veryLow: 0.1, // Below this = potential tracking issues
+  veryHigh: 0.9, // Above this = high usage (normal)
+  veryLowScore: 50, // Risk score for very low utilization
+  veryHighScore: 30, // Risk score for very high utilization
+};
+
+/**
+ * Turnover rate thresholds indicating systemic issues
+ */
+const TURNOVER_THRESHOLDS = {
+  high: 0.3, // Above 30% = high turnover
+  medium: 0.2, // Above 20% = medium turnover
+  highScore: 30, // Risk score for high turnover
+  mediumScore: 15, // Risk score for medium turnover
+};
+
+/**
  * Risk bracket percentile descriptions
  */
 const RISK_BRACKETS: Record<number, RiskBracket> = {
@@ -136,10 +156,10 @@ function calculateDenialRateFactor(features: RiskFeatures): RiskFactor {
 function calculateAccrualPatternsFactor(features: RiskFeatures): RiskFactor {
   // Low utilization could indicate accrual tracking issues
   const utilizationScore =
-    features.avgAccrualUtilization < 0.1
-      ? 50 // Very low usage might indicate tracking problems
-      : features.avgAccrualUtilization > 0.9
-        ? 30 // High usage is normal
+    features.avgAccrualUtilization < ACCRUAL_UTILIZATION_THRESHOLDS.veryLow
+      ? ACCRUAL_UTILIZATION_THRESHOLDS.veryLowScore // Very low usage might indicate tracking problems
+      : features.avgAccrualUtilization > ACCRUAL_UTILIZATION_THRESHOLDS.veryHigh
+        ? ACCRUAL_UTILIZATION_THRESHOLDS.veryHighScore // High usage is normal
         : 0; // Normal utilization
 
   // Calculation errors and late updates
@@ -267,10 +287,10 @@ function calculateEmployeeComplaintsFactor(features: RiskFeatures): RiskFactor {
 
   // Turnover can indicate systemic issues
   const turnoverScore =
-    features.employeeTurnoverRate > 0.3
-      ? 30
-      : features.employeeTurnoverRate > 0.2
-        ? 15
+    features.employeeTurnoverRate > TURNOVER_THRESHOLDS.high
+      ? TURNOVER_THRESHOLDS.highScore
+      : features.employeeTurnoverRate > TURNOVER_THRESHOLDS.medium
+        ? TURNOVER_THRESHOLDS.mediumScore
         : 0;
 
   const score = Math.min(100, Math.max(0, complaintScore + turnoverScore));

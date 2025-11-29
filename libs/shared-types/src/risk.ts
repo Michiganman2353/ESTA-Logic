@@ -69,7 +69,53 @@ export const RiskFactorSchema = z.object({
 });
 
 // ============================================================================
-// Section 2: ESTA Score Types
+// Section 2: Recommendation Types (defined before ESTAScore to avoid forward reference)
+// ============================================================================
+
+/**
+ * Priority level for recommendations
+ */
+export const RecommendationPrioritySchema = z.enum([
+  'critical',
+  'high',
+  'medium',
+  'low',
+]);
+export type RecommendationPriority = z.infer<
+  typeof RecommendationPrioritySchema
+>;
+
+/**
+ * Risk recommendation for employers
+ */
+export interface RiskRecommendation {
+  id: string;
+  priority: RecommendationPriority;
+  category: RiskFactorCategory;
+  title: string;
+  description: string;
+  impact: string;
+  estimatedScoreReduction: number; // How much this could reduce risk score
+  actionItems: string[];
+  deadline?: Date;
+  resources?: string[];
+}
+
+export const RiskRecommendationSchema = z.object({
+  id: z.string(),
+  priority: RecommendationPrioritySchema,
+  category: RiskFactorCategorySchema,
+  title: z.string(),
+  description: z.string(),
+  impact: z.string(),
+  estimatedScoreReduction: z.number().min(0).max(100),
+  actionItems: z.array(z.string()),
+  deadline: z.date().optional(),
+  resources: z.array(z.string()).optional(),
+});
+
+// ============================================================================
+// Section 3: ESTA Score Types
 // ============================================================================
 
 /**
@@ -137,7 +183,7 @@ export const ESTAScoreSchema = z.object({
     quarterLabel: z.string(),
   }),
   primaryRiskDrivers: z.array(z.string()),
-  recommendations: z.array(z.lazy(() => RiskRecommendationSchema)),
+  recommendations: z.array(RiskRecommendationSchema),
   confidence: z.number().min(0).max(1),
   modelVersion: z.string(),
   calculatedAt: z.date(),
@@ -148,52 +194,6 @@ export const ESTAScoreSchema = z.object({
       change: z.number(),
     })
     .optional(),
-});
-
-// ============================================================================
-// Section 3: Recommendation Types
-// ============================================================================
-
-/**
- * Priority level for recommendations
- */
-export const RecommendationPrioritySchema = z.enum([
-  'critical',
-  'high',
-  'medium',
-  'low',
-]);
-export type RecommendationPriority = z.infer<
-  typeof RecommendationPrioritySchema
->;
-
-/**
- * Risk recommendation for employers
- */
-export interface RiskRecommendation {
-  id: string;
-  priority: RecommendationPriority;
-  category: RiskFactorCategory;
-  title: string;
-  description: string;
-  impact: string;
-  estimatedScoreReduction: number; // How much this could reduce risk score
-  actionItems: string[];
-  deadline?: Date;
-  resources?: string[];
-}
-
-export const RiskRecommendationSchema = z.object({
-  id: z.string(),
-  priority: RecommendationPrioritySchema,
-  category: RiskFactorCategorySchema,
-  title: z.string(),
-  description: z.string(),
-  impact: z.string(),
-  estimatedScoreReduction: z.number().min(0).max(100),
-  actionItems: z.array(z.string()),
-  deadline: z.date().optional(),
-  resources: z.array(z.string()).optional(),
 });
 
 // ============================================================================

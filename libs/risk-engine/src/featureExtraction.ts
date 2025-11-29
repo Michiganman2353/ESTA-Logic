@@ -47,7 +47,7 @@ function calculateDenialTrend(
   now: Date
 ): number {
   const cutoff30 = new Date(now.getTime() - DAYS_30);
-  const cutoff60 = new Date(now.getTime() - DAYS_90);
+  const cutoff90 = new Date(now.getTime() - DAYS_90);
 
   // Recent period (last 30 days)
   const recentRequests = requests.filter(
@@ -55,7 +55,7 @@ function calculateDenialTrend(
   );
   // Previous period (30-90 days ago)
   const previousRequests = requests.filter(
-    (r) => r.requestedAt >= cutoff60 && r.requestedAt < cutoff30
+    (r) => r.requestedAt >= cutoff90 && r.requestedAt < cutoff30
   );
 
   if (recentRequests.length === 0 || previousRequests.length === 0) {

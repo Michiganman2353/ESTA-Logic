@@ -28,12 +28,37 @@ import { randomUUID } from 'crypto';
 // ============================================================================
 
 /**
- * Simple in-memory cache for risk scores
+ * Simple in-memory cache for risk scores with LRU-like eviction
  * In production, this should be replaced with Redis or similar
  */
 const riskScoreCache = new Map<string, { score: ESTAScore; expiresAt: Date }>();
 
 const CACHE_TTL_MS = 3600000; // 1 hour
+const MAX_CACHE_SIZE = 1000; // Maximum number of cached scores
+
+/**
+ * Evict expired entries and oldest entries if cache is full
+ */
+function evictIfNeeded(): void {
+  const now = new Date();
+
+  // First, evict expired entries
+  for (const [key, value] of riskScoreCache.entries()) {
+    if (now > value.expiresAt) {
+      riskScoreCache.delete(key);
+    }
+  }
+
+  // If still over limit, evict oldest entries
+  while (riskScoreCache.size >= MAX_CACHE_SIZE) {
+    const oldestKey = riskScoreCache.keys().next().value;
+    if (oldestKey) {
+      riskScoreCache.delete(oldestKey);
+    } else {
+      break;
+    }
+  }
+}
 
 /**
  * Get cached score if available and not expired
@@ -51,9 +76,10 @@ function getCachedScore(tenantId: string): ESTAScore | null {
 }
 
 /**
- * Cache a risk score
+ * Cache a risk score with size limit enforcement
  */
 function cacheScore(score: ESTAScore): void {
+  evictIfNeeded();
   const expiresAt = new Date(Date.now() + CACHE_TTL_MS);
   riskScoreCache.set(score.tenantId, { score, expiresAt });
 }
