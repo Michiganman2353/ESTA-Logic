@@ -10,6 +10,21 @@
 
 import { test, expect } from '@playwright/test';
 
+/**
+ * Helper function to detect if user is on the landing page or login page (not authenticated)
+ * @param url Current page URL
+ * @returns true if user is not logged in
+ */
+function isNotLoggedIn(url: string): boolean {
+  const isLoginPage = url.includes('/login');
+  // Check for landing page patterns - base URL or localhost with port
+  const isLandingPage =
+    url.endsWith('/') ||
+    /:\d+\/?$/.test(url) || // matches :5173 or :5173/
+    (!url.includes('/dashboard') && !url.includes('/login'));
+  return isLoginPage || isLandingPage;
+}
+
 test.describe('PTO Request Workflow', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to app
@@ -28,14 +43,8 @@ test.describe('PTO Request Workflow', () => {
     // This test assumes user is already logged in or we have test credentials
     // In a real scenario, you'd log in first
 
-    // Skip if not logged in (on landing page or login page)
-    const currentUrl = page.url();
-    const isLoginPage = currentUrl.includes('/login');
-    const isLandingPage =
-      currentUrl.endsWith('/') ||
-      currentUrl.endsWith(':5173') ||
-      currentUrl.endsWith(':5173/');
-    if (isLoginPage || isLandingPage) {
+    // Skip if not logged in
+    if (isNotLoggedIn(page.url())) {
       test.skip();
       return;
     }
@@ -76,14 +85,8 @@ test.describe('PTO Request Workflow', () => {
   });
 
   test('manager can approve PTO request', async ({ page }) => {
-    // Skip if not logged in (on landing page or login page)
-    const currentUrl = page.url();
-    const isLoginPage = currentUrl.includes('/login');
-    const isLandingPage =
-      currentUrl.endsWith('/') ||
-      currentUrl.endsWith(':5173') ||
-      currentUrl.endsWith(':5173/');
-    if (isLoginPage || isLandingPage) {
+    // Skip if not logged in
+    if (isNotLoggedIn(page.url())) {
       test.skip();
       return;
     }
@@ -117,14 +120,8 @@ test.describe('PTO Request Workflow', () => {
   });
 
   test('manager can deny PTO request with reason', async ({ page }) => {
-    // Skip if not logged in (on landing page or login page)
-    const currentUrl = page.url();
-    const isLoginPage = currentUrl.includes('/login');
-    const isLandingPage =
-      currentUrl.endsWith('/') ||
-      currentUrl.endsWith(':5173') ||
-      currentUrl.endsWith(':5173/');
-    if (isLoginPage || isLandingPage) {
+    // Skip if not logged in
+    if (isNotLoggedIn(page.url())) {
       test.skip();
       return;
     }
@@ -163,14 +160,8 @@ test.describe('PTO Request Workflow', () => {
   });
 
   test('employee can view PTO balance', async ({ page }) => {
-    // Skip if not logged in (on landing page or login page)
-    const currentUrl = page.url();
-    const isLoginPage = currentUrl.includes('/login');
-    const isLandingPage =
-      currentUrl.endsWith('/') ||
-      currentUrl.endsWith(':5173') ||
-      currentUrl.endsWith(':5173/');
-    if (isLoginPage || isLandingPage) {
+    // Skip if not logged in
+    if (isNotLoggedIn(page.url())) {
       test.skip();
       return;
     }
@@ -192,14 +183,8 @@ test.describe('PTO Request Workflow', () => {
   });
 
   test('employee can cancel pending PTO request', async ({ page }) => {
-    // Skip if not logged in (on landing page or login page)
-    const currentUrl = page.url();
-    const isLoginPage = currentUrl.includes('/login');
-    const isLandingPage =
-      currentUrl.endsWith('/') ||
-      currentUrl.endsWith(':5173') ||
-      currentUrl.endsWith(':5173/');
-    if (isLoginPage || isLandingPage) {
+    // Skip if not logged in
+    if (isNotLoggedIn(page.url())) {
       test.skip();
       return;
     }
@@ -228,14 +213,8 @@ test.describe('PTO Request Workflow', () => {
   });
 
   test('system prevents overlapping PTO requests', async ({ page }) => {
-    // Skip if not logged in (on landing page or login page)
-    const currentUrl = page.url();
-    const isLoginPage = currentUrl.includes('/login');
-    const isLandingPage =
-      currentUrl.endsWith('/') ||
-      currentUrl.endsWith(':5173') ||
-      currentUrl.endsWith(':5173/');
-    if (isLoginPage || isLandingPage) {
+    // Skip if not logged in
+    if (isNotLoggedIn(page.url())) {
       test.skip();
       return;
     }
@@ -277,18 +256,9 @@ test.describe('PTO Request Workflow', () => {
     });
   });
 
-  test('PTO request workflow respects permissions', async ({
-    page,
-    context,
-  }) => {
-    // Skip if not logged in (on landing page or login page)
-    const currentUrl = page.url();
-    const isLoginPage = currentUrl.includes('/login');
-    const isLandingPage =
-      currentUrl.endsWith('/') ||
-      currentUrl.endsWith(':5173') ||
-      currentUrl.endsWith(':5173/');
-    if (isLoginPage || isLandingPage) {
+  test('PTO request workflow respects permissions', async ({ page }) => {
+    // Skip if not logged in
+    if (isNotLoggedIn(page.url())) {
       test.skip();
       return;
     }
@@ -309,14 +279,8 @@ test.describe('PTO Request Workflow', () => {
   });
 
   test('PTO request includes file attachment upload', async ({ page }) => {
-    // Skip if not logged in (on landing page or login page)
-    const currentUrl = page.url();
-    const isLoginPage = currentUrl.includes('/login');
-    const isLandingPage =
-      currentUrl.endsWith('/') ||
-      currentUrl.endsWith(':5173') ||
-      currentUrl.endsWith(':5173/');
-    if (isLoginPage || isLandingPage) {
+    // Skip if not logged in
+    if (isNotLoggedIn(page.url())) {
       test.skip();
       return;
     }
@@ -377,11 +341,8 @@ test.describe('PTO Request Accessibility', () => {
     // Wait for page to load
     await page.waitForLoadState('domcontentloaded');
 
-    // Check if we're on landing page (not logged in) - skip test
-    const isLandingPage =
-      !page.url().includes('/login') && !page.url().includes('/dashboard');
-    const isLoginPage = page.url().includes('/login');
-    if (isLoginPage || isLandingPage) {
+    // Skip if not logged in
+    if (isNotLoggedIn(page.url())) {
       test.skip();
       return;
     }
@@ -429,11 +390,8 @@ test.describe('PTO Request Accessibility', () => {
     // Wait for page to load
     await page.waitForLoadState('domcontentloaded');
 
-    // Check if we're on landing page (not logged in) - skip test
-    const isLandingPage =
-      !page.url().includes('/login') && !page.url().includes('/dashboard');
-    const isLoginPage = page.url().includes('/login');
-    if (isLoginPage || isLandingPage) {
+    // Skip if not logged in
+    if (isNotLoggedIn(page.url())) {
       test.skip();
       return;
     }
