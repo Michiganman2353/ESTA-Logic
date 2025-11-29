@@ -143,16 +143,12 @@ async function runHealthCheck() {
       passedTests++;
     }
   } catch (err) {
-    log(
-      'yellow',
-      '⚠',
-      `Could not load @esta/core - run "npm run build" first`
-    );
+    log('yellow', '⚠', `Could not load @esta/core - run "npm run build" first`);
     log('yellow', '  ', `Error: ${err.message}`);
   }
 
   // Summary
-  console.log('\n' + '━'.repeat(50));
+  console.log(`\n${'━'.repeat(50)}`);
   console.log('\n📊 Health Check Summary\n');
 
   if (failures.length === 0 && passedTests === totalTests) {
