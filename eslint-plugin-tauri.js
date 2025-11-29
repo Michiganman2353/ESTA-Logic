@@ -23,8 +23,6 @@ Object.assign(plugin.configs, {
         },
       },
       rules: {
-        // Allow unused vars prefixed with underscore (common in Tauri callbacks)
-        'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
         // Prefer template literals for string concatenation
         'prefer-template': 'error',
       },
