@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@esta/firebase": "file:../libs/esta-firebase",
+    "@esta-tracker/shared-utils": "file:../libs/shared-utils",
     "@vercel/node": "^5.5.8",
     "firebase-admin": "^12.0.0",
     "next": "^16.0.3"

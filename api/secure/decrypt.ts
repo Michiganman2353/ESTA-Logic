@@ -1,34 +1,41 @@
 /**
  * Node.js Function: Decrypt Data
- * 
+ *
  * This endpoint runs in Node.js runtime for server-side decryption operations.
  * Uses KMS-backed hybrid decryption for production-grade security.
- * 
+ *
  * Runtime: Node.js (serverless)
- * 
+ *
  * Security: Protected endpoint - requires authentication and authorization.
  * Only authenticated users can decrypt data they have permission to access.
  */
 
 import type { VercelResponse } from '@vercel/node';
-import { decryptHybrid, type HybridDecryptionPayload } from '../lib/encryption/hybridEncryption';
-import { decryptWithKMS, type KMSDecryptionPayload } from '../lib/services/kmsHybridEncryption';
-import { 
-  requireAuth, 
-  isResourceOwner, 
-  hasTenantAccess, 
+import {
+  decryptHybrid,
+  type HybridDecryptionPayload,
+} from '../lib/encryption/hybridEncryption';
+import {
+  decryptWithKMS,
+  type KMSDecryptionPayload,
+} from '../lib/services/kmsHybridEncryption';
+import {
+  requireAuth,
+  isResourceOwner,
+  hasTenantAccess,
   logSecurityEvent,
-  type AuthenticatedVercelRequest 
+  type AuthenticatedVercelRequest,
 } from '../lib/authMiddleware';
+import { ErrorCode } from '@esta-tracker/shared-utils';
 
 /**
  * Decrypt data using KMS-backed hybrid decryption or legacy RSA decryption
- * 
+ *
  * POST /api/secure/decrypt
- * 
+ *
  * Headers:
  * Authorization: Bearer <firebase-id-token>
- * 
+ *
  * Request Body (KMS mode):
  * {
  *   payload: {
@@ -42,7 +49,7 @@ import {
  *   resourceOwnerId?: string;     // User ID that owns the encrypted data
  *   tenantId?: string;            // Tenant ID for the encrypted data
  * }
- * 
+ *
  * Request Body (Legacy mode - deprecated):
  * {
  *   payload: { ... },
@@ -50,7 +57,7 @@ import {
  *   resourceOwnerId?: string;
  *   tenantId?: string;
  * }
- * 
+ *
  * Response:
  * {
  *   success: boolean;
@@ -58,12 +65,16 @@ import {
  *   error?: string;
  * }
  */
-export default async function handler(req: AuthenticatedVercelRequest, res: VercelResponse) {
+export default async function handler(
+  req: AuthenticatedVercelRequest,
+  res: VercelResponse
+) {
   // Only allow POST
   if (req.method !== 'POST') {
-    return res.status(405).json({ 
+    return res.status(405).json({
       success: false,
-      error: 'Method not allowed' 
+      error: 'Method not allowed',
+      code: ErrorCode.METHOD_NOT_ALLOWED,
     });
   }
 
@@ -81,22 +92,24 @@ export default async function handler(req: AuthenticatedVercelRequest, res: Verc
     // 1. If resourceOwnerId is provided, verify user has access to it
     if (resourceOwnerId) {
       const hasAccess = isResourceOwner(req, resourceOwnerId);
-      
+
       // Employers can access their employees' data if in same tenant
-      const isEmployerWithAccess = req.user?.role === 'employer' && 
-                                    tenantId && 
-                                    hasTenantAccess(req, tenantId);
-      
+      const isEmployerWithAccess =
+        req.user?.role === 'employer' &&
+        tenantId &&
+        hasTenantAccess(req, tenantId);
+
       if (!hasAccess && !isEmployerWithAccess && req.user?.role !== 'admin') {
         await logSecurityEvent('decrypt_access_denied', req, {
           reason: 'insufficient_permissions',
           resourceOwnerId,
-          tenantId
+          tenantId,
         });
-        
+
         return res.status(403).json({
           success: false,
-          error: 'Forbidden: You do not have permission to decrypt this data'
+          error: 'Forbidden: You do not have permission to decrypt this data',
+          code: ErrorCode.PERMISSION_DENIED,
         });
       }
     }
@@ -105,38 +118,41 @@ export default async function handler(req: AuthenticatedVercelRequest, res: Verc
     if (tenantId && !hasTenantAccess(req, tenantId)) {
       await logSecurityEvent('decrypt_access_denied', req, {
         reason: 'tenant_access_denied',
-        tenantId
+        tenantId,
       });
-      
+
       return res.status(403).json({
         success: false,
-        error: 'Forbidden: You do not have access to this tenant\'s data'
+        error: "Forbidden: You do not have access to this tenant's data",
+        code: ErrorCode.TENANT_ACCESS_DENIED,
       });
     }
 
     // Validate input
     if (!payload || typeof payload !== 'object') {
       await logSecurityEvent('decrypt_validation_error', req, {
-        error: 'invalid_payload'
+        error: 'invalid_payload',
       });
-      
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Invalid payload parameter' 
+
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid payload parameter',
+        code: ErrorCode.INVALID_PAYLOAD,
       });
     }
 
     // Validate payload structure
     const { encryptedData, encryptedAESKey, iv, authTag, keyVersion } = payload;
-    
+
     if (!encryptedData || !encryptedAESKey || !iv || !authTag) {
       await logSecurityEvent('decrypt_validation_error', req, {
-        error: 'missing_payload_fields'
+        error: 'missing_payload_fields',
       });
-      
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Missing required payload fields' 
+
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required payload fields',
+        code: ErrorCode.MISSING_REQUIRED_FIELD,
       });
     }
 
@@ -150,25 +166,27 @@ export default async function handler(req: AuthenticatedVercelRequest, res: Verc
         encryptedAESKey,
         iv,
         authTag,
-        keyVersion
+        keyVersion,
       } as KMSDecryptionPayload);
 
       await logSecurityEvent('decrypt_success_kms', req, {
         resourceOwnerId: resourceOwnerId || 'not_specified',
         tenantId: tenantId || 'not_specified',
         dataSize: encryptedData.length,
-        keyVersion: keyVersion || 'default'
+        keyVersion: keyVersion || 'default',
       });
     } else {
       // Legacy RSA decryption (deprecated - for backward compatibility)
       if (!privateKey || typeof privateKey !== 'string') {
         await logSecurityEvent('decrypt_validation_error', req, {
-          error: 'invalid_private_key_legacy_mode'
+          error: 'invalid_private_key_legacy_mode',
         });
-        
-        return res.status(400).json({ 
-          success: false, 
-          error: 'Legacy mode requires privateKey parameter. Consider migrating to KMS.' 
+
+        return res.status(400).json({
+          success: false,
+          error:
+            'Legacy mode requires privateKey parameter. Consider migrating to KMS.',
+          code: ErrorCode.MISSING_REQUIRED_FIELD,
         });
       }
 
@@ -178,7 +196,7 @@ export default async function handler(req: AuthenticatedVercelRequest, res: Verc
           encryptedData,
           encryptedAESKey,
           iv,
-          authTag
+          authTag,
         } as HybridDecryptionPayload,
         privateKey
       );
@@ -187,29 +205,29 @@ export default async function handler(req: AuthenticatedVercelRequest, res: Verc
         resourceOwnerId: resourceOwnerId || 'not_specified',
         tenantId: tenantId || 'not_specified',
         dataSize: encryptedData.length,
-        warning: 'using_legacy_decryption'
+        warning: 'using_legacy_decryption',
       });
     }
 
     // Return decrypted data
     return res.status(200).json({
       success: true,
-      decrypted: decryptedData
+      decrypted: decryptedData,
     });
-
   } catch (error) {
     console.error('Decryption error:', error);
-    
+
     // Log decryption failure
     await logSecurityEvent('decrypt_error', req, {
       error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
+      stack: error instanceof Error ? error.stack : undefined,
     });
-    
-    return res.status(500).json({ 
-      success: false, 
+
+    return res.status(500).json({
+      success: false,
       error: 'Decryption failed',
-      message: error instanceof Error ? error.message : 'Unknown error'
+      code: ErrorCode.DECRYPTION_FAILED,
+      message: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }
