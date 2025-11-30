@@ -1,0 +1,30 @@
+{
+  "name": "@esta-logic/sentinel",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/sentinel",
+  "projectType": "library",
+  "tags": ["type:lib", "scope:ai", "lang:python"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo 'No build needed for Sentinel - Python module'",
+        "cwd": "packages/sentinel"
+      }
+    },
+    "run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "python client.py",
+        "cwd": "packages/sentinel"
+      }
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf __pycache__ .pytest_cache",
+        "cwd": "packages/sentinel"
+      }
+    }
+  }
+}

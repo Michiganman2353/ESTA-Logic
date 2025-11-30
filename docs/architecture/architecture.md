@@ -5,6 +5,7 @@
 ## System Architecture
 
 ESTA Tracker uses a hybrid architecture combining:
+
 - **Frontend:** React + Vite (static site on Vercel)
 - **Backend API:** Express (Node.js) for business logic
 - **Firebase Cloud Functions:** Serverless functions for Firebase-specific operations
@@ -33,6 +34,7 @@ ESTA Tracker employs a **dual-implementation pattern** for certain features:
 ### When to Use Each
 
 #### Use Backend Express Routes For:
+
 - ✅ Business logic that doesn't require Firebase Admin SDK
 - ✅ Data transformation and validation
 - ✅ Third-party API integrations
@@ -40,11 +42,13 @@ ESTA Tracker employs a **dual-implementation pattern** for certain features:
 - ✅ CSV imports and data processing
 
 **Examples:**
+
 - `/api/v1/accrual` - Accrual calculations
 - `/api/v1/import` - CSV import processing
 - `/api/v1/policies` - Policy management
 
 #### Use Firebase Cloud Functions For:
+
 - ✅ Direct Firebase database operations
 - ✅ Secure file operations (signed URLs)
 - ✅ Authentication triggers
@@ -52,6 +56,7 @@ ESTA Tracker employs a **dual-implementation pattern** for certain features:
 - ✅ Operations requiring elevated permissions
 
 **Examples:**
+
 - `generateDocumentUploadUrl` - Signed URL generation
 - `confirmDocumentUpload` - Document metadata storage
 - `getDocumentDownloadUrl` - Secure download links
@@ -78,6 +83,7 @@ Contains **placeholder implementations** with TODO comments:
 ```
 
 These routes:
+
 - Document the API interface
 - Return helpful messages explaining Firebase integration is needed
 - Serve as reference for future client implementations
@@ -94,6 +100,7 @@ export const onPtoApproval = functions.firestore.document(...)
 ```
 
 These functions:
+
 - Generate signed URLs with Firebase Admin SDK
 - Enforce security rules
 - Create audit logs in Firestore
@@ -217,6 +224,7 @@ Return to Frontend
 ## Deployment Architecture
 
 ### Vercel (Frontend + Backend API)
+
 ```
 Vercel Edge Network
 ├── Static Frontend (React)
@@ -224,6 +232,7 @@ Vercel Edge Network
 ```
 
 ### Firebase (Cloud Functions + Services)
+
 ```
 Firebase Platform
 ├── Cloud Functions (Node.js)
@@ -234,6 +243,7 @@ Firebase Platform
 ```
 
 ### Google Cloud (KMS)
+
 ```
 Google Cloud Platform
 └── Cloud KMS
@@ -246,27 +256,29 @@ Google Cloud Platform
 ## API Endpoints Summary
 
 ### Backend Express API (`/api/v1/*`)
-| Endpoint | Status | Implementation |
-|----------|--------|----------------|
-| `/auth/*` | ✅ Production | Express Routes |
-| `/accrual/*` | ✅ Production | Express Routes |
-| `/requests/*` | ✅ Production | Express Routes |
-| `/audit/*` | ✅ Production | Express Routes |
-| `/retaliation/*` | ✅ Production | Express Routes |
-| `/employer/*` | ✅ Production | Express Routes |
-| `/documents/*` | ℹ️ Placeholder | See Cloud Functions |
-| `/policies/*` | ✅ Production | Express Routes |
-| `/import/*` | ✅ Production | Express Routes |
+
+| Endpoint         | Status         | Implementation      |
+| ---------------- | -------------- | ------------------- |
+| `/auth/*`        | ✅ Production  | Express Routes      |
+| `/accrual/*`     | ✅ Production  | Express Routes      |
+| `/requests/*`    | ✅ Production  | Express Routes      |
+| `/audit/*`       | ✅ Production  | Express Routes      |
+| `/retaliation/*` | ✅ Production  | Express Routes      |
+| `/employer/*`    | ✅ Production  | Express Routes      |
+| `/documents/*`   | ℹ️ Placeholder | See Cloud Functions |
+| `/policies/*`    | ✅ Production  | Express Routes      |
+| `/import/*`      | ✅ Production  | Express Routes      |
 
 ### Firebase Cloud Functions
-| Function | Type | Purpose |
-|----------|------|---------|
-| `onEmailVerified` | Auth Trigger | User creation logging |
-| `approveUserAfterVerification` | Callable | User approval |
-| `generateDocumentUploadUrl` | Callable | Signed upload URL |
-| `confirmDocumentUpload` | Callable | Upload confirmation |
-| `getDocumentDownloadUrl` | Callable | Signed download URL |
-| `onPtoApproval` | Firestore Trigger | Document immutability |
+
+| Function                       | Type              | Purpose               |
+| ------------------------------ | ----------------- | --------------------- |
+| `onEmailVerified`              | Auth Trigger      | User creation logging |
+| `approveUserAfterVerification` | Callable          | User approval         |
+| `generateDocumentUploadUrl`    | Callable          | Signed upload URL     |
+| `confirmDocumentUpload`        | Callable          | Upload confirmation   |
+| `getDocumentDownloadUrl`       | Callable          | Signed download URL   |
+| `onPtoApproval`                | Firestore Trigger | Document immutability |
 
 ---
 
@@ -300,17 +312,20 @@ Google Cloud Platform
 ## Monitoring & Observability
 
 ### Backend Express API
+
 - Server logs via console
 - Error handling middleware
 - Health check endpoint: `/health`
 
 ### Cloud Functions
+
 - Firebase Console logs
 - Function execution metrics
 - Error reporting
 - Performance monitoring
 
 ### Frontend
+
 - Browser console (development)
 - Error boundaries
 - Sentry (planned)
@@ -342,12 +357,14 @@ As the application matures, consider:
 ### Migration Path
 
 If consolidating to Cloud Functions:
+
 1. Remove placeholder backend routes
 2. Implement all logic in Cloud Functions
 3. Update frontend to use only Firebase SDK
 4. Simplify deployment (Vercel frontend + Firebase)
 
 If consolidating to Backend API:
+
 1. Implement Firebase Admin SDK in backend
 2. Remove Cloud Functions (except triggers)
 3. Frontend calls backend API for everything
@@ -355,13 +372,114 @@ If consolidating to Backend API:
 
 ---
 
+## Advanced Packages (Expo-Ready)
+
+### Gleam Helix Core (`packages/helix/`)
+
+Immutable FP accrual calculations in Gleam language. Compiles to WASM for Tauri pivot.
+
+**Key Features:**
+
+- Pure functional, immutable calculations
+- Type-safe accrual computations
+- WASM compilation target for cross-platform
+
+```gleam
+// Example: Calculate accrual
+let result = calculate(160.0, 5.0)
+// Returns: SimpleAccrual(regular: 5.33, bonus: 0.0)
+```
+
+### XState Legion (`packages/legion/`)
+
+Deadlock-free workflow state machines for zero-entry sync.
+
+**Workflow Visualization:**
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                 Zero Entry Sync Machine                  │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  ┌──────┐  PULL_HOURS  ┌──────────┐  onDone  ┌──────────┐│
+│  │ idle │─────────────>│ syncing  │────────->│predicting││
+│  └──────┘              └──────────┘          └──────────┘│
+│      ↑                      │                     │      │
+│      │        onError       │        onDone       │      │
+│      │         ┌────────────┴─────────────────────┘      │
+│      │         ↓                                         │
+│      │    ┌─────────┐                          ┌────────┐│
+│      └────│  error  │                          │approved││
+│    RETRY  └─────────┘                          │ FINAL  ││
+│                                                └────────┘│
+└─────────────────────────────────────────────────────────┘
+```
+
+**State Flow:**
+
+1. `idle` → PULL_HOURS event → `syncing`
+2. `syncing` → Invokes QuickBooks Playwright bot → `predicting`
+3. `predicting` → Invokes Helix accrual calculation → `approved`
+4. `error` → RETRY event → `idle` (recovery path)
+
+### Ollama Sentinel (`packages/sentinel/`)
+
+Local LLM for 60-90 day advance alerts on ESTA law changes.
+
+**Features:**
+
+- Michigan ESTA law expertise via custom system prompt
+- RSS feed analysis for regulatory updates
+- Predictive compliance alerts
+- Fully local processing (no data leaves your machine)
+
+**Example Query:**
+
+```python
+response = query_sentinel("Upcoming ESTA changes 2026?")
+# Output: "Accrual 1:30 from July 1..."
+```
+
+---
+
+## Package Dependencies
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    ESTA Tracker Packages                 │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  ┌──────────────┐      ┌──────────────┐                 │
+│  │ Helix Core   │<─────│ Accrual      │                 │
+│  │ (Gleam)      │      │ Engine (TS)  │                 │
+│  └──────────────┘      └──────────────┘                 │
+│         │                     ↑                          │
+│         │                     │                          │
+│         ↓                     │                          │
+│  ┌──────────────┐      ┌──────────────┐                 │
+│  │ Legion       │─────>│ n8n Bots     │                 │
+│  │ (XState)     │      │ (Playwright) │                 │
+│  └──────────────┘      └──────────────┘                 │
+│         │                                                │
+│         ↓                                                │
+│  ┌──────────────┐                                       │
+│  │ Sentinel     │                                       │
+│  │ (Ollama)     │                                       │
+│  └──────────────┘                                       │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
 ## Conclusion
 
 The current architecture leverages the strengths of both approaches:
+
 - **Backend API:** Business logic, data processing, integrations
 - **Cloud Functions:** Firebase operations, triggers, secure file handling
 
 This provides:
+
 - ✅ Flexibility
 - ✅ Scalability
 - ✅ Security
@@ -369,11 +487,18 @@ This provides:
 
 The "placeholder" backend routes with TODOs are **intentional** and serve as API documentation while the actual implementation lives in Cloud Functions where it can leverage Firebase Admin SDK capabilities.
 
+### Expo-Ready Features
+
+- **Gleam Helix Core:** "Immutable compliance proofs"
+- **XState Legion:** "Deadlock-free workflows as art"
+- **Ollama Sentinel:** "AI thinks for you - 60-90 day alerts"
+
 ---
 
 **Questions or Need Help?**
 
 Refer to:
+
 - [Deployment Guide](../deployment/deployment.md) - Deployment instructions
 - [Firebase Setup](../setup/FIREBASE_SETUP.md) - Firebase configuration
 - [Testing Guide](./testing.md) - Testing guidelines

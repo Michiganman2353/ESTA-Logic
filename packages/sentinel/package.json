@@ -1,0 +1,20 @@
+{
+  "name": "@esta-logic/sentinel",
+  "version": "1.0.0",
+  "description": "Ollama Sentinel - Local LLM for ESTA law change predictions",
+  "main": "client.py",
+  "private": true,
+  "scripts": {
+    "build": "echo 'No build needed for Sentinel - Python module'",
+    "test": "echo 'Run: python -m pytest to test if pytest is installed'",
+    "clean": "rm -rf __pycache__ .pytest_cache",
+    "run": "python client.py"
+  },
+  "keywords": [
+    "ollama",
+    "llm",
+    "sentinel",
+    "law-prediction",
+    "esta"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "name": "@esta-logic/legion",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/legion/src",
+  "projectType": "library",
+  "tags": ["type:lib", "scope:workflow", "scope:xstate"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc",
+        "cwd": "packages/legion"
+      },
+      "outputs": ["{projectRoot}/dist"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run --passWithNoTests",
+        "cwd": "packages/legion"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit",
+        "cwd": "packages/legion"
+      }
+    },
+    "visualize": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo 'Run: npx @xstate/viz to visualize state machines'",
+        "cwd": "packages/legion"
+      }
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf dist",
+        "cwd": "packages/legion"
+      }
+    }
+  }
+}

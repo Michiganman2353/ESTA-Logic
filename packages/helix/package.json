@@ -1,0 +1,21 @@
+{
+  "name": "@esta-logic/helix",
+  "version": "1.0.0",
+  "description": "Gleam Helix Core - Immutable FP accrual calculations",
+  "main": "gleam.toml",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "echo 'Gleam build: Run gleam build manually if Gleam is installed'",
+    "typecheck": "echo 'Gleam handles its own type checking'",
+    "test": "echo 'Gleam tests: Run gleam test manually if Gleam is installed'",
+    "clean": "rm -rf build"
+  },
+  "keywords": [
+    "gleam",
+    "functional",
+    "immutable",
+    "accrual",
+    "esta"
+  ]
+}

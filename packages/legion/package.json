@@ -1,0 +1,36 @@
+{
+  "name": "@esta-logic/legion",
+  "version": "1.0.0",
+  "description": "XState Legion - Deadlock-free workflow state machines for ESTA Tracker",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf dist",
+    "visualize": "echo 'Run: npx @xstate/viz to visualize state machines'"
+  },
+  "keywords": [
+    "xstate",
+    "state-machine",
+    "workflow",
+    "n8n",
+    "fsm"
+  ],
+  "dependencies": {
+    "xstate": "^5.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vitest": "^2.1.8"
+  }
+}
