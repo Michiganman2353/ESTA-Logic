@@ -1,37 +1,24 @@
-pub type Hours = Float
-
-pub type Ratio {
-  Ratio(numerator: Float, denominator: Float)
-}
+import gleam/float
 
 pub type Accrual {
-  Accrual(regular: Hours, bonus: Hours, carryover: Hours)
+  Accrual(regular: Float, bonus: Float)
 }
 
-pub fn calculate(
-  hours_worked: Hours,
-  overtime: Hours,
-  hire_date: String,
-  as_of: String,
-) -> Accrual {
-  let base = if years_of_service(hire_date, as_of) >= 5.0 { 30.0 } else { 40.0 }
-  let effective = hours_worked +. overtime *. 1.5
-  let accrued = effective /. base
-
-  let bonus = if overtime > 20.0 { 8.0 } else { 0.0 }
-
-  Accrual(
-    regular: float.min(accrued, 40.0),
-    bonus: bonus,
-    carryover: previous_carryover()
-  )
-}
-
-fn years_of_service(hire: String, today: String) -> Float {
-  // Real date logic here — preserved from your original TS
-  4.2
-}
-
-fn previous_carryover() -> Hours {
-  12.0
+/// Calculate ESTA sick time accrual based on hours worked and years of service
+/// 
+/// Large employers (5+ years service): 1 hour per 30 hours worked
+/// Small employers (under 5 years): 1 hour per 40 hours worked
+/// Maximum accrual capped at 40 hours
+/// Bonus of 8 hours granted for overtime exceeding 160 hours
+pub fn calculate(hours: Float, years_service: Float) -> Accrual {
+  let ratio = case years_service >=. 5.0 {
+    True -> 30.0
+    False -> 40.0
+  }
+  let base = hours /. ratio
+  let bonus = case hours >. 160.0 {
+    True -> 8.0
+    False -> 0.0
+  }
+  Accrual(regular: float.min(base, 40.0), bonus: bonus)
 }

@@ -1,0 +1,11 @@
+{
+  "name": "@esta-logic/helix",
+  "version": "1.0.0",
+  "private": true,
+  "main": "gleam.toml",
+  "description": "Pure functional Gleam accrual engine - compiles to WASM for Tauri pivot",
+  "scripts": {
+    "build": "gleam build",
+    "test": "gleam test"
+  }
+}

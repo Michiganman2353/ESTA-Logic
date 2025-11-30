@@ -1,0 +1,10 @@
+{
+  "name": "@esta-logic/legion",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./machines/sync.ts",
+  "types": "./machines/sync.ts",
+  "dependencies": {
+    "xstate": "^5.18.0"
+  }
+}
