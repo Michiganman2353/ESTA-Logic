@@ -178,3 +178,12 @@ local-env.json
 *.rej
 # Playwright Storage State
 e2e/storageState.json
+
+# ==================== #
+# Legacy / Deprecated
+# ==================== #
+# Lerna (deprecated - Nx workspaces now orchestrate)
+lerna.json
+
+# Archived docs (superseded by architecture.md)
+docs/archive/
