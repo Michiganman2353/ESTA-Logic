@@ -1,5 +1,12 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-git pull --rebase origin main
-nx affected --target=lint --base=main
+# Lint affected files first (before any rebase changes the history)
+nx affected --target=lint --base=origin/main || {
+    echo "Linting failed - please fix lint errors before pushing"
+    exit 1
+}
+
+# Fetch latest from main and rebase to ensure clean history
+git fetch origin main
+git rebase origin/main
