@@ -186,7 +186,7 @@ export default async function handler(
           success: false,
           error:
             'Legacy mode requires privateKey parameter. Consider migrating to KMS.',
-          code: ErrorCode.MISSING_REQUIRED_FIELD,
+          code: ErrorCode.INVALID_INPUT,
         });
       }
 
