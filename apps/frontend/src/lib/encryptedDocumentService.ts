@@ -8,10 +8,15 @@ import {
   formatFileSize,
   type DocumentMetadata,
 } from './documentService';
+import {
+  ErrorCode,
+  AppError,
+  ERROR_MESSAGES,
+} from '@esta-tracker/shared-utils';
 
 /**
  * Encrypted Document Service
- * 
+ *
  * Extends the document service with client-side encryption.
  * Documents are encrypted before upload and decrypted after download.
  * Encryption keys are stored securely and associated with each document.
@@ -49,7 +54,11 @@ export async function uploadEncryptedDocument(
     // Validate file first
     const validation = validateDocumentFile(file);
     if (!validation.valid) {
-      throw new Error(validation.error);
+      throw new AppError(
+        validation.error || ERROR_MESSAGES[ErrorCode.VALIDATION_ERROR],
+        ErrorCode.VALIDATION_ERROR,
+        400
+      );
     }
 
     // Step 1: Encrypt the file
@@ -58,11 +67,9 @@ export async function uploadEncryptedDocument(
     if (onProgress) onProgress(20);
 
     // Create encrypted file with same name but different type
-    const encryptedFile = new File(
-      [encryptedBlob],
-      `encrypted_${file.name}`,
-      { type: 'application/octet-stream' }
-    );
+    const encryptedFile = new File([encryptedBlob], `encrypted_${file.name}`, {
+      type: 'application/octet-stream',
+    });
 
     // Step 2: Generate signed URL for encrypted file
     const { uploadUrl, documentId } = await generateDocumentUploadUrl(
@@ -72,12 +79,16 @@ export async function uploadEncryptedDocument(
     if (onProgress) onProgress(30);
 
     // Step 3: Upload encrypted file
-    await uploadDocumentToSignedUrl(uploadUrl, encryptedFile, (uploadProgress) => {
-      if (onProgress) {
-        // Map upload progress to 30-90% of total progress
-        onProgress(30 + uploadProgress * 0.6);
+    await uploadDocumentToSignedUrl(
+      uploadUrl,
+      encryptedFile,
+      (uploadProgress) => {
+        if (onProgress) {
+          // Map upload progress to 30-90% of total progress
+          onProgress(30 + uploadProgress * 0.6);
+        }
       }
-    });
+    );
 
     // Step 4: Confirm upload
     await confirmDocumentUpload(documentId);
@@ -121,7 +132,11 @@ export async function downloadEncryptedDocument(
     // Step 2: Download encrypted blob
     const response = await fetch(downloadUrl);
     if (!response.ok) {
-      throw new Error('Failed to download encrypted document');
+      throw new AppError(
+        ERROR_MESSAGES[ErrorCode.DOCUMENT_DOWNLOAD_FAILED],
+        ErrorCode.DOCUMENT_DOWNLOAD_FAILED,
+        response.status
+      );
     }
     const encryptedBlob = await response.blob();
 
@@ -145,13 +160,17 @@ export async function downloadEncryptedDocument(
     return decryptedFile;
   } catch (error) {
     console.error('Error downloading encrypted document:', error);
-    throw new Error('Failed to download and decrypt document');
+    throw new AppError(
+      ERROR_MESSAGES[ErrorCode.DOCUMENT_DOWNLOAD_FAILED],
+      ErrorCode.DOCUMENT_DOWNLOAD_FAILED,
+      500
+    );
   }
 }
 
 /**
  * Store encryption keys securely
- * 
+ *
  * This is a placeholder for secure key storage.
  * In production, encryption keys should be:
  * 1. Stored in a secure backend service (e.g., AWS KMS, Azure Key Vault)
@@ -159,7 +178,7 @@ export async function downloadEncryptedDocument(
  * 3. Associated with user authentication
  * 4. Encrypted at rest
  * 5. Access-controlled based on user permissions
- * 
+ *
  * @param documentId - Document ID
  * @param keys - Encryption keys
  * @returns Key storage ID
@@ -174,12 +193,14 @@ export async function storeEncryptionKeysSecurely(
   // 2. Encrypts the keys with a master key
   // 3. Stores in secure database
   // 4. Returns a key reference ID
-  
-  console.warn('storeEncryptionKeysSecurely not yet implemented - using placeholder');
-  
+
+  console.warn(
+    'storeEncryptionKeysSecurely not yet implemented - using placeholder'
+  );
+
   // Placeholder implementation (DO NOT USE IN PRODUCTION)
   const keyId = `key_${documentId}_${Date.now()}`;
-  
+
   // In production, this would be a backend API call:
   // const response = await fetch('/api/v1/encryption-keys', {
   //   method: 'POST',
@@ -187,13 +208,13 @@ export async function storeEncryptionKeysSecurely(
   //   body: JSON.stringify({ documentId, keys }),
   // });
   // const { keyId } = await response.json();
-  
+
   return keyId;
 }
 
 /**
  * Retrieve encryption keys securely
- * 
+ *
  * @param keyId - Key storage ID
  * @returns Encryption keys
  */
@@ -206,12 +227,18 @@ export async function retrieveEncryptionKeysSecurely(
   // 2. Retrieves encrypted keys from secure database
   // 3. Decrypts keys with master key
   // 4. Returns keys over secure connection
-  
-  console.warn('retrieveEncryptionKeysSecurely not yet implemented - using placeholder');
-  
+
+  console.warn(
+    'retrieveEncryptionKeysSecurely not yet implemented - using placeholder'
+  );
+
   // Placeholder implementation (DO NOT USE IN PRODUCTION)
-  throw new Error('Key retrieval not yet implemented. Use keys from upload response.');
-  
+  throw new AppError(
+    'Key retrieval not yet implemented. Use keys from upload response.',
+    ErrorCode.INTERNAL_ERROR,
+    501
+  );
+
   // In production, this would be a backend API call:
   // const response = await fetch(`/api/v1/encryption-keys/${keyId}`);
   // const keys = await response.json();
@@ -220,10 +247,10 @@ export async function retrieveEncryptionKeysSecurely(
 
 /**
  * Complete encrypted upload workflow with key storage
- * 
+ *
  * This combines upload and key storage in a single transaction.
  * Use this for the complete workflow.
- * 
+ *
  * @param requestId - PTO request ID
  * @param file - File to upload
  * @param onProgress - Progress callback

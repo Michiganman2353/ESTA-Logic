@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './PhotoCapture.css';
+import { ErrorCode, ERROR_MESSAGES } from '@esta-tracker/shared-utils';
 
 /**
  * PhotoCapture Component
- * 
+ *
  * Mobile-friendly photo capture interface with:
  * - Camera access
  * - Photo preview
@@ -32,12 +33,17 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
   acceptedFormats = ['image/jpeg', 'image/jpg', 'image/png'],
   requireQualityCheck = true,
 }) => {
-  const [step, setStep] = useState<'capture' | 'preview' | 'confirm'>('capture');
+  const [step, setStep] = useState<'capture' | 'preview' | 'confirm'>(
+    'capture'
+  );
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
-  const [quality, setQuality] = useState<PhotoQuality>({ isValid: true, warnings: [] });
-  
+  const [quality, setQuality] = useState<PhotoQuality>({
+    isValid: true,
+    warnings: [],
+  });
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -72,9 +78,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
       setCameraError(null);
     } catch (error) {
       console.error('Error accessing camera:', error);
-      setCameraError(
-        'Unable to access camera. Please ensure camera permissions are granted.'
-      );
+      setCameraError(ERROR_MESSAGES[ErrorCode.CAMERA_ACCESS_DENIED]);
     }
   };
 
@@ -327,7 +331,7 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
               className="camera-preview"
             />
             <canvas ref={canvasRef} style={{ display: 'none' }} />
-            
+
             <div className="camera-controls">
               <button
                 onClick={startCamera}
@@ -373,7 +377,11 @@ export const PhotoCapture: React.FC<PhotoCaptureProps> = ({
 
       <div className="photo-preview-container">
         {photoUrl && (
-          <img src={photoUrl} alt="Captured photo" className="photo-preview-image" />
+          <img
+            src={photoUrl}
+            alt="Captured photo"
+            className="photo-preview-image"
+          />
         )}
       </div>
 

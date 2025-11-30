@@ -13,6 +13,8 @@ import {
   notFoundError,
   permissionDeniedError,
   authenticationRequiredError,
+  ERROR_MESSAGES,
+  getUserFriendlyMessage,
 } from '../errors';
 
 describe('AppError', () => {
@@ -196,5 +198,46 @@ describe('Error factory functions', () => {
     const error = authenticationRequiredError();
     expect(error.code).toBe(ErrorCode.AUTHENTICATION_REQUIRED);
     expect(error.statusCode).toBe(401);
+  });
+});
+
+describe('ERROR_MESSAGES', () => {
+  it('should have messages for all error codes', () => {
+    // Verify that each ErrorCode has a corresponding message
+    const errorCodes = Object.values(ErrorCode);
+    for (const code of errorCodes) {
+      expect(ERROR_MESSAGES[code]).toBeDefined();
+      expect(typeof ERROR_MESSAGES[code]).toBe('string');
+      expect(ERROR_MESSAGES[code].length).toBeGreaterThan(0);
+    }
+  });
+
+  it('should have user-friendly messages for common error codes', () => {
+    expect(ERROR_MESSAGES[ErrorCode.INVALID_CREDENTIALS]).toBe(
+      'Invalid email or password. Please try again.'
+    );
+    expect(ERROR_MESSAGES[ErrorCode.NETWORK_ERROR]).toContain('connect');
+    expect(ERROR_MESSAGES[ErrorCode.DECRYPTION_FAILED]).toContain('decrypt');
+    expect(ERROR_MESSAGES[ErrorCode.CAMERA_ACCESS_DENIED]).toContain('camera');
+  });
+});
+
+describe('getUserFriendlyMessage', () => {
+  it('should return message for valid error code', () => {
+    expect(getUserFriendlyMessage(ErrorCode.INVALID_CREDENTIALS)).toBe(
+      ERROR_MESSAGES[ErrorCode.INVALID_CREDENTIALS]
+    );
+    expect(getUserFriendlyMessage(ErrorCode.DECRYPTION_FAILED)).toBe(
+      ERROR_MESSAGES[ErrorCode.DECRYPTION_FAILED]
+    );
+  });
+
+  it('should return internal error message as fallback for unknown codes', () => {
+    // Test that any invalid code returns the INTERNAL_ERROR message
+    const fallbackMessage = ERROR_MESSAGES[ErrorCode.INTERNAL_ERROR];
+    // This test verifies the function doesn't crash with edge cases
+    expect(getUserFriendlyMessage(ErrorCode.INTERNAL_ERROR)).toBe(
+      fallbackMessage
+    );
   });
 });

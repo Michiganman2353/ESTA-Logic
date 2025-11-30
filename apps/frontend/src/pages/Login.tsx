@@ -4,23 +4,60 @@ import { signIn } from '@/lib/authService';
 import { User } from '@/types';
 import { PasswordField } from '@/components/PasswordField';
 import { LoadingButton } from '@/components/LoadingButton';
+import { ErrorCode, ERROR_MESSAGES } from '@esta-tracker/shared-utils';
 
 interface LoginProps {
   onLogin: (user: User) => void;
+}
+
+/**
+ * Maps HTTP status codes and error conditions to standardized error codes
+ */
+function getErrorCodeFromResponse(error: {
+  status?: number;
+  code?: ErrorCode;
+  message?: string;
+  isNetworkError?: boolean;
+}): ErrorCode {
+  // If the error already has a code, use it
+  if (error.code && Object.values(ErrorCode).includes(error.code)) {
+    return error.code;
+  }
+
+  // Map by condition/status
+  if (error.isNetworkError) {
+    return ErrorCode.NETWORK_ERROR;
+  }
+  if (error.status === 401) {
+    return ErrorCode.INVALID_CREDENTIALS;
+  }
+  if (error.status === 403) {
+    return ErrorCode.ACCOUNT_PENDING_APPROVAL;
+  }
+  if (error.status && error.status >= 500) {
+    return ErrorCode.SERVER_ERROR;
+  }
+  if (error.status && error.status >= 400 && error.status < 500) {
+    return ErrorCode.VALIDATION_ERROR;
+  }
+
+  return ErrorCode.INTERNAL_ERROR;
 }
 
 export default function Login({ onLogin }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [errorCode, setErrorCode] = useState<ErrorCode | null>(null);
   const [loading, setLoading] = useState(false);
   const [searchParams] = useSearchParams();
-  
+
   const verified = searchParams.get('verified') === 'true';
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+    setErrorCode(null);
     setLoading(true);
 
     // Log login attempt for debugging
@@ -40,79 +77,108 @@ export default function Login({ onLogin }: LoginProps) {
       console.error('=== Login Error ===');
       console.error('Error:', err);
       console.error('==================');
-      
+
       if (err instanceof Error) {
+        // For standard errors, use the message directly
         setError(err.message);
+        setErrorCode(ErrorCode.INTERNAL_ERROR);
       } else {
-        // Type guard for ApiError
-        const error = err as { status?: number; message?: string; isNetworkError?: boolean };
-        
-        if (error.isNetworkError) {
-          setError('Unable to connect to server. Please check your internet connection and try again. If the problem persists, the server may be down.');
-        } else if (error.status === 401) {
-          setError('Invalid email or password. Please try again.');
-        } else if (error.status === 403) {
-          setError('Your account is pending approval. Please wait for an administrator to activate your account, or contact support if you believe this is an error.');
-        } else if (error.status && error.status >= 400 && error.status < 500) {
-          setError(error.message || 'Login failed. Please check your credentials and try again.');
-        } else if (error.status && error.status >= 500) {
-          setError('Server error. Please try again later or contact support if the problem persists.');
-        } else {
-          setError(error.message || 'Login failed. Please try again. If the problem persists, contact support.');
-        }
+        // Type guard for ApiError with potential error code
+        const apiError = err as {
+          status?: number;
+          code?: ErrorCode;
+          message?: string;
+          isNetworkError?: boolean;
+        };
+
+        const code = getErrorCodeFromResponse(apiError);
+        setErrorCode(code);
+
+        // Use the user-friendly message from ERROR_MESSAGES,
+        // falling back to the api error message if available
+        const friendlyMessage = ERROR_MESSAGES[code];
+        setError(apiError.message || friendlyMessage);
       }
     } finally {
       setLoading(false);
     }
   }
 
+  // Check if this is a network-related error for showing troubleshooting tips
+  const isNetworkError = errorCode === ErrorCode.NETWORK_ERROR;
+
   return (
-    <div className="min-h-screen flex items-center justify-center gradient-bg py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="gradient-bg relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-12 sm:px-6 lg:px-8">
       {/* Animated background elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-10 right-10 w-72 h-72 bg-primary-400/20 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-10 left-10 w-80 h-80 bg-accent-400/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '1s' }}></div>
+      <div className="pointer-events-none absolute left-0 top-0 h-full w-full overflow-hidden">
+        <div className="bg-primary-400/20 animate-float absolute right-10 top-10 h-72 w-72 rounded-full blur-3xl"></div>
+        <div
+          className="bg-accent-400/20 animate-float absolute bottom-10 left-10 h-80 w-80 rounded-full blur-3xl"
+          style={{ animationDelay: '1s' }}
+        ></div>
       </div>
 
-      <div className="max-w-md w-full space-y-8 relative z-10 animate-fade-in-up">
+      <div className="animate-fade-in-up relative z-10 w-full max-w-md space-y-8">
         <div className="text-center">
-          <h2 className="mt-6 text-4xl font-extrabold gradient-header animate-fade-in-down">
+          <h2 className="gradient-header animate-fade-in-down mt-6 text-4xl font-extrabold">
             Michigan ESTA Tracker
           </h2>
-          <p className="mt-3 text-base text-gray-700 dark:text-gray-300 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <p
+            className="animate-fade-in mt-3 text-base text-gray-700 dark:text-gray-300"
+            style={{ animationDelay: '0.2s' }}
+          >
             Earned Sick Time Act Compliance
           </p>
         </div>
-        <div className="glass-card p-8 animate-scale-in" style={{ animationDelay: '0.3s' }}>
+        <div
+          className="glass-card animate-scale-in p-8"
+          style={{ animationDelay: '0.3s' }}
+        >
           <form className="space-y-6" onSubmit={handleSubmit}>
             {verified && (
-              <div className="rounded-md bg-green-50 dark:bg-green-900/20 p-4 animate-fade-in border-l-4 border-green-500">
+              <div className="animate-fade-in rounded-md border-l-4 border-green-500 bg-green-50 p-4 dark:bg-green-900/20">
                 <p className="text-sm text-green-800 dark:text-green-200">
                   ✓ Email verified successfully! You can now sign in.
                 </p>
               </div>
             )}
             {error && (
-              <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4 border-l-4 border-red-500 animate-shake">
+              <div className="animate-shake rounded-md border-l-4 border-red-500 bg-red-50 p-4 dark:bg-red-900/20">
                 <div className="flex items-start">
                   <div className="flex-shrink-0">
-                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    <svg
+                      className="h-5 w-5 text-red-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </div>
                   <div className="ml-3 flex-1">
-                    <p className="text-sm text-red-800 dark:text-red-200 font-medium">Login Failed</p>
-                    <p className="mt-1 text-sm text-red-700 dark:text-red-300">{error}</p>
-                    {error.includes('network') || error.includes('connect') ? (
+                    <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                      Login Failed
+                    </p>
+                    <p className="mt-1 text-sm text-red-700 dark:text-red-300">
+                      {error}
+                    </p>
+                    {isNetworkError && (
                       <div className="mt-2 text-xs text-red-600 dark:text-red-400">
-                        <p className="font-semibold mb-1">Troubleshooting tips:</p>
-                        <ul className="list-disc list-inside space-y-0.5">
+                        <p className="mb-1 font-semibold">
+                          Troubleshooting tips:
+                        </p>
+                        <ul className="list-inside list-disc space-y-0.5">
                           <li>Check your internet connection</li>
-                          <li>Make sure you're not behind a restrictive firewall</li>
+                          <li>
+                            Make sure you're not behind a restrictive firewall
+                          </li>
                           <li>Try refreshing the page</li>
                         </ul>
                       </div>
-                    ) : null}
+                    )}
                   </div>
                 </div>
               </div>
@@ -130,9 +196,19 @@ export default function Login({ onLogin }: LoginProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                <div className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-400">
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"
+                    />
                   </svg>
                 </div>
               </div>
@@ -152,7 +228,7 @@ export default function Login({ onLogin }: LoginProps) {
                 loading={loading}
                 loadingText="Signing in..."
                 variant="primary"
-                className="w-full flex justify-center py-3"
+                className="flex w-full justify-center py-3"
               >
                 Sign in
               </LoadingButton>
@@ -161,7 +237,7 @@ export default function Login({ onLogin }: LoginProps) {
             <div className="text-center">
               <a
                 href="/register"
-                className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400 hover:underline transition-all"
+                className="text-primary-600 hover:text-primary-500 dark:text-primary-400 font-medium transition-all hover:underline"
               >
                 Don't have an account? Register
               </a>
