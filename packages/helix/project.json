@@ -24,7 +24,7 @@
     "ci": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "gleam deps download && gleam test --format json",
+        "command": "gleam deps download && gleam test",
         "cwd": "packages/helix",
         "parallel": false
       }
