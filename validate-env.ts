@@ -34,7 +34,7 @@ const envSchema = z.object({
 
 try {
   envSchema.parse(process.env);
-  console.log('✅ Env valid – ready for expo!');
+  console.log('✅ Env valid - ready for expo!');
   process.exit(0);
 } catch (e) {
   if (e instanceof z.ZodError) {

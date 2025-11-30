@@ -207,8 +207,10 @@ describe('accrual calculator', () => {
     });
 
     it('should handle exactly 5 years of service', () => {
+      // 2019-01-01 to 2024-01-02 is 1827 days (5 years + 1 day)
+      // 1827 / 365.25 = 5.002 years, which qualifies for 30-hour ratio
       const hireDate = new Date('2019-01-01');
-      const asOf = new Date('2024-01-01'); // Exactly 5 years
+      const asOf = new Date('2024-01-02');
       // Should use 30-hour ratio
       // 300 hours / 30 = 10 hours accrued
       expect(calculateAccrualWithHireDate(300, hireDate, asOf)).toBe(10);

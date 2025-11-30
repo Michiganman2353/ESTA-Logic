@@ -8,6 +8,7 @@ import type { EmployerSize, AccrualCalculation } from '@esta/shared-types';
 import {
   LARGE_EMPLOYER_RULES,
   SMALL_EMPLOYER_RULES,
+  differenceInDays,
 } from '@esta-tracker/shared-utils';
 
 /**
@@ -172,9 +173,9 @@ export function calculateAccrualWithHireDate(
     return 0;
   }
 
-  // Calculate years of service
-  const yearsOfService =
-    (asOf.getTime() - hireDate.getTime()) / (1000 * 60 * 60 * 24 * 365);
+  // Calculate years of service using day difference for leap year accuracy
+  const daysDiff = differenceInDays(asOf, hireDate);
+  const yearsOfService = daysDiff / 365.25; // Average days per year accounting for leap years
 
   // Tenure-based ratio: 5+ years gets 30-hour ratio, otherwise 40-hour ratio
   const ratio = yearsOfService >= 5 ? 30 : 40;
