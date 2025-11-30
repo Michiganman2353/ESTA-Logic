@@ -10,6 +10,12 @@ import { redis } from './client.js';
 /**
  * Check if a request should be rate limited.
  *
+ * Note: This implementation uses separate incr and expire commands.
+ * While there's a theoretical race condition if the process fails between
+ * these commands, Upstash Redis REST API doesn't support Lua scripts.
+ * The window is short and the consequence is just a persistent key that
+ * will eventually be cleaned up.
+ *
  * @param key - The rate limit key (e.g., `ratelimit:gusto:${firmId}`)
  * @param limit - Maximum number of requests allowed in the window (default: 100)
  * @param window - Time window in seconds (default: 3600 = 1 hour)
@@ -22,6 +28,7 @@ export async function isRateLimited(
 ): Promise<boolean> {
   const count = await redis.incr(key);
   if (count === 1) {
+    // Set expiry only on first increment to establish the window
     await redis.expire(key, window);
   }
   return count > limit;

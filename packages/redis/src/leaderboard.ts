@@ -11,10 +11,15 @@ const LEADERBOARD_KEY = 'compliance:leaderboard';
 
 /**
  * Update a firm's compliance score in the leaderboard.
- * Lower denial rates result in higher rankings (score is negated for sorting).
+ *
+ * Scores are negated when stored so that lower values (better compliance)
+ * appear first in the sorted set. This means:
+ * - A denial rate of 0.1 (10%) is stored as -0.1
+ * - A denial rate of 0.5 (50%) is stored as -0.5
+ * - Lower denial rates result in higher rankings
  *
  * @param firmId - The unique identifier of the firm
- * @param score - The compliance score (e.g., denial rate)
+ * @param score - The compliance score (e.g., denial rate where lower is better)
  */
 export async function updateComplianceScore(
   firmId: string,
@@ -46,12 +51,19 @@ export async function getTopFirms(limit = 100): Promise<LeaderboardEntry[]> {
   const entries: LeaderboardEntry[] = [];
   for (let i = 0; i < results.length; i += 2) {
     const member = results[i];
-    const score = results[i + 1];
-    if (typeof member === 'string' && score !== undefined) {
-      entries.push({
-        member,
-        score: typeof score === 'string' ? parseFloat(score) : Number(score),
-      });
+    const scoreValue = results[i + 1];
+    if (typeof member === 'string' && scoreValue !== undefined) {
+      const parsedScore =
+        typeof scoreValue === 'string'
+          ? parseFloat(scoreValue)
+          : Number(scoreValue);
+      // Skip entries with invalid scores
+      if (!Number.isNaN(parsedScore)) {
+        entries.push({
+          member,
+          score: parsedScore,
+        });
+      }
     }
   }
   return entries;

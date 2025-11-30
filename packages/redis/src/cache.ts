@@ -18,6 +18,17 @@ export interface CacheOptions {
 }
 
 /**
+ * Safely parse JSON from cache, returning null if parsing fails.
+ */
+function safeJsonParse<T>(value: string): T | null {
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Get a cached prediction or compute and cache it.
  *
  * @param employeeId - The employee identifier
@@ -37,7 +48,12 @@ export async function getCachedPrediction<T>(
 
   const cached = await redis.get<string>(cacheKey);
   if (cached !== null) {
-    return JSON.parse(cached) as T;
+    const parsed = safeJsonParse<T>(cached);
+    if (parsed !== null) {
+      return parsed;
+    }
+    // Cached value was corrupted, invalidate it
+    await redis.del(cacheKey);
   }
 
   const prediction = await computeFn();
@@ -49,14 +65,14 @@ export async function getCachedPrediction<T>(
  * Get a value from cache.
  *
  * @param key - The cache key
- * @returns The cached value, or null if not found
+ * @returns The cached value, or null if not found or corrupted
  */
 export async function getFromCache<T>(key: string): Promise<T | null> {
   const cached = await redis.get<string>(key);
   if (cached === null) {
     return null;
   }
-  return JSON.parse(cached) as T;
+  return safeJsonParse<T>(cached);
 }
 
 /**
