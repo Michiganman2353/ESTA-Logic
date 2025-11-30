@@ -146,7 +146,7 @@ This project uses a modern monorepo structure powered by:
 - **Nx (v22+)** - Build orchestration, task running, and intelligent caching
 - **npm Workspaces** - Dependency management and package linking
 
-> **Note**: While `lerna.json` exists for version management and publishing, day-to-day development uses Nx commands exclusively. Lerna's legacy `bootstrap`, `add`, and `link` commands are deprecated and not used.
+> **Note**: Day-to-day development uses Nx commands exclusively for build orchestration, task running, and dependency management.
 
 #### Available Commands
 
@@ -193,8 +193,7 @@ libs/                    # Shared libraries
 └── shared-utils/       # Shared utility functions
 
 packages/                # Additional packages
-├── esta-core/          # Core ESTA business logic
-└── esta-firebase-adapter/  # Firebase adapter layer
+└── esta-core/          # Core ESTA business logic
 ```
 
 ## Features
@@ -240,7 +239,6 @@ See [Security Documentation](./docs/security/) for complete security details.
 
 - **Monorepo Management**: Nx (v22+) + npm Workspaces
 - **Build Orchestration**: Nx with intelligent caching and task dependencies
-- **Version Management**: Lerna (for publishing only, not package management)
 - **Node Version**: 22.11+ LTS (enforced via `.nvmrc`)
 - **CI/CD**: GitHub Actions with Nx caching
 
@@ -314,7 +312,6 @@ For detailed information, see [Employer Profile Documentation](./docs/employer-p
 
 - [Complete Documentation Index](./docs/README.md) - Full documentation map
 - [Security Summary](./docs/security/security-summary.md) - Security architecture overview
-- [Audit Findings](./docs/archive/audit-findings.md) - Historical audit reports
 
 ## Vision & Roadmap
 
@@ -333,8 +330,6 @@ For detailed information, see [Employer Profile Documentation](./docs/employer-p
 - **Phase 2**: Payroll integrations (QuickBooks Time, Homebase), Mobile app, Advanced reporting
 - **Phase 3**: Multi-state expansion, White-label offerings, Full HR suite
 - **Phase 4**: National HR compliance engine, Enterprise partnerships
-
-See [docs/archive/MASTER_PLAN_V2_IMPLEMENTATION.md](./docs/archive/MASTER_PLAN_V2_IMPLEMENTATION.md) for the complete strategic vision.
 
 ---
 
