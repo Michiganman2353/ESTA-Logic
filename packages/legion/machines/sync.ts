@@ -1,30 +1,30 @@
 import { createMachine } from 'xstate';
 
 /**
- * Zero-Entry Sync Machine
+ * Zero-Entry Expo Sync Machine
  *
  * Visual FSM for deadlock-free workflow orchestration.
- * Syncs with n8n bots and Helix calculations for expo scalability.
+ * Syncs with n8n/Playwright bots and Helix immutable calculations.
  *
  * States:
- * - idle: Waiting for PULL_HOURS event
- * - syncing: Invoking QuickBooks Playwright bot
- * - predicting: Running Helix immutable calculations
- * - approved: Final state - workflow complete
+ * - idle: Waiting for START_SYNC event
+ * - pulling: Invoking CSV processor to pull hours
+ * - predicting: Running Helix accrual calculations
+ * - ready: Final state - prediction complete
  *
  * Visualize: npx @xstate/viz > sync.svg
  */
 export const syncMachine = createMachine({
-  id: 'zeroEntrySync',
+  id: 'zeroEntryExpo',
   initial: 'idle',
   states: {
-    idle: { on: { PULL_HOURS: 'syncing' } },
-    syncing: {
-      invoke: { src: 'quickbooksBot', onDone: 'predicting' }, // Calls your Playwright
+    idle: { on: { START_SYNC: 'pulling' } },
+    pulling: {
+      invoke: { src: 'csvProcessor.pullHours', onDone: 'predicting' },
     },
     predicting: {
-      invoke: { src: 'helixCalculate', onDone: 'approved' },
+      invoke: { src: 'helixCalculate', onDone: 'ready' },
     },
-    approved: { type: 'final' },
+    ready: { type: 'final' },
   },
 });

@@ -401,6 +401,7 @@ Pure functional programming layer for immutable, provably correct accrual calcul
 - Elevates TypeScript accrual logic to pure FP for expo demos
 - Provides immutable proofs of compliance
 - Compiles to WASM for Tauri pivot potential
+- Returns complete accrual data with regular hours, bonus, and cap
 
 **Integration:**
 
@@ -413,6 +414,14 @@ import { calculate } from '@esta-logic/helix';
 
 - `packages/helix/gleam.toml` - Gleam project configuration
 - `packages/helix/src/accrual.gleam` - Pure functional accrual calculations
+
+**Accrual Type:**
+
+```gleam
+pub type Accrual {
+  Accrual(regular: Float, bonus: Float, cap: Float)
+}
+```
 
 **Build:**
 
@@ -427,23 +436,23 @@ Visual finite state machine layer for deadlock-free workflow orchestration.
 **Purpose:**
 
 - Makes n8n workflows visual and provably deadlock-free
-- Syncs with QuickBooks and other integrations
-- Zero-entry sync as visual art for expo demonstrations
+- Syncs with CSV processor and other integrations
+- Zero-entry expo sync as visual art for demonstrations
 
 **State Flow:**
 
 ```
-┌──────┐  PULL_HOURS  ┌─────────┐  onDone  ┌────────────┐  onDone  ┌──────────┐
-│ idle │─────────────>│ syncing │─────────>│ predicting │─────────>│ approved │
-└──────┘              └─────────┘          └────────────┘          └──────────┘
+┌──────┐  START_SYNC  ┌─────────┐  onDone  ┌────────────┐  onDone  ┌───────┐
+│ idle │─────────────>│ pulling │─────────>│ predicting │─────────>│ ready │
+└──────┘              └─────────┘          └────────────┘          └───────┘
                            │                     │
                            v                     v
-                    quickbooksBot          helixCalculate
+                  csvProcessor.pullHours    helixCalculate
 ```
 
 **Key Files:**
 
-- `packages/legion/machines/sync.ts` - Zero-entry sync state machine
+- `packages/legion/machines/sync.ts` - Zero-entry expo sync state machine
 
 **Visualization:**
 
