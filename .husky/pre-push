@@ -1,15 +1,30 @@
-# Verify branch is not diverged from main (prevents merge conflicts)
+# Verify branch is not diverged from main/master (prevents merge conflicts)
+BASE_BRANCH=""
 if git fetch origin main --quiet 2>/dev/null; then
-    if ! git merge-base --is-ancestor origin/main HEAD 2>/dev/null; then
-        echo "Warning: Your branch has diverged from origin/main."
-        echo "Consider running 'git pull --rebase origin main' before pushing."
+    BASE_BRANCH="origin/main"
+elif git fetch origin master --quiet 2>/dev/null; then
+    BASE_BRANCH="origin/master"
+fi
+
+if [ -n "$BASE_BRANCH" ]; then
+    if ! git merge-base --is-ancestor "$BASE_BRANCH" HEAD 2>/dev/null; then
+        echo "Warning: Your branch has diverged from $BASE_BRANCH."
+        echo "Consider running 'git pull --rebase $BASE_BRANCH' before pushing."
     fi
 else
-    echo "Note: Unable to fetch origin/main - skipping divergence check."
+    echo "Note: Unable to fetch origin/main or origin/master - skipping divergence check."
 fi
 
 # Lint affected files before push
-nx affected --target=lint --base=origin/main || {
-    echo "Linting failed - please fix lint errors before pushing"
-    exit 1
-}
+if [ -n "$BASE_BRANCH" ]; then
+    nx affected --target=lint --base="$BASE_BRANCH" || {
+        echo "Linting failed - please fix lint errors before pushing"
+        exit 1
+    }
+else
+    echo "Note: No base branch available for affected lint - running full lint"
+    nx run-many --target=lint --all || {
+        echo "Linting failed - please fix lint errors before pushing"
+        exit 1
+    }
+fi
