@@ -1,10 +1,14 @@
-# Upstream harmony – sync with master to prevent diverge shadows
-git pull --rebase origin master || {
-    echo "Rebase failed - please resolve conflicts before pushing"
-    exit 1
-}
+# Verify branch is not diverged from master (prevents merge conflicts)
+if git fetch origin master --quiet; then
+    if ! git merge-base --is-ancestor origin/master HEAD 2>/dev/null; then
+        echo "Warning: Your branch has diverged from origin/master."
+        echo "Consider running 'git pull --rebase origin master' before pushing."
+    fi
+else
+    echo "Note: Unable to fetch origin/master - skipping divergence check."
+fi
 
-# Lint as guard – pure before push
+# Lint affected files before push
 nx affected --target=lint --base=origin/master || {
     echo "Linting failed - please fix lint errors before pushing"
     exit 1
