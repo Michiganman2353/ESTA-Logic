@@ -33,7 +33,9 @@
       "@esta/firebase": ["libs/esta-firebase/dist"],
       "@esta/firebase/*": ["libs/esta-firebase/dist/*"],
       "@esta/core": ["packages/esta-core/dist"],
-      "@esta/core/*": ["packages/esta-core/dist/*"]
+      "@esta/core/*": ["packages/esta-core/dist/*"],
+      "@esta/redis": ["packages/redis/dist"],
+      "@esta/redis/*": ["packages/redis/dist/*"]
     }
   },
   "include": ["src"]
