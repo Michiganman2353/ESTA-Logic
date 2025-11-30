@@ -7,6 +7,11 @@ import {
 } from './encryptedDocumentService';
 import * as encryptionService from './encryptionService';
 import * as documentService from './documentService';
+import {
+  ErrorCode,
+  ERROR_MESSAGES,
+  AppError,
+} from '@esta-tracker/shared-utils';
 
 // Mock the dependencies
 vi.mock('./encryptionService');
@@ -19,7 +24,9 @@ describe('Encrypted Document Service', () => {
 
   describe('uploadEncryptedDocument', () => {
     it('should encrypt and upload document successfully', async () => {
-      const mockFile = new File(['content'], 'test.jpg', { type: 'image/jpeg' });
+      const mockFile = new File(['content'], 'test.jpg', {
+        type: 'image/jpeg',
+      });
       const mockRequestId = 'request123';
 
       const mockEncryptedBlob = new Blob(['encrypted']);
@@ -52,7 +59,9 @@ describe('Encrypted Document Service', () => {
       });
 
       // Mock upload
-      vi.mocked(documentService.uploadDocumentToSignedUrl).mockResolvedValue(undefined);
+      vi.mocked(documentService.uploadDocumentToSignedUrl).mockResolvedValue(
+        undefined
+      );
 
       // Mock confirmation
       vi.mocked(documentService.confirmDocumentUpload).mockResolvedValue({
@@ -72,15 +81,21 @@ describe('Encrypted Document Service', () => {
         iv: mockKeys.iv,
       });
 
-      expect(documentService.validateDocumentFile).toHaveBeenCalledWith(mockFile);
+      expect(documentService.validateDocumentFile).toHaveBeenCalledWith(
+        mockFile
+      );
       expect(encryptionService.encryptFile).toHaveBeenCalledWith(mockFile);
       expect(documentService.generateDocumentUploadUrl).toHaveBeenCalled();
       expect(documentService.uploadDocumentToSignedUrl).toHaveBeenCalled();
-      expect(documentService.confirmDocumentUpload).toHaveBeenCalledWith('doc123');
+      expect(documentService.confirmDocumentUpload).toHaveBeenCalledWith(
+        'doc123'
+      );
     });
 
-    it('should throw error if file validation fails', async () => {
-      const mockFile = new File(['content'], 'test.txt', { type: 'text/plain' });
+    it('should throw AppError with VALIDATION_ERROR code if file validation fails', async () => {
+      const mockFile = new File(['content'], 'test.txt', {
+        type: 'text/plain',
+      });
       const mockRequestId = 'request123';
 
       vi.mocked(documentService.validateDocumentFile).mockReturnValue({
@@ -88,13 +103,19 @@ describe('Encrypted Document Service', () => {
         error: 'Invalid file type',
       });
 
-      await expect(
-        uploadEncryptedDocument(mockRequestId, mockFile)
-      ).rejects.toThrow('Invalid file type');
+      try {
+        await uploadEncryptedDocument(mockRequestId, mockFile);
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect((error as AppError).code).toBe(ErrorCode.VALIDATION_ERROR);
+      }
     });
 
     it('should call progress callback', async () => {
-      const mockFile = new File(['content'], 'test.jpg', { type: 'image/jpeg' });
+      const mockFile = new File(['content'], 'test.jpg', {
+        type: 'image/jpeg',
+      });
       const mockRequestId = 'request123';
       const onProgress = vi.fn();
 
@@ -107,7 +128,9 @@ describe('Encrypted Document Service', () => {
         iv: 'd'.repeat(32),
       };
 
-      vi.mocked(documentService.validateDocumentFile).mockReturnValue({ valid: true });
+      vi.mocked(documentService.validateDocumentFile).mockReturnValue({
+        valid: true,
+      });
       vi.mocked(encryptionService.encryptFile).mockResolvedValue({
         encryptedBlob: mockEncryptedBlob,
         keys: mockKeys,
@@ -119,7 +142,9 @@ describe('Encrypted Document Service', () => {
         storagePath: '/path',
         expiresIn: 900,
       });
-      vi.mocked(documentService.uploadDocumentToSignedUrl).mockResolvedValue(undefined);
+      vi.mocked(documentService.uploadDocumentToSignedUrl).mockResolvedValue(
+        undefined
+      );
       vi.mocked(documentService.confirmDocumentUpload).mockResolvedValue({
         success: true,
         message: 'Confirmed',
@@ -164,8 +189,12 @@ describe('Encrypted Document Service', () => {
       });
 
       // Mock decryption
-      const mockDecryptedBlob = new Blob(['decrypted'], { type: mockOriginalType });
-      vi.mocked(encryptionService.decryptBlob).mockResolvedValue(mockDecryptedBlob);
+      const mockDecryptedBlob = new Blob(['decrypted'], {
+        type: mockOriginalType,
+      });
+      vi.mocked(encryptionService.decryptBlob).mockResolvedValue(
+        mockDecryptedBlob
+      );
 
       // Execute
       const result = await downloadEncryptedDocument(
@@ -178,7 +207,9 @@ describe('Encrypted Document Service', () => {
       // Verify
       expect(result.name).toBe(mockOriginalName);
       expect(result.type).toBe(mockOriginalType);
-      expect(documentService.getDocumentDownloadUrl).toHaveBeenCalledWith(mockDocumentId);
+      expect(documentService.getDocumentDownloadUrl).toHaveBeenCalledWith(
+        mockDocumentId
+      );
       expect(encryptionService.decryptBlob).toHaveBeenCalledWith(
         mockEncryptedBlob,
         expect.objectContaining({
@@ -191,7 +222,7 @@ describe('Encrypted Document Service', () => {
       );
     });
 
-    it('should throw error if download fails', async () => {
+    it('should throw AppError with DOCUMENT_DOWNLOAD_FAILED code if download fails', async () => {
       const mockDocumentId = 'doc123';
       const mockKeys = {
         encryptedData: 'encrypted-base64-data',
@@ -212,14 +243,29 @@ describe('Encrypted Document Service', () => {
       // Mock failed fetch
       global.fetch = vi.fn().mockResolvedValue({
         ok: false,
+        status: 404,
       });
 
-      await expect(
-        downloadEncryptedDocument(mockDocumentId, mockKeys, 'image/jpeg', 'photo.jpg')
-      ).rejects.toThrow('Failed to download and decrypt document');
+      try {
+        await downloadEncryptedDocument(
+          mockDocumentId,
+          mockKeys,
+          'image/jpeg',
+          'photo.jpg'
+        );
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect((error as AppError).code).toBe(
+          ErrorCode.DOCUMENT_DOWNLOAD_FAILED
+        );
+        expect((error as AppError).message).toBe(
+          ERROR_MESSAGES[ErrorCode.DOCUMENT_DOWNLOAD_FAILED]
+        );
+      }
     });
 
-    it('should throw error if decryption fails', async () => {
+    it('should throw AppError with DOCUMENT_DOWNLOAD_FAILED code if decryption fails', async () => {
       const mockDocumentId = 'doc123';
       const mockKeys = {
         encryptedData: 'encrypted-base64-data',
@@ -248,9 +294,23 @@ describe('Encrypted Document Service', () => {
         new Error('Decryption failed')
       );
 
-      await expect(
-        downloadEncryptedDocument(mockDocumentId, mockKeys, 'image/jpeg', 'photo.jpg')
-      ).rejects.toThrow('Failed to download and decrypt document');
+      try {
+        await downloadEncryptedDocument(
+          mockDocumentId,
+          mockKeys,
+          'image/jpeg',
+          'photo.jpg'
+        );
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect(error).toBeInstanceOf(AppError);
+        expect((error as AppError).code).toBe(
+          ErrorCode.DOCUMENT_DOWNLOAD_FAILED
+        );
+        expect((error as AppError).message).toBe(
+          ERROR_MESSAGES[ErrorCode.DOCUMENT_DOWNLOAD_FAILED]
+        );
+      }
     });
   });
 
@@ -273,7 +333,9 @@ describe('Encrypted Document Service', () => {
 
   describe('uploadEncryptedDocumentComplete', () => {
     it('should upload document and store keys', async () => {
-      const mockFile = new File(['content'], 'test.jpg', { type: 'image/jpeg' });
+      const mockFile = new File(['content'], 'test.jpg', {
+        type: 'image/jpeg',
+      });
       const mockRequestId = 'request123';
 
       const mockEncryptedBlob = new Blob(['encrypted']);
@@ -285,7 +347,9 @@ describe('Encrypted Document Service', () => {
         iv: 'd'.repeat(32),
       };
 
-      vi.mocked(documentService.validateDocumentFile).mockReturnValue({ valid: true });
+      vi.mocked(documentService.validateDocumentFile).mockReturnValue({
+        valid: true,
+      });
       vi.mocked(encryptionService.encryptFile).mockResolvedValue({
         encryptedBlob: mockEncryptedBlob,
         keys: mockKeys,
@@ -297,13 +361,18 @@ describe('Encrypted Document Service', () => {
         storagePath: '/path',
         expiresIn: 900,
       });
-      vi.mocked(documentService.uploadDocumentToSignedUrl).mockResolvedValue(undefined);
+      vi.mocked(documentService.uploadDocumentToSignedUrl).mockResolvedValue(
+        undefined
+      );
       vi.mocked(documentService.confirmDocumentUpload).mockResolvedValue({
         success: true,
         message: 'Confirmed',
       });
 
-      const result = await uploadEncryptedDocumentComplete(mockRequestId, mockFile);
+      const result = await uploadEncryptedDocumentComplete(
+        mockRequestId,
+        mockFile
+      );
 
       expect(result.documentId).toBe('doc123');
       expect(result.keyId).toContain('key_doc123_');

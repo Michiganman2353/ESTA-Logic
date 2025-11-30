@@ -13,6 +13,9 @@ export enum ErrorCode {
   VALIDATION_ERROR = 'VALIDATION_ERROR',
   INVALID_INPUT = 'INVALID_INPUT',
   MISSING_REQUIRED_FIELD = 'MISSING_REQUIRED_FIELD',
+  INVALID_PAYLOAD = 'INVALID_PAYLOAD',
+  INVALID_FILE_TYPE = 'INVALID_FILE_TYPE',
+  INVALID_FILE_SIZE = 'INVALID_FILE_SIZE',
 
   // Authentication errors (401-level)
   AUTHENTICATION_REQUIRED = 'AUTHENTICATION_REQUIRED',
@@ -22,6 +25,11 @@ export enum ErrorCode {
   // Authorization errors (403-level)
   PERMISSION_DENIED = 'PERMISSION_DENIED',
   INSUFFICIENT_PERMISSIONS = 'INSUFFICIENT_PERMISSIONS',
+  TENANT_ACCESS_DENIED = 'TENANT_ACCESS_DENIED',
+  ACCOUNT_PENDING_APPROVAL = 'ACCOUNT_PENDING_APPROVAL',
+
+  // HTTP Method errors (405-level)
+  METHOD_NOT_ALLOWED = 'METHOD_NOT_ALLOWED',
 
   // Not found errors (404-level)
   RESOURCE_NOT_FOUND = 'RESOURCE_NOT_FOUND',
@@ -33,10 +41,26 @@ export enum ErrorCode {
   INSUFFICIENT_SICK_TIME = 'INSUFFICIENT_SICK_TIME',
   INVALID_DATE_RANGE = 'INVALID_DATE_RANGE',
 
+  // Encryption/Decryption errors (500-level)
+  DECRYPTION_FAILED = 'DECRYPTION_FAILED',
+  ENCRYPTION_FAILED = 'ENCRYPTION_FAILED',
+  LEGACY_KEY_REQUIRED = 'LEGACY_KEY_REQUIRED',
+
+  // Document/File errors
+  DOCUMENT_DOWNLOAD_FAILED = 'DOCUMENT_DOWNLOAD_FAILED',
+  DOCUMENT_UPLOAD_FAILED = 'DOCUMENT_UPLOAD_FAILED',
+
+  // Camera/Media errors
+  CAMERA_ACCESS_DENIED = 'CAMERA_ACCESS_DENIED',
+
+  // Network errors
+  NETWORK_ERROR = 'NETWORK_ERROR',
+
   // Server errors (500-level)
   INTERNAL_ERROR = 'INTERNAL_ERROR',
   DATABASE_ERROR = 'DATABASE_ERROR',
   EXTERNAL_SERVICE_ERROR = 'EXTERNAL_SERVICE_ERROR',
+  SERVER_ERROR = 'SERVER_ERROR',
 }
 
 /**
@@ -213,4 +237,83 @@ export function authenticationRequiredError(): AppError {
     ErrorCode.AUTHENTICATION_REQUIRED,
     401
   );
+}
+
+/**
+ * Mapping of error codes to user-friendly messages for UI display.
+ * These messages are safe to show to end users.
+ */
+export const ERROR_MESSAGES: Record<ErrorCode, string> = {
+  // Validation errors
+  [ErrorCode.VALIDATION_ERROR]: 'Please check your input and try again.',
+  [ErrorCode.INVALID_INPUT]: 'The provided input is invalid.',
+  [ErrorCode.MISSING_REQUIRED_FIELD]: 'Please fill in all required fields.',
+  [ErrorCode.INVALID_PAYLOAD]: 'Invalid request data.',
+  [ErrorCode.INVALID_FILE_TYPE]: 'File type is not supported.',
+  [ErrorCode.INVALID_FILE_SIZE]: 'File size exceeds the allowed limit.',
+
+  // Authentication errors
+  [ErrorCode.AUTHENTICATION_REQUIRED]: 'Please sign in to continue.',
+  [ErrorCode.INVALID_CREDENTIALS]:
+    'Invalid email or password. Please try again.',
+  [ErrorCode.TOKEN_EXPIRED]: 'Your session has expired. Please sign in again.',
+
+  // Authorization errors
+  [ErrorCode.PERMISSION_DENIED]:
+    'You do not have permission to perform this action.',
+  [ErrorCode.INSUFFICIENT_PERMISSIONS]:
+    'You do not have permission to decrypt this data.',
+  [ErrorCode.TENANT_ACCESS_DENIED]:
+    "You do not have access to this tenant's data.",
+  [ErrorCode.ACCOUNT_PENDING_APPROVAL]:
+    'Your account is pending approval. Please wait for an administrator to activate your account, or contact support if you believe this is an error.',
+
+  // HTTP Method errors
+  [ErrorCode.METHOD_NOT_ALLOWED]: 'This operation is not allowed.',
+
+  // Not found errors
+  [ErrorCode.RESOURCE_NOT_FOUND]: 'The requested resource was not found.',
+  [ErrorCode.EMPLOYEE_NOT_FOUND]: 'Employee not found.',
+  [ErrorCode.EMPLOYER_NOT_FOUND]: 'Employer not found.',
+
+  // Business logic errors
+  [ErrorCode.BUSINESS_RULE_VIOLATION]: 'This action violates business rules.',
+  [ErrorCode.INSUFFICIENT_SICK_TIME]: 'Insufficient sick time balance.',
+  [ErrorCode.INVALID_DATE_RANGE]: 'The selected date range is invalid.',
+
+  // Encryption/Decryption errors
+  [ErrorCode.DECRYPTION_FAILED]: 'Failed to decrypt data.',
+  [ErrorCode.ENCRYPTION_FAILED]: 'Failed to encrypt data.',
+  [ErrorCode.LEGACY_KEY_REQUIRED]:
+    'Legacy mode requires privateKey parameter. Consider migrating to KMS.',
+
+  // Document/File errors
+  [ErrorCode.DOCUMENT_DOWNLOAD_FAILED]:
+    'Failed to download and decrypt document.',
+  [ErrorCode.DOCUMENT_UPLOAD_FAILED]: 'Failed to upload document.',
+
+  // Camera/Media errors
+  [ErrorCode.CAMERA_ACCESS_DENIED]:
+    'Unable to access camera. Please ensure camera permissions are granted.',
+
+  // Network errors
+  [ErrorCode.NETWORK_ERROR]:
+    'Unable to connect to server. Please check your internet connection and try again.',
+
+  // Server errors
+  [ErrorCode.INTERNAL_ERROR]:
+    'An unexpected error occurred. Please try again later.',
+  [ErrorCode.DATABASE_ERROR]:
+    'A database error occurred. Please try again later.',
+  [ErrorCode.EXTERNAL_SERVICE_ERROR]:
+    'An external service error occurred. Please try again later.',
+  [ErrorCode.SERVER_ERROR]:
+    'Server error. Please try again later or contact support if the problem persists.',
+};
+
+/**
+ * Get user-friendly message for an error code
+ */
+export function getUserFriendlyMessage(code: ErrorCode): string {
+  return ERROR_MESSAGES[code] || ERROR_MESSAGES[ErrorCode.INTERNAL_ERROR];
 }

@@ -8,6 +8,7 @@ import handler from '../secure/decrypt';
 import type { AuthenticatedVercelRequest } from '../lib/authMiddleware';
 import * as authMiddleware from '../lib/authMiddleware';
 import * as hybridEncryption from '../lib/encryption/hybridEncryption';
+import { ErrorCode, ERROR_MESSAGES } from '@esta-tracker/shared-utils';
 
 // Mock dependencies
 vi.mock('../lib/authMiddleware', async () => {
@@ -17,7 +18,7 @@ vi.mock('../lib/authMiddleware', async () => {
     requireAuth: vi.fn(),
     isResourceOwner: vi.fn(),
     hasTenantAccess: vi.fn(),
-    logSecurityEvent: vi.fn()
+    logSecurityEvent: vi.fn(),
   };
 });
 
@@ -25,7 +26,7 @@ vi.mock('../lib/encryption/hybridEncryption', async () => {
   const actual = await vi.importActual('../lib/encryption/hybridEncryption');
   return {
     ...actual,
-    decryptHybrid: vi.fn()
+    decryptHybrid: vi.fn(),
   };
 });
 
@@ -37,7 +38,7 @@ describe('Decrypt Endpoint', () => {
     mockReq = {
       method: 'POST',
       headers: {
-        authorization: 'Bearer valid-token'
+        authorization: 'Bearer valid-token',
       },
       url: '/api/secure/decrypt',
       body: {
@@ -45,15 +46,16 @@ describe('Decrypt Endpoint', () => {
           encryptedData: 'encrypted-data-base64',
           encryptedAESKey: 'encrypted-key-base64',
           iv: 'iv-base64',
-          authTag: 'auth-tag-base64'
+          authTag: 'auth-tag-base64',
         },
-        privateKey: '-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC...\n-----END PRIVATE KEY-----'
-      }
+        privateKey:
+          '-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC...\n-----END PRIVATE KEY-----',
+      },
     };
 
     mockRes = {
       status: vi.fn().mockReturnThis(),
-      json: vi.fn().mockReturnThis()
+      json: vi.fn().mockReturnThis(),
     };
 
     // Default successful authentication
@@ -64,8 +66,8 @@ describe('Decrypt Endpoint', () => {
         email: 'test@example.com',
         role: 'employee',
         tenantId: 'tenant123',
-        employeeId: 'emp123'
-      }
+        employeeId: 'emp123',
+      },
     });
 
     vi.mocked(authMiddleware.isResourceOwner).mockReturnValue(true);
@@ -80,13 +82,17 @@ describe('Decrypt Endpoint', () => {
     it('should reject non-POST requests', async () => {
       mockReq.method = 'GET';
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(mockRes.status).toHaveBeenCalledWith(405);
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: false,
-          error: 'Method not allowed'
+          code: ErrorCode.METHOD_NOT_ALLOWED,
+          error: ERROR_MESSAGES[ErrorCode.METHOD_NOT_ALLOWED],
         })
       );
     });
@@ -96,10 +102,13 @@ describe('Decrypt Endpoint', () => {
       mockReq.user = {
         uid: 'user123',
         role: 'employee',
-        tenantId: 'tenant123'
+        tenantId: 'tenant123',
       };
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
     });
@@ -110,10 +119,13 @@ describe('Decrypt Endpoint', () => {
       vi.mocked(authMiddleware.requireAuth).mockResolvedValue({
         success: false,
         error: 'Unauthorized',
-        statusCode: 401
+        statusCode: 401,
       });
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(authMiddleware.requireAuth).toHaveBeenCalled();
     });
@@ -122,10 +134,13 @@ describe('Decrypt Endpoint', () => {
       vi.mocked(authMiddleware.requireAuth).mockResolvedValue({
         success: false,
         error: 'Unauthorized',
-        statusCode: 401
+        statusCode: 401,
       });
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(hybridEncryption.decryptHybrid).not.toHaveBeenCalled();
     });
@@ -137,15 +152,21 @@ describe('Decrypt Endpoint', () => {
       mockReq.user = {
         uid: 'user123',
         role: 'employee',
-        tenantId: 'tenant123'
+        tenantId: 'tenant123',
       };
 
       vi.mocked(authMiddleware.isResourceOwner).mockReturnValue(true);
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
-      expect(authMiddleware.isResourceOwner).toHaveBeenCalledWith(mockReq, 'user123');
+      expect(authMiddleware.isResourceOwner).toHaveBeenCalledWith(
+        mockReq,
+        'user123'
+      );
     });
 
     it('should deny non-owner from decrypting data', async () => {
@@ -153,19 +174,23 @@ describe('Decrypt Endpoint', () => {
       mockReq.user = {
         uid: 'user123',
         role: 'employee',
-        tenantId: 'tenant123'
+        tenantId: 'tenant123',
       };
 
       vi.mocked(authMiddleware.isResourceOwner).mockReturnValue(false);
       vi.mocked(authMiddleware.hasTenantAccess).mockReturnValue(false);
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(mockRes.status).toHaveBeenCalledWith(403);
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: false,
-          error: expect.stringContaining('do not have permission')
+          code: ErrorCode.INSUFFICIENT_PERMISSIONS,
+          error: ERROR_MESSAGES[ErrorCode.INSUFFICIENT_PERMISSIONS],
         })
       );
     });
@@ -176,13 +201,16 @@ describe('Decrypt Endpoint', () => {
       mockReq.user = {
         uid: 'employer123',
         role: 'employer',
-        tenantId: 'tenant123'
+        tenantId: 'tenant123',
       };
 
       vi.mocked(authMiddleware.isResourceOwner).mockReturnValue(false);
       vi.mocked(authMiddleware.hasTenantAccess).mockReturnValue(true);
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
     });
@@ -192,12 +220,15 @@ describe('Decrypt Endpoint', () => {
       mockReq.user = {
         uid: 'admin123',
         role: 'admin',
-        tenantId: 'admin-tenant'
+        tenantId: 'admin-tenant',
       };
 
       vi.mocked(authMiddleware.isResourceOwner).mockReturnValue(false);
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
     });
@@ -209,12 +240,15 @@ describe('Decrypt Endpoint', () => {
       mockReq.user = {
         uid: 'user123',
         role: 'employee',
-        tenantId: 'tenant123'
+        tenantId: 'tenant123',
       };
 
       vi.mocked(authMiddleware.hasTenantAccess).mockReturnValue(true);
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(mockRes.status).toHaveBeenCalledWith(200);
     });
@@ -224,18 +258,22 @@ describe('Decrypt Endpoint', () => {
       mockReq.user = {
         uid: 'user123',
         role: 'employee',
-        tenantId: 'tenant123'
+        tenantId: 'tenant123',
       };
 
       vi.mocked(authMiddleware.hasTenantAccess).mockReturnValue(false);
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(mockRes.status).toHaveBeenCalledWith(403);
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: false,
-          error: expect.stringContaining('do not have access to this tenant')
+          code: ErrorCode.TENANT_ACCESS_DENIED,
+          error: ERROR_MESSAGES[ErrorCode.TENANT_ACCESS_DENIED],
         })
       );
     });
@@ -246,16 +284,20 @@ describe('Decrypt Endpoint', () => {
       mockReq.body.payload = null;
       mockReq.user = {
         uid: 'user123',
-        role: 'employee'
+        role: 'employee',
       };
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(mockRes.status).toHaveBeenCalledWith(400);
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: false,
-          error: 'Invalid payload parameter'
+          code: ErrorCode.INVALID_PAYLOAD,
+          error: ERROR_MESSAGES[ErrorCode.INVALID_PAYLOAD],
         })
       );
     });
@@ -264,16 +306,20 @@ describe('Decrypt Endpoint', () => {
       mockReq.body.payload = 'not-an-object';
       mockReq.user = {
         uid: 'user123',
-        role: 'employee'
+        role: 'employee',
       };
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(mockRes.status).toHaveBeenCalledWith(400);
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: false,
-          error: 'Invalid payload parameter'
+          code: ErrorCode.INVALID_PAYLOAD,
+          error: ERROR_MESSAGES[ErrorCode.INVALID_PAYLOAD],
         })
       );
     });
@@ -282,16 +328,20 @@ describe('Decrypt Endpoint', () => {
       mockReq.body.privateKey = null;
       mockReq.user = {
         uid: 'user123',
-        role: 'employee'
+        role: 'employee',
       };
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(mockRes.status).toHaveBeenCalledWith(400);
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: false,
-          error: 'Legacy mode requires privateKey parameter. Consider migrating to KMS.'
+          code: ErrorCode.LEGACY_KEY_REQUIRED,
+          error: ERROR_MESSAGES[ErrorCode.LEGACY_KEY_REQUIRED],
         })
       );
     });
@@ -303,16 +353,20 @@ describe('Decrypt Endpoint', () => {
       };
       mockReq.user = {
         uid: 'user123',
-        role: 'employee'
+        role: 'employee',
       };
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(mockRes.status).toHaveBeenCalledWith(400);
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: false,
-          error: 'Missing required payload fields'
+          code: ErrorCode.MISSING_REQUIRED_FIELD,
+          error: ERROR_MESSAGES[ErrorCode.MISSING_REQUIRED_FIELD],
         })
       );
     });
@@ -323,19 +377,24 @@ describe('Decrypt Endpoint', () => {
       mockReq.user = {
         uid: 'user123',
         role: 'employee',
-        tenantId: 'tenant123'
+        tenantId: 'tenant123',
       };
 
-      vi.mocked(hybridEncryption.decryptHybrid).mockReturnValue('decrypted-secret-data');
+      vi.mocked(hybridEncryption.decryptHybrid).mockReturnValue(
+        'decrypted-secret-data'
+      );
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(hybridEncryption.decryptHybrid).toHaveBeenCalledWith(
         expect.objectContaining({
           encryptedData: 'encrypted-data-base64',
           encryptedAESKey: 'encrypted-key-base64',
           iv: 'iv-base64',
-          authTag: 'auth-tag-base64'
+          authTag: 'auth-tag-base64',
         }),
         mockReq.body.privateKey
       );
@@ -343,28 +402,32 @@ describe('Decrypt Endpoint', () => {
       expect(mockRes.status).toHaveBeenCalledWith(200);
       expect(mockRes.json).toHaveBeenCalledWith({
         success: true,
-        decrypted: 'decrypted-secret-data'
+        decrypted: 'decrypted-secret-data',
       });
     });
 
     it('should handle decryption errors', async () => {
       mockReq.user = {
         uid: 'user123',
-        role: 'employee'
+        role: 'employee',
       };
 
       vi.mocked(hybridEncryption.decryptHybrid).mockImplementation(() => {
         throw new Error('Decryption failed: Invalid key');
       });
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(mockRes.status).toHaveBeenCalledWith(500);
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: false,
-          error: 'Decryption failed',
-          message: 'Decryption failed: Invalid key'
+          code: ErrorCode.DECRYPTION_FAILED,
+          error: ERROR_MESSAGES[ErrorCode.DECRYPTION_FAILED],
+          message: 'Decryption failed: Invalid key',
         })
       );
     });
@@ -377,10 +440,13 @@ describe('Decrypt Endpoint', () => {
       mockReq.user = {
         uid: 'user123',
         role: 'employee',
-        tenantId: 'tenant123'
+        tenantId: 'tenant123',
       };
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(authMiddleware.logSecurityEvent).toHaveBeenCalledWith(
         'decrypt_success_legacy',
@@ -389,7 +455,7 @@ describe('Decrypt Endpoint', () => {
           resourceOwnerId: 'user123',
           tenantId: 'tenant123',
           dataSize: expect.any(Number),
-          warning: 'using_legacy_decryption'
+          warning: 'using_legacy_decryption',
         })
       );
     });
@@ -399,20 +465,23 @@ describe('Decrypt Endpoint', () => {
       mockReq.user = {
         uid: 'user123',
         role: 'employee',
-        tenantId: 'tenant123'
+        tenantId: 'tenant123',
       };
 
       vi.mocked(authMiddleware.isResourceOwner).mockReturnValue(false);
       vi.mocked(authMiddleware.hasTenantAccess).mockReturnValue(false);
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(authMiddleware.logSecurityEvent).toHaveBeenCalledWith(
         'decrypt_access_denied',
         mockReq,
         expect.objectContaining({
           reason: 'insufficient_permissions',
-          resourceOwnerId: 'user999'
+          resourceOwnerId: 'user999',
         })
       );
     });
@@ -421,16 +490,19 @@ describe('Decrypt Endpoint', () => {
       mockReq.body.payload = null;
       mockReq.user = {
         uid: 'user123',
-        role: 'employee'
+        role: 'employee',
       };
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(authMiddleware.logSecurityEvent).toHaveBeenCalledWith(
         'decrypt_validation_error',
         mockReq,
         expect.objectContaining({
-          error: 'invalid_payload'
+          error: 'invalid_payload',
         })
       );
     });
@@ -438,20 +510,23 @@ describe('Decrypt Endpoint', () => {
     it('should log decryption errors', async () => {
       mockReq.user = {
         uid: 'user123',
-        role: 'employee'
+        role: 'employee',
       };
 
       vi.mocked(hybridEncryption.decryptHybrid).mockImplementation(() => {
         throw new Error('Decryption failed');
       });
 
-      await handler(mockReq as AuthenticatedVercelRequest, mockRes as VercelResponse);
+      await handler(
+        mockReq as AuthenticatedVercelRequest,
+        mockRes as VercelResponse
+      );
 
       expect(authMiddleware.logSecurityEvent).toHaveBeenCalledWith(
         'decrypt_error',
         mockReq,
         expect.objectContaining({
-          error: 'Decryption failed'
+          error: 'Decryption failed',
         })
       );
     });
