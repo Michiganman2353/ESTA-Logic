@@ -17,7 +17,16 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "gleam deps download && gleam test",
-        "cwd": "packages/helix"
+        "cwd": "packages/helix",
+        "parallel": false
+      }
+    },
+    "ci": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gleam deps download && gleam test --format json",
+        "cwd": "packages/helix",
+        "parallel": false
       }
     },
     "lint": {
@@ -25,7 +34,11 @@
       "options": {
         "command": "echo 'Gleam lint handled by compiler'",
         "cwd": "packages/helix"
-      }
+      },
+      "inputs": [
+        "{projectRoot}/src/**/*.gleam",
+        "{projectRoot}/test/**/*.gleam"
+      ]
     },
     "clean": {
       "executor": "nx:run-commands",
