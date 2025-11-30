@@ -1,8 +1,8 @@
 # Verify branch is not diverged from main/master (prevents merge conflicts)
 BASE_BRANCH=""
-if git fetch origin main --quiet 2>/dev/null; then
+if git fetch origin main --quiet 2>/dev/null && git rev-parse origin/main >/dev/null 2>&1; then
     BASE_BRANCH="origin/main"
-elif git fetch origin master --quiet 2>/dev/null; then
+elif git fetch origin master --quiet 2>/dev/null && git rev-parse origin/master >/dev/null 2>&1; then
     BASE_BRANCH="origin/master"
 fi
 
@@ -16,7 +16,7 @@ else
 fi
 
 # Lint affected files before push
-if [ -n "$BASE_BRANCH" ]; then
+if [ -n "$BASE_BRANCH" ] && git rev-parse "$BASE_BRANCH" >/dev/null 2>&1; then
     nx affected --target=lint --base="$BASE_BRANCH" || {
         echo "Linting failed - please fix lint errors before pushing"
         exit 1
