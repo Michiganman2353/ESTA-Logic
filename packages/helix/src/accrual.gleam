@@ -77,11 +77,12 @@ pub fn calculate_extended(
 }
 
 /// Calculate years of service between hire date and current date
-/// Note: Placeholder implementation - real date parsing would be added
+/// TODO: Implement actual date parsing for production use
+/// Note: Returns placeholder value - real implementation needed
 fn years_of_service(_hire: String, _today: String) -> Float {
-  // Real date logic here — preserved from your original TS
-  // In production, this would parse dates and calculate difference
-  4.2
+  // Placeholder: Real date logic would parse dates and calculate difference
+  // Using 0.0 to make incomplete implementation obvious
+  0.0
 }
 
 /// Get previous carryover hours

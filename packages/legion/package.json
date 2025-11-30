@@ -27,7 +27,7 @@
     "fsm"
   ],
   "dependencies": {
-    "xstate": "^5.0.0"
+    "xstate": "^5.18.0"
   },
   "devDependencies": {
     "typescript": "^5.3.3",

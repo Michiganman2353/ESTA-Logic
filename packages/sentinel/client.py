@@ -27,7 +27,7 @@ except ImportError:
     sys.exit(1)
 
 
-def query_sentinel(prompt: str, model: str = "llama3.2") -> Optional[str]:
+def query_sentinel(prompt: str, model: str = "esta-sentinel") -> Optional[str]:
     """
     Query the ESTA Sentinel model for law change predictions.
 

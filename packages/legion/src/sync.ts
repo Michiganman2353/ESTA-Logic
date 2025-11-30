@@ -48,7 +48,7 @@ export const syncMachine = createMachine({
     },
     /** Workflow completed successfully */
     approved: {
-      type: 'final' as const,
+      type: 'final',
     },
     /** Error state for handling failures */
     error: {

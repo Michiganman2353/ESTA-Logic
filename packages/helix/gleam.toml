@@ -2,8 +2,9 @@ name = "helix"
 version = "1.0.0"
 description = "Gleam Helix Core - Immutable FP accrual calculations for ESTA Tracker"
 
-# Build targets
-target = "erlang"
+# Build targets: "erlang" for BEAM VM, "javascript" for WASM/browser
+# Using javascript target for WASM compilation and Tauri pivot
+target = "javascript"
 
 [dependencies]
 gleam_stdlib = ">= 0.34.0 and < 2.0.0"

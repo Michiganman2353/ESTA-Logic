@@ -43,7 +43,7 @@ export const zeroEntryMachine = createMachine({
     },
     /** Workflow completed successfully */
     ready: {
-      type: 'final' as const,
+      type: 'final',
     },
     /** Error state for handling failures */
     error: {

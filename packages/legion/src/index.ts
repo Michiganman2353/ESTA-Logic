@@ -5,5 +5,5 @@
  * integrating with n8n bots and Helix calculations.
  */
 
-export * from './machines/sync.xstate.js';
-export * from './sync.js';
+export * from './machines/sync.xstate';
+export * from './sync';
