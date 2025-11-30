@@ -1,0 +1,38 @@
+{
+  "name": "@esta-logic/helix",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/helix/src",
+  "projectType": "library",
+  "tags": ["scope:helix", "type:library"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gleam build",
+        "cwd": "packages/helix"
+      },
+      "outputs": ["{projectRoot}/build"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gleam deps download && gleam test",
+        "cwd": "packages/helix"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo 'Gleam lint handled by compiler'",
+        "cwd": "packages/helix"
+      }
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf build",
+        "cwd": "packages/helix"
+      }
+    }
+  }
+}
