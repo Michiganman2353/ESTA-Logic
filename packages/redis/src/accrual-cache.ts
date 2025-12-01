@@ -283,8 +283,7 @@ export async function invalidateEmployeeAccrualCache(
   employeeId: string
 ): Promise<void> {
   // Invalidate today's snapshot
-  const todayParts = new Date().toISOString().split('T');
-  const today = todayParts[0] ?? new Date().toISOString().slice(0, 10);
+  const today = new Date().toISOString().slice(0, 10);
   const key = getAccrualSnapshotKey(employeeId, today);
   await deleteCache(tenantId, CACHE_PREFIX.SNAPSHOT, key);
 }
@@ -299,8 +298,7 @@ export async function invalidateEmployeeAccrualCache(
 export async function invalidateDashboardCache(
   tenantId: string
 ): Promise<void> {
-  const todayParts = new Date().toISOString().split('T');
-  const today = todayParts[0] ?? new Date().toISOString().slice(0, 10);
+  const today = new Date().toISOString().slice(0, 10);
   const key = `dashboard:${today}`;
   await deleteCache(tenantId, CACHE_PREFIX.DASHBOARD, key);
 }

@@ -221,7 +221,7 @@ export async function batchGetCache<T>(
   const results = new Map<string, CacheResult<T>>();
   const cacheKeys = keys.map((key) => buildCacheKey(tenantId, prefix, key));
 
-  const values = await redis.mget<(string | null)[]>(...cacheKeys);
+  const values = (await redis.mget(...cacheKeys)) as (string | null)[];
 
   keys.forEach((key, index) => {
     const value = values[index];

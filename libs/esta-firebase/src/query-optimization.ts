@@ -427,7 +427,7 @@ export async function streamQuery<T extends admin.firestore.DocumentData>(
 ): Promise<{ totalProcessed: number }> {
   const db = getFirestore();
   let totalProcessed = 0;
-  let lastDoc: admin.firestore.QueryDocumentSnapshot | null = null;
+  let lastDoc: admin.firestore.QueryDocumentSnapshot | undefined;
 
   while (true) {
     let query: admin.firestore.Query = db.collection(collection);
@@ -464,7 +464,7 @@ export async function streamQuery<T extends admin.firestore.DocumentData>(
     await onBatch(docs);
 
     totalProcessed += docs.length;
-    lastDoc = snapshot.docs[snapshot.docs.length - 1] ?? null;
+    lastDoc = snapshot.docs[snapshot.docs.length - 1];
 
     // If we got fewer than batchSize, we've reached the end
     if (snapshot.docs.length < batchSize) {
