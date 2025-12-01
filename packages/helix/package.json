@@ -7,6 +7,6 @@
   "scripts": {
     "build": "gleam build",
     "test": "gleam deps download && gleam test",
-    "test:coverage": "gleam deps download && gleam test && echo 'Coverage: Gleam does not yet have native coverage support. Tests passed.'"
+    "test:coverage": "gleam deps download && gleam test"
   }
 }
