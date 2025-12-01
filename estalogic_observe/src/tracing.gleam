@@ -10,6 +10,12 @@
 //// Implements W3C Trace Context propagation for distributed tracing
 //// across WASM ↔ Tauri ↔ Kafka boundaries.
 ////
+//// Design Note on Type Duplication:
+//// TraceId and SpanId types are defined here and in message.gleam.
+//// Each Gleam package is a standalone compilation unit. The types
+//// are structurally identical to ensure wire-format compatibility
+//// when serializing/deserializing across package boundaries.
+////
 //// Reference: https://www.w3.org/TR/trace-context/
 //// Version: 1.0.0
 

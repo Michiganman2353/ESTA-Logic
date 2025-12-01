@@ -11,6 +11,15 @@
 //// 3. All messages are traceable with embedded context
 //// 4. Authentication context is always present for security
 ////
+//// Design Note on Type Duplication:
+//// Some types (TraceId, SpanId, SequenceNumber) are intentionally defined in
+//// multiple packages. Each Gleam package is a standalone compilation unit
+//// without cross-package imports. This design ensures:
+//// - Package independence for WASM module isolation
+//// - Clear boundaries between protocol, observe, and kernel concerns
+//// - No circular dependencies between packages
+//// The types are structurally compatible for serialization/deserialization.
+////
 //// Reference: docs/abi/kernel_contract.md
 //// Version: 1.0.0
 

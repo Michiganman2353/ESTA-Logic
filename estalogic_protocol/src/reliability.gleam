@@ -7,6 +7,19 @@
 //// 2. Reorder correction with bounded CRA (Causal Reorder Avoidance)
 //// 3. Flow control with credit-based, token bucket, and priority queue strategies
 ////
+//// Design Note on Type Definitions:
+//// The IdempotencyToken type here is richer than the one in message.gleam
+//// because the reliability layer needs additional metadata (created_at, scope)
+//// for TTL management and multi-tenant isolation. The message.gleam version
+//// is the wire format; this version is the runtime representation with
+//// computed fields. Conversion happens at the protocol boundary.
+////
+//// Performance Note:
+//// The reorder buffer uses insertion sort to maintain order during insertion
+//// rather than sorting at lookup time. This provides O(n) insertion with
+//// O(1) lookup for the next expected sequence, which is optimal for mostly
+//// in-order message streams.
+////
 //// Reference: docs/abi/kernel_contract.md
 //// Version: 1.0.0
 
@@ -376,6 +389,9 @@ fn extract_consecutive(
 }
 
 // Helper: flush buffer and return deliverable messages
+// Note: This is only called during window overflow, which is a rare event.
+// The buffer is already mostly sorted via insert_sorted, so quicksort
+// performs well on nearly-sorted data in practice.
 fn flush_buffer(
   buffer: List(ReorderEntry(payload)),
   expected: SequenceNumber,
