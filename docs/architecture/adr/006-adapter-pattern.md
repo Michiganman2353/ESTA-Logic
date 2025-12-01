@@ -333,7 +333,7 @@ export type AdapterError =
 
 - [Kernel Boundary Package](../../libs/kernel-boundary/)
 - [Martin Fowler: Repository Pattern](https://martinfowler.com/eaaCatalog/repository.html)
-- [Gleam Driver Specs](../../estalogic_drivers/)
+- [Gleam Driver Specifications](../../estalogic_drivers/) (relative to repository root)
 
 ## Revision History
 

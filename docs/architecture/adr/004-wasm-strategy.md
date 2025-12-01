@@ -233,7 +233,7 @@ export function calculateAccrual(
 
 - [WebAssembly Specification](https://webassembly.github.io/spec/)
 - [wasm-pack Documentation](https://rustwasm.github.io/wasm-pack/)
-- [Gleam WASM Roadmap](https://github.com/gleam-lang/gleam/issues)
+- [Gleam Language](https://gleam.run/) - WASM target planned for future releases
 - [WASM Interface Types](https://github.com/WebAssembly/interface-types)
 
 ## Revision History
