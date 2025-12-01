@@ -1,4 +1,11 @@
 version: 2
+
+# Dependabot configuration for automated dependency updates and security alerts
+# This configuration enables:
+# - Weekly npm dependency updates
+# - Weekly GitHub Actions updates
+# - Automated CVE alerts and security patches
+
 updates:
   # Enable version updates for npm
   - package-ecosystem: 'npm'
@@ -6,10 +13,22 @@ updates:
     schedule:
       interval: 'weekly'
       day: 'monday'
+      time: '06:00'
+      timezone: 'America/Detroit'
     open-pull-requests-limit: 10
     commit-message:
       prefix: 'chore(deps)'
+    reviewers:
+      - 'Michiganman2353'
+    labels:
+      - 'dependencies'
+      - 'npm'
     groups:
+      # Group security updates together for faster remediation
+      security-updates:
+        applies-to: security-updates
+        patterns:
+          - '*'
       # Group minor and patch updates together
       minor-and-patch:
         patterns:
@@ -17,10 +36,41 @@ updates:
         update-types:
           - 'minor'
           - 'patch'
-    # Ignore major updates for stability
+      # Group testing dependencies
+      testing:
+        patterns:
+          - 'vitest*'
+          - '@vitest/*'
+          - 'playwright*'
+          - '@playwright/*'
+          - 'jest*'
+          - '@jest/*'
+      # Group linting/formatting dependencies
+      linting:
+        patterns:
+          - 'eslint*'
+          - '@eslint/*'
+          - 'prettier*'
+          - '@typescript-eslint/*'
+      # Group Nx dependencies
+      nx:
+        patterns:
+          - 'nx'
+          - '@nx/*'
+          - '@nrwl/*'
+    # Ignore major updates for stability (handled manually)
     ignore:
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
+    # Allow specific major updates for security-critical packages
+    allow:
+      - dependency-type: 'production'
+        update-types:
+          [
+            'security',
+            'version-update:semver-minor',
+            'version-update:semver-patch',
+          ]
 
   # Enable version updates for GitHub Actions
   - package-ecosystem: 'github-actions'
@@ -28,6 +78,24 @@ updates:
     schedule:
       interval: 'weekly'
       day: 'monday'
+      time: '06:00'
+      timezone: 'America/Detroit'
     open-pull-requests-limit: 5
     commit-message:
       prefix: 'chore(ci)'
+    reviewers:
+      - 'Michiganman2353'
+    labels:
+      - 'dependencies'
+      - 'github-actions'
+    groups:
+      # Group all GitHub Actions updates
+      actions-all:
+        patterns:
+          - '*'
+
+# Registries configuration (if private registries are needed in the future)
+# registries:
+#   npm-registry:
+#     type: npm-registry
+#     url: https://registry.npmjs.org

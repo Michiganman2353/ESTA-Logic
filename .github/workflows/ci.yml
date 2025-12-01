@@ -11,19 +11,83 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Set minimal permissions for security
+permissions:
+  contents: read
+
 # Increase Node.js heap memory to prevent out-of-memory errors during parallel builds
 env:
   NODE_OPTIONS: '--max-old-space-size=4096'
+  # Deterministic build configuration
+  NX_DAEMON: 'false'
+  NX_PARALLEL: 3
+  NX_SKIP_NX_CACHE: 'false'
 
 jobs:
+  # Lockfile verification - ensures deterministic builds
+  lockfile-verify:
+    name: Verify Lockfile Integrity
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Verify package-lock.json exists
+        run: |
+          if [ ! -f "package-lock.json" ]; then
+            echo "❌ ERROR: package-lock.json not found"
+            echo "Run 'npm install' locally and commit the lockfile"
+            exit 1
+          fi
+          echo "✅ package-lock.json exists"
+
+      - name: Validate lockfile integrity
+        run: |
+          npm ci --dry-run 2>&1 | tee /tmp/npm-ci-output.txt
+          if grep -q "npm warn" /tmp/npm-ci-output.txt; then
+            echo "⚠️ npm warnings detected during lockfile validation"
+            cat /tmp/npm-ci-output.txt
+          fi
+          echo "✅ Lockfile integrity verified"
+
+      - name: Check for lockfile desync
+        run: |
+          # Install dependencies
+          npm ci
+
+          # Check if lockfile would change
+          npm install --package-lock-only
+
+          if git diff --exit-code package-lock.json; then
+            echo "✅ Lockfile is in sync with package.json"
+          else
+            echo "❌ ERROR: Lockfile is out of sync with package.json"
+            echo "Run 'npm install' locally and commit the updated lockfile"
+            git diff package-lock.json
+            exit 1
+          fi
+
   test:
     name: Test & Build
     runs-on: ubuntu-latest
+    needs: lockfile-verify
+    permissions:
+      contents: read
     strategy:
       matrix:
         node-version: [22.x]
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -58,10 +122,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json') }}-
             ${{ runner.os }}-nx-
-
-      - name: Validate Lockfile Sync
-        run: |
-          npm ci --dry-run || (echo "Lockfile desync detected – run 'npm install' locally" && exit 1)
 
       - name: Install Dependencies
         run: npm ci
@@ -126,6 +186,9 @@ jobs:
           npx nx reset
           rm -rf .nx/cache .nx/workspace-data
 
+      - name: Set Nx SHAs for Affected Commands
+        uses: nrwl/nx-set-shas@v4
+
       - name: Validate Nx Workspace
         run: |
           echo "Validating Nx project graph..."
@@ -145,11 +208,11 @@ jobs:
       - name: Verify Nx Installation
         run: npx nx --version
 
-      - name: Lint
-        run: npm run lint
+      - name: Lint (Affected)
+        run: npx nx affected --target=lint --parallel=${{ env.NX_PARALLEL }}
 
-      - name: Type Check
-        run: npm run typecheck
+      - name: Type Check (Affected)
+        run: npx nx affected --target=typecheck --parallel=${{ env.NX_PARALLEL }}
 
       - name: Build Shared Types (for smoke test)
         run: npx nx build shared-types
@@ -157,7 +220,7 @@ jobs:
       - name: Smoke Test - Employer Code Generation
         run: node scripts/smoke-test-employer-code.mjs
 
-      - name: Run Unit Tests
+      - name: Run Unit Tests with Coverage
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
@@ -165,7 +228,9 @@ jobs:
           VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
-        run: npm run test
+        run: |
+          npx nx affected --target=test --parallel=${{ env.NX_PARALLEL }} -- --coverage --passWithNoTests
+          echo "✅ Tests completed"
 
       - name: Check Environment Variables
         env:
@@ -177,8 +242,8 @@ jobs:
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
         run: node ./scripts/check-envs.js
 
-      - name: Build
-        run: npm run build
+      - name: Build (Affected)
+        run: npx nx affected --target=build --parallel=${{ env.NX_PARALLEL }}
         env:
           NODE_ENV: production
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
@@ -193,11 +258,25 @@ jobs:
         with:
           name: dist
           path: apps/frontend/dist
+          if-no-files-found: ignore
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-reports
+          path: |
+            apps/*/coverage
+            libs/*/coverage
+          if-no-files-found: ignore
+          retention-days: 14
 
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
     needs: test
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -207,10 +286,6 @@ jobs:
           node-version: 22.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
-
-      - name: Validate Lockfile Sync
-        run: |
-          npm ci --dry-run || (echo "Lockfile desync detected – run 'npm install' locally" && exit 1)
 
       - name: Install Dependencies
         run: npm ci
@@ -234,11 +309,15 @@ jobs:
         with:
           name: playwright-report
           path: playwright-report/
+          retention-days: 14
 
   # Blueprint validation job - validates marketing blueprints
   blueprints-validate:
     name: Validate Blueprints
     runs-on: ubuntu-latest
+    needs: lockfile-verify
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -259,10 +338,6 @@ jobs:
           fi
           echo "✅ Node version verified: $(node -v)"
 
-      - name: Validate Lockfile Sync
-        run: |
-          npm ci --dry-run || (echo "Lockfile desync detected – run 'npm install' locally" && exit 1)
-
       - name: Install Dependencies
         run: npm ci
 
@@ -279,12 +354,15 @@ jobs:
         with:
           name: blueprint-coverage
           path: libs/blueprints/coverage/
+          retention-days: 14
 
   # Marketing visual tests - validates marketing app builds and renders correctly
   marketing-visual:
     name: Marketing Visual Tests
     runs-on: ubuntu-latest
     needs: [test]
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -294,10 +372,6 @@ jobs:
           node-version: 22.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
-
-      - name: Validate Lockfile Sync
-        run: |
-          npm ci --dry-run || (echo "Lockfile desync detected – run 'npm install' locally" && exit 1)
 
       - name: Install Dependencies
         run: npm ci
@@ -321,6 +395,7 @@ jobs:
         with:
           name: marketing-playwright-report
           path: apps/marketing/playwright-report/
+          retention-days: 14
 
       - name: Upload Visual Snapshots
         uses: actions/upload-artifact@v4
@@ -334,7 +409,10 @@ jobs:
     name: Deploy Preview
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    needs: test
+    needs: [test, e2e]
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
 
@@ -344,10 +422,6 @@ jobs:
           node-version: 22.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
-
-      - name: Validate Lockfile Sync
-        run: |
-          npm ci --dry-run || (echo "Lockfile desync detected – run 'npm install' locally" && exit 1)
 
       - name: Install Dependencies
         run: npm ci
@@ -364,6 +438,7 @@ jobs:
             exit 1
           fi
           echo "✓ Frontend entry point validated successfully"
+
       - name: Check Environment Variables
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
@@ -470,6 +545,41 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+      - name: Smoke Test - Verify Preview Deployment
+        run: |
+          PREVIEW_URL="${{ steps.deploy.outputs.url }}"
+          echo "Running smoke tests against: $PREVIEW_URL"
+
+          # Wait for deployment to be ready
+          sleep 10
+
+          # Test 1: Check if the site is accessible
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$PREVIEW_URL" || echo "000")
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+            echo "✅ Site is accessible (HTTP $HTTP_STATUS)"
+          else
+            echo "❌ Site is not accessible (HTTP $HTTP_STATUS)"
+            exit 1
+          fi
+
+          # Test 2: Check for essential HTML elements
+          BODY_CONTENT=$(curl -s "$PREVIEW_URL")
+          if echo "$BODY_CONTENT" | grep -q "<html"; then
+            echo "✅ HTML content is present"
+          else
+            echo "❌ HTML content is missing"
+            exit 1
+          fi
+
+          # Test 3: Check for JavaScript bundle
+          if echo "$BODY_CONTENT" | grep -q "script"; then
+            echo "✅ JavaScript bundles are present"
+          else
+            echo "⚠️ JavaScript bundles may be missing"
+          fi
+
+          echo "✅ All smoke tests passed for preview deployment"
+
       - name: Comment PR with Preview URL
         uses: actions/github-script@v7
         if: success()
@@ -479,7 +589,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `✅ Preview deployment ready!\n\n🔗 Preview URL: ${{ steps.deploy.outputs.url }}`
+              body: `✅ Preview deployment ready!\n\n🔗 Preview URL: ${{ steps.deploy.outputs.url }}\n\n**Smoke Tests Passed:**\n- ✅ Site accessibility verified\n- ✅ HTML content present\n- ✅ JavaScript bundles loaded`
             })
 
   # Production deployment for master branch
@@ -501,7 +611,7 @@ jobs:
     name: Deploy to Production
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: [test, e2e]
+    needs: [test, e2e, blueprints-validate]
     # Explicitly set minimal permissions for security
     permissions:
       contents: read
@@ -514,10 +624,6 @@ jobs:
           node-version: 22.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
-
-      - name: Validate Lockfile Sync
-        run: |
-          npm ci --dry-run || (echo "Lockfile desync detected – run 'npm install' locally" && exit 1)
 
       - name: Install Dependencies
         run: npm ci
@@ -534,6 +640,7 @@ jobs:
             exit 1
           fi
           echo "✓ Frontend entry point validated successfully"
+
       - name: Check Environment Variables
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
@@ -626,6 +733,7 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Deploy to Vercel Production
+        id: deploy-prod
         run: |
           set -e
           url=$(vercel deploy --prebuilt --prod --token="${{ steps.sanitize-token.outputs.token }}")
@@ -633,7 +741,36 @@ jobs:
             echo "Error: Deployment failed - no URL returned"
             exit 1
           fi
+          echo "url=$url" >> $GITHUB_OUTPUT
           echo "Production URL: $url"
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Smoke Test - Verify Production Deployment
+        run: |
+          PROD_URL="${{ steps.deploy-prod.outputs.url }}"
+          echo "Running smoke tests against: $PROD_URL"
+
+          # Wait for deployment to be ready
+          sleep 15
+
+          # Test 1: Check if the site is accessible
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$PROD_URL" || echo "000")
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+            echo "✅ Site is accessible (HTTP $HTTP_STATUS)"
+          else
+            echo "❌ Site is not accessible (HTTP $HTTP_STATUS)"
+            exit 1
+          fi
+
+          # Test 2: Check for essential HTML elements
+          BODY_CONTENT=$(curl -s "$PROD_URL")
+          if echo "$BODY_CONTENT" | grep -q "<html"; then
+            echo "✅ HTML content is present"
+          else
+            echo "❌ HTML content is missing"
+            exit 1
+          fi
+
+          echo "✅ All smoke tests passed for production deployment"

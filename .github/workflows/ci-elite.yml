@@ -255,7 +255,7 @@ jobs:
       - name: Type Check Affected Projects
         run: npx nx affected --target=typecheck --parallel=3
 
-  # Test affected projects
+  # Test affected projects with coverage
   test:
     name: Test (Affected)
     runs-on: ubuntu-latest
@@ -297,7 +297,7 @@ jobs:
       - name: Clean Nx Cache
         run: rm -rf .nx/cache .nx/workspace-data
 
-      - name: Run Tests on Affected Projects
+      - name: Run Tests on Affected Projects with Coverage
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
@@ -305,7 +305,18 @@ jobs:
           VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
           VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
           VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
-        run: npx nx affected --target=test --parallel=3
+        run: npx nx affected --target=test --parallel=3 -- --coverage --passWithNoTests
+
+      - name: Upload Coverage Reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-reports
+          path: |
+            apps/*/coverage
+            libs/*/coverage
+          if-no-files-found: ignore
+          retention-days: 14
 
   # Build affected projects
   build:

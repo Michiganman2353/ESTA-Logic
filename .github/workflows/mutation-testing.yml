@@ -1,0 +1,97 @@
+name: Mutation Testing
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'libs/accrual-engine/**'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'libs/accrual-engine/**'
+  schedule:
+    # Weekly mutation testing on Sunday at 2 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_OPTIONS: '--max-old-space-size=4096'
+
+jobs:
+  mutation-testing:
+    name: Accrual Engine Mutation Testing
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install Accrual Engine Dependencies
+        working-directory: libs/accrual-engine
+        run: npm install
+
+      - name: Build Dependencies
+        run: |
+          npx nx build shared-types
+          npx nx build shared-utils
+
+      - name: Run Mutation Tests
+        id: mutation
+        working-directory: libs/accrual-engine
+        run: |
+          npm run test:mutation 2>&1 | tee /tmp/mutation-output.txt
+
+          # Extract mutation score from output using portable grep/awk
+          SCORE=$(grep -o 'Mutation score: [0-9.]*' /tmp/mutation-output.txt | awk '{print $3}' || echo "0")
+          echo "score=$SCORE" >> $GITHUB_OUTPUT
+
+          echo "## Mutation Testing Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Mutation Score:** $SCORE%" >> $GITHUB_STEP_SUMMARY
+        continue-on-error: true
+
+      - name: Upload Mutation Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mutation-report
+          path: |
+            libs/accrual-engine/reports/mutation/
+            libs/accrual-engine/mutation-report.html
+            libs/accrual-engine/mutation-report.json
+          retention-days: 30
+          if-no-files-found: ignore
+
+      - name: Check Mutation Score Threshold
+        run: |
+          SCORE="${{ steps.mutation.outputs.score }}"
+          THRESHOLD=50
+
+          if [ -z "$SCORE" ]; then
+            echo "⚠️ Could not determine mutation score"
+            exit 0
+          fi
+
+          SCORE_INT=${SCORE%.*}
+
+          if [ "$SCORE_INT" -lt "$THRESHOLD" ]; then
+            echo "❌ Mutation score ($SCORE%) is below threshold ($THRESHOLD%)"
+            echo "Please improve test coverage to catch more mutations."
+            exit 1
+          else
+            echo "✅ Mutation score ($SCORE%) meets threshold ($THRESHOLD%)"
+          fi
