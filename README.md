@@ -302,7 +302,7 @@ ESTA Tracker uses Upstash Redis for serverless caching. To configure:
 
 1. Go to GitHub → Settings → Secrets and variables → Actions
 2. Add these secrets:
-   - `UPSTASH_REDIS_URL` → `https://full-krill-43053.upstash.io`
+   - `UPSTASH_REDIS_URL` → Your Upstash REST API URL (from console.upstash.com)
    - `UPSTASH_REDIS_TOKEN` → Your Upstash REST API token (from console.upstash.com)
 
 3. In Vercel → Project Settings → Environment Variables → add the same variables
