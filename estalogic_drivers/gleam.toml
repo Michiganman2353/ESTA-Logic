@@ -1,0 +1,10 @@
+name = "estalogic_drivers"
+version = "1.0.0"
+target = "javascript"
+description = "ESTA Logic Verified Drivers - Kafka, Redis, Postgres Contracts"
+
+[dependencies]
+gleam_stdlib = ">= 0.34.0 and < 2.0.0"
+
+[dev-dependencies]
+gleeunit = "~> 1.6.2"
