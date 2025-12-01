@@ -16,6 +16,7 @@
  * - Integrates maintenance mode notification
  * - Includes debug panel for development
  * - Uses React lazy loading for optimal performance
+ * - WCAG 2.1 AA accessibility compliant with skip links and focus management
  *
  * Uses:
  * - React Router for client-side navigation
@@ -23,16 +24,24 @@
  * - API client for backend authentication fallback
  * - Design system components for consistent UI feedback
  * - React.lazy and Suspense for code splitting
+ * - SkipLinks for keyboard accessibility
  *
  * All application pages and layout are controlled from here.
  */
 
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from 'react-router-dom';
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { useAuth } from '@/contexts/useAuth';
 import { User } from '@/types';
 import { MaintenanceMode } from '@/components/MaintenanceMode';
 import { DebugPanel } from '@/components/DebugPanel';
+import { SkipLinks, FocusAnchor } from '@/components/SkipLinks';
 
 // Eagerly load critical components that appear on first render
 import Login from '@/pages/Login';
@@ -48,6 +57,28 @@ const EmployerDashboard = lazy(() => import('@/pages/EmployerDashboard'));
 const AuditLog = lazy(() => import('@/pages/AuditLog'));
 const Settings = lazy(() => import('@/pages/Settings'));
 const Pricing = lazy(() => import('@/pages/Pricing'));
+
+/**
+ * Focus management component for route changes
+ * Manages focus for accessibility when navigating between pages
+ */
+function FocusManager() {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Set focus to main content on route change
+    const mainContent = document.getElementById('main-content');
+    if (mainContent) {
+      // Small delay to ensure content is rendered
+      const timeoutId = setTimeout(() => {
+        mainContent.focus({ preventScroll: true });
+      }, 100);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [location.pathname]);
+
+  return null;
+}
 
 /**
  * Loading fallback component for lazy-loaded routes
@@ -231,8 +262,23 @@ function App() {
         v7_relativeSplatPath: true,
       }}
     >
+      {/* Skip Links for keyboard navigation - WCAG 2.4.1 */}
+      <SkipLinks
+        targets={[
+          { id: 'main-content', label: 'Skip to main content' },
+          { id: 'main-navigation', label: 'Skip to navigation' },
+        ]}
+      />
+
+      {/* Focus management for route changes - WCAG 2.4.3 */}
+      <FocusManager />
+
       <MaintenanceMode />
       <DebugPanel />
+
+      {/* Main content area with focus anchor */}
+      <FocusAnchor id="main-content" label="Main content" />
+
       <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Public routes - accessible without authentication */}
