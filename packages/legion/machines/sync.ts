@@ -3,6 +3,9 @@ import { createMachine, assign } from 'xstate';
 /**
  * Sync Machine Context
  * Holds retry counts, error info, and sync metadata
+ *
+ * @requires xstate ^5.18.0 - This machine uses XState v5 syntax which has
+ * breaking changes from v4. Ensure you are using a compatible version.
  */
 export interface SyncContext {
   retryCount: number;
@@ -183,7 +186,9 @@ export const syncMachine = createMachine(
   },
   {
     delays: {
-      RETRY_DELAY: ({ context }) => Math.pow(2, context.retryCount) * 1000,
+      // Exponential backoff with max delay cap of 30 seconds to prevent excessive waits
+      RETRY_DELAY: ({ context }) =>
+        Math.min(Math.pow(2, context.retryCount) * 1000, 30000),
     },
   }
 );

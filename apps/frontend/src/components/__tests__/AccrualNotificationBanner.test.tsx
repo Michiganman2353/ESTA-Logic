@@ -205,13 +205,15 @@ describe('createESTANotification', () => {
     expect(notification.message).toContain('72 hours'); // Default max hours
   });
 
-  it('should generate unique IDs with different timestamps', async () => {
+  it('should generate unique IDs with counter', () => {
+    // IDs should be unique even when called immediately after each other
+    // due to the counter-based approach
     const notification1 = createESTANotification('cap_reached');
-    // Wait a short time to ensure different timestamp
-    await new Promise((resolve) => setTimeout(resolve, 2));
     const notification2 = createESTANotification('cap_reached');
 
     expect(notification1.id).not.toBe(notification2.id);
+    // Verify ID format includes counter
+    expect(notification1.id).toMatch(/^notification-cap_reached-\d+-\d+$/);
   });
 });
 

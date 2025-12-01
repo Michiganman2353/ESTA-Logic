@@ -54,9 +54,13 @@ export function SkipLinks({ targets, className = '' }: SkipLinksProps) {
     event.preventDefault();
     const target = document.getElementById(targetId);
     if (target) {
-      // Focus the target element
-      target.focus({ preventScroll: true });
-      // Smooth scroll to target
+      // Make target focusable if not already
+      if (!target.hasAttribute('tabindex')) {
+        target.setAttribute('tabindex', '-1');
+      }
+      // Focus the target element (allow scroll to happen naturally)
+      target.focus();
+      // Ensure element is in view
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
@@ -69,7 +73,10 @@ export function SkipLinks({ targets, className = '' }: SkipLinksProps) {
       event.preventDefault();
       const target = document.getElementById(targetId);
       if (target) {
-        target.focus({ preventScroll: true });
+        if (!target.hasAttribute('tabindex')) {
+          target.setAttribute('tabindex', '-1');
+        }
+        target.focus();
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
