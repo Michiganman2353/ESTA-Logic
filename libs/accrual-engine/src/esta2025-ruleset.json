@@ -98,7 +98,7 @@
   "tenureBasedRates": {
     "enabled": false,
     "description": "Michigan ESTA 2025 uses flat 1:30 rate regardless of tenure",
-    "note": "The tenure-based 1:40 rate for <5 years was removed in final law"
+    "legislativeNote": "The tenure-based 1:40 rate for <5 years was removed in final law"
   },
   "recordKeepingRequirements": {
     "retentionYears": 3,

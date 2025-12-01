@@ -89,9 +89,12 @@ export interface ESTARuleset {
     };
   };
   tenureBasedRates: {
+    /** Whether tenure-based rates are enabled */
     enabled: boolean;
+    /** Description of tenure-based rate policy */
     description: string;
-    note: string;
+    /** Historical context or legislative note about why this setting exists */
+    legislativeNote: string;
   };
   recordKeepingRequirements: {
     retentionYears: number;

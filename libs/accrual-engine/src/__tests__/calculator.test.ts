@@ -164,10 +164,11 @@ describe('accrual calculator', () => {
       expect(calculateAccrualWithHireDate(400, hireDate, asOf)).toBe(0);
     });
 
-    it('should use flat 1:30 rate for all employees (ESTA 2025)', () => {
+    it('should use flat 1:30 rate for all employees regardless of tenure (ESTA 2025)', () => {
       const hireDate = new Date('2022-01-01');
       const asOf = new Date('2024-01-01'); // 2 years of service
       // ESTA 2025 uses flat 1:30 rate regardless of tenure
+      // This is the same rate as 5+ year employees - no tenure difference
       // 300 hours / 30 = 10 hours accrued
       expect(calculateAccrualWithHireDate(300, hireDate, asOf)).toBe(10);
     });
