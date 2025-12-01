@@ -1281,6 +1281,123 @@ pub fn is_retryable_error(error: PostgresError) -> Bool {
 }
 
 fn string_take(s: String, n: Int) -> String {
-  // Simple implementation - in practice would use stdlib
-  s
+  // Take first n characters from string
+  // In Gleam, strings are UTF-8 so we need to be careful with graphemes
+  // For SQLSTATE which is ASCII, we can use simple character extraction
+  string_take_acc(s, n, "")
+}
+
+fn string_take_acc(s: String, remaining: Int, acc: String) -> String {
+  case remaining <= 0 {
+    True -> acc
+    False -> {
+      case string_pop_grapheme(s) {
+        Error(_) -> acc
+        Ok(#(char, rest)) -> string_take_acc(rest, remaining - 1, acc <> char)
+      }
+    }
+  }
+}
+
+/// Pop the first grapheme from a string
+/// Returns the grapheme and the remaining string
+fn string_pop_grapheme(s: String) -> Result(#(String, String), Nil) {
+  case s == "" {
+    True -> Error(Nil)
+    False -> {
+      // For ASCII (SQLSTATE codes), first byte is the character
+      // This is a simplified implementation for 2-character SQLSTATE class
+      let first = string_first_char(s)
+      let rest = string_rest(s)
+      Ok(#(first, rest))
+    }
+  }
+}
+
+/// Get first character of string
+fn string_first_char(s: String) -> String {
+  // For SQLSTATE which uses only ASCII digits and uppercase letters,
+  // we need access to individual characters. Using pattern matching.
+  case s {
+    "0" <> _ -> "0"
+    "1" <> _ -> "1"
+    "2" <> _ -> "2"
+    "3" <> _ -> "3"
+    "4" <> _ -> "4"
+    "5" <> _ -> "5"
+    "6" <> _ -> "6"
+    "7" <> _ -> "7"
+    "8" <> _ -> "8"
+    "9" <> _ -> "9"
+    "A" <> _ -> "A"
+    "B" <> _ -> "B"
+    "C" <> _ -> "C"
+    "D" <> _ -> "D"
+    "E" <> _ -> "E"
+    "F" <> _ -> "F"
+    "G" <> _ -> "G"
+    "H" <> _ -> "H"
+    "I" <> _ -> "I"
+    "J" <> _ -> "J"
+    "K" <> _ -> "K"
+    "L" <> _ -> "L"
+    "M" <> _ -> "M"
+    "N" <> _ -> "N"
+    "O" <> _ -> "O"
+    "P" <> _ -> "P"
+    "Q" <> _ -> "Q"
+    "R" <> _ -> "R"
+    "S" <> _ -> "S"
+    "T" <> _ -> "T"
+    "U" <> _ -> "U"
+    "V" <> _ -> "V"
+    "W" <> _ -> "W"
+    "X" <> _ -> "X"
+    "Y" <> _ -> "Y"
+    "Z" <> _ -> "Z"
+    _ -> ""
+  }
+}
+
+/// Get string without first character
+fn string_rest(s: String) -> String {
+  case s {
+    "0" <> rest -> rest
+    "1" <> rest -> rest
+    "2" <> rest -> rest
+    "3" <> rest -> rest
+    "4" <> rest -> rest
+    "5" <> rest -> rest
+    "6" <> rest -> rest
+    "7" <> rest -> rest
+    "8" <> rest -> rest
+    "9" <> rest -> rest
+    "A" <> rest -> rest
+    "B" <> rest -> rest
+    "C" <> rest -> rest
+    "D" <> rest -> rest
+    "E" <> rest -> rest
+    "F" <> rest -> rest
+    "G" <> rest -> rest
+    "H" <> rest -> rest
+    "I" <> rest -> rest
+    "J" <> rest -> rest
+    "K" <> rest -> rest
+    "L" <> rest -> rest
+    "M" <> rest -> rest
+    "N" <> rest -> rest
+    "O" <> rest -> rest
+    "P" <> rest -> rest
+    "Q" <> rest -> rest
+    "R" <> rest -> rest
+    "S" <> rest -> rest
+    "T" <> rest -> rest
+    "U" <> rest -> rest
+    "V" <> rest -> rest
+    "W" <> rest -> rest
+    "X" <> rest -> rest
+    "Y" <> rest -> rest
+    "Z" <> rest -> rest
+    _ -> ""
+  }
 }

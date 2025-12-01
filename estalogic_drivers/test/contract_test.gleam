@@ -8,6 +8,16 @@
 //// - Sequence validation
 //// - Driver invariants
 //// - Connection state transitions
+////
+//// Design Note on Type Duplication:
+//// Type definitions in this test file are intentionally mirrored from the
+//// contract modules. Each Gleam package is a standalone compilation unit
+//// without cross-package imports. This design ensures:
+//// - Package independence for WASM module isolation
+//// - Clear boundaries between test and implementation concerns
+//// - No circular dependencies between packages
+//// The types are structurally compatible for serialization/deserialization.
+//// This pattern is consistent with estalogic_protocol and estalogic_kernel.
 
 import gleam/list
 import gleam/option.{None, Some}
