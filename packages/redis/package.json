@@ -13,12 +13,25 @@
     "./client": {
       "types": "./dist/client.d.ts",
       "import": "./dist/client.js"
+    },
+    "./cache": {
+      "types": "./dist/cache-service.d.ts",
+      "import": "./dist/cache-service.js"
+    },
+    "./accrual-cache": {
+      "types": "./dist/accrual-cache.d.ts",
+      "import": "./dist/accrual-cache.js"
+    },
+    "./circuit-breaker": {
+      "types": "./dist/circuit-breaker.d.ts",
+      "import": "./dist/circuit-breaker.js"
     }
   },
   "scripts": {
     "build": "tsc",
     "lint": "echo 'Lint handled by workspace'",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
     "clean": "rm -rf dist"
   },
   "dependencies": {
@@ -26,6 +39,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^2.1.9"
   }
 }

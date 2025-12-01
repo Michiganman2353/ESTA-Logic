@@ -1,41 +1,41 @@
 /**
  * @esta/firebase
- * 
+ *
  * Centralized Firebase package for ESTA Tracker
  * Single source of truth for all Firebase initialization and configuration.
- * 
+ *
  * This package provides:
  * - Client-side Firebase SDK (for frontend)
  * - Server-side Firebase Admin SDK (for backend)
  * - Environment validation
  * - Testing mocks
- * 
+ *
  * Frontend Usage:
  * ```typescript
  * import { app, auth, db } from '@esta/firebase';
- * 
+ *
  * // Use Firebase services directly
  * const user = auth.currentUser;
  * const docRef = doc(db, 'users', userId);
  * ```
- * 
+ *
  * Backend Usage:
  * ```typescript
  * import { initializeFirebaseAdmin, getFirestore, getAuth } from '@esta/firebase/admin';
- * 
+ *
  * // Initialize once at app startup
  * initializeFirebaseAdmin();
- * 
+ *
  * // Use throughout your app
  * const db = getFirestore();
  * const users = await db.collection('users').get();
  * ```
- * 
+ *
  * Testing:
  * In test environments (detected via VITEST, JEST_WORKER_ID, or NODE_ENV=test),
  * this module exports null for all Firebase instances. Tests should mock this
  * module using vi.mock() or jest.mock() to provide their own implementations.
- * 
+ *
  * ```typescript
  * vi.mock('@esta/firebase', () => ({
  *   app: {},
@@ -61,7 +61,13 @@ export {
 } from './firebase-app.js';
 
 // Import getter functions for lazy initialization
-import { getApp, getFirebaseAuth, getFirebaseFirestore, getFirebaseStorage, getFirebaseAnalytics } from './firebase-app.js';
+import {
+  getApp,
+  getFirebaseAuth,
+  getFirebaseFirestore,
+  getFirebaseStorage,
+  getFirebaseAnalytics,
+} from './firebase-app.js';
 
 /**
  * Detect if running in a test environment
@@ -71,7 +77,11 @@ function isTestEnvironment(): boolean {
   // Check for common test environment indicators
   if (typeof process !== 'undefined' && process.env) {
     // Vitest and Jest set these
-    if (process.env.VITEST || process.env.JEST_WORKER_ID || process.env.NODE_ENV === 'test') {
+    if (
+      process.env.VITEST ||
+      process.env.JEST_WORKER_ID ||
+      process.env.NODE_ENV === 'test'
+    ) {
       return true;
     }
   }
@@ -133,7 +143,12 @@ export const analytics = inTestEnv ? null : getFirebaseAnalytics();
 // Re-export common Firebase client types for convenience
 export type { FirebaseApp, FirebaseOptions } from 'firebase/app';
 export type { Auth, User } from 'firebase/auth';
-export type { Firestore, DocumentReference, CollectionReference, QuerySnapshot } from 'firebase/firestore';
+export type {
+  Firestore,
+  DocumentReference,
+  CollectionReference,
+  QuerySnapshot,
+} from 'firebase/firestore';
 export type { FirebaseStorage, StorageReference } from 'firebase/storage';
 export type { Analytics } from 'firebase/analytics';
 
@@ -148,3 +163,15 @@ export {
   getEmployerEmployee,
   regenerateEmployerCode,
 } from './employer-profile.js';
+
+// Export query optimization utilities
+export {
+  batchGetDocuments,
+  fetchEmployeesWithWorkLogs,
+  fetchEmployerDashboardData,
+  paginatedQuery,
+  batchWrite,
+  streamQuery,
+  BATCH_LIMITS,
+  type PaginatedResult,
+} from './query-optimization.js';
