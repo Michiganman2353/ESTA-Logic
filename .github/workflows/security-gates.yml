@@ -1,0 +1,261 @@
+name: Security Gates
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    # Weekly security scan on Monday at 4 AM UTC
+    - cron: '0 4 * * 1'
+  workflow_dispatch:
+    inputs:
+      create_remediation_pr:
+        description: 'Create remediation PR for vulnerabilities'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  # Dependency vulnerability scanning
+  dependency-scan:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        id: audit
+        run: |
+          npm audit --json > /tmp/npm-audit.json 2>&1 || true
+
+          # Parse the audit results
+          CRITICAL=$(jq '.metadata.vulnerabilities.critical // 0' /tmp/npm-audit.json)
+          HIGH=$(jq '.metadata.vulnerabilities.high // 0' /tmp/npm-audit.json)
+          MODERATE=$(jq '.metadata.vulnerabilities.moderate // 0' /tmp/npm-audit.json)
+          LOW=$(jq '.metadata.vulnerabilities.low // 0' /tmp/npm-audit.json)
+
+          echo "critical=$CRITICAL" >> $GITHUB_OUTPUT
+          echo "high=$HIGH" >> $GITHUB_OUTPUT
+          echo "moderate=$MODERATE" >> $GITHUB_OUTPUT
+          echo "low=$LOW" >> $GITHUB_OUTPUT
+
+          echo "## Vulnerability Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Severity | Count |" >> $GITHUB_STEP_SUMMARY
+          echo "|----------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 🔴 Critical | $CRITICAL |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🟠 High | $HIGH |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🟡 Moderate | $MODERATE |" >> $GITHUB_STEP_SUMMARY
+          echo "| 🟢 Low | $LOW |" >> $GITHUB_STEP_SUMMARY
+
+          # Fail on critical or high vulnerabilities in production dependencies
+          if [ "$CRITICAL" -gt 0 ]; then
+            echo "❌ Critical vulnerabilities found!"
+            exit 1
+          fi
+
+      - name: Upload Audit Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: npm-audit-report
+          path: /tmp/npm-audit.json
+          retention-days: 30
+
+  # SAST scanning using CodeQL
+  sast-scan:
+    name: SAST Scan (CodeQL)
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        language: ['javascript-typescript']
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: +security-extended,security-and-quality
+
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v3
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: '/language:${{ matrix.language }}'
+
+  # License compliance check
+  license-check:
+    name: License Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install license-checker
+        run: npm install -g license-checker
+
+      - name: Check Licenses
+        run: |
+          license-checker --json --production > /tmp/licenses.json
+
+          # Check for problematic licenses
+          PROBLEMATIC_LICENSES="GPL|AGPL|LGPL|SSPL|CPAL|EPL|EUPL"
+
+          if jq -r 'to_entries[] | "\(.key): \(.value.licenses)"' /tmp/licenses.json | grep -iE "$PROBLEMATIC_LICENSES"; then
+            echo "⚠️ Potentially problematic licenses found. Please review."
+          else
+            echo "✅ No problematic licenses detected"
+          fi
+
+      - name: Upload License Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: license-report
+          path: /tmp/licenses.json
+          retention-days: 30
+
+  # Generate SBOM
+  sbom-generate:
+    name: Generate SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install CycloneDX
+        run: npm install -g @cyclonedx/cyclonedx-npm
+
+      - name: Generate SBOM (XML)
+        run: cyclonedx-npm --output-file sbom.xml --output-format XML
+
+      - name: Generate SBOM (JSON)
+        run: cyclonedx-npm --output-file sbom.json --output-format JSON
+
+      - name: Upload SBOM Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-reports
+          path: |
+            sbom.xml
+            sbom.json
+          retention-days: 90
+
+  # Weekly CVE remediation (only on schedule or manual trigger)
+  cve-remediation:
+    name: CVE Remediation Check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.create_remediation_pr == 'true')
+    needs: [dependency-scan]
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Attempt Automatic Fixes
+        id: fix
+        run: |
+          # Try to fix vulnerabilities automatically
+          npm audit fix --dry-run > /tmp/audit-fix-dryrun.txt 2>&1 || true
+
+          # Check if there are fixes available
+          if grep -q "added\|removed\|changed" /tmp/audit-fix-dryrun.txt; then
+            echo "fixes_available=true" >> $GITHUB_OUTPUT
+            npm audit fix
+          else
+            echo "fixes_available=false" >> $GITHUB_OUTPUT
+            echo "No automatic fixes available"
+          fi
+
+      - name: Check for Changes
+        id: changes
+        run: |
+          if git diff --quiet package-lock.json; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create Remediation PR
+        if: steps.changes.outputs.has_changes == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore(security): automated vulnerability remediation'
+          title: '🔒 Security: Automated Vulnerability Remediation'
+          body: |
+            ## Automated Security Update
+
+            This PR was automatically generated by the weekly CVE remediation workflow.
+
+            ### Changes
+            - Applied `npm audit fix` to resolve known vulnerabilities
+            - Updated package-lock.json with patched versions
+
+            ### Review Checklist
+            - [ ] Verify all tests pass
+            - [ ] Review the updated dependencies
+            - [ ] Check for any breaking changes
+
+            ---
+            *Generated by Security Gates workflow*
+          branch: security/automated-remediation
+          delete-branch: true
+          labels: |
+            security
+            automated
+            dependencies

@@ -4,6 +4,7 @@
   "affected": {
     "defaultBase": "master"
   },
+  "defaultProject": "frontend",
   "targetDefaults": {
     "build": {
       "dependsOn": ["^build"],
@@ -22,7 +23,8 @@
         "{projectRoot}/vite.config.ts",
         "{projectRoot}/index.html",
         "{workspaceRoot}/tsconfig.base.json",
-        "{workspaceRoot}/vercel.json"
+        "{workspaceRoot}/vercel.json",
+        "{workspaceRoot}/package-lock.json"
       ]
     },
     "test": {
@@ -31,7 +33,8 @@
         "{projectRoot}/src/**",
         "{projectRoot}/**/*.test.ts",
         "{projectRoot}/**/*.test.tsx",
-        "{projectRoot}/vitest.config.ts"
+        "{projectRoot}/vitest.config.ts",
+        "{workspaceRoot}/package-lock.json"
       ]
     },
     "test:coverage": {
@@ -41,7 +44,8 @@
         "{projectRoot}/src/**",
         "{projectRoot}/**/*.test.ts",
         "{projectRoot}/**/*.test.tsx",
-        "{projectRoot}/vitest.config.ts"
+        "{projectRoot}/vitest.config.ts",
+        "{workspaceRoot}/package-lock.json"
       ]
     },
     "lint": {
@@ -50,7 +54,9 @@
         "{projectRoot}/src/**",
         "{projectRoot}/.eslintrc.*",
         "{projectRoot}/eslint.config.js",
-        "{projectRoot}/package.json"
+        "{projectRoot}/package.json",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/eslint.config.js"
       ]
     },
     "typecheck": {
@@ -96,7 +102,11 @@
       "{workspaceRoot}/firestore.indexes.json",
       "{workspaceRoot}/storage.rules"
     ],
-    "vercel": ["{workspaceRoot}/vercel.json", "{projectRoot}/.vercel/**"]
+    "vercel": ["{workspaceRoot}/vercel.json", "{projectRoot}/.vercel/**"],
+    "sharedGlobals": [
+      "{workspaceRoot}/package-lock.json",
+      "{workspaceRoot}/tsconfig.base.json"
+    ]
   },
   "tasksRunnerOptions": {
     "default": {
@@ -108,12 +118,17 @@
           "test:coverage",
           "lint",
           "typecheck"
-        ]
+        ],
+        "parallel": 3,
+        "useDaemonProcess": false
       }
     }
   },
   "workspaceLayout": {
     "appsDir": "apps",
     "libsDir": "libs"
-  }
+  },
+  "parallel": 3,
+  "cacheDirectory": ".nx/cache",
+  "useDaemonProcess": false
 }
