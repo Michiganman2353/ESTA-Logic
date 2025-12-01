@@ -1,3 +1,9 @@
+# Skip hooks in CI environments or when HUSKY=0
+if [ "$CI" = "true" ] || [ "$HUSKY" = "0" ]; then
+    echo "Skipping pre-push hooks in CI environment"
+    exit 0
+fi
+
 # Verify branch is not diverged from main/master (prevents merge conflicts)
 BASE_BRANCH=""
 if git fetch origin main --quiet 2>/dev/null && git rev-parse origin/main >/dev/null 2>&1; then
