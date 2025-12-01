@@ -29,7 +29,6 @@
             wasmtime
           ];
           shellHook = ''
-            /* eslint-disable no-unused-vars */
             export PATH="$PATH:$HOME/.cargo/bin"
             echo "ESTA Rainforest ready. Run: pnpm tauri dev"
           '';

@@ -8,8 +8,6 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { Kafka, Producer } from 'kafkajs';
 import { ESTAKafkaProducer, type ESTAProducerConfig } from '../kafka/producer';
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 // Mock KafkaJS types
 const mockSend = vi.fn().mockResolvedValue([
   {
@@ -91,8 +89,16 @@ describe('ESTAKafkaProducer', () => {
       expect(mockSend).toHaveBeenCalledWith({
         topic: 'esta-events',
         messages: [
-          { key: 'accrual-calc-1', value: JSON.stringify({ hours: 160 }), timestamp: undefined },
-          { key: 'accrual-calc-2', value: JSON.stringify({ hours: 200 }), timestamp: undefined },
+          {
+            key: 'accrual-calc-1',
+            value: JSON.stringify({ hours: 160 }),
+            timestamp: undefined,
+          },
+          {
+            key: 'accrual-calc-2',
+            value: JSON.stringify({ hours: 200 }),
+            timestamp: undefined,
+          },
         ],
       });
     });
@@ -114,7 +120,9 @@ describe('ESTAKafkaProducer', () => {
     it('should throw error when not connected', async () => {
       const messages = [{ key: 'test', value: 'test' }];
 
-      await expect(producer.send(messages)).rejects.toThrow('Producer not connected');
+      await expect(producer.send(messages)).rejects.toThrow(
+        'Producer not connected'
+      );
     });
   });
 
@@ -122,7 +130,10 @@ describe('ESTAKafkaProducer', () => {
     it('should produce a single message', async () => {
       await producer.connect();
 
-      await producer.produce('compliance-event', JSON.stringify({ type: 'audit' }));
+      await producer.produce(
+        'compliance-event',
+        JSON.stringify({ type: 'audit' })
+      );
 
       expect(mockSend).toHaveBeenCalledWith({
         topic: 'esta-events',
@@ -137,7 +148,9 @@ describe('ESTAKafkaProducer', () => {
     });
 
     it('should throw error when not connected', async () => {
-      await expect(producer.produce('key', 'value')).rejects.toThrow('Producer not connected');
+      await expect(producer.produce('key', 'value')).rejects.toThrow(
+        'Producer not connected'
+      );
     });
   });
 });
