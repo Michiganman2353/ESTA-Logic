@@ -784,10 +784,15 @@ pub fn replay_entry(
   entry: LogEntry,
 ) -> #(ReplayContext, Result(Nil, String)) {
   // Verify LSN ordering
-  case entry.lsn.value != ctx.current_lsn.value + 1 {
+  // For first entry, current_lsn equals start_lsn (e.g., 0)
+  // and entry.lsn should be start_lsn + 1 (e.g., 1)
+  // For subsequent entries, current_lsn is the last replayed entry's LSN
+  let expected_lsn = increment_lsn(ctx.current_lsn)
+  case entry.lsn.value != expected_lsn.value {
     True -> #(ctx, Error("LSN discontinuity during replay"))
     False -> {
       // Verify timestamp ordering (determinism check)
+      // Allow equal timestamps for entries created in same batch
       case entry.timestamp < ctx.last_entry_timestamp {
         True -> #(ctx, Error("Timestamp ordering violation"))
         False -> {
@@ -1037,6 +1042,16 @@ pub fn is_replication_healthy(coordinator: DualCoreCoordinator) -> Bool {
 // ============================================================================
 
 /// Compute hash for a log entry
+/// 
+/// NOTE: This is a placeholder implementation for development purposes.
+/// For production use in space-certification systems, this MUST be replaced
+/// with a proper cryptographic hash function (e.g., SHA-256) that:
+/// 1. Covers the complete entry including all payload bytes
+/// 2. Provides collision resistance
+/// 3. Is implemented using a vetted cryptographic library
+/// 
+/// The production implementation should use external FFI to a certified
+/// cryptographic library such as libsodium or ring.
 fn compute_entry_hash(
   lsn: LogSequenceNumber,
   epoch: Epoch,
@@ -1044,18 +1059,63 @@ fn compute_entry_hash(
   payload: LogPayload,
   prev_hash: List(Int),
 ) -> List(Int) {
-  // Simplified hash computation
-  // In production, use proper cryptographic hash
+  // PLACEHOLDER: Simplified hash for development
+  // TODO: Replace with SHA-256 via FFI before production deployment
   let type_code = entry_type_code(entry_type)
+  let payload_hash = compute_payload_hash(payload)
+  let prev_byte = case prev_hash {
+    [h, ..] -> h
+    [] -> 0
+  }
+  // Mix all components including payload
   [
     lsn.value % 256,
+    { lsn.value / 256 } % 256,
     epoch.value % 256,
     type_code,
-    case prev_hash {
-      [h, ..] -> h
-      [] -> 0
-    },
+    payload_hash % 256,
+    { payload_hash / 256 } % 256,
+    prev_byte,
+    { lsn.value + epoch.value + type_code + payload_hash + prev_byte } % 256,
   ]
+}
+
+/// Compute a hash of the payload data
+/// PLACEHOLDER: Must be replaced with cryptographic hash in production
+fn compute_payload_hash(payload: LogPayload) -> Int {
+  case payload {
+    MutationPayload(subsystem, operation, data) -> {
+      let subsystem_code = subsystem_to_code(subsystem)
+      let data_sum = list_sum_ints(data)
+      subsystem_code * 1000 + data_sum
+    }
+    ConfigPayload(_, _, _) -> 2000
+    CheckpointPayload(id, hash) -> 3000 + id + list_sum_ints(hash)
+    EpochChangePayload(old, new, _) -> 4000 + old.value + new.value
+    EmptyPayload -> 5000
+    BarrierPayload(id) -> 6000 + id
+  }
+}
+
+/// Convert subsystem to numeric code
+fn subsystem_to_code(subsystem: Subsystem) -> Int {
+  case subsystem {
+    ProcessManager -> 1
+    MemoryManager -> 2
+    Scheduler -> 3
+    MessageRouter -> 4
+    CapabilitySystem -> 5
+    AuditLog -> 6
+    DriverRegistry -> 7
+  }
+}
+
+/// Sum integers in a list
+fn list_sum_ints(list: List(Int)) -> Int {
+  case list {
+    [] -> 0
+    [x, ..rest] -> x + list_sum_ints(rest)
+  }
 }
 
 /// Get numeric code for entry type
@@ -1141,8 +1201,24 @@ pub type DualCoreInvariant {
 }
 
 /// Check if primary and secondary are in sync
+/// 
+/// State consistency means secondary has applied all entries up to
+/// what primary has committed. During normal operation, there may be
+/// a small lag which is acceptable within the configured max_replication_lag.
+/// 
+/// For strict consistency check (e.g., before failover), use this function.
+/// For runtime health monitoring, use is_replication_healthy() instead.
 pub fn check_state_consistency(coordinator: DualCoreCoordinator) -> Bool {
-  coordinator.primary.last_committed_lsn.value ==
+  // Secondary should have applied at least up to primary's committed LSN
+  // We compare against last_committed_lsn because that's what's guaranteed durable
+  coordinator.secondary.last_applied_lsn.value >= 
+    coordinator.primary.last_committed_lsn.value
+}
+
+/// Check strict state consistency (both replicas at exact same point)
+/// Use this only during quiescent periods or after sync barrier
+pub fn check_strict_consistency(coordinator: DualCoreCoordinator) -> Bool {
+  coordinator.primary.last_applied_lsn.value ==
     coordinator.secondary.last_applied_lsn.value
 }
 

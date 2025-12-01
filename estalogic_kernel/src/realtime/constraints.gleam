@@ -1003,7 +1003,16 @@ fn update_stats(stats: RtoStats, completed: CompletedRecovery) -> RtoStats {
     True -> stats.rto_violated_count
     False -> stats.rto_violated_count + 1
   }
-  let new_avg = (stats.avg_recovery_time_ms * stats.total_recoveries + completed.duration_ms) / new_total
+  // Use weighted average to minimize precision loss
+  // Formula: new_avg = (old_avg * old_count + new_value) / new_count
+  // For first entry (old_count = 0), this correctly gives new_avg = new_value
+  let new_avg = case stats.total_recoveries {
+    0 -> completed.duration_ms
+    _ -> {
+      let total_sum = stats.avg_recovery_time_ms * stats.total_recoveries + completed.duration_ms
+      total_sum / new_total
+    }
+  }
   let new_worst = case completed.duration_ms > stats.worst_recovery_time_ms {
     True -> completed.duration_ms
     False -> stats.worst_recovery_time_ms
@@ -1220,22 +1229,42 @@ fn count_outliers(samples: List(Int), avg: Int, std_dev: Int) -> Int {
   })
 }
 
-/// Integer square root (approximation)
+/// Integer square root (approximation using Newton's method)
+/// Returns floor(sqrt(n)) for non-negative integers
+/// 
+/// Safety: Uses bounded iteration to prevent infinite recursion
+/// and handles edge cases for 0 and 1 explicitly.
 fn int_sqrt(n: Int) -> Int {
-  case n <= 0 {
-    True -> 0
-    False -> int_sqrt_helper(n, n / 2)
+  case n {
+    _ if n <= 0 -> 0
+    1 -> 1
+    _ -> {
+      // Initial guess: n/2 is safe and converges quickly
+      let initial_guess = n / 2
+      int_sqrt_bounded(n, initial_guess, 0, 64)  // Max 64 iterations
+    }
   }
 }
 
-fn int_sqrt_helper(n: Int, guess: Int) -> Int {
-  case guess <= 0 {
-    True -> 1
+/// Bounded Newton's method iteration for integer square root
+/// max_iters prevents infinite recursion for edge cases
+fn int_sqrt_bounded(n: Int, guess: Int, iters: Int, max_iters: Int) -> Int {
+  // Safety: return best guess if max iterations reached
+  case iters >= max_iters {
+    True -> guess
     False -> {
-      let new_guess = (guess + n / guess) / 2
-      case new_guess >= guess {
-        True -> guess
-        False -> int_sqrt_helper(n, new_guess)
+      case guess <= 0 {
+        True -> 1
+        False -> {
+          // Newton's method: new_guess = (guess + n/guess) / 2
+          let quotient = n / guess
+          let new_guess = (guess + quotient) / 2
+          // Converged when guess stops decreasing
+          case new_guess >= guess {
+            True -> guess
+            False -> int_sqrt_bounded(n, new_guess, iters + 1, max_iters)
+          }
+        }
       }
     }
   }

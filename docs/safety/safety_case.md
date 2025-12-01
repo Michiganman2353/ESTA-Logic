@@ -740,12 +740,34 @@ All changes to safety-critical components require:
 
 ## Appendix C: Safety Case Approval
 
-| Role | Name | Signature | Date |
-|------|------|-----------|------|
-| Safety Authority | | | |
-| Technical Lead | | | |
-| QA Lead | | | |
-| Project Manager | | | |
+**Status**: PENDING FORMAL APPROVAL
+
+This safety case requires formal approval before the system can be deployed in a production environment. The following approvals are required:
+
+| Role | Name | Signature | Date | Status |
+|------|------|-----------|------|--------|
+| Safety Authority | ___________________ | ___________________ | __________ | PENDING |
+| Technical Lead | ___________________ | ___________________ | __________ | PENDING |
+| QA Lead | ___________________ | ___________________ | __________ | PENDING |
+| Project Manager | ___________________ | ___________________ | __________ | PENDING |
+
+### Approval Process
+
+1. **Review Phase**: All stakeholders review the complete safety case documentation
+2. **Comment Resolution**: Address any concerns or questions raised during review
+3. **Final Review**: Conduct a final review meeting with all approvers
+4. **Signature Collection**: Collect signatures from all required approvers
+5. **Document Control**: Archive signed document under configuration management
+
+### Pre-Approval Checklist
+
+Before seeking approval, ensure:
+- [ ] All hazards have been identified and analyzed
+- [ ] All safety requirements have verification evidence
+- [ ] All proof obligations have been discharged
+- [ ] Evidence bundle is complete and accessible
+- [ ] Residual risks are documented and accepted
+- [ ] Document has been reviewed by independent party
 
 ---
 
