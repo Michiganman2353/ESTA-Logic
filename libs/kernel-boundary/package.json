@@ -1,0 +1,47 @@
+{
+  "name": "@esta/kernel-boundary",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Kernel Boundary Contract (KBC) - Formal interfaces between kernel/userland",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "require": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./capability": {
+      "types": "./src/capability.ts",
+      "import": "./src/capability.ts",
+      "default": "./src/capability.ts"
+    },
+    "./ipc": {
+      "types": "./src/ipc.ts",
+      "import": "./src/ipc.ts",
+      "default": "./src/ipc.ts"
+    },
+    "./adapter": {
+      "types": "./src/adapter.ts",
+      "import": "./src/adapter.ts",
+      "default": "./src/adapter.ts"
+    }
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vitest": "^2.1.9"
+  }
+}

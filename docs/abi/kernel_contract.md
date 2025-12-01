@@ -1,9 +1,29 @@
-# ESTA Logic Microkernel ABI Contract Specification
+# ESTA Logic Kernel Boundary Contract (KBC) Specification
 
 **Version**: 1.0.0  
-**Status**: Draft  
+**Status**: Draft - Target Architecture  
 **Last Updated**: 2025-12-01  
 **NASA-Level Requirement**: No module shall implicitly define protocol behavior.
+
+---
+
+> **⚠️ Implementation Status**  
+> This document describes the **target architecture** for ESTA-Logic. The current implementation
+> is a modular monolith with formal type specifications. See [MICROKERNEL_STATUS.md](../architecture/MICROKERNEL_STATUS.md)
+> for the current state and migration path.
+>
+> **What's Implemented:**
+>
+> - Gleam type specifications (`estalogic_kernel`, `estalogic_protocol`)
+> - TypeScript port interfaces (`@esta/kernel-boundary`)
+> - Pure business logic (`accrual-engine`, `esta-core`)
+>
+> **What's Planned:**
+>
+> - Runtime capability enforcement
+> - Message-based IPC
+> - WASM module execution
+> - Formal verification
 
 ---
 
