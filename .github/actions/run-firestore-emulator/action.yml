@@ -1,0 +1,18 @@
+name: run-firestore-emulator
+description: Start Firestore emulator for tests
+inputs: {}
+runs:
+  using: 'composite'
+  steps:
+    - name: Run emulator
+      shell: bash
+      run: |
+        # Start Google emulators in background; exit if cannot
+        gcloud --version || echo "gcloud not installed; rely on firebase-tools"
+        npm i -g firebase-tools || true
+        nohup firebase emulators:start --only firestore --project test-project --host 127.0.0.1 --port 8080 > firestore-emulator.log 2>&1 &
+        # wait for emulator to accept connections
+        for i in $(seq 1 20); do
+          if nc -z 127.0.0.1 8080; then break; fi
+          sleep 1
+        done

@@ -24,6 +24,12 @@
       "import": "./src/testing/index.ts",
       "require": "./src/testing/index.ts",
       "default": "./src/testing/index.ts"
+    },
+    "./compat-shim": {
+      "types": "./src/compat-shim.ts",
+      "import": "./src/compat-shim.ts",
+      "require": "./src/compat-shim.ts",
+      "default": "./src/compat-shim.ts"
     }
   },
   "sideEffects": false,
