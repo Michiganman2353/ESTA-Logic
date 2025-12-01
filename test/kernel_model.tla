@@ -24,12 +24,16 @@ CONSTANTS
     MaxProcesses,       \* Maximum number of concurrent processes
     MaxMessages,        \* Maximum mailbox capacity
     MaxPriority,        \* Maximum priority level (5 = System)
-    NumCores            \* Number of CPU cores
+    NumCores,           \* Number of CPU cores
+    HighPriorityMailboxCapacity,    \* Mailbox capacity for high-priority processes (4096)
+    NormalMailboxCapacity           \* Mailbox capacity for normal processes (1024)
 
 ASSUME MaxProcesses > 0
 ASSUME MaxMessages > 0
 ASSUME MaxPriority >= 5
 ASSUME NumCores > 0
+ASSUME HighPriorityMailboxCapacity > NormalMailboxCapacity
+ASSUME NormalMailboxCapacity > 0
 
 --------------------------------------------------------------------------------
 \* STATE VARIABLES
@@ -161,7 +165,7 @@ Spawn(priority, parent) ==
                state |-> "Created",
                priority |-> priority,
                waitTime |-> 0,
-               mailboxCapacity |-> IF priority >= 4 THEN 4096 ELSE 1024,
+               mailboxCapacity |-> IF priority >= 4 THEN HighPriorityMailboxCapacity ELSE NormalMailboxCapacity,
                parent |-> parent
            ]
        IN /\ processes' = processes \cup {newProcess}

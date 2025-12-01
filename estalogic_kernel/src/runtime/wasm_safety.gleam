@@ -27,25 +27,21 @@ pub const max_instructions_per_slice: Int = 1_000_000
 /// Calls exceeding this limit are terminated with TrapTimeout
 pub const max_call_latency_ms: Int = 100
 
-/// Maximum memory growth per allocation request (in bytes)
+/// Maximum memory growth per allocation request
+/// 1 MB limit prevents excessive single allocations
 pub const max_allocation_size: Int = 1_048_576
 
-// 1 MB
-
-/// Maximum total memory for a user module (in bytes)
+/// Maximum total memory for a user module
+/// 16 MB provides adequate space for compliance logic
 pub const max_user_memory: Int = 16_777_216
 
-// 16 MB
-
-/// Maximum total memory for a system module (in bytes)  
+/// Maximum total memory for a system module
+/// 64 MB allows for system-level operations
 pub const max_system_memory: Int = 67_108_864
 
-// 64 MB
-
 /// Memory page size in bytes (WASM standard)
+/// 64 KB as per WebAssembly specification
 pub const memory_page_size: Int = 65_536
-
-// 64 KB
 
 // ============================================================================
 // SECTION 2: EXECUTION CONTEXT TYPES
@@ -533,9 +529,18 @@ fn trap_message(trap: TrapType) -> String {
   }
 }
 
-// Simple int to string for trap codes
+// Convert integer to string for trap codes
 fn int_to_string(n: Int) -> String {
   case n {
+    _ if n < 0 -> "-" <> int_to_string(-n)
+    _ if n < 10 -> digit_to_string(n)
+    _ -> int_to_string(n / 10) <> digit_to_string(n % 10)
+  }
+}
+
+// Convert single digit to string
+fn digit_to_string(d: Int) -> String {
+  case d {
     0 -> "0"
     1 -> "1"
     2 -> "2"
@@ -546,7 +551,7 @@ fn int_to_string(n: Int) -> String {
     7 -> "7"
     8 -> "8"
     9 -> "9"
-    _ -> "N"
+    _ -> "?"
   }
 }
 

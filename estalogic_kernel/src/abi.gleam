@@ -533,6 +533,7 @@ pub type VerificationResult {
 // ============================================================================
 
 /// Convert priority level to time slice in milliseconds
+/// System priority gets 0 slice as it runs to completion
 pub fn priority_to_slice(priority: Priority) -> TimeSlice {
   case priority {
     Idle -> TimeSlice(100)
@@ -541,7 +542,6 @@ pub fn priority_to_slice(priority: Priority) -> TimeSlice {
     High -> TimeSlice(15)
     Realtime -> TimeSlice(10)
     System -> TimeSlice(0)
-    // System runs to completion
   }
 }
 
@@ -637,16 +637,15 @@ pub fn create_message(
   msg_type: MessageType,
   payload: payload,
 ) -> Message(payload) {
+  // Note: sequence, timestamp are assigned by kernel at send time
+  // Default priority is 3 (normal), flags are all false
   Message(
     header: MessageHeader(
       source: source,
       target: target,
       sequence: SequenceNumber(0),
-      // Kernel assigns
       timestamp: Timestamp(0),
-      // Kernel assigns
       priority: MessagePriority(3),
-      // Default normal priority
       flags: MessageFlags(
         require_ack: False,
         transactional: False,
