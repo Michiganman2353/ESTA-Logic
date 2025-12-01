@@ -363,7 +363,10 @@ export class PostgresAdapter<T extends Entity> implements DataAdapter<T> {
       const { sql, params } = this.buildQuery(query);
       const result = await this.pool.query(sql, params);
 
-      // Get total count
+      // Note: For production, consider:
+      // 1. Using cursor-based pagination without count queries
+      // 2. Caching count results with short TTL
+      // 3. Using approximate counts for large tables
       const countResult = await this.pool.query(
         `SELECT COUNT(*) FROM ${this.tableName} WHERE tenant_id = $1`,
         [this.tenantId]
@@ -385,21 +388,39 @@ export class PostgresAdapter<T extends Entity> implements DataAdapter<T> {
     }
   }
 
+  // Schema definition for allowed fields (set during construction)
+  private readonly allowedFields: Set<string> = new Set();
+
+  private validateFieldName(field: string): string {
+    // Security: Validate field names against schema to prevent SQL injection
+    // Field names must be pre-registered in allowedFields during adapter setup
+    if (!this.allowedFields.has(field)) {
+      throw new Error(`Invalid field name: ${field}. Field not in schema.`);
+    }
+    // Additional safety: only allow alphanumeric and underscores
+    if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(field)) {
+      throw new Error(`Invalid field name format: ${field}`);
+    }
+    return field;
+  }
+
   private buildQuery(query: QuerySpec<T>): { sql: string; params: unknown[] } {
     const params: unknown[] = [this.tenantId];
     let sql = `SELECT * FROM ${this.tableName} WHERE tenant_id = $1`;
 
-    // Add where clauses
+    // Add where clauses with field validation
     for (const where of query.where ?? []) {
+      const validField = this.validateFieldName(String(where.field));
       params.push(where.value);
-      sql += ` AND ${String(where.field)} ${this.sqlOperator(where.operator)} $${params.length}`;
+      sql += ` AND ${validField} ${this.sqlOperator(where.operator)} $${params.length}`;
     }
 
-    // Add ordering
+    // Add ordering with field validation
     if (query.orderBy?.length) {
-      const orderClauses = query.orderBy.map(
-        (o) => `${String(o.field)} ${o.direction.toUpperCase()}`
-      );
+      const orderClauses = query.orderBy.map((o) => {
+        const validField = this.validateFieldName(String(o.field));
+        return `${validField} ${o.direction.toUpperCase()}`;
+      });
       sql += ` ORDER BY ${orderClauses.join(', ')}`;
     }
 

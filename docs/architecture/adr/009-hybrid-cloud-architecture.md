@@ -382,11 +382,36 @@ export class ADPProvider implements PayrollProvider {
   readonly providerId = 'adp' as const;
   private accessToken?: string;
   private refreshToken?: string;
+  private refreshAttempts = 0;
+  private readonly maxRefreshAttempts = 3;
 
   constructor(private config: ADPConfig) {}
 
+  /**
+   * Validate credentials format before using
+   */
+  private validateCredentials(credentials: ADPCredentials): void {
+    // Validate clientId format (alphanumeric, hyphens allowed)
+    if (!/^[a-zA-Z0-9-]+$/.test(credentials.clientId)) {
+      throw new Error('Invalid clientId format');
+    }
+    // Validate clientSecret is present and reasonable length
+    if (!credentials.clientSecret || credentials.clientSecret.length < 8) {
+      throw new Error('Invalid clientSecret format');
+    }
+    // Ensure no control characters or special injection attempts
+    if (
+      /[\x00-\x1f\x7f]/.test(credentials.clientId + credentials.clientSecret)
+    ) {
+      throw new Error('Invalid characters in credentials');
+    }
+  }
+
   async connect(credentials: ADPCredentials): Promise<ConnectionResult> {
     try {
+      // Validate credentials before use
+      this.validateCredentials(credentials);
+
       // ADP uses OAuth 2.0
       const tokenResponse = await fetch(this.config.tokenEndpoint, {
         method: 'POST',
@@ -407,6 +432,7 @@ export class ADPProvider implements PayrollProvider {
       const tokens = await tokenResponse.json();
       this.accessToken = tokens.access_token;
       this.refreshToken = tokens.refresh_token;
+      this.refreshAttempts = 0; // Reset on successful connection
 
       return { ok: true };
     } catch (error) {
@@ -470,9 +496,21 @@ export class ADPProvider implements PayrollProvider {
     });
 
     if (response.status === 401) {
+      // Prevent infinite recursion with retry limit
+      if (this.refreshAttempts >= this.maxRefreshAttempts) {
+        this.refreshAttempts = 0; // Reset for next operation
+        throw new PayrollAPIError(
+          401,
+          'Token refresh failed after max attempts'
+        );
+      }
+      this.refreshAttempts++;
       await this.refreshAccessToken();
       return this.apiCall(endpoint, params);
     }
+
+    // Reset attempts on successful call
+    this.refreshAttempts = 0;
 
     if (!response.ok) {
       throw new PayrollAPIError(response.status, await response.text());

@@ -144,8 +144,13 @@ pub fn calculate_accrual(
 }
 
 /// Get accrual rate based on employer size
+/// Note: Per Michigan ESTA 2025, the base accrual rate is 1 hour per 30 hours worked
+/// for all employer sizes. The difference is in annual caps (40 vs 72 hours) and
+/// usage limits, which are enforced in apply_annual_cap().
 fn get_accrual_rate(size: EmployerSize) -> AccrualRate {
   case size {
+    // Both sizes accrue at 1 hour per 30 hours worked
+    // Difference is in annual caps and usage limits
     Small -> AccrualRate(hours_per_unit: 30, accrual_per_unit: 1)
     Large -> AccrualRate(hours_per_unit: 30, accrual_per_unit: 1)
   }
