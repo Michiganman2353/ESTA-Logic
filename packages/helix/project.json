@@ -35,7 +35,7 @@
         "commands": [
           "mkdir -p ../../test-output",
           "gleam deps download --all",
-          "gleam test > ../../test-output/helix-tests.json || true"
+          "gleam test 2>&1 | tee ../../test-output/helix-tests.json || true"
         ],
         "cwd": "packages/helix",
         "parallel": false
@@ -52,7 +52,7 @@
             "commands": [
               "mkdir -p ../../test-output",
               "gleam deps download --all",
-              "gleam test > ../../test-output/helix-tests.json"
+              "gleam test 2>&1 | tee ../../test-output/helix-tests.json"
             ]
           }
         }

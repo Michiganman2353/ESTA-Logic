@@ -12,6 +12,8 @@ jobs:
   helix-test:
     name: Run Gleam/Helix tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,7 +35,8 @@ jobs:
           # Ensure dev dependencies (e.g., gleeunit) are downloaded
           gleam deps download --all
           # Run tests and write output to repository-level test-output folder
-          gleam test > ../../test-output/helix-tests.json
+          # Use tee to capture both stdout and stderr while also showing output
+          gleam test 2>&1 | tee ../../test-output/helix-tests.json
 
       - name: Upload test report
         uses: actions/upload-artifact@v4
@@ -41,9 +44,17 @@ jobs:
           name: helix-tests
           path: test-output/helix-tests.json
 
-      - name: Fail if no tests found
+      - name: Verify tests ran successfully
         run: |
           if [ ! -s test-output/helix-tests.json ]; then
             echo "Helix test report missing or empty"
+            exit 1
+          fi
+          # Check for test pass patterns in the output
+          if grep -q "Finished in" test-output/helix-tests.json; then
+            echo "✅ Tests completed successfully"
+          else
+            echo "⚠️ Tests may not have run properly, please check the output"
+            cat test-output/helix-tests.json
             exit 1
           fi
