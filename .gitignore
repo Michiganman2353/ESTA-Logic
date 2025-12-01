@@ -190,3 +190,12 @@ lerna.json
 
 # Archived docs (superseded by architecture.md)
 docs/archive/
+
+# ==================== #
+# Gleam Build Artifacts
+# ==================== #
+**/build/
+**/erl_crash.dump
+**/*.beam
+**/gleam.lock
+**/_gleam_artefacts/
