@@ -8,14 +8,17 @@ An Architecture Decision Record (ADR) is a document that captures an important a
 
 ## ADR Index
 
-| ADR    | Title                                      | Status      | Date       |
-| ------ | ------------------------------------------ | ----------- | ---------- |
-| [001]  | Monorepo Strategy - Nx                     | Implemented | 2025-11-20 |
-| [002]  | Gleam Integration for Type-Safe Kernel     | Implemented | 2025-12-01 |
-| [003]  | Tauri Desktop Application Strategy         | Planned     | 2025-12-01 |
-| [004]  | WASM Compilation Strategy                  | Planned     | 2025-12-01 |
-| [005]  | IPC Message-Passing Architecture           | Partial     | 2025-12-01 |
-| [006]  | Adapter Pattern for Persistence Isolation  | Partial     | 2025-12-01 |
+| ADR   | Title                                     | Status      | Date       |
+| ----- | ----------------------------------------- | ----------- | ---------- |
+| [001] | Monorepo Strategy - Nx                    | Implemented | 2025-11-20 |
+| [002] | Gleam Integration for Type-Safe Kernel    | Implemented | 2025-12-01 |
+| [003] | Tauri Desktop Application Strategy        | Planned     | 2025-12-01 |
+| [004] | WASM Compilation Strategy                 | Planned     | 2025-12-01 |
+| [005] | IPC Message-Passing Architecture          | Partial     | 2025-12-01 |
+| [006] | Adapter Pattern for Persistence Isolation | Partial     | 2025-12-01 |
+| [007] | WASM Accrual Engine Specification         | RFC         | 2025-12-01 |
+| [008] | Data Portability Strategy                 | RFC         | 2025-12-01 |
+| [009] | Hybrid Cloud Architecture                 | RFC         | 2025-12-01 |
 
 [001]: ./001-monorepo-strategy.md
 [002]: ./002-gleam-integration.md
@@ -23,18 +26,22 @@ An Architecture Decision Record (ADR) is a document that captures an important a
 [004]: ./004-wasm-strategy.md
 [005]: ./005-ipc-messaging.md
 [006]: ./006-adapter-pattern.md
+[007]: ./007-wasm-accrual-engine.md
+[008]: ./008-data-portability.md
+[009]: ./009-hybrid-cloud-architecture.md
 
 ## ADR Status Definitions
 
-| Status       | Description                                      |
-| ------------ | ------------------------------------------------ |
-| Proposed     | Under discussion, not yet accepted               |
-| Accepted     | Accepted but not yet implemented                 |
-| Planned      | Accepted and scheduled for implementation        |
-| Partial      | Implementation in progress                       |
-| Implemented  | Fully implemented and in production              |
-| Deprecated   | No longer recommended, superseded by another ADR |
-| Superseded   | Replaced by a newer ADR                          |
+| Status      | Description                                      |
+| ----------- | ------------------------------------------------ |
+| RFC         | Request for Comments - seeking feedback          |
+| Proposed    | Under discussion, not yet accepted               |
+| Accepted    | Accepted but not yet implemented                 |
+| Planned     | Accepted and scheduled for implementation        |
+| Partial     | Implementation in progress                       |
+| Implemented | Fully implemented and in production              |
+| Deprecated  | No longer recommended, superseded by another ADR |
+| Superseded  | Replaced by a newer ADR                          |
 
 ## Creating a New ADR
 
