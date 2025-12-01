@@ -11,6 +11,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Set minimal permissions for security
+permissions:
+  contents: read
+
 # Increase Node.js heap memory to prevent out-of-memory errors during parallel builds
 env:
   NODE_OPTIONS: '--max-old-space-size=4096'
@@ -24,6 +28,8 @@ jobs:
   lockfile-verify:
     name: Verify Lockfile Integrity
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -73,6 +79,8 @@ jobs:
     name: Test & Build
     runs-on: ubuntu-latest
     needs: lockfile-verify
+    permissions:
+      contents: read
     strategy:
       matrix:
         node-version: [22.x]
@@ -267,6 +275,8 @@ jobs:
     name: E2E Tests
     runs-on: ubuntu-latest
     needs: test
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -306,6 +316,8 @@ jobs:
     name: Validate Blueprints
     runs-on: ubuntu-latest
     needs: lockfile-verify
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -349,6 +361,8 @@ jobs:
     name: Marketing Visual Tests
     runs-on: ubuntu-latest
     needs: [test]
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -396,6 +410,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     needs: [test, e2e]
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
 
