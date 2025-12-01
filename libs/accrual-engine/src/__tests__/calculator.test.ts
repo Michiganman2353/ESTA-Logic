@@ -164,40 +164,41 @@ describe('accrual calculator', () => {
       expect(calculateAccrualWithHireDate(400, hireDate, asOf)).toBe(0);
     });
 
-    it('should use 40-hour ratio for employees with less than 5 years of service', () => {
+    it('should use flat 1:30 rate for all employees (ESTA 2025)', () => {
       const hireDate = new Date('2022-01-01');
       const asOf = new Date('2024-01-01'); // 2 years of service
-      // 400 hours / 40 = 10 hours accrued
-      expect(calculateAccrualWithHireDate(400, hireDate, asOf)).toBe(10);
+      // ESTA 2025 uses flat 1:30 rate regardless of tenure
+      // 300 hours / 30 = 10 hours accrued
+      expect(calculateAccrualWithHireDate(300, hireDate, asOf)).toBe(10);
     });
 
-    it('should use 30-hour ratio for employees with 5+ years of service', () => {
+    it('should use same 1:30 rate for employees with 5+ years of service', () => {
       const hireDate = new Date('2018-01-01');
       const asOf = new Date('2024-01-01'); // 6 years of service
       // 300 hours / 30 = 10 hours accrued
       expect(calculateAccrualWithHireDate(300, hireDate, asOf)).toBe(10);
     });
 
-    it('should cap accrual at 40 hours maximum', () => {
+    it('should cap accrual at 72 hours maximum (ESTA 2025 large employer cap)', () => {
       const hireDate = new Date('2018-01-01');
       const asOf = new Date('2024-01-01'); // 6 years of service
-      // 1500 hours / 30 = 50 hours, but capped at 40
-      expect(calculateAccrualWithHireDate(1500, hireDate, asOf)).toBe(40);
+      // 2400 hours / 30 = 80 hours, but capped at 72
+      expect(calculateAccrualWithHireDate(2400, hireDate, asOf)).toBe(72);
     });
 
     it('should handle same-day hire and calculation date', () => {
       const hireDate = new Date('2024-01-01');
       const asOf = new Date('2024-01-01');
-      // Same day = 0 years of service, uses 40-hour ratio
-      // 80 hours / 40 = 2 hours accrued
-      expect(calculateAccrualWithHireDate(80, hireDate, asOf)).toBe(2);
+      // Same day, uses 1:30 ratio
+      // 60 hours / 30 = 2 hours accrued
+      expect(calculateAccrualWithHireDate(60, hireDate, asOf)).toBe(2);
     });
 
     it('should handle mid-period hire correctly', () => {
       const hireDate = new Date('2024-03-15');
       const asOf = new Date('2024-06-15'); // 3 months of service
-      // 160 hours / 40 = 4 hours accrued
-      expect(calculateAccrualWithHireDate(160, hireDate, asOf)).toBe(4);
+      // 120 hours / 30 = 4 hours accrued
+      expect(calculateAccrualWithHireDate(120, hireDate, asOf)).toBe(4);
     });
 
     it('should return 0 for zero hours worked', () => {
@@ -206,12 +207,11 @@ describe('accrual calculator', () => {
       expect(calculateAccrualWithHireDate(0, hireDate, asOf)).toBe(0);
     });
 
-    it('should handle exactly 5 years of service', () => {
-      // 2019-01-01 to 2024-01-02 is 1827 days (5 years + 1 day)
-      // 1827 / 365.25 = 5.002 years, which qualifies for 30-hour ratio
+    it('should use flat rate regardless of tenure (5+ years)', () => {
+      // ESTA 2025 removed tenure-based rates from final law
       const hireDate = new Date('2019-01-01');
       const asOf = new Date('2024-01-02');
-      // Should use 30-hour ratio
+      // Uses flat 1:30 ratio
       // 300 hours / 30 = 10 hours accrued
       expect(calculateAccrualWithHireDate(300, hireDate, asOf)).toBe(10);
     });
