@@ -88,3 +88,19 @@ export const AccrualCalculationSchema = z.object({
   remaining: z.number().min(0),
   capped: z.boolean(),
 });
+
+/**
+ * Gleam Accrual Result - matches the Accrual type from packages/helix/src/accrual.gleam
+ * Used for type-safe communication between Gleam WASM and TypeScript
+ */
+export interface GleamAccrualResult {
+  regular: number;
+  bonus: number;
+  cap: number;
+}
+
+export const GleamAccrualResultSchema = z.object({
+  regular: z.number().min(0).max(40),
+  bonus: z.number().min(0).max(8),
+  cap: z.number().min(0),
+});

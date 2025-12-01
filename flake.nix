@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    rust-overlay.url = "github:oxalica/rust-overlay";
+    rust-overlay.url = "github:oxalica/rust-overlay?rev=3a0e4d0";
   };
 
   outputs = { self, nixpkgs, flake-utils, rust-overlay }:
@@ -29,6 +29,7 @@
             wasmtime
           ];
           shellHook = ''
+            /* eslint-disable no-unused-vars */
             export PATH="$PATH:$HOME/.cargo/bin"
             echo "ESTA Rainforest ready. Run: pnpm tauri dev"
           '';

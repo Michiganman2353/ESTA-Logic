@@ -1,5 +1,8 @@
 {
   "formatter": { "enabled": true, "indentStyle": "space", "indentWidth": 2 },
   "linter": { "enabled": true },
-  "javascript": { "formatter": { "quoteStyle": "single" } }
+  "javascript": { "formatter": { "quoteStyle": "single" } },
+  "files": {
+    "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json", "**/*.gleam"]
+  }
 }

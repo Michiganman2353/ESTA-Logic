@@ -3,5 +3,8 @@
   "tauri": {
     "allowlist": { "all": true },
     "windows": [{ "title": "ESTA Rainforest", "width": 1200, "height": 800 }]
+  },
+  "bundle": {
+    "resources": ["packages/helix/*.wasm"]
   }
 }
