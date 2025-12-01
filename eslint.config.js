@@ -17,6 +17,8 @@ export default [
       'libs/*/src/**', // Handled by lib-specific ESLint configs
       'functions/**', // Handled by functions-specific ESLint config
       'api/**/*.ts', // TypeScript files handled by their own configs
+      '**/*.gleam', // Gleam files handled by Gleam compiler
+      '**/gleam.toml', // Gleam config files
     ],
   },
   js.configs.recommended,
