@@ -1,0 +1,60 @@
+name: Helix Gleam Tests
+
+on:
+  push:
+    paths:
+      - 'packages/helix/**'
+  pull_request:
+    paths:
+      - 'packages/helix/**'
+
+jobs:
+  helix-test:
+    name: Run Gleam/Helix tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Gleam and Erlang
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: '26'
+          gleam-version: '1.6.3'
+
+      - name: Create test-output dir
+        run: mkdir -p test-output
+
+      - name: Install dev deps & run Gleam tests
+        working-directory: packages/helix
+        run: |
+          # Ensure dev dependencies (e.g., gleeunit) are downloaded
+          gleam deps download --all
+          # Run tests and write output to repository-level test-output folder
+          # Use tee to capture both stdout and stderr while also showing output
+          gleam test 2>&1 | tee ../../test-output/helix-tests.json
+
+      - name: Upload test report
+        uses: actions/upload-artifact@v4
+        with:
+          name: helix-tests
+          path: test-output/helix-tests.json
+
+      - name: Verify tests ran successfully
+        run: |
+          if [ ! -s test-output/helix-tests.json ]; then
+            echo "Helix test report missing or empty"
+            exit 1
+          fi
+          # Check for test pass patterns in the output
+          if grep -q "Finished in" test-output/helix-tests.json; then
+            echo "✅ Tests completed successfully"
+          else
+            echo "⚠️ Tests may not have run properly, please check the output"
+            cat test-output/helix-tests.json
+            exit 1
+          fi
