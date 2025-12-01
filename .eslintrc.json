@@ -1,6 +1,6 @@
 {
   "root": true,
-  "ignorePatterns": ["**/*"],
+  "ignorePatterns": ["**/*", "**/*.gleam", "**/gleam.toml"],
   "plugins": ["@nx"],
   "overrides": [
     {
