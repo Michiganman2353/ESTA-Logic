@@ -9,3 +9,5 @@ export * from './validation.js';
 export * from './formatting.js';
 export * from './constants.js';
 export * from './errors.js';
+export * from './tenant-identifier.js';
+export * from './rbac-claims.js';

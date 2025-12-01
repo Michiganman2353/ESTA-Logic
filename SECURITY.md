@@ -42,6 +42,32 @@ We only provide security updates for the latest stable release on the `main` bra
 
 ## Security Measures
 
+### Multi-Tenant Isolation
+
+- **Signed Tenant Identifiers**: HMAC-SHA256 signed tokens replace brute-forceable 4-digit codes
+- **Capability-Scoped Queries**: All database queries are tenant-scoped by default
+- **Cross-Tenant Prevention**: Firestore rules enforce tenant isolation at the database level
+- **Derived Scope Identifiers**: Tenant-specific collection keys prevent data leakage
+
+See `libs/shared-utils/src/tenant-identifier.ts` for implementation details.
+
+### Role-Based Access Control (RBAC)
+
+- **Least-Privilege Model**: Each role receives minimum permissions required
+- **Explicit Permissions**: No implicit permission inheritance
+- **Fine-Grained Claims**: JWT tokens include explicit permission arrays
+- **Self-Access Separation**: Distinct permissions for own data vs. tenant data
+
+Roles:
+
+- **Admin**: Full system access
+- **Employer**: Employee and tenant management
+- **Employee**: Self-data access only
+- **Auditor**: Read-only compliance access
+- **Service**: Backend automation only
+
+See `libs/shared-utils/src/rbac-claims.ts` for implementation details.
+
 ### Code Security
 
 - **Static Analysis**: CodeQL scans on every PR and weekly schedules
@@ -95,9 +121,12 @@ The Sentinel is configured via `.github/workflows/sentinel.yml` and can be manua
 #### Automated Key Rotation
 
 - 90-day automatic key rotation via Cloud Scheduler
+- Quarterly secret rotation policy for deployment credentials
 - Compliance with SOC2 and HIPAA key management requirements
 - Old key versions retained for backward compatibility
 - Audit trail of all rotation events
+
+See `docs/SECURITY_OIDC.md` for secret rotation procedures.
 
 #### Property-Based Fuzzing
 
@@ -110,8 +139,33 @@ The Sentinel is configured via `.github/workflows/sentinel.yml` and can be manua
 
 - Firebase Authentication for secure user management
 - JWT tokens with short expiration times
-- Role-based permissions (Employer, Employee, Admin)
+- Role-based permissions (Employer, Employee, Admin, Auditor)
 - Secure session management
+- Signed tenant identifiers for enhanced isolation
+
+### API Security
+
+- **CORS Hardening**: Strict origin allowlist with pattern matching for Vercel previews
+- **Security Headers**: X-Content-Type-Options, X-Frame-Options, X-XSS-Protection
+- **Rate Limiting**: Per-endpoint rate limits prevent abuse
+- **Input Validation**: Zod schemas validate all API inputs
+
+### Desktop Application Security (Tauri)
+
+- **Restricted Allowlist**: All Tauri capabilities disabled by default
+- **Content Security Policy**: Strict CSP prevents XSS attacks
+- **No File System Access**: File operations disabled
+- **No Shell Access**: Shell execution disabled
+
+## Secret Rotation Policy
+
+All deployment secrets must be rotated quarterly:
+
+1. **VERCEL_TOKEN**: Regenerate in Vercel Dashboard
+2. **TENANT_SIGNING_SECRET**: Generate new 32-byte secret
+3. **Firebase Credentials**: Rotate service account keys
+
+See `docs/SECURITY_OIDC.md` for detailed rotation procedures.
 
 ## Security Best Practices for Contributors
 
@@ -120,6 +174,9 @@ The Sentinel is configured via `.github/workflows/sentinel.yml` and can be manua
 3. **Sanitize outputs** - Prevent XSS and injection attacks
 4. **Keep dependencies updated** - Monitor Dependabot alerts
 5. **Follow principle of least privilege** - Request minimal permissions
+6. **Use signed tenant identifiers** - Never expose raw tenant IDs
+7. **Enforce tenant isolation** - Always scope queries to tenant
+8. **Log security events** - Audit all access and modifications
 
 ## Acknowledgments
 

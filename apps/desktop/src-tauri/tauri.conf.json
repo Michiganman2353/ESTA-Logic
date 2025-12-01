@@ -1,8 +1,91 @@
 {
   "package": { "productName": "ESTA Rainforest", "version": "1.0.0" },
   "tauri": {
-    "allowlist": { "all": true },
-    "windows": [{ "title": "ESTA Rainforest", "width": 1200, "height": 800 }]
+    "allowlist": {
+      "all": false,
+      "shell": {
+        "all": false,
+        "open": false
+      },
+      "dialog": {
+        "all": false,
+        "open": false,
+        "save": false
+      },
+      "fs": {
+        "all": false,
+        "readFile": false,
+        "writeFile": false,
+        "readDir": false,
+        "copyFile": false,
+        "createDir": false,
+        "removeDir": false,
+        "removeFile": false,
+        "renameFile": false
+      },
+      "http": {
+        "all": false,
+        "request": false
+      },
+      "notification": {
+        "all": false
+      },
+      "globalShortcut": {
+        "all": false
+      },
+      "os": {
+        "all": false
+      },
+      "path": {
+        "all": false
+      },
+      "process": {
+        "all": false,
+        "exit": false,
+        "relaunch": false
+      },
+      "protocol": {
+        "all": false,
+        "asset": false,
+        "assetScope": []
+      },
+      "window": {
+        "all": false,
+        "create": false,
+        "center": false,
+        "requestUserAttention": false,
+        "setResizable": false,
+        "setTitle": false,
+        "maximize": false,
+        "unmaximize": false,
+        "minimize": false,
+        "unminimize": false,
+        "show": false,
+        "hide": false,
+        "close": false,
+        "setDecorations": false,
+        "setAlwaysOnTop": false,
+        "setSize": false,
+        "setMinSize": false,
+        "setMaxSize": false,
+        "setPosition": false,
+        "setFullscreen": false,
+        "setFocus": false,
+        "setIcon": false,
+        "setSkipTaskbar": false,
+        "setCursorGrab": false,
+        "setCursorVisible": false,
+        "setCursorIcon": false,
+        "setCursorPosition": false,
+        "startDragging": false,
+        "print": false
+      }
+    },
+    "windows": [{ "title": "ESTA Rainforest", "width": 1200, "height": 800 }],
+    "security": {
+      "dangerousDisableAssetCspModification": false,
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com"
+    }
   },
   "bundle": {
     "resources": ["packages/helix/*.wasm"]
