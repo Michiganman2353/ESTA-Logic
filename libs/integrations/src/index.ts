@@ -5,3 +5,4 @@
  */
 
 export * from './quickbooks/index.js';
+export * from './kafka/index.js';
