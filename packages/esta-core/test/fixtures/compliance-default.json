@@ -1,0 +1,13 @@
+{
+  "effectiveDate": "2025-01-01",
+  "accrual": {
+    "rateHoursPerHoursWorkedNumerator": 1,
+    "rateHoursPerHoursWorkedDenominator": 30,
+    "frontloadOptions": [40, 72],
+    "proratePartialWeeks": true,
+    "smallBusinessDelay": {
+      "enabled": true,
+      "effectiveDate": "2025-10-01"
+    }
+  }
+}
