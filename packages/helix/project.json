@@ -16,18 +16,36 @@
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "gleam deps download --all && gleam test",
+        "command": "gleam deps download && gleam test",
         "cwd": "packages/helix",
         "parallel": false
-      }
+      },
+      "inputs": [
+        "{projectRoot}/src/**/*.gleam",
+        "{projectRoot}/test/**/*.gleam",
+        "{projectRoot}/gleam.toml"
+      ]
     },
     "ci": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "gleam deps download --all && gleam test",
+        "command": "gleam deps download && gleam test",
         "cwd": "packages/helix",
         "parallel": false
       }
+    },
+    "test:coverage": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gleam deps download && gleam test && echo 'Coverage: Gleam does not yet have native coverage support. Tests passed.'",
+        "cwd": "packages/helix",
+        "parallel": false
+      },
+      "inputs": [
+        "{projectRoot}/src/**/*.gleam",
+        "{projectRoot}/test/**/*.gleam",
+        "{projectRoot}/gleam.toml"
+      ]
     },
     "lint": {
       "executor": "nx:run-commands",
@@ -46,6 +64,14 @@
         "command": "rm -rf build",
         "cwd": "packages/helix"
       }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gleam deps download && gleam build",
+        "cwd": "packages/helix"
+      },
+      "inputs": ["{projectRoot}/src/**/*.gleam", "{projectRoot}/gleam.toml"]
     }
   }
 }
