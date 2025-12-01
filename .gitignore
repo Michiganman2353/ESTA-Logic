@@ -100,6 +100,9 @@ test-results/
 playwright-report/
 playwright/.cache/
 
+# Gleam/Helix test output
+test-output/
+
 # ==================== #
 # IDE & Editor Files
 # ==================== #

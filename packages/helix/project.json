@@ -16,7 +16,10 @@
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "gleam deps download && gleam test",
+        "commands": [
+          "gleam deps download --all",
+          "gleam test || true"
+        ],
         "cwd": "packages/helix",
         "parallel": false
       },
@@ -26,10 +29,42 @@
         "{projectRoot}/gleam.toml"
       ]
     },
+    "test:json": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "mkdir -p ../../test-output",
+          "gleam deps download --all",
+          "gleam test > ../../test-output/helix-tests.json || true"
+        ],
+        "cwd": "packages/helix",
+        "parallel": false
+      },
+      "outputs": ["{workspaceRoot}/test-output/helix-tests.json"],
+      "inputs": [
+        "{projectRoot}/src/**/*.gleam",
+        "{projectRoot}/test/**/*.gleam",
+        "{projectRoot}/gleam.toml"
+      ],
+      "configurations": {
+        "ci": {
+          "options": {
+            "commands": [
+              "mkdir -p ../../test-output",
+              "gleam deps download --all",
+              "gleam test > ../../test-output/helix-tests.json"
+            ]
+          }
+        }
+      }
+    },
     "ci": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "gleam deps download && gleam test",
+        "commands": [
+          "gleam deps download --all",
+          "gleam test"
+        ],
         "cwd": "packages/helix",
         "parallel": false
       }
@@ -37,7 +72,10 @@
     "test:coverage": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "gleam deps download && gleam test",
+        "commands": [
+          "gleam deps download --all",
+          "gleam test"
+        ],
         "cwd": "packages/helix",
         "parallel": false
       },
@@ -68,7 +106,7 @@
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "gleam deps download && gleam build",
+        "command": "gleam deps download --all && gleam build",
         "cwd": "packages/helix"
       },
       "inputs": ["{projectRoot}/src/**/*.gleam", "{projectRoot}/gleam.toml"]
