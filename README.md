@@ -296,6 +296,26 @@ For detailed information, see [Employer Profile Documentation](./docs/employer-p
 - [Vercel Deployment](./docs/deployment/deployment.md) - Vercel deployment and CI/CD setup
 - [Edge Config](./docs/setup/EDGE_CONFIG_SETUP.md) - Edge configuration for Vercel
 
+### 🗄️ Upstash Redis Setup (Secure)
+
+ESTA Tracker uses Upstash Redis for serverless caching. To configure:
+
+1. Go to GitHub → Settings → Secrets and variables → Actions
+2. Add these secrets:
+   - `UPSTASH_REDIS_URL` → Your Upstash REST API URL (from console.upstash.com)
+   - `UPSTASH_REDIS_TOKEN` → Your Upstash REST API token (from console.upstash.com)
+
+3. In Vercel → Project Settings → Environment Variables → add the same variables
+
+4. Usage in your app:
+
+```typescript
+import redis from '@esta/redis'
+
+await redis.set('test', 'hello')
+console.log(await redis.get('test')) // → "hello"
+```
+
 ### 🔒 Security Documentation
 
 - [Security Best Practices](./docs/SECURITY.md) - Environment variables, backend/frontend security
