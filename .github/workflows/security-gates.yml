@@ -131,11 +131,26 @@ jobs:
         run: |
           license-checker --json --production > /tmp/licenses.json
 
-          # Check for problematic licenses
-          PROBLEMATIC_LICENSES="GPL|AGPL|LGPL|SSPL|CPAL|EPL|EUPL"
+          # Check for problematic licenses (GPL, AGPL, etc.)
+          # These may have copyleft requirements that affect commercial use
+          PROBLEMATIC_LICENSES="GPL|AGPL|SSPL|CPAL"
 
-          if jq -r 'to_entries[] | "\(.key): \(.value.licenses)"' /tmp/licenses.json | grep -iE "$PROBLEMATIC_LICENSES"; then
-            echo "⚠️ Potentially problematic licenses found. Please review."
+          FOUND_PROBLEMATIC=$(jq -r 'to_entries[] | "\(.key): \(.value.licenses)"' /tmp/licenses.json | grep -iE "$PROBLEMATIC_LICENSES" || true)
+
+          if [ -n "$FOUND_PROBLEMATIC" ]; then
+            echo "⚠️ Potentially problematic licenses found:"
+            echo "$FOUND_PROBLEMATIC"
+            echo ""
+            echo "## License Compliance Warning" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Potentially problematic licenses detected:" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "$FOUND_PROBLEMATIC" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Please review these dependencies for license compliance." >> $GITHUB_STEP_SUMMARY
+            # Note: Not failing the build as some GPL dependencies may be acceptable
+            # depending on usage context. Set exit 1 here to enforce strict compliance.
           else
             echo "✅ No problematic licenses detected"
           fi

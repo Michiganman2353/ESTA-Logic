@@ -215,8 +215,13 @@ test.describe('ESTA Compliance Edge Cases', () => {
           .isVisible({ timeout: 5000 })
           .catch(() => false);
 
-        // Pass if error is shown OR if there's input validation preventing the submit
-        expect(hasError || true).toBeTruthy();
+        // If validation is working, we should see an error or the input should be rejected
+        if (hasError) {
+          expect(hasError).toBeTruthy();
+        } else {
+          // Feature may not be implemented - skip rather than false positive
+          test.skip();
+        }
       }
     }
   });
@@ -307,7 +312,12 @@ test.describe('Employer Onboarding Compliance', () => {
       .catch(() => false);
 
     // This test verifies the multi-step form exists for employer onboarding
-    expect(hasSteps || true).toBeTruthy();
+    if (hasSteps) {
+      expect(hasSteps).toBeTruthy();
+    } else {
+      // Feature may not be implemented - skip rather than false positive
+      test.skip();
+    }
   });
 });
 
@@ -372,7 +382,11 @@ test.describe('ESTA Compliance Record Keeping', () => {
       .catch(() => false);
 
     // ESTA requires employees to have access to their records
-    // This test verifies the link exists or appropriately skips
-    expect(recordsExist || true).toBeTruthy();
+    if (recordsExist) {
+      expect(recordsExist).toBeTruthy();
+    } else {
+      // Feature may not be implemented - skip rather than false positive
+      test.skip();
+    }
   });
 });

@@ -43,6 +43,11 @@ export default {
   },
   
   // Mutation score thresholds
+  // Note: Mutation testing typically has lower thresholds than code coverage
+  // because achieving high mutation scores is more difficult and expensive.
+  // A 50% mutation score threshold represents a reasonable baseline for
+  // catching obvious gaps in test logic, while the 80% code coverage threshold
+  // ensures good structural coverage.
   thresholds: {
     high: 80,
     low: 60,

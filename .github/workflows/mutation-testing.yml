@@ -55,8 +55,8 @@ jobs:
         run: |
           npm run test:mutation 2>&1 | tee /tmp/mutation-output.txt
 
-          # Extract mutation score from output
-          SCORE=$(grep -oP 'Mutation score: \K[\d.]+' /tmp/mutation-output.txt || echo "0")
+          # Extract mutation score from output using portable grep/awk
+          SCORE=$(grep -o 'Mutation score: [0-9.]*' /tmp/mutation-output.txt | awk '{print $3}' || echo "0")
           echo "score=$SCORE" >> $GITHUB_OUTPUT
 
           echo "## Mutation Testing Results" >> $GITHUB_STEP_SUMMARY
