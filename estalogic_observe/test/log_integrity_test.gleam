@@ -169,7 +169,15 @@ type LogCategory {
 }
 
 type LogField {
-  LogField(key: String, value: String)
+  LogField(key: String, value: FieldValue)
+}
+
+/// Log field value types (mirrors main implementation)
+type FieldValue {
+  FieldString(value: String)
+  FieldInt(value: Int)
+  FieldFloat(value: Float)
+  FieldBool(value: Bool)
 }
 
 type LogEntry {
@@ -678,8 +686,11 @@ pub fn entry_without_pid_test() -> Bool {
 
 /// Test: Log field creation
 pub fn log_field_test() -> Bool {
-  let field = LogField(key: "user_id", value: "12345")
-  field.key == "user_id" && field.value == "12345"
+  let field = LogField(key: "user_id", value: FieldString("12345"))
+  case field.value {
+    FieldString("12345") -> field.key == "user_id"
+    _ -> False
+  }
 }
 
 /// Test: Entry with fields
@@ -692,8 +703,8 @@ pub fn entry_with_fields_test() -> Bool {
     pid: Error(Nil),
     message: "Audit event",
     fields: [
-      LogField(key: "action", value: "login"),
-      LogField(key: "user", value: "admin"),
+      LogField(key: "action", value: FieldString("login")),
+      LogField(key: "user", value: FieldString("admin")),
     ],
     entry_hash: null_hash(),
     previous_hash: null_hash(),
@@ -712,6 +723,33 @@ pub fn category_types_test() -> Bool {
     CategoryAudit,
   ]
   list.length(cats) == 5
+}
+
+/// Test: Field value types - integer
+pub fn field_value_int_test() -> Bool {
+  let field = LogField(key: "count", value: FieldInt(42))
+  case field.value {
+    FieldInt(42) -> True
+    _ -> False
+  }
+}
+
+/// Test: Field value types - boolean
+pub fn field_value_bool_test() -> Bool {
+  let field = LogField(key: "success", value: FieldBool(True))
+  case field.value {
+    FieldBool(True) -> True
+    _ -> False
+  }
+}
+
+/// Test: Field value types - float
+pub fn field_value_float_test() -> Bool {
+  let field = LogField(key: "ratio", value: FieldFloat(0.75))
+  case field.value {
+    FieldFloat(_) -> True
+    _ -> False
+  }
 }
 
 // ============================================================================
@@ -771,6 +809,9 @@ pub fn run_all_tests() -> List(TestResult) {
     run_test("log_field_test", log_field_test),
     run_test("entry_with_fields_test", entry_with_fields_test),
     run_test("category_types_test", category_types_test),
+    run_test("field_value_int_test", field_value_int_test),
+    run_test("field_value_bool_test", field_value_bool_test),
+    run_test("field_value_float_test", field_value_float_test),
   ]
 }
 

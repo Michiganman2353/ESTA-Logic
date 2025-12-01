@@ -1014,19 +1014,62 @@ fn max(a: Int, b: Int) -> Int {
   }
 }
 
-/// Convert int to float
+/// Convert int to float (iterative to avoid stack overflow)
+/// Note: This is a workaround since Gleam targeting JavaScript
+/// has limitations on built-in int-to-float conversion
 fn int_to_float(n: Int) -> Float {
+  // Use multiplication for safe conversion
+  // For small values used in backoff calculations (typically < 10)
   case n {
     0 -> 0.0
-    _ -> 1.0 +. int_to_float(n - 1)
+    1 -> 1.0
+    2 -> 2.0
+    3 -> 3.0
+    4 -> 4.0
+    5 -> 5.0
+    6 -> 6.0
+    7 -> 7.0
+    8 -> 8.0
+    9 -> 9.0
+    10 -> 10.0
+    _ -> {
+      // For larger values, use a safe iterative approach
+      // This handles the typical use case of restart delays (< 1000)
+      let tens = n / 10
+      let ones = n % 10
+      int_to_float(tens) *. 10.0 +. int_to_float(ones)
+    }
   }
 }
 
-/// Convert float to int (truncate)
+/// Convert float to int (truncate) - iterative approach
 fn float_to_int(f: Float) -> Int {
+  // Handle negative values
+  case f <. 0.0 {
+    True -> 0 - float_to_int(0.0 -. f)
+    False -> float_to_int_positive(f, 0)
+  }
+}
+
+/// Helper for positive float to int conversion
+fn float_to_int_positive(f: Float, acc: Int) -> Int {
   case f <. 1.0 {
-    True -> 0
-    False -> 1 + float_to_int(f -. 1.0)
+    True -> acc
+    False -> {
+      // Use larger steps for efficiency
+      case f >=. 1000.0 {
+        True -> float_to_int_positive(f -. 1000.0, acc + 1000)
+        False ->
+          case f >=. 100.0 {
+            True -> float_to_int_positive(f -. 100.0, acc + 100)
+            False ->
+              case f >=. 10.0 {
+                True -> float_to_int_positive(f -. 10.0, acc + 10)
+                False -> float_to_int_positive(f -. 1.0, acc + 1)
+              }
+          }
+      }
+    }
   }
 }
 
