@@ -20,12 +20,14 @@ docs/
 
 ### Essential Reading (Start Here!)
 
-| Document | Purpose |
-| -------- | ------- |
-| **[Developer Onboarding](./DEVELOPER_ONBOARDING.md)** | New team member setup guide |
-| **[Architecture Quick Reference](./ARCHITECTURE_QUICK_REFERENCE.md)** | One-page architecture overview |
-| **[Engineering Standards](./ENGINEERING_STANDARDS.md)** | Git, commits, versioning, reviews |
-| **[ADR Index](./architecture/adr/README.md)** | All architecture decisions |
+| Document                                                              | Purpose                              |
+| --------------------------------------------------------------------- | ------------------------------------ |
+| **[Developer Onboarding](./DEVELOPER_ONBOARDING.md)**                 | New team member setup guide          |
+| **[Architecture Quick Reference](./ARCHITECTURE_QUICK_REFERENCE.md)** | One-page architecture overview       |
+| **[Engineering Ecosystem](./ENGINEERING_ECOSYSTEM.md)**               | Unified engineering ecosystem vision |
+| **[Engineering Principles](./ENGINEERING_PRINCIPLES.md)**             | Codified engineering charter         |
+| **[Engineering Standards](./ENGINEERING_STANDARDS.md)**               | Git, commits, versioning, reviews    |
+| **[ADR Index](./architecture/adr/README.md)**                         | All architecture decisions           |
 
 ### Core Documentation
 
@@ -36,6 +38,7 @@ docs/
 - **[Security Summary](./security/security-summary.md)** - Security architecture overview
 
 ### First-Time Setup
+
 1. [Firebase Setup](./setup/FIREBASE_SETUP.md) - Configure Firebase services
 2. [KMS Setup](./setup/KMS_SETUP_GUIDE.md) - Google Cloud KMS for encryption
 3. [Vercel Deployment](./setup/VERCEL_QUICK_START.md) - Deploy to Vercel
@@ -44,13 +47,16 @@ docs/
 ## 🔧 CI/CD & Deployment (New!)
 
 ### Critical Deployment Resources
+
 - **[GitHub Secrets Setup](./GITHUB-SECRETS-SETUP.md)** - Step-by-step guide to configure GitHub secrets for CI/CD
 - **[Pre-Deployment Checklist](./PRE-DEPLOYMENT-CHECKLIST.md)** - Complete checklist before deploying
 - **[CI/CD Troubleshooting](./CI-CD-TROUBLESHOOTING.md)** - Common issues and solutions for GitHub Actions and Vercel
 - **[Dependency Upgrade Plan](./DEPENDENCY-UPGRADE-PLAN.md)** - Strategy for upgrading deprecated packages
 
 ### Quick CI/CD Setup
+
 If you're experiencing deployment failures:
+
 1. Read [GitHub Secrets Setup](./GITHUB-SECRETS-SETUP.md) to configure secrets
 2. Run `npm run validate:deployment` to check your build
 3. Consult [CI/CD Troubleshooting](./CI-CD-TROUBLESHOOTING.md) for specific errors
@@ -62,18 +68,19 @@ If you're experiencing deployment failures:
 
 All major architectural decisions are documented as ADRs:
 
-| ADR | Title | Status |
-| --- | ----- | ------ |
+| ADR                                                | Title                  | Status      |
+| -------------------------------------------------- | ---------------------- | ----------- |
 | [001](./architecture/adr/001-monorepo-strategy.md) | Monorepo Strategy - Nx | Implemented |
-| [002](./architecture/adr/002-gleam-integration.md) | Gleam Integration | Implemented |
-| [003](./architecture/adr/003-tauri-desktop.md) | Tauri Desktop Strategy | Planned |
-| [004](./architecture/adr/004-wasm-strategy.md) | WASM Compilation | Planned |
-| [005](./architecture/adr/005-ipc-messaging.md) | IPC Message-Passing | Partial |
-| [006](./architecture/adr/006-adapter-pattern.md) | Adapter Pattern | Partial |
+| [002](./architecture/adr/002-gleam-integration.md) | Gleam Integration      | Implemented |
+| [003](./architecture/adr/003-tauri-desktop.md)     | Tauri Desktop Strategy | Planned     |
+| [004](./architecture/adr/004-wasm-strategy.md)     | WASM Compilation       | Planned     |
+| [005](./architecture/adr/005-ipc-messaging.md)     | IPC Message-Passing    | Partial     |
+| [006](./architecture/adr/006-adapter-pattern.md)   | Adapter Pattern        | Partial     |
 
 See [ADR Index](./architecture/adr/README.md) for full list and templates.
 
 ### System Architecture
+
 - **[Architecture Overview](./architecture/architecture.md)** - High-level system design
   - Hybrid architecture (React + Vite + Express + Firebase)
   - Backend routes vs Cloud Functions decision
@@ -106,6 +113,7 @@ See [ADR Index](./architecture/adr/README.md) for full list and templates.
 ## 🚀 Deployment Documentation
 
 ### Production Deployment
+
 - **[Deployment Guide](./deployment/deployment.md)** - Complete deployment instructions
   - Vercel configuration
   - Environment variables
@@ -114,6 +122,7 @@ See [ADR Index](./architecture/adr/README.md) for full list and templates.
   - Troubleshooting
 
 ### Setup Guides
+
 - **[Firebase Setup](./setup/FIREBASE_SETUP.md)** - Firebase project configuration
 - **[KMS Setup Guide](./setup/KMS_SETUP_GUIDE.md)** - Google Cloud KMS configuration
 - **[KMS IAM Setup](./setup/KMS_IAM_SETUP.md)** - IAM roles and permissions
@@ -126,6 +135,7 @@ See [ADR Index](./architecture/adr/README.md) for full list and templates.
 ## 🔒 Security Documentation
 
 ### Security Architecture
+
 - **[Security Summary](./security/security-summary.md)** - Complete security overview
   - Document upload implementation
   - Access control and permissions
@@ -142,6 +152,7 @@ See [ADR Index](./architecture/adr/README.md) for full list and templates.
 - **[Decrypt Endpoint Security](./security/DECRYPT_ENDPOINT_SECURITY_SUMMARY.md)** - Decryption endpoint security
 
 ### Design Documents (Archived)
+
 - **[Hybrid Encryption Design](./design/hybrid-encryption-design.md)** - Original encryption design and implementation plan
 
 ## 📋 Historical Documentation
@@ -149,17 +160,20 @@ See [ADR Index](./architecture/adr/README.md) for full list and templates.
 The `archive/` directory contains historical implementation reports, audit findings, and system evolution documentation:
 
 ### Audit Reports
+
 - [Audit Findings](./archive/audit-findings.md) - Repository audit results
 - [Audit Report](./archive/AUDIT_REPORT.md) - Detailed audit documentation
 - [Audit Summary](./archive/AUDIT_SUMMARY.md) - Executive summary
 
 ### Implementation Reports
+
 - [Master Plan V2 Implementation](./archive/MASTER_PLAN_V2_IMPLEMENTATION.md) - Original strategic plan
 - [Registration System](./archive/REGISTRATION_SYSTEM.md) - User registration architecture
 - [Document Upload System](./archive/DOCUMENT_UPLOAD_SYSTEM.md) - Document handling implementation
 - [Background Functions Summary](./archive/BACKGROUND_FUNCTIONS_SUMMARY.md) - Firebase functions overview
 
 ### Fix Reports
+
 - [Registration Fix Summary](./archive/REGISTRATION_FIX_SUMMARY.md)
 - [Firebase Fix](./archive/FIREBASE_FIX.md)
 - [Load Failed Fix](./archive/LOAD_FAILED_FIX.md)
@@ -168,6 +182,7 @@ The `archive/` directory contains historical implementation reports, audit findi
 ## 🛠️ Development Resources
 
 ### For New Team Members
+
 1. Complete [Developer Onboarding](./DEVELOPER_ONBOARDING.md)
 2. Review [Architecture Quick Reference](./ARCHITECTURE_QUICK_REFERENCE.md)
 3. Read [Engineering Standards](./ENGINEERING_STANDARDS.md)
@@ -175,6 +190,7 @@ The `archive/` directory contains historical implementation reports, audit findi
 5. Study [Architecture Overview](./architecture/architecture.md)
 
 ### Engineering Governance
+
 - **[Engineering Standards](./ENGINEERING_STANDARDS.md)** - Complete standards guide
   - Git workflow and branching strategy
   - Commit conventions (Conventional Commits)
@@ -183,6 +199,7 @@ The `archive/` directory contains historical implementation reports, audit findi
   - Release procedures
 
 ### For Contributors
+
 - **[Contributing Guide](../CONTRIBUTING.md)** - How to contribute
   - Development setup
   - Code style guidelines
@@ -190,39 +207,55 @@ The `archive/` directory contains historical implementation reports, audit findi
   - Pull request process
 
 ### Main Documentation
+
 - **[README](../README.md)** - Project overview and quick start
 - **[License](../LICENSE)** - Project license
 
 ## 📚 Documentation by Role
 
 ### For New Developers
+
 1. Complete [Developer Onboarding](./DEVELOPER_ONBOARDING.md) ⭐
 2. Read [Architecture Quick Reference](./ARCHITECTURE_QUICK_REFERENCE.md)
-3. Review [Engineering Standards](./ENGINEERING_STANDARDS.md)
-4. Study [ADR Index](./architecture/adr/README.md)
-5. Set up development environment using [Setup Guides](./setup/)
+3. Understand [Engineering Ecosystem](./ENGINEERING_ECOSYSTEM.md)
+4. Review [Engineering Principles](./ENGINEERING_PRINCIPLES.md)
+5. Study [Engineering Standards](./ENGINEERING_STANDARDS.md)
+6. Explore [ADR Index](./architecture/adr/README.md)
+7. Set up development environment using [Setup Guides](./setup/)
+
+### For Tech Leads & Architects
+
+1. Read [Engineering Ecosystem](./ENGINEERING_ECOSYSTEM.md) ⭐
+2. Review [Engineering Principles](./ENGINEERING_PRINCIPLES.md)
+3. Study [Microkernel Status](./architecture/MICROKERNEL_STATUS.md)
+4. Understand [Architecture Overview](./architecture/architecture.md)
+5. Explore [ADR Index](./architecture/adr/README.md)
 
 ### For DevOps Engineers
+
 1. Review [Deployment Guide](./deployment/deployment.md)
 2. Configure services using [Setup Guides](./setup/)
 3. Implement [Security Checklist](./security/SECURITY_CHECKLIST.md)
 4. Monitor using tools described in deployment docs
 
 ### For Security Auditors
+
 1. Read [Security Summary](./security/security-summary.md)
 2. Review [KMS Security](./security/KMS_SECURITY_SUMMARY.md)
 3. Examine [Security Checklist](./security/SECURITY_CHECKLIST.md)
 4. Check [Audit Findings](./archive/audit-findings.md)
 
 ### For Product Managers
+
 1. Read [README](../README.md) for vision and features
-2. Review [Master Plan](./archive/MASTER_PLAN_V2_IMPLEMENTATION.md) for strategy
-3. Check [Audit Reports](./archive/) for system status
+2. Review [Engineering Ecosystem](./ENGINEERING_ECOSYSTEM.md) for platform vision
+3. Check [Master Plan](./archive/MASTER_PLAN_V2_IMPLEMENTATION.md) for strategy
 4. Understand compliance features in [Security Docs](./security/)
 
 ## 🔄 Keeping Documentation Updated
 
 Documentation should be updated when:
+
 - Architecture changes are made
 - New features are added
 - Deployment procedures change
@@ -230,6 +263,7 @@ Documentation should be updated when:
 - Dependencies are modified
 
 ### Documentation Best Practices
+
 - Keep docs concise and focused
 - Use clear examples and code snippets
 - Include diagrams where helpful

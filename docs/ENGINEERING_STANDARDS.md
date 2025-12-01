@@ -56,15 +56,15 @@ main (or master)      # Production-ready code
 <type>/<short-description>
 ```
 
-| Type       | Use Case                                  | Example                        |
-| ---------- | ----------------------------------------- | ------------------------------ |
-| `feature/` | New functionality                         | `feature/employee-import`      |
-| `fix/`     | Bug fixes                                 | `fix/accrual-calculation`      |
-| `docs/`    | Documentation only                        | `docs/api-specification`       |
-| `refactor/`| Code restructuring (no behavior change)   | `refactor/auth-service`        |
-| `chore/`   | Build, CI, dependencies                   | `chore/upgrade-typescript`     |
-| `test/`    | Test additions/fixes                      | `test/accrual-edge-cases`      |
-| `hotfix/`  | Urgent production fixes                   | `hotfix/security-patch`        |
+| Type        | Use Case                                | Example                    |
+| ----------- | --------------------------------------- | -------------------------- |
+| `feature/`  | New functionality                       | `feature/employee-import`  |
+| `fix/`      | Bug fixes                               | `fix/accrual-calculation`  |
+| `docs/`     | Documentation only                      | `docs/api-specification`   |
+| `refactor/` | Code restructuring (no behavior change) | `refactor/auth-service`    |
+| `chore/`    | Build, CI, dependencies                 | `chore/upgrade-typescript` |
+| `test/`     | Test additions/fixes                    | `test/accrual-edge-cases`  |
+| `hotfix/`   | Urgent production fixes                 | `hotfix/security-patch`    |
 
 ### Branch Lifecycle
 
@@ -88,10 +88,10 @@ main (or master)      # Production-ready code
 
 ### Protected Branches
 
-| Branch  | Protection                                       |
-| ------- | ------------------------------------------------ |
-| `main`  | Require PR, CI pass, 1+ approval, no force push  |
-| `develop` (if used) | Require PR, CI pass                  |
+| Branch              | Protection                                      |
+| ------------------- | ----------------------------------------------- |
+| `main`              | Require PR, CI pass, 1+ approval, no force push |
+| `develop` (if used) | Require PR, CI pass                             |
 
 ---
 
@@ -111,34 +111,34 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) specifica
 
 ### Commit Types
 
-| Type       | Description                                | Example                              |
-| ---------- | ------------------------------------------ | ------------------------------------ |
-| `feat`     | New feature                                | `feat(accrual): add overtime bonus`  |
-| `fix`      | Bug fix                                    | `fix(auth): correct token expiry`    |
-| `docs`     | Documentation only                         | `docs(readme): update setup guide`   |
-| `style`    | Code style (formatting, semicolons)        | `style(api): fix linting errors`     |
-| `refactor` | Code change without behavior change        | `refactor(db): simplify queries`     |
-| `perf`     | Performance improvement                    | `perf(csv): optimize large imports`  |
-| `test`     | Add/update tests                           | `test(accrual): edge case coverage`  |
-| `build`    | Build system or dependencies               | `build(deps): upgrade vitest`        |
-| `ci`       | CI configuration                           | `ci(github): add e2e workflow`       |
-| `chore`    | Other changes (tooling, etc.)              | `chore(nx): update cache config`     |
-| `revert`   | Revert a previous commit                   | `revert: feat(accrual): add bonus`   |
+| Type       | Description                         | Example                             |
+| ---------- | ----------------------------------- | ----------------------------------- |
+| `feat`     | New feature                         | `feat(accrual): add overtime bonus` |
+| `fix`      | Bug fix                             | `fix(auth): correct token expiry`   |
+| `docs`     | Documentation only                  | `docs(readme): update setup guide`  |
+| `style`    | Code style (formatting, semicolons) | `style(api): fix linting errors`    |
+| `refactor` | Code change without behavior change | `refactor(db): simplify queries`    |
+| `perf`     | Performance improvement             | `perf(csv): optimize large imports` |
+| `test`     | Add/update tests                    | `test(accrual): edge case coverage` |
+| `build`    | Build system or dependencies        | `build(deps): upgrade vitest`       |
+| `ci`       | CI configuration                    | `ci(github): add e2e workflow`      |
+| `chore`    | Other changes (tooling, etc.)       | `chore(nx): update cache config`    |
+| `revert`   | Revert a previous commit            | `revert: feat(accrual): add bonus`  |
 
 ### Scope Examples
 
-| Scope        | Description                        |
-| ------------ | ---------------------------------- |
-| `frontend`   | Frontend application               |
-| `backend`    | Backend API                        |
-| `accrual`    | Accrual engine library             |
-| `firebase`   | Firebase-related code              |
-| `auth`       | Authentication/authorization       |
-| `api`        | API routes                         |
-| `db`         | Database/persistence               |
-| `ci`         | CI/CD workflows                    |
-| `deps`       | Dependencies                       |
-| `docs`       | Documentation                      |
+| Scope      | Description                  |
+| ---------- | ---------------------------- |
+| `frontend` | Frontend application         |
+| `backend`  | Backend API                  |
+| `accrual`  | Accrual engine library       |
+| `firebase` | Firebase-related code        |
+| `auth`     | Authentication/authorization |
+| `api`      | API routes                   |
+| `db`       | Database/persistence         |
+| `ci`       | CI/CD workflows              |
+| `deps`     | Dependencies                 |
+| `docs`     | Documentation                |
 
 ### Good Commit Examples
 
@@ -187,29 +187,29 @@ We follow [Semantic Versioning](https://semver.org/) (SemVer).
 MAJOR.MINOR.PATCH[-PRERELEASE][+BUILD]
 ```
 
-| Part         | When to Increment                           | Example           |
-| ------------ | ------------------------------------------- | ----------------- |
-| `MAJOR`      | Breaking API changes                        | `1.0.0` → `2.0.0` |
-| `MINOR`      | New features (backward compatible)          | `1.1.0` → `1.2.0` |
-| `PATCH`      | Bug fixes (backward compatible)             | `1.1.1` → `1.1.2` |
-| `PRERELEASE` | Pre-release versions                        | `2.0.0-beta.1`    |
-| `BUILD`      | Build metadata (optional)                   | `1.0.0+20251201`  |
+| Part         | When to Increment                  | Example           |
+| ------------ | ---------------------------------- | ----------------- |
+| `MAJOR`      | Breaking API changes               | `1.0.0` → `2.0.0` |
+| `MINOR`      | New features (backward compatible) | `1.1.0` → `1.2.0` |
+| `PATCH`      | Bug fixes (backward compatible)    | `1.1.1` → `1.1.2` |
+| `PRERELEASE` | Pre-release versions               | `2.0.0-beta.1`    |
+| `BUILD`      | Build metadata (optional)          | `1.0.0+20251201`  |
 
 ### Version Sources
 
-| Package Type | Version Source          | Tool             |
-| ------------ | ----------------------- | ---------------- |
-| Root         | `package.json`          | npm version      |
-| Libraries    | Individual `package.json` | Nx release     |
-| Changelog    | `CHANGELOG.md`          | Conventional Changelog |
+| Package Type | Version Source            | Tool                   |
+| ------------ | ------------------------- | ---------------------- |
+| Root         | `package.json`            | npm version            |
+| Libraries    | Individual `package.json` | Nx release             |
+| Changelog    | `CHANGELOG.md`            | Conventional Changelog |
 
 ### Pre-release Tags
 
-| Tag     | Purpose                          | Example           |
-| ------- | -------------------------------- | ----------------- |
-| `alpha` | Early development, unstable      | `2.0.0-alpha.1`   |
-| `beta`  | Feature-complete, testing        | `2.0.0-beta.3`    |
-| `rc`    | Release candidate, near-final    | `2.0.0-rc.1`      |
+| Tag     | Purpose                       | Example         |
+| ------- | ----------------------------- | --------------- |
+| `alpha` | Early development, unstable   | `2.0.0-alpha.1` |
+| `beta`  | Feature-complete, testing     | `2.0.0-beta.3`  |
+| `rc`    | Release candidate, near-final | `2.0.0-rc.1`    |
 
 ---
 
@@ -270,23 +270,23 @@ Reviewers should check:
 
 ### Review Response Times
 
-| PR Type     | Target Response | Target Resolution |
-| ----------- | --------------- | ----------------- |
-| Hotfix      | 2 hours         | 4 hours           |
-| Bug fix     | 1 business day  | 2 business days   |
-| Feature     | 1 business day  | 3 business days   |
-| Refactor    | 2 business days | 5 business days   |
-| Documentation | 1 business day | 2 business days |
+| PR Type       | Target Response | Target Resolution |
+| ------------- | --------------- | ----------------- |
+| Hotfix        | 2 hours         | 4 hours           |
+| Bug fix       | 1 business day  | 2 business days   |
+| Feature       | 1 business day  | 3 business days   |
+| Refactor      | 2 business days | 5 business days   |
+| Documentation | 1 business day  | 2 business days   |
 
 ### Approval Requirements
 
-| Change Type     | Approvals Required |
-| --------------- | ------------------ |
-| Documentation   | 1                  |
-| Bug fix         | 1                  |
-| Feature         | 2                  |
-| Architecture    | 2 + Tech Lead      |
-| Security        | 2 + Security Owner |
+| Change Type   | Approvals Required |
+| ------------- | ------------------ |
+| Documentation | 1                  |
+| Bug fix       | 1                  |
+| Feature       | 2                  |
+| Architecture  | 2 + Tech Lead      |
+| Security      | 2 + Security Owner |
 
 ---
 
@@ -294,12 +294,12 @@ Reviewers should check:
 
 ### Release Types
 
-| Type    | Cadence      | Contents                            |
-| ------- | ------------ | ----------------------------------- |
-| Major   | As needed    | Breaking changes, major features    |
-| Minor   | Bi-weekly    | New features, improvements          |
-| Patch   | As needed    | Bug fixes, security patches         |
-| Hotfix  | Emergency    | Critical production fixes           |
+| Type   | Cadence   | Contents                         |
+| ------ | --------- | -------------------------------- |
+| Major  | As needed | Breaking changes, major features |
+| Minor  | Bi-weekly | New features, improvements       |
+| Patch  | As needed | Bug fixes, security patches      |
+| Hotfix | Emergency | Critical production fixes        |
 
 ### Release Checklist
 
@@ -363,7 +363,7 @@ All notable changes to this project will be documented in this file.
 
 #### TypeScript/JavaScript
 
-```typescript
+````typescript
 /**
  * Calculate sick time accrual based on hours worked
  *
@@ -385,11 +385,11 @@ export function calculateAccrual(
 ): AccrualResult {
   // Implementation
 }
-```
+````
 
 #### Gleam
 
-```gleam
+````gleam
 /// Calculate ESTA sick time accrual based on hours worked
 ///
 /// ## Parameters
@@ -411,17 +411,17 @@ export function calculateAccrual(
 pub fn calculate(hours: Float, years_service: Float, employer_size: Int) -> Accrual {
   // Implementation
 }
-```
+````
 
 ### Documentation Types
 
-| Type          | Location              | Format   |
-| ------------- | --------------------- | -------- |
-| API Reference | `docs/api/`           | OpenAPI  |
-| Architecture  | `docs/architecture/`  | Markdown |
-| Guides        | `docs/guides/`        | Markdown |
+| Type          | Location                 | Format   |
+| ------------- | ------------------------ | -------- |
+| API Reference | `docs/api/`              | OpenAPI  |
+| Architecture  | `docs/architecture/`     | Markdown |
+| Guides        | `docs/guides/`           | Markdown |
 | ADRs          | `docs/architecture/adr/` | Markdown |
-| Runbooks      | `docs/runbooks/`      | Markdown |
+| Runbooks      | `docs/runbooks/`         | Markdown |
 
 ### Writing Style
 
@@ -474,5 +474,7 @@ All PRs must pass:
 - [Conventional Commits](https://www.conventionalcommits.org/)
 - [Semantic Versioning](https://semver.org/)
 - [Keep a Changelog](https://keepachangelog.com/)
-- [Contributing Guide](../../CONTRIBUTING.md)
+- [Engineering Ecosystem](./ENGINEERING_ECOSYSTEM.md)
+- [Engineering Principles](./ENGINEERING_PRINCIPLES.md)
+- [Contributing Guide](../CONTRIBUTING.md)
 - [ADR Index](./architecture/adr/README.md)
