@@ -13,21 +13,27 @@ interface RedisLikeClient {
 
 let redisClient: RedisLikeClient | null = null;
 const inMemoryMap = new Map<string, string>();
+const ttlTimers = new Map<string, ReturnType<typeof setTimeout>>();
 let initPromise: Promise<void> | null = null;
 
-// Helper for dynamic import that avoids TypeScript module resolution errors
+/**
+ * Safely loads the redis module at runtime if available.
+ * The module path is hardcoded and validated to prevent code injection.
+ */
 async function tryLoadRedis(): Promise<{
   createClient: (options: { url: string }) => RedisLikeClient;
 } | null> {
+  // The only allowed module path - hardcoded for security
+  const REDIS_MODULE_PATH = 'redis';
   try {
-    // Use Function constructor to avoid static analysis
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
-    const dynamicImport = new Function(
-      'modulePath',
-      'return import(modulePath)'
-    );
-    return await dynamicImport('redis');
+    // Try/catch around dynamic import - if redis is not installed, this will fail
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const redisModule = require(REDIS_MODULE_PATH) as {
+      createClient: (options: { url: string }) => RedisLikeClient;
+    };
+    return redisModule;
   } catch {
+    // Redis module not available
     return null;
   }
 }
@@ -82,9 +88,19 @@ export async function cacheSet(
       );
     }
   }
+  // Clear any existing timer for this key
+  const existingTimer = ttlTimers.get(key);
+  if (existingTimer) {
+    clearTimeout(existingTimer);
+    ttlTimers.delete(key);
+  }
   inMemoryMap.set(key, value);
   if (ttlSeconds) {
-    setTimeout(() => inMemoryMap.delete(key), ttlSeconds * 1000);
+    const timer = setTimeout(() => {
+      inMemoryMap.delete(key);
+      ttlTimers.delete(key);
+    }, ttlSeconds * 1000);
+    ttlTimers.set(key, timer);
   }
 }
 
@@ -105,9 +121,14 @@ export async function cacheGet(key: string): Promise<string | null> {
 }
 
 /**
- * Clear the in-memory cache (useful for tests)
+ * Clear the in-memory cache and all TTL timers (useful for tests)
  */
 export function clearInMemoryCache(): void {
+  // Clear all pending timers to prevent memory leaks
+  for (const timer of ttlTimers.values()) {
+    clearTimeout(timer);
+  }
+  ttlTimers.clear();
   inMemoryMap.clear();
 }
 

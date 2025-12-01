@@ -40,7 +40,12 @@ function scan(dir) {
       }
     }
   } catch (err) {
-    // Skip directories we can't read
+    // Log permission errors or unexpected failures
+    if (err && err.code !== 'ENOENT') {
+      console.warn(
+        `[migration-notice] Error scanning ${dir}: ${err.message || err}`
+      );
+    }
   }
 }
 

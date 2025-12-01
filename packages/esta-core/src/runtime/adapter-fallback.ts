@@ -38,16 +38,26 @@ interface FirebaseAdapterModule {
   };
 }
 
-// Helper for dynamic import that avoids TypeScript module resolution errors
-async function tryDynamicImport<T>(modulePath: string): Promise<T | null> {
+// Allowed module paths for dynamic loading - hardcoded for security
+const ALLOWED_MODULES: Record<string, string> = {
+  adapter: '@esta/firebase/adapter',
+  compatShim: '@esta/firebase/compat-shim',
+};
+
+/**
+ * Safely loads a module at runtime if available.
+ * Only allowed module paths (hardcoded above) can be loaded.
+ */
+function tryRequireModule<T>(
+  moduleKey: keyof typeof ALLOWED_MODULES
+): T | null {
+  const modulePath = ALLOWED_MODULES[moduleKey];
+  if (!modulePath) {
+    return null;
+  }
   try {
-    // Use Function constructor to avoid static analysis
-    // eslint-disable-next-line @typescript-eslint/no-implied-eval, no-new-func
-    const dynamicImport = new Function(
-      'modulePath',
-      'return import(modulePath)'
-    );
-    return await dynamicImport(modulePath);
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require(modulePath) as T;
   } catch {
     return null;
   }
@@ -58,9 +68,7 @@ export async function fetchEmployeeListLegacy(
 ): Promise<EmployeeRecord[]> {
   // Prefer the new adapter if present
   try {
-    const adapter = await tryDynamicImport<FirebaseAdapterModule>(
-      '@esta/firebase/adapter'
-    );
+    const adapter = tryRequireModule<FirebaseAdapterModule>('adapter');
     if (adapter?.default?.getEmployeesByEmployer) {
       return adapter.default.getEmployeesByEmployer(employerId);
     }
@@ -70,9 +78,7 @@ export async function fetchEmployeeListLegacy(
 
   // fall back to compat shim
   try {
-    const firebaseCompat = await tryDynamicImport<FirebaseCompatModule>(
-      '@esta/firebase/compat-shim'
-    );
+    const firebaseCompat = tryRequireModule<FirebaseCompatModule>('compatShim');
     if (!firebaseCompat) {
       return [];
     }
