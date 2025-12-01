@@ -8,7 +8,6 @@ import type { EmployerSize, AccrualCalculation } from '@esta/shared-types';
 import {
   LARGE_EMPLOYER_RULES,
   SMALL_EMPLOYER_RULES,
-  differenceInDays,
 } from '@esta-tracker/shared-utils';
 
 /**
@@ -154,14 +153,17 @@ export function isWithinUsageLimit(
  * Guards against invalid dates (e.g., mid-period hires, future hire dates).
  * Returns 0 if hire date is null or after the calculation date.
  *
- * For tenure-based ratio calculations:
- * - 5+ years of service: 1 hour per 30 hours worked
- * - Under 5 years: 1 hour per 40 hours worked
+ * IMPORTANT: Per ESTA 2025 final law, the accrual rate is a flat 1:30
+ * for all employees regardless of tenure. The tenure-based ratio
+ * (1:40 for <5 years) was removed from the final legislation.
  *
  * @param hours - Hours worked in the period
  * @param hireDate - Employee's hire date (null if unknown)
  * @param asOf - Date to calculate accrual as of
- * @returns Accrued hours (capped at 40 hours)
+ * @returns Accrued hours (capped at 72 hours per ESTA 2025)
+ *
+ * @deprecated Use calculateAccrualV2 from compliance-engine.ts for
+ * ruleset-driven calculations with proper effective date handling.
  */
 export function calculateAccrualWithHireDate(
   hours: number,
@@ -173,13 +175,10 @@ export function calculateAccrualWithHireDate(
     return 0;
   }
 
-  // Calculate years of service using day difference for leap year accuracy
-  const daysDiff = differenceInDays(asOf, hireDate);
-  const yearsOfService = daysDiff / 365.25; // Average days per year accounting for leap years
+  // ESTA 2025 uses flat 1:30 rate for all employees
+  // Tenure-based rates were removed from final legislation
+  const ratio = 30;
 
-  // Tenure-based ratio: 5+ years gets 30-hour ratio, otherwise 40-hour ratio
-  const ratio = yearsOfService >= 5 ? 30 : 40;
-
-  // Cap at 40 hours maximum
-  return Math.min(hours / ratio, 40);
+  // Cap at 72 hours maximum per ESTA 2025 large employer cap
+  return Math.min(hours / ratio, 72);
 }

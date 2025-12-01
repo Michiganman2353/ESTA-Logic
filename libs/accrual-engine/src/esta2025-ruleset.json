@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "version": "2025.1.0",
+  "legislativeReference": {
+    "act": "Michigan Employee Earned Sick Time Act (ESTA)",
+    "year": 2025,
+    "effectiveDate": "2025-02-21",
+    "sections": {
+      "accrualRate": "§5(1)",
+      "waitingPeriod": "§5(2)",
+      "caps": "§5(3)",
+      "carryover": "§5(4)",
+      "smallEmployerDelay": "§5(5)",
+      "frontloading": "§5(6)"
+    }
+  },
+  "effectiveDates": {
+    "generalEffective": "2025-02-21",
+    "smallEmployerEffective": "2025-10-01"
+  },
+  "employerSizeThreshold": 10,
+  "employerTypes": {
+    "large": {
+      "minEmployees": 10,
+      "maxEmployees": null,
+      "effectiveDate": "2025-02-21",
+      "accrual": {
+        "method": "hourly",
+        "rate": 1,
+        "denominator": 30,
+        "description": "1 hour of sick time per 30 hours worked"
+      },
+      "caps": {
+        "accrualCapPerYear": 72,
+        "usageCapPerYear": 72,
+        "carryoverCap": 72
+      },
+      "paidTime": {
+        "maxPaidHoursPerYear": 72,
+        "maxUnpaidHoursPerYear": 0
+      },
+      "waitingPeriod": {
+        "maxDays": 120,
+        "description": "Employer may require up to 120 calendar days of employment before use"
+      }
+    },
+    "small": {
+      "minEmployees": 1,
+      "maxEmployees": 9,
+      "effectiveDate": "2025-10-01",
+      "accrual": {
+        "method": "annual_grant",
+        "rate": 0,
+        "denominator": 0,
+        "annualGrant": 40,
+        "description": "40 hours granted at start of year or employment"
+      },
+      "caps": {
+        "accrualCapPerYear": 40,
+        "usageCapPerYear": 72,
+        "carryoverCap": 40
+      },
+      "paidTime": {
+        "maxPaidHoursPerYear": 40,
+        "maxUnpaidHoursPerYear": 32
+      },
+      "waitingPeriod": {
+        "maxDays": 120,
+        "description": "Employer may require up to 120 calendar days of employment before use"
+      }
+    }
+  },
+  "carryoverRules": {
+    "allowed": true,
+    "expirationPeriod": null,
+    "usageCapAppliesAfterCarryover": true,
+    "description": "Unused accrued time carries over to next year up to the carryover cap"
+  },
+  "frontloadingRules": {
+    "allowed": true,
+    "largeEmployer": {
+      "frontloadAmount": 72,
+      "eliminatesAccrualTracking": true,
+      "description": "Large employers may frontload 72 hours at start of year"
+    },
+    "smallEmployer": {
+      "frontloadAmount": 40,
+      "eliminatesAccrualTracking": true,
+      "description": "Small employers may frontload 40 hours at start of year"
+    }
+  },
+  "seasonalWorkerRules": {
+    "definition": "Employee who works for employer less than 25 weeks in 12-month period",
+    "accrualMethod": "same_as_regular",
+    "carryoverRequired": true,
+    "prorationAllowed": false
+  },
+  "tenureBasedRates": {
+    "enabled": false,
+    "description": "Michigan ESTA 2025 uses flat 1:30 rate regardless of tenure",
+    "legislativeNote": "The tenure-based 1:40 rate for <5 years was removed in final law"
+  },
+  "recordKeepingRequirements": {
+    "retentionYears": 3,
+    "requiredRecords": [
+      "hours_worked",
+      "sick_time_accrued",
+      "sick_time_used",
+      "sick_time_balance"
+    ]
+  }
+}
