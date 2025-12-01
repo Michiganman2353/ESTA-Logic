@@ -39,13 +39,13 @@
 
 ## Current State: Modular Monolith
 
-| Aspect          | Current State                  | Target State              |
-| --------------- | ------------------------------ | ------------------------- |
-| Deployment      | Single unit                    | Microkernel + drivers     |
-| Process Model   | Shared process                 | Isolated WASM modules     |
-| Communication   | Direct function calls          | Message-passing IPC       |
-| Authorization   | Middleware-based               | Capability tokens         |
-| Persistence     | Some direct Firebase imports   | All via adapter layer     |
+| Aspect        | Current State                | Target State          |
+| ------------- | ---------------------------- | --------------------- |
+| Deployment    | Single unit                  | Microkernel + drivers |
+| Process Model | Shared process               | Isolated WASM modules |
+| Communication | Direct function calls        | Message-passing IPC   |
+| Authorization | Middleware-based             | Capability tokens     |
+| Persistence   | Some direct Firebase imports | All via adapter layer |
 
 ---
 
@@ -147,14 +147,14 @@ interface Repository<T> {
 
 ## Decision Records Summary
 
-| ADR | Decision                  | Status      |
-| --- | ------------------------- | ----------- |
-| 001 | Nx for monorepo           | Implemented |
-| 002 | Gleam for kernel specs    | Implemented |
-| 003 | Tauri for desktop         | Planned     |
-| 004 | WASM compilation          | Planned     |
-| 005 | IPC message-passing       | Partial     |
-| 006 | Adapter pattern           | Partial     |
+| ADR | Decision               | Status      |
+| --- | ---------------------- | ----------- |
+| 001 | Nx for monorepo        | Implemented |
+| 002 | Gleam for kernel specs | Implemented |
+| 003 | Tauri for desktop      | Planned     |
+| 004 | WASM compilation       | Planned     |
+| 005 | IPC message-passing    | Partial     |
+| 006 | Adapter pattern        | Partial     |
 
 ---
 
@@ -187,20 +187,22 @@ npx nx show projects  # List projects
 
 ## Key Files
 
-| Purpose               | File                                      |
-| --------------------- | ----------------------------------------- |
-| Workspace config      | `nx.json`                                 |
-| Root package          | `package.json`                            |
-| TypeScript config     | `tsconfig.base.json`                      |
-| ESLint config         | `eslint.config.js`                        |
-| Firebase rules        | `firestore.rules`, `storage.rules`        |
-| CI/CD                 | `.github/workflows/ci.yml`                |
-| Environment template  | `.env.example`                            |
+| Purpose              | File                               |
+| -------------------- | ---------------------------------- |
+| Workspace config     | `nx.json`                          |
+| Root package         | `package.json`                     |
+| TypeScript config    | `tsconfig.base.json`               |
+| ESLint config        | `eslint.config.js`                 |
+| Firebase rules       | `firestore.rules`, `storage.rules` |
+| CI/CD                | `.github/workflows/ci.yml`         |
+| Environment template | `.env.example`                     |
 
 ---
 
 ## Links
 
+- [Engineering Ecosystem](./ENGINEERING_ECOSYSTEM.md)
+- [Engineering Principles](./ENGINEERING_PRINCIPLES.md)
 - [Full Architecture Doc](./architecture/architecture.md)
 - [Microkernel Status](./architecture/MICROKERNEL_STATUS.md)
 - [Kernel Contract](./abi/kernel_contract.md)
