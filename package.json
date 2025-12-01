@@ -30,6 +30,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
+    "test:perf": "vitest run --config test/performance/vitest.config.ts",
+    "test:perf:watch": "vitest --config test/performance/vitest.config.ts",
     "lint": "nx run-many --target=lint --all",
     "lint:fix": "nx run-many --target=lint --all -- --fix",
     "lint:affected": "nx affected --target=lint",
