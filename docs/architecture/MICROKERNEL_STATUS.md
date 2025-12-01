@@ -1,6 +1,6 @@
 # ESTA Logic Architecture: From Modular Monolith to Verified Microkernel
 
-**Version**: 1.0.0  
+**Version**: 1.1.0  
 **Status**: Active  
 **Last Updated**: 2025-12-01
 
@@ -9,6 +9,13 @@
 ## Overview
 
 This document describes the true architectural state of ESTA-Logic and the roadmap towards a verified microkernel architecture. It replaces misleading documentation that described the system as a microkernel when it was actually a modular monolith.
+
+> **Related ADRs:**
+> - [ADR-002: Gleam Integration](./adr/002-gleam-integration.md)
+> - [ADR-003: Tauri Desktop](./adr/003-tauri-desktop.md)
+> - [ADR-004: WASM Strategy](./adr/004-wasm-strategy.md)
+> - [ADR-005: IPC Messaging](./adr/005-ipc-messaging.md)
+> - [ADR-006: Adapter Pattern](./adr/006-adapter-pattern.md)
 
 ## Current State: Modular Monolith
 

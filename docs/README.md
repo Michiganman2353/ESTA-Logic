@@ -6,7 +6,9 @@ Welcome to the ESTA Tracker documentation. This directory contains all technical
 
 ```
 docs/
+├── abi/                # Kernel ABI specifications
 ├── architecture/       # System architecture and technical documentation
+│   └── adr/           # Architecture Decision Records
 ├── deployment/         # Deployment guides and procedures
 ├── design/            # Archived design documents and planning
 ├── security/          # Security documentation and guidelines
@@ -16,8 +18,19 @@ docs/
 
 ## 🚀 Quick Start Documentation
 
-### Essential Reading
+### Essential Reading (Start Here!)
+
+| Document | Purpose |
+| -------- | ------- |
+| **[Developer Onboarding](./DEVELOPER_ONBOARDING.md)** | New team member setup guide |
+| **[Architecture Quick Reference](./ARCHITECTURE_QUICK_REFERENCE.md)** | One-page architecture overview |
+| **[Engineering Standards](./ENGINEERING_STANDARDS.md)** | Git, commits, versioning, reviews |
+| **[ADR Index](./architecture/adr/README.md)** | All architecture decisions |
+
+### Core Documentation
+
 - **[Architecture Overview](./architecture/architecture.md)** - System design and technical decisions
+- **[Microkernel Status](./architecture/MICROKERNEL_STATUS.md)** - Current vs target architecture
 - **[Testing Guide](./architecture/testing.md)** - Testing strategies and procedures
 - **[Deployment Guide](./deployment/deployment.md)** - Production deployment instructions
 - **[Security Summary](./security/security-summary.md)** - Security architecture overview
@@ -45,12 +58,38 @@ If you're experiencing deployment failures:
 
 ## 🏗️ Architecture Documentation
 
+### Architecture Decision Records (ADRs)
+
+All major architectural decisions are documented as ADRs:
+
+| ADR | Title | Status |
+| --- | ----- | ------ |
+| [001](./architecture/adr/001-monorepo-strategy.md) | Monorepo Strategy - Nx | Implemented |
+| [002](./architecture/adr/002-gleam-integration.md) | Gleam Integration | Implemented |
+| [003](./architecture/adr/003-tauri-desktop.md) | Tauri Desktop Strategy | Planned |
+| [004](./architecture/adr/004-wasm-strategy.md) | WASM Compilation | Planned |
+| [005](./architecture/adr/005-ipc-messaging.md) | IPC Message-Passing | Partial |
+| [006](./architecture/adr/006-adapter-pattern.md) | Adapter Pattern | Partial |
+
+See [ADR Index](./architecture/adr/README.md) for full list and templates.
+
 ### System Architecture
 - **[Architecture Overview](./architecture/architecture.md)** - High-level system design
   - Hybrid architecture (React + Vite + Express + Firebase)
   - Backend routes vs Cloud Functions decision
   - Data flow and component interaction
   - Scaling considerations
+
+- **[Microkernel Status](./architecture/MICROKERNEL_STATUS.md)** - Current vs target architecture
+  - Current modular monolith state
+  - Target microkernel architecture
+  - Migration path and phases
+
+- **[Kernel Contract Specification](./abi/kernel_contract.md)** - Formal kernel ABI
+  - Process lifecycle
+  - Message-passing semantics
+  - Capability system
+  - Formal verification targets
 
 - **[Testing Guide](./architecture/testing.md)** - Testing infrastructure
   - Unit testing with Vitest
@@ -128,6 +167,21 @@ The `archive/` directory contains historical implementation reports, audit findi
 
 ## 🛠️ Development Resources
 
+### For New Team Members
+1. Complete [Developer Onboarding](./DEVELOPER_ONBOARDING.md)
+2. Review [Architecture Quick Reference](./ARCHITECTURE_QUICK_REFERENCE.md)
+3. Read [Engineering Standards](./ENGINEERING_STANDARDS.md)
+4. Follow [Contributing Guide](../CONTRIBUTING.md) for setup
+5. Study [Architecture Overview](./architecture/architecture.md)
+
+### Engineering Governance
+- **[Engineering Standards](./ENGINEERING_STANDARDS.md)** - Complete standards guide
+  - Git workflow and branching strategy
+  - Commit conventions (Conventional Commits)
+  - Semantic versioning
+  - Code review process
+  - Release procedures
+
 ### For Contributors
 - **[Contributing Guide](../CONTRIBUTING.md)** - How to contribute
   - Development setup
@@ -142,10 +196,10 @@ The `archive/` directory contains historical implementation reports, audit findi
 ## 📚 Documentation by Role
 
 ### For New Developers
-1. Read [README](../README.md) for project overview
-2. Follow [Contributing Guide](../CONTRIBUTING.md) for setup
-3. Review [Architecture Overview](./architecture/architecture.md)
-4. Study [Testing Guide](./architecture/testing.md)
+1. Complete [Developer Onboarding](./DEVELOPER_ONBOARDING.md) ⭐
+2. Read [Architecture Quick Reference](./ARCHITECTURE_QUICK_REFERENCE.md)
+3. Review [Engineering Standards](./ENGINEERING_STANDARDS.md)
+4. Study [ADR Index](./architecture/adr/README.md)
 5. Set up development environment using [Setup Guides](./setup/)
 
 ### For DevOps Engineers
@@ -191,4 +245,4 @@ Documentation should be updated when:
 
 ---
 
-**Last Updated:** November 2024
+**Last Updated:** December 2025
