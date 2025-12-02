@@ -41,12 +41,6 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, './src'),
       },
     },
-    // Define global constants to ensure SSR compatibility
-    // This ensures import.meta.env is properly defined even in SSR context
-    define: {
-      // Ensure import.meta.env is available in all contexts
-      'import.meta.env.SSR': JSON.stringify(false),
-    },
     // Force optimization of dependencies for monorepo
     // This prevents workspace resolution issues
     // Note: Firebase v12+ uses modular exports, so we include specific subpaths

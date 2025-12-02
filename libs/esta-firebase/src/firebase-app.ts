@@ -28,15 +28,20 @@ let analytics: Analytics | null = null;
  * This function uses a Vite-compatible pattern that works correctly during:
  * - Vite dev server (browser)
  * - Vite SSR builds
+ * - Vercel preview deployments
  * - Node.js runtime (backend/tests)
  *
- * The key is to access import.meta.env directly without dynamic checks,
- * as Vite statically replaces import.meta.env.* during build.
+ * IMPORTANT: We use explicit property access for import.meta.env instead of
+ * dynamic access (import.meta.env[key]) because Vite performs STATIC replacement
+ * of import.meta.env.* at build time. Dynamic property access is not supported
+ * and causes SSR/build failures. The explicit mapping is intentional and necessary.
+ *
+ * @see https://vitejs.dev/guide/env-and-mode.html
  */
 function getEnvVar(key: string): string | undefined {
-  // For Vite environments, use import.meta.env directly
-  // Vite statically replaces these during build, so we access them by key
-  // This pattern is SSR-safe because Vite handles the transformation
+  // IMPORTANT: Explicit property access is REQUIRED for Vite static replacement.
+  // Do NOT refactor to dynamic access (import.meta.env[key]) - this breaks builds.
+  // Vite statically replaces import.meta.env.VITE_* at build time.
   const viteEnv: Record<string, string | undefined> = {
     VITE_FIREBASE_API_KEY: import.meta.env?.VITE_FIREBASE_API_KEY,
     VITE_FIREBASE_AUTH_DOMAIN: import.meta.env?.VITE_FIREBASE_AUTH_DOMAIN,
