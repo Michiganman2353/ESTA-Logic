@@ -58,7 +58,14 @@ export interface ESTARuleset {
     act: string;
     year: number;
     effectiveDate: string;
-    sections: Record<string, string>;
+    sections: {
+      accrualRate: string;
+      waitingPeriod: string;
+      caps: string;
+      carryover: string;
+      smallEmployerDelay: string;
+      frontloading: string;
+    };
   };
   effectiveDates: {
     generalEffective: string;

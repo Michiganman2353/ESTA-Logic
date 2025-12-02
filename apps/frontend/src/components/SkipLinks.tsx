@@ -132,6 +132,7 @@ export function FocusAnchor({ id, label, className = '' }: FocusAnchorProps) {
       element.addEventListener('blur', handleBlur);
       return () => element.removeEventListener('blur', handleBlur);
     }
+    return undefined;
   }, []);
 
   return (
