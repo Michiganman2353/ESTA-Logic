@@ -153,6 +153,7 @@ export type { FirebaseStorage, StorageReference } from 'firebase/storage';
 export type { Analytics } from 'firebase/analytics';
 
 // Export employer profile helpers
+// Note: These use client-side Firebase Firestore (not Admin SDK)
 export {
   generateEmployerCode,
   getEmployerProfileByCode,
@@ -164,14 +165,7 @@ export {
   regenerateEmployerCode,
 } from './employer-profile.js';
 
-// Export query optimization utilities
-export {
-  batchGetDocuments,
-  fetchEmployeesWithWorkLogs,
-  fetchEmployerDashboardData,
-  paginatedQuery,
-  batchWrite,
-  streamQuery,
-  BATCH_LIMITS,
-  type PaginatedResult,
-} from './query-optimization.js';
+// Note: Query optimization utilities (batchGetDocuments, paginatedQuery, etc.)
+// use Firebase Admin SDK and are only available via '@esta/firebase/admin'.
+// Import them from the admin subpath for backend/API usage:
+// import { batchGetDocuments, ... } from '@esta/firebase/admin';

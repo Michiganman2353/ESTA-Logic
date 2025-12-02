@@ -11,6 +11,12 @@
       "import": "./src/index.ts",
       "require": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./server": {
+      "types": "./src/server.ts",
+      "import": "./src/server.ts",
+      "require": "./src/server.ts",
+      "default": "./src/server.ts"
     }
   },
   "sideEffects": false,

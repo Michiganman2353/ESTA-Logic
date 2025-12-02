@@ -5,20 +5,24 @@
   "installCommand": "npm ci --prefer-offline",
   "devCommand": "npm run dev:frontend",
   "framework": null,
+  "nodeVersion": "22.x",
   "cleanUrls": true,
   "trailingSlash": false,
   "functions": {
     "api/background/*.ts": {
       "maxDuration": 300,
-      "memory": 1024
+      "memory": 1024,
+      "runtime": "nodejs22.x"
     },
     "api/secure/*.ts": {
       "maxDuration": 60,
-      "memory": 512
+      "memory": 512,
+      "runtime": "nodejs22.x"
     },
     "api/*.ts": {
       "maxDuration": 30,
-      "memory": 512
+      "memory": 512,
+      "runtime": "nodejs22.x"
     }
   },
   "rewrites": [
