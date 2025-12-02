@@ -5,6 +5,10 @@ inputs:
     description: 'Port to run the Firestore emulator on'
     required: false
     default: '8080'
+  java_heap_size:
+    description: 'Java heap size for the emulator (e.g., 512m, 1g)'
+    required: false
+    default: '512m'
 outputs:
   emulator_pid:
     description: 'PID of the emulator process'
@@ -25,6 +29,7 @@ runs:
       shell: bash
       env:
         EMULATOR_PORT: ${{ inputs.port }}
+        JAVA_HEAP_SIZE: ${{ inputs.java_heap_size }}
       run: |
         # Cleanup any existing emulator processes
         pkill -f "firebase.*emulators" || true
@@ -48,11 +53,21 @@ runs:
         # Install firebase-tools if not available
         if ! command -v firebase &> /dev/null; then
           echo "📦 Installing firebase-tools..."
-          npm i -g firebase-tools || true
+          if ! npm i -g firebase-tools; then
+            echo "❌ Failed to install firebase-tools"
+            exit 1
+          fi
+          echo "✅ firebase-tools installed"
+        fi
+
+        # Verify firebase is available
+        if ! command -v firebase &> /dev/null; then
+          echo "❌ firebase command not available after installation"
+          exit 1
         fi
 
         # Start emulator with Java options for stability
-        export JAVA_TOOL_OPTIONS="-Xmx512m"
+        export JAVA_TOOL_OPTIONS="-Xmx${JAVA_HEAP_SIZE}"
         nohup firebase emulators:start --only firestore --project test-project --host 127.0.0.1 --port ${PORT} > firestore-emulator.log 2>&1 &
         EMULATOR_PID=$!
         echo "pid=${EMULATOR_PID}" >> $GITHUB_OUTPUT
