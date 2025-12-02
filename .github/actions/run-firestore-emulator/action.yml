@@ -13,16 +13,46 @@ outputs:
   emulator_pid:
     description: 'PID of the emulator process'
     value: ${{ steps.start-emulator.outputs.pid }}
+  emulator_port:
+    description: 'Port the emulator is running on'
+    value: ${{ steps.start-emulator.outputs.port }}
 runs:
   using: 'composite'
   steps:
     - name: Install dependencies
       shell: bash
       run: |
-        # Install netcat for port checking
+        # Install netcat and lsof for port checking and cleanup
         sudo apt-get update -qq
-        sudo apt-get install -y -qq netcat-openbsd || true
-        echo "✅ netcat installed"
+        sudo apt-get install -y -qq netcat-openbsd lsof || {
+          echo "⚠️ Failed to install some dependencies, attempting fallback..."
+          sudo apt-get install -y -qq netcat lsof 2>/dev/null || true
+        }
+        echo "✅ Dependencies installed"
+
+    - name: Cleanup stale emulator processes
+      shell: bash
+      env:
+        EMULATOR_PORT: ${{ inputs.port }}
+      run: |
+        # Kill any existing emulator processes
+        pkill -f "firebase.*emulators" || true
+
+        # Use lsof to clear ports 8080 and 8085 (common emulator ports)
+        for PORT in 8080 8085 ${EMULATOR_PORT}; do
+          PID=$(lsof -t -i:${PORT} 2>/dev/null || true)
+          if [ -n "${PID}" ]; then
+            echo "⚠️ Killing process ${PID} on port ${PORT}"
+            kill ${PID} 2>/dev/null || true
+            sleep 1
+            # Force kill if still running
+            kill -9 ${PID} 2>/dev/null || true
+          fi
+        done
+
+        # Wait for ports to be released
+        sleep 2
+        echo "✅ Port cleanup complete"
 
     - name: Start emulator
       id: start-emulator
@@ -31,9 +61,6 @@ runs:
         EMULATOR_PORT: ${{ inputs.port }}
         JAVA_HEAP_SIZE: ${{ inputs.java_heap_size }}
       run: |
-        # Cleanup any existing emulator processes
-        pkill -f "firebase.*emulators" || true
-
         # Check if port is already in use and find alternative
         PORT=${EMULATOR_PORT}
         MAX_PORT_ATTEMPTS=5
@@ -75,7 +102,7 @@ runs:
 
         # Wait for emulator to accept connections with timeout
         echo "⏳ Waiting for Firestore emulator on port ${PORT}..."
-        TIMEOUT=30
+        TIMEOUT=45
         for i in $(seq 1 ${TIMEOUT}); do
           if nc -z 127.0.0.1 ${PORT} 2>/dev/null; then
             echo "✅ Firestore emulator is ready on port ${PORT} (PID: ${EMULATOR_PID})"
@@ -93,3 +120,17 @@ runs:
         echo "❌ Timeout waiting for Firestore emulator"
         cat firestore-emulator.log || true
         exit 1
+
+    - name: Export cleanup info
+      if: always()
+      shell: bash
+      run: |
+        # Document cleanup for consumers of this action
+        # GitHub Actions terminates all processes when the job ends, but consumers
+        # can use the emulator_pid output to kill the emulator earlier if needed:
+        #   kill ${{ steps.start-emulator.outputs.pid }} 2>/dev/null || true
+        EMU_PID="${{ steps.start-emulator.outputs.pid }}"
+        if [ -n "${EMU_PID}" ]; then
+          echo "✅ Emulator running with PID: ${EMU_PID}"
+          echo "   To stop manually: kill ${EMU_PID}"
+        fi

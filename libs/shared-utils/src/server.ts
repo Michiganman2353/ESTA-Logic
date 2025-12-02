@@ -15,3 +15,6 @@ export * from './index.js';
 
 // Server-only exports (uses Node.js 'crypto' module)
 export * from './tenant-identifier.js';
+
+// Cache utilities with Redis/in-memory fallback
+export * from './cache.js';

@@ -51,6 +51,7 @@ jobs:
     needs: [security-audit]
     permissions:
       contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
 
@@ -70,10 +71,11 @@ jobs:
       - name: Generate SBOM
         run: |
           # Generate SBOM with error handling for partially resolvable dependencies
-          cyclonedx-npm --ignore-npm-errors --output-file bom.xml --output-format XML || {
+          # Use --omit=dev to reduce scanning surface and avoid dev-only dependency issues
+          cyclonedx-npm --omit=dev --ignore-npm-errors --output-file bom.xml --output-format XML || {
             echo "⚠️ SBOM generation encountered issues with some dependencies"
             echo "Attempting to generate SBOM from package-lock.json only..."
-            cyclonedx-npm --package-lock-only --ignore-npm-errors --output-file bom.xml --output-format XML || {
+            cyclonedx-npm --package-lock-only --omit=dev --ignore-npm-errors --output-file bom.xml --output-format XML || {
               echo "❌ SBOM generation failed"
               exit 1
             }

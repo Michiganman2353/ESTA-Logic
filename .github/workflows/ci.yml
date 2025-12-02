@@ -124,7 +124,7 @@ jobs:
             ${{ runner.os }}-nx-
 
       - name: Install Dependencies
-        run: npm ci
+        run: npm ci --prefer-offline
 
       - name: Security Audit
         run: |
