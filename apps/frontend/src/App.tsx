@@ -75,6 +75,7 @@ function FocusManager() {
       }, 100);
       return () => clearTimeout(timeoutId);
     }
+    return undefined;
   }, [location.pathname]);
 
   return null;

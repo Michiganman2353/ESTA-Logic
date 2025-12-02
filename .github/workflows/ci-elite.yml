@@ -68,7 +68,23 @@ jobs:
         run: npm install -g @cyclonedx/cyclonedx-npm
 
       - name: Generate SBOM
-        run: cyclonedx-npm --output-file bom.xml --output-format XML
+        run: |
+          # Generate SBOM with error handling for partially resolvable dependencies
+          cyclonedx-npm --ignore-npm-errors --output-file bom.xml --output-format XML || {
+            echo "⚠️ SBOM generation encountered issues with some dependencies"
+            echo "Attempting to generate SBOM from package-lock.json only..."
+            cyclonedx-npm --package-lock-only --ignore-npm-errors --output-file bom.xml --output-format XML || {
+              echo "❌ SBOM generation failed"
+              exit 1
+            }
+          }
+          if [ -f bom.xml ]; then
+            echo "✅ SBOM generated successfully"
+            echo "📊 SBOM contains $(grep -c '<component' bom.xml || echo '0') components"
+          else
+            echo "❌ SBOM file not created"
+            exit 1
+          fi
 
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v4

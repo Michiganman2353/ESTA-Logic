@@ -87,6 +87,7 @@ function NotificationItem({ notification, onDismiss }: NotificationItemProps) {
 
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [notification.autoDismissMs, notification.id, onDismiss]);
 
   const handleDismiss = () => {
