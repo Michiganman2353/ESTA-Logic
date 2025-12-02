@@ -20,10 +20,11 @@ fi
 echo "📋 Generating SBOM..."
 
 # Generate SBOM in CycloneDX format with error handling
-cyclonedx-npm --ignore-npm-errors --output-file bom.xml --output-format XML || {
+# Use --omit=dev to reduce scanning surface and focus on production dependencies
+cyclonedx-npm --omit=dev --ignore-npm-errors --output-file bom.xml --output-format XML || {
   echo "⚠️ SBOM generation encountered issues with some dependencies"
   echo "Attempting to generate SBOM from package-lock.json only..."
-  cyclonedx-npm --package-lock-only --ignore-npm-errors --output-file bom.xml --output-format XML || {
+  cyclonedx-npm --package-lock-only --omit=dev --ignore-npm-errors --output-file bom.xml --output-format XML || {
     echo "❌ Failed to generate SBOM"
     exit 1
   }

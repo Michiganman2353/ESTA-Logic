@@ -28,12 +28,17 @@
       "@esta/shared-types/*": ["libs/shared-types/dist/*"],
       "@esta-tracker/shared-utils": ["libs/shared-utils/dist"],
       "@esta-tracker/shared-utils/*": ["libs/shared-utils/dist/*"],
+      "@esta-tracker/shared-utils/server": ["libs/shared-utils/dist/server"],
       "@esta-tracker/risk-engine": ["libs/risk-engine/src"],
       "@esta-tracker/risk-engine/*": ["libs/risk-engine/src/*"],
       "@esta/firebase": ["libs/esta-firebase/dist"],
       "@esta/firebase/*": ["libs/esta-firebase/dist/*"],
+      "@esta/firebase/admin": ["libs/esta-firebase/dist/admin-exports"],
+      "@esta/firebase/testing": ["libs/esta-firebase/dist/testing"],
       "@esta/core": ["packages/esta-core/dist"],
-      "@esta/core/*": ["packages/esta-core/dist/*"]
+      "@esta/core/*": ["packages/esta-core/dist/*"],
+      "@esta/redis": ["packages/redis/src"],
+      "@esta/redis/*": ["packages/redis/src/*"]
     }
   },
   "include": ["src"]

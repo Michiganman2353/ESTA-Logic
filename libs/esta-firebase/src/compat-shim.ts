@@ -13,6 +13,7 @@ import { getFirestore, type Firestore } from 'firebase-admin/firestore';
 
 let initialized = false;
 let db: Firestore | null = null;
+let legacyGetDocWarned = false;
 
 function ensureInit(): void {
   if (initialized) return;
@@ -68,10 +69,14 @@ export function getFirestoreCompat(): Firestore | null {
 export async function legacyGetDoc(
   refPath: string
 ): Promise<Record<string, unknown> | null> {
-  // eslint-disable-next-line no-console
-  console.warn(
-    '[esta-firebase][compat-shim] legacyGetDoc is deprecated; migrate to adapter interface.'
-  );
+  // Only warn once per process to avoid log spam
+  if (!legacyGetDocWarned) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[esta-firebase][compat-shim] legacyGetDoc is deprecated; migrate to adapter interface.'
+    );
+    legacyGetDocWarned = true;
+  }
   const f = getFirestoreCompat();
   if (!f) return null;
   const doc = await f.doc(refPath).get();
