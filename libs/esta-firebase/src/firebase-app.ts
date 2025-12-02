@@ -1,11 +1,16 @@
 /**
  * Client-side Firebase App Initialization
- * 
+ *
  * This module initializes Firebase for client-side use (frontend)
  * using the Firebase Web SDK (not Admin SDK).
  */
 
-import { initializeApp, getApps, FirebaseApp, FirebaseOptions } from 'firebase/app';
+import {
+  initializeApp,
+  getApps,
+  FirebaseApp,
+  FirebaseOptions,
+} from 'firebase/app';
 import { getAnalytics, isSupported, Analytics } from 'firebase/analytics';
 import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
@@ -19,19 +24,41 @@ let analytics: Analytics | null = null;
 
 /**
  * Get environment variable - handles both Vite (import.meta.env) and Node (process.env)
+ *
+ * This function uses a Vite-compatible pattern that works correctly during:
+ * - Vite dev server (browser)
+ * - Vite SSR builds
+ * - Node.js runtime (backend/tests)
+ *
+ * The key is to access import.meta.env directly without dynamic checks,
+ * as Vite statically replaces import.meta.env.* during build.
  */
 function getEnvVar(key: string): string | undefined {
-  // Check Vite environment first (frontend)
-  if (typeof import.meta !== 'undefined') {
-    const meta = import.meta as { env?: Record<string, string | undefined> };
-    if (meta.env && key in meta.env) {
-      return meta.env[key];
-    }
+  // For Vite environments, use import.meta.env directly
+  // Vite statically replaces these during build, so we access them by key
+  // This pattern is SSR-safe because Vite handles the transformation
+  const viteEnv: Record<string, string | undefined> = {
+    VITE_FIREBASE_API_KEY: import.meta.env?.VITE_FIREBASE_API_KEY,
+    VITE_FIREBASE_AUTH_DOMAIN: import.meta.env?.VITE_FIREBASE_AUTH_DOMAIN,
+    VITE_FIREBASE_PROJECT_ID: import.meta.env?.VITE_FIREBASE_PROJECT_ID,
+    VITE_FIREBASE_STORAGE_BUCKET: import.meta.env?.VITE_FIREBASE_STORAGE_BUCKET,
+    VITE_FIREBASE_MESSAGING_SENDER_ID: import.meta.env
+      ?.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    VITE_FIREBASE_APP_ID: import.meta.env?.VITE_FIREBASE_APP_ID,
+    VITE_FIREBASE_MEASUREMENT_ID: import.meta.env?.VITE_FIREBASE_MEASUREMENT_ID,
+  };
+
+  // Check Vite environment first (statically replaced during build)
+  if (key in viteEnv && viteEnv[key]) {
+    return viteEnv[key];
   }
-  // Fallback to process.env (backend/test)
-  if (typeof process !== 'undefined' && process.env) {
+
+  // Fallback to process.env (backend/test environments)
+  // Use optional chaining for SSR safety
+  if (typeof process !== 'undefined' && process.env?.[key]) {
     return process.env[key];
   }
+
   return undefined;
 }
 
@@ -45,17 +72,17 @@ function validateFirebaseConfig(): void {
     'PROJECT_ID',
     'STORAGE_BUCKET',
     'MESSAGING_SENDER_ID',
-    'APP_ID'
+    'APP_ID',
   ] as const;
 
-  const missingVars = requiredEnvVars.filter(key => {
+  const missingVars = requiredEnvVars.filter((key) => {
     const envKey = `VITE_FIREBASE_${key}`;
     return !getEnvVar(envKey);
   });
 
   if (missingVars.length > 0) {
     throw new Error(
-      `Missing required Firebase environment variables: ${missingVars.map(k => `VITE_FIREBASE_${k}`).join(', ')}`
+      `Missing required Firebase environment variables: ${missingVars.map((k) => `VITE_FIREBASE_${k}`).join(', ')}`
     );
   }
 }
@@ -87,7 +114,7 @@ function getFirebaseConfig(): FirebaseOptions {
 /**
  * Initialize Firebase App (client-side)
  * Safe to call multiple times - will return existing instance
- * 
+ *
  * @returns Firebase App instance
  */
 export function initializeFirebase(): FirebaseApp {
@@ -114,28 +141,34 @@ export function initializeFirebase(): FirebaseApp {
     // may return null during initialization or if analytics is not supported.
     // This is by design - analytics is optional and should not block app initialization.
     if (firebaseConfig.measurementId && typeof window !== 'undefined') {
-      isSupported().then((supported) => {
-        if (supported && app) {
-          analytics = getAnalytics(app);
-          console.log('✅ Firebase Analytics initialized');
-        }
-      }).catch(() => {
-        // Analytics not supported in this environment (e.g., SSR, Node.js)
-        console.log('ℹ️ Firebase Analytics not supported in this environment');
-      });
+      isSupported()
+        .then((supported) => {
+          if (supported && app) {
+            analytics = getAnalytics(app);
+            console.log('✅ Firebase Analytics initialized');
+          }
+        })
+        .catch(() => {
+          // Analytics not supported in this environment (e.g., SSR, Node.js)
+          console.log(
+            'ℹ️ Firebase Analytics not supported in this environment'
+          );
+        });
     }
 
     return app;
   } catch (error) {
     console.error('❌ Failed to initialize Firebase:', error);
-    throw new Error(`Failed to initialize Firebase: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to initialize Firebase: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
 /**
  * Get Firebase App instance
  * Initializes if not already initialized
- * 
+ *
  * @returns Firebase App instance
  */
 export function getApp(): FirebaseApp {
@@ -148,7 +181,7 @@ export function getApp(): FirebaseApp {
 /**
  * Get Firebase Auth instance
  * Automatically initializes Firebase if needed
- * 
+ *
  * @returns Auth instance
  */
 export function getFirebaseAuth(): Auth {
@@ -162,7 +195,7 @@ export function getFirebaseAuth(): Auth {
 /**
  * Get Firestore instance
  * Automatically initializes Firebase if needed
- * 
+ *
  * @returns Firestore instance
  */
 export function getFirebaseFirestore(): Firestore {
@@ -176,7 +209,7 @@ export function getFirebaseFirestore(): Firestore {
 /**
  * Get Firebase Storage instance
  * Automatically initializes Firebase if needed
- * 
+ *
  * @returns Storage instance
  */
 export function getFirebaseStorage(): FirebaseStorage {
@@ -191,7 +224,7 @@ export function getFirebaseStorage(): FirebaseStorage {
  * Get Firebase Analytics instance
  * Returns null if Analytics is not supported, not configured, or still initializing.
  * Analytics initialization is async to avoid blocking the app.
- * 
+ *
  * @returns Analytics instance or null
  */
 export function getFirebaseAnalytics(): Analytics | null {

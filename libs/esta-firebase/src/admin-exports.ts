@@ -1,16 +1,16 @@
 /**
  * Firebase Admin SDK Exports
- * 
+ *
  * This file provides the Admin SDK exports for backend use.
  * Import from '@esta/firebase/admin' in your backend code.
- * 
+ *
  * Usage:
  * ```typescript
  * import { initializeFirebaseAdmin, getFirestore, getAuth } from '@esta/firebase/admin';
- * 
+ *
  * // Initialize once at app startup
  * initializeFirebaseAdmin();
- * 
+ *
  * // Use throughout your app
  * const db = getFirestore();
  * const auth = getAuth();
@@ -61,11 +61,7 @@ export {
 } from './storage.js';
 
 // Re-export common Firebase Admin types
-export type {
-  App,
-  Credential,
-  ServiceAccount,
-} from 'firebase-admin/app';
+export type { App, Credential, ServiceAccount } from 'firebase-admin/app';
 
 export type {
   Firestore,
@@ -84,3 +80,15 @@ export type {
   CreateRequest,
   UpdateRequest,
 } from 'firebase-admin/auth';
+
+// Query optimization utilities (Admin SDK only)
+export {
+  batchGetDocuments,
+  fetchEmployeesWithWorkLogs,
+  fetchEmployerDashboardData,
+  paginatedQuery,
+  batchWrite,
+  streamQuery,
+  BATCH_LIMITS,
+  type PaginatedResult,
+} from './query-optimization.js';

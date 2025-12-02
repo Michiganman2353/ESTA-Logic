@@ -41,6 +41,12 @@ export default defineConfig(({ mode }) => {
         '@': path.resolve(__dirname, './src'),
       },
     },
+    // Define global constants to ensure SSR compatibility
+    // This ensures import.meta.env is properly defined even in SSR context
+    define: {
+      // Ensure import.meta.env is available in all contexts
+      'import.meta.env.SSR': JSON.stringify(false),
+    },
     // Force optimization of dependencies for monorepo
     // This prevents workspace resolution issues
     // Note: Firebase v12+ uses modular exports, so we include specific subpaths
@@ -59,6 +65,13 @@ export default defineConfig(({ mode }) => {
         'date-fns',
         'zustand',
       ],
+      // Exclude packages that should not be pre-bundled for SSR compatibility
+      exclude: [],
+    },
+    // SSR configuration for Vercel compatibility
+    ssr: {
+      // Do not externalize Firebase packages - they need to be bundled
+      noExternal: ['firebase', '@firebase/*', '@esta/firebase'],
     },
     server: {
       port: 5173,
@@ -77,6 +90,8 @@ export default defineConfig(({ mode }) => {
       // Ensure dist folder is cleaned to prevent stale artifacts
       emptyOutDir: true,
       sourcemap: true,
+      // Target modern browsers that support ES modules
+      target: 'es2020',
       // Performance optimizations
       rollupOptions: {
         output: {
