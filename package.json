@@ -55,7 +55,9 @@
     "firebase:deploy": "nx run firebase-infra:deploy:all",
     "firebase:deploy:rules": "nx run firebase-infra:deploy:rules",
     "graph": "nx graph",
-    "affected": "nx affected"
+    "affected": "nx affected",
+    "audit": "npm audit --audit-level=moderate",
+    "audit:fix": "npm audit fix"
   },
   "dependencies": {
     "firebase-admin": "^12.0.0",
