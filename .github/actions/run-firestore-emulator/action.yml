@@ -121,16 +121,16 @@ runs:
         cat firestore-emulator.log || true
         exit 1
 
-    - name: Register cleanup hook
+    - name: Export cleanup info
       if: always()
       shell: bash
       run: |
-        # Create cleanup script that will be run on job completion
+        # Document cleanup for consumers of this action
+        # GitHub Actions terminates all processes when the job ends, but consumers
+        # can use the emulator_pid output to kill the emulator earlier if needed:
+        #   kill ${{ steps.start-emulator.outputs.pid }} 2>/dev/null || true
         EMU_PID="${{ steps.start-emulator.outputs.pid }}"
         if [ -n "${EMU_PID}" ]; then
-          echo "Registered cleanup for emulator PID: ${EMU_PID}"
-          # The cleanup happens naturally when the job ends, but we ensure graceful shutdown
-          # by setting up a trap in a separate script if needed for post-action
-          echo "kill ${EMU_PID} 2>/dev/null || true" > /tmp/emulator-cleanup.sh
-          chmod +x /tmp/emulator-cleanup.sh
+          echo "✅ Emulator running with PID: ${EMU_PID}"
+          echo "   To stop manually: kill ${EMU_PID}"
         fi

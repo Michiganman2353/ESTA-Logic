@@ -11,9 +11,23 @@ let initWarningLogged = false;
 const inMemoryCache = new Map<string, { value: string; expires?: number }>();
 
 /**
+ * Common Redis operations interface that both real and mock clients implement
+ */
+interface RedisClientInterface {
+  get(key: string): Promise<string | null>;
+  set(key: string, value: string): Promise<string>;
+  setex(key: string, seconds: number, value: string): Promise<string>;
+  del(...keys: string[]): Promise<number>;
+  keys(pattern: string): Promise<string[]>;
+  mget<T extends string[]>(...keys: T): Promise<(string | null)[]>;
+  ttl(key: string): Promise<number>;
+  ping(): Promise<string>;
+}
+
+/**
  * Mock Redis client for fallback when Upstash Redis is not configured
  */
-const mockRedis = {
+const mockRedis: RedisClientInterface = {
   get: async (key: string): Promise<string | null> => {
     const entry = inMemoryCache.get(key);
     if (!entry) return null;
@@ -71,14 +85,15 @@ const mockRedis = {
  * Uses Upstash Redis if environment variables are configured,
  * otherwise falls back to in-memory cache for CI/tests/local development.
  */
-function createRedisClient(): typeof mockRedis {
+function createRedisClient(): RedisClientInterface {
   const url = process.env.UPSTASH_REDIS_URL;
   const token = process.env.UPSTASH_REDIS_TOKEN;
 
   if (url && token) {
     try {
       const redis = new Redis({ url, token });
-      return redis as unknown as typeof mockRedis;
+      // Upstash Redis client is compatible with our interface
+      return redis as RedisClientInterface;
     } catch (err) {
       if (!initWarningLogged) {
         // eslint-disable-next-line no-console
