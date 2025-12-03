@@ -18,10 +18,14 @@ This document describes the WASM-native microkernel architecture, migration stra
 
 ## Migration plan (high-level)
 
-1. P0 — Accrual prototype: compile `libs/accrual-engine` to WASM and validate deterministic outputs.
-2. P1 — Tauri integration: allow kernel to be launched by Tauri, enforce module allowlists.
-3. P2 — Persistence plugin: implement Firestore adapter as WASM plugin; move read-only operations first.
-4. P3 — Replace Nx orchestration with kernel loader; retire server-side domain logic.
+| Phase | Description                                                                                      | Owner          | ETA     | Status      |
+| ----- | ------------------------------------------------------------------------------------------------ | -------------- | ------- | ----------- |
+| P0    | Accrual prototype: compile `libs/accrual-engine` to WASM and validate deterministic outputs.     | @kernel-team   | Q1 2025 | In Progress |
+| P1    | Tauri integration: allow kernel to be launched by Tauri, enforce module allowlists.              | @kernel-team   | Q2 2025 | Planned     |
+| P2    | Persistence plugin: implement Firestore adapter as WASM plugin; move read-only operations first. | @platform-team | Q3 2025 | Planned     |
+| P3    | Replace Nx orchestration with kernel loader; retire server-side domain logic.                    | @platform-team | Q4 2025 | Planned     |
+
+> **Note**: Track detailed status and blockers on the project board. Update ADR 0001 upon phase completion.
 
 ## Security model
 
