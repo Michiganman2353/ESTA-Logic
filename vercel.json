@@ -5,7 +5,6 @@
   "installCommand": "npm ci --prefer-offline",
   "devCommand": "npm run dev:frontend",
   "framework": null,
-  "nodeVersion": "22.x",
   "cleanUrls": true,
   "trailingSlash": false,
   "functions": {
