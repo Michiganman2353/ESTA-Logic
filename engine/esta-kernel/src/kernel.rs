@@ -39,11 +39,13 @@ impl Capability {
     }
 }
 
-/// Tracks running module instances for lifecycle management
+/// Tracks running module instances for lifecycle management.
+/// Stores module metadata for capability validation and status reporting.
 #[allow(dead_code)]
 struct ModuleHandle {
     name: String,
     handle: JoinHandle<()>,
+    /// Capabilities granted to this module, used for runtime validation
     capabilities: Vec<Capability>,
 }
 
@@ -74,6 +76,12 @@ impl ModuleRegistry {
     #[allow(dead_code)]
     pub(crate) fn unregister(&mut self, name: &str) -> Option<JoinHandle<()>> {
         self.modules.remove(name).map(|h| h.handle)
+    }
+
+    /// Get the capabilities granted to a module
+    #[allow(dead_code)]
+    pub fn get_module_capabilities(&self, name: &str) -> Option<&[Capability]> {
+        self.modules.get(name).map(|h| h.capabilities.as_slice())
     }
 
     pub async fn shutdown_all(&mut self) {
@@ -157,7 +165,14 @@ impl Kernel {
             .collect()
     }
 
+    /// Maximum allowed size for WASM memory operations
+    const MAX_WASM_MEMORY_SIZE: i32 = 1_048_576; // 1MB
+
     /// Register minimal host functions based on granted capabilities
+    /// 
+    /// Note: In production, these functions should read from WASM linear memory
+    /// using the caller's memory export. Currently they are stubs that only log
+    /// the operation parameters for prototype validation.
     fn register_host_functions(
         linker: &mut Linker<Vec<Capability>>,
         capabilities: &[Capability],
@@ -166,14 +181,26 @@ impl Kernel {
 
         if capabilities.contains(&Capability::Log) {
             linker.func_wrap("env", "host_log", |_caller: Caller<'_, Vec<Capability>>, level: i32, ptr: i32, len: i32| {
-                // Minimal logging stub - in production, read string from WASM memory
+                // Validate parameters before processing
+                if ptr < 0 || len < 0 || len > Self::MAX_WASM_MEMORY_SIZE {
+                    warn!("WASM log: invalid parameters (ptr={}, len={})", ptr, len);
+                    return;
+                }
+                // Minimal logging stub - in production, read string from WASM memory using caller.get_export("memory")
+                // TODO: Implement proper memory read with bounds checking
                 info!("WASM log (level={}, ptr={}, len={})", level, ptr, len);
             })?;
         }
 
         if capabilities.contains(&Capability::AuditEmit) {
             linker.func_wrap("env", "host_audit_emit", |_caller: Caller<'_, Vec<Capability>>, event_type: i32, ptr: i32, len: i32| {
-                // Audit emit stub - write to immutable audit log
+                // Validate parameters before processing
+                if ptr < 0 || len < 0 || len > Self::MAX_WASM_MEMORY_SIZE {
+                    warn!("WASM audit emit: invalid parameters (ptr={}, len={})", ptr, len);
+                    return;
+                }
+                // Audit emit stub - in production, read data from WASM memory and write to immutable audit log
+                // TODO: Implement proper memory read with bounds checking
                 info!("WASM audit emit (type={}, ptr={}, len={})", event_type, ptr, len);
             })?;
         }

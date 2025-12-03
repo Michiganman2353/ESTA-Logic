@@ -28,9 +28,11 @@ pub struct AccrualOutput {
 /// This function is provided for WASM host-to-guest memory allocation.
 /// For production use, prefer wasm-bindgen or WASI interfaces over raw pointers.
 /// This is a minimal implementation for prototype purposes.
+/// Memory is zero-initialized to prevent potential information leakage.
 #[no_mangle]
 pub extern "C" fn alloc(size: usize) -> *mut u8 {
-    let mut buf = Vec::with_capacity(size);
+    // Zero-initialize memory to prevent potential information leakage
+    let mut buf = vec![0u8; size];
     let ptr = buf.as_mut_ptr();
     std::mem::forget(buf);
     ptr
@@ -47,6 +49,9 @@ pub unsafe extern "C" fn dealloc(ptr: *mut u8, size: usize) {
     }
 }
 
+/// Maximum allowed input size (1MB) to prevent resource exhaustion
+const MAX_INPUT_SIZE: usize = 1_048_576;
+
 /// Compute accrual based on input JSON.
 /// Returns JSON string for WASM boundary crossing.
 ///
@@ -56,9 +61,15 @@ pub unsafe extern "C" fn dealloc(ptr: *mut u8, size: usize) {
 ///
 /// # Returns
 /// Pointer to JSON output string (caller must read length from first 4 bytes)
+/// Returns null pointer if input is invalid (null pointer or exceeds size limit)
 #[no_mangle]
 pub extern "C" fn accrue_json(input_ptr: *const u8, input_len: usize) -> *const u8 {
-    // Safety: This assumes the host provides valid pointers
+    // Validate input pointer and size
+    if input_ptr.is_null() || input_len == 0 || input_len > MAX_INPUT_SIZE {
+        return std::ptr::null();
+    }
+
+    // Safety: We've validated the pointer is non-null and size is reasonable
     let input_slice = unsafe { std::slice::from_raw_parts(input_ptr, input_len) };
 
     let result = match serde_json::from_slice::<AccrualInput>(input_slice) {

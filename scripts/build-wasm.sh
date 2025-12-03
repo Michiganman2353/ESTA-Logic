@@ -22,8 +22,13 @@ fi
 
 echo "[wasm-build] building accrual engine to wasm32-unknown-unknown..."
 pushd libs/accrual-engine-wasm
-# ensure target exists
-rustup target add wasm32-unknown-unknown 2>/dev/null || true
+
+# Ensure wasm32 target is installed (only show output if adding new target)
+if ! rustup target list --installed | grep -q wasm32-unknown-unknown; then
+    echo "[wasm-build] Installing wasm32-unknown-unknown target..."
+    rustup target add wasm32-unknown-unknown
+fi
+
 cargo build --release --target wasm32-unknown-unknown
 WASM_PATH=target/wasm32-unknown-unknown/release/accrual_engine_wasm.wasm
 if [ -f "$WASM_PATH" ]; then

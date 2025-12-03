@@ -31,26 +31,33 @@ pub struct KernelResponse {
     pub error: Option<String>,
 }
 
+/// Maximum allowed payload size (1MB)
+const MAX_PAYLOAD_SIZE: usize = 1_048_576;
+
+/// Allowed actions for kernel invocation
+const ALLOWED_ACTIONS: &[&str] = &["accrue", "validate", "audit", "status"];
+
+/// Allowed modules for kernel invocation
+const ALLOWED_MODULES: &[&str] = &["accrual", "compliance", "audit"];
+
 /// Validate the kernel request before processing
 fn validate_request(request: &KernelRequest) -> Result<(), String> {
     // Validate action is in allowlist
-    const ALLOWED_ACTIONS: &[&str] = &["accrue", "validate", "audit", "status"];
     if !ALLOWED_ACTIONS.contains(&request.action.as_str()) {
         return Err(format!("Action '{}' is not allowed", request.action));
     }
 
     // Validate module is in allowlist
-    const ALLOWED_MODULES: &[&str] = &["accrual", "compliance", "audit"];
     if !ALLOWED_MODULES.contains(&request.module.as_str()) {
         return Err(format!("Module '{}' is not allowed", request.module));
     }
 
-    // Validate payload is not excessively large (1MB limit)
+    // Validate payload is not excessively large
     let payload_size = serde_json::to_string(&request.payload)
         .map(|s| s.len())
         .unwrap_or(0);
-    if payload_size > 1_048_576 {
-        return Err("Payload exceeds maximum size of 1MB".to_string());
+    if payload_size > MAX_PAYLOAD_SIZE {
+        return Err(format!("Payload exceeds maximum size of {} bytes", MAX_PAYLOAD_SIZE));
     }
 
     Ok(())
