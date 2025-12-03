@@ -33,6 +33,7 @@ docs/
 
 - **[Architecture Overview](./architecture/architecture.md)** - System design and technical decisions
 - **[Microkernel Status](./architecture/MICROKERNEL_STATUS.md)** - Current vs target architecture
+- **[Architecture Enforcement Report](./ARCHITECTURE_ENFORCEMENT_REPORT.md)** - Violations and remediation plan
 - **[Testing Guide](./architecture/testing.md)** - Testing strategies and procedures
 - **[Deployment Guide](./deployment/deployment.md)** - Production deployment instructions
 - **[Security Summary](./security/security-summary.md)** - Security architecture overview

@@ -1,31 +1,47 @@
 /**
  * Accrual Calculation Utilities
- * 
- * Provides utility functions for calculating sick time accrual
- * according to Michigan ESTA (Earned Sick Time Act) law requirements.
- * 
- * Michigan ESTA Rules:
+ *
+ * @deprecated This module violates the microkernel architecture.
+ * All compliance calculations should be performed by the kernel via WASM modules.
+ *
+ * ARCHITECTURAL NOTE (2025-12):
+ * Per the ESTA-Logic Architecture Enforcement Report, frontend components
+ * must not encode compliance logic. The frontend is an "untrusted client"
+ * that should request computation from the kernel.
+ *
+ * MIGRATION PATH:
+ * Instead of using these functions directly, use the kernel service:
+ *
+ * ```typescript
+ * import { kernelClient } from '@/services/kernel';
+ *
+ * // Preferred approach - delegate to kernel
+ * const result = await kernelClient.calculateAccrual(hoursWorked, employerSize);
+ * ```
+ *
+ * These functions are retained temporarily for backward compatibility
+ * but will be removed in a future release. All new code should use
+ * the kernel service.
+ *
+ * See: docs/ARCHITECTURE_ENFORCEMENT_REPORT.md
+ * See: docs/architecture/MICROKERNEL_STATUS.md
+ *
+ * Michigan ESTA Rules (for reference only - logic lives in WASM):
  * - Large employers (≥10 employees): 1 hour per 30 hours worked, up to 72 hours/year
  * - Small employers (<10 employees): 40 hours annually (paid) + 32 hours (unpaid)
  * - Accrual begins at start of employment
  * - Unused hours carry over to next year (subject to caps)
- * 
- * Functions:
- * - calculateAccrualForHours: Calculate accrual for hours worked
- * - getMaxAccrualForEmployerSize: Get maximum accrual limits
- * - calculateCarryover: Calculate carryover to next year
- * - calculateAvailableHours: Calculate available sick time balance
- * - isWithinUsageLimit: Check if usage request is within limits
- * 
- * Uses:
- * - ComplianceRules type from types
- * - Pure functions for testability
  */
 
 import { ComplianceRules } from '@/types';
 
 /**
  * Calculate sick time accrual based on hours worked
+ *
+ * @deprecated Use kernelClient.calculateAccrual() instead.
+ * This function violates the microkernel architecture by computing
+ * compliance logic in the frontend.
+ *
  * @param hoursWorked - Number of hours worked in the period
  * @param employerSize - Size of employer ('small' or 'large')
  * @returns Number of sick time hours accrued
@@ -46,10 +62,16 @@ export function calculateAccrualForHours(
 
 /**
  * Get maximum accrual limits for employer size
+ *
+ * @deprecated Use kernel service for compliance rules.
+ * This function violates the microkernel architecture.
+ *
  * @param employerSize - Size of employer ('small' or 'large')
  * @returns ComplianceRules object with limits
  */
-export function getMaxAccrualForEmployerSize(employerSize: 'small' | 'large'): ComplianceRules {
+export function getMaxAccrualForEmployerSize(
+  employerSize: 'small' | 'large'
+): ComplianceRules {
   if (employerSize === 'large') {
     return {
       employerSize: 'large',
@@ -73,6 +95,10 @@ export function getMaxAccrualForEmployerSize(employerSize: 'small' | 'large'): C
 
 /**
  * Calculate carryover hours to next year
+ *
+ * @deprecated Use kernel service for carryover calculation.
+ * This function violates the microkernel architecture.
+ *
  * @param currentBalance - Current unused sick time balance
  * @param employerSize - Size of employer ('small' or 'large')
  * @returns Hours that will carry over to next year
@@ -87,6 +113,10 @@ export function calculateCarryover(
 
 /**
  * Calculate available sick time hours
+ *
+ * @deprecated Use kernel service for balance calculation.
+ * This function violates the microkernel architecture.
+ *
  * @param yearlyAccrued - Hours accrued this year
  * @param paidHoursUsed - Paid hours used this year
  * @param unpaidHoursUsed - Unpaid hours used this year (small employers only)
@@ -102,21 +132,28 @@ export function calculateAvailableHours(
   employerSize: 'small' | 'large'
 ): { availablePaid: number; availableUnpaid: number } {
   const rules = getMaxAccrualForEmployerSize(employerSize);
-  
+
   const totalAccrued = yearlyAccrued + carryoverHours;
   const cappedAccrued = Math.min(totalAccrued, rules.maxPaidHoursPerYear);
   const availablePaid = Math.max(0, cappedAccrued - paidHoursUsed);
-  
+
   if (employerSize === 'small') {
-    const availableUnpaid = Math.max(0, rules.maxUnpaidHoursPerYear - unpaidHoursUsed);
+    const availableUnpaid = Math.max(
+      0,
+      rules.maxUnpaidHoursPerYear - unpaidHoursUsed
+    );
     return { availablePaid, availableUnpaid };
   }
-  
+
   return { availablePaid, availableUnpaid: 0 };
 }
 
 /**
  * Check if a usage request is within allowed limits
+ *
+ * @deprecated Use kernel service for usage validation.
+ * This function violates the microkernel architecture.
+ *
  * @param requestedHours - Hours requested for sick time use
  * @param availablePaid - Available paid sick time hours
  * @param availableUnpaid - Available unpaid sick time hours (small employers only)
@@ -138,6 +175,10 @@ export function isWithinUsageLimit(
 
 /**
  * Calculate total hours worked required to accrue target hours
+ *
+ * @deprecated Use kernel service for accrual projections.
+ * This function violates the microkernel architecture.
+ *
  * @param targetAccrualHours - Desired sick time hours to accrue
  * @param employerSize - Size of employer ('small' or 'large')
  * @returns Number of hours that need to be worked
@@ -161,7 +202,12 @@ export function calculateHoursNeededForAccrual(
  * @param showDecimals - Whether to show decimal places
  * @returns Formatted string (e.g., "8 hours", "8.5 hours")
  */
-export function formatHours(hours: number, showDecimals: boolean = true): string {
-  const formatted = showDecimals ? hours.toFixed(1) : Math.round(hours).toString();
+export function formatHours(
+  hours: number,
+  showDecimals: boolean = true
+): string {
+  const formatted = showDecimals
+    ? hours.toFixed(1)
+    : Math.round(hours).toString();
   return `${formatted} ${hours === 1 ? 'hour' : 'hours'}`;
 }

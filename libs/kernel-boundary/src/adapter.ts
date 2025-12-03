@@ -604,6 +604,13 @@ export interface InMemoryStorage<T> {
 
 /**
  * Create an in-memory repository for testing
+ *
+ * NOTE: This mock implementation uses Date.now() and Math.random() for ID generation,
+ * which is non-deterministic. For deterministic testing (e.g., snapshot tests,
+ * formal verification), use fixed IDs or a seeded PRNG.
+ *
+ * The context.now timestamp should be used instead of Date.now() where possible
+ * to maintain consistency with kernel time.
  */
 export function createInMemoryRepository<
   T extends EntityMetadata,
@@ -619,8 +626,10 @@ export function createInMemoryRepository<
     metadata: Partial<EntityMetadata>
   ) => T
 ): TenantScopedRepository<T, CreateInput, UpdateInput> {
+  // NOTE: Uses context.now for timestamp but still non-deterministic due to Math.random()
+  // For strict determinism, accept ID from context or use seeded generator
   const generateId = (): string =>
-    `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 11)}`;
+    `${context.now.toString(36)}-${Math.random().toString(36).slice(2, 11)}`;
 
   return {
     getContext: () => context,

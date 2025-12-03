@@ -583,6 +583,16 @@ export function withHeader<T>(
 
 /**
  * Generate a message ID
+ *
+ * NOTE: This implementation uses Math.random() which is non-deterministic.
+ * For strict determinism requirements (e.g., replay testing, formal verification),
+ * message IDs should be provided by the kernel or generated with a seeded PRNG.
+ *
+ * In production, consider using a cryptographically secure ID generator
+ * or accepting IDs from an authoritative kernel source.
+ *
+ * @param timestamp - Timestamp component for the ID
+ * @returns A new message ID
  */
 export function generateMessageId(timestamp: number): MessageId {
   return {

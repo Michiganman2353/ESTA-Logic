@@ -5,6 +5,18 @@
  * This engine loads rules from a JSON configuration file to ensure
  * deterministic behavior that can be audited and verified.
  *
+ * ARCHITECTURAL NOTE (2025-12):
+ * This module is part of the kernel-side compliance logic. Functions that
+ * accept dates should receive explicit timestamps rather than using
+ * Date.now() or new Date() defaults, to ensure deterministic behavior.
+ *
+ * For production use, callers should provide explicit timestamps from
+ * an authoritative time source (e.g., kernel clock). Default parameters
+ * using new Date() are provided for convenience but violate strict
+ * determinism requirements.
+ *
+ * See: docs/ARCHITECTURE_ENFORCEMENT_REPORT.md (Section: Determinism Violations)
+ *
  * Legislative Reference: Michigan Employee Earned Sick Time Act (ESTA) 2025
  */
 

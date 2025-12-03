@@ -1,10 +1,23 @@
 /**
  * Michigan ESTA Accrual Rules
  * Handles sick time accrual calculations with proper capping
+ *
+ * @deprecated This module violates the microkernel architecture.
+ * All compliance calculations should be performed by the kernel via WASM modules.
+ *
+ * ARCHITECTURAL NOTE (2025-12):
+ * Per the ESTA-Logic Architecture Enforcement Report, frontend components
+ * must not encode compliance logic. The frontend is an "untrusted client"
+ * that should request computation from the kernel.
+ *
+ * See: docs/ARCHITECTURE_ENFORCEMENT_REPORT.md
  */
 
 import { AccrualCalculation, EmployerSize } from './types';
-import { LARGE_EMPLOYER_RULES, SMALL_EMPLOYER_RULES } from './employerSizeRules';
+import {
+  LARGE_EMPLOYER_RULES,
+  SMALL_EMPLOYER_RULES,
+} from './employerSizeRules';
 
 /**
  * Calculate accrual for a work period with proper capping
@@ -18,7 +31,8 @@ export function calculateAccrual(
   employerSize: EmployerSize,
   yearlyAccrued: number
 ): AccrualCalculation {
-  const rules = employerSize === 'small' ? SMALL_EMPLOYER_RULES : LARGE_EMPLOYER_RULES;
+  const rules =
+    employerSize === 'small' ? SMALL_EMPLOYER_RULES : LARGE_EMPLOYER_RULES;
   const cap = rules.maxPaidHoursPerYear;
 
   if (employerSize === 'small') {
@@ -41,7 +55,7 @@ export function calculateAccrual(
     accrued,
     cap,
     remaining,
-    capped: yearlyAccrued >= cap || (yearlyAccrued + rawAccrued) > cap,
+    capped: yearlyAccrued >= cap || yearlyAccrued + rawAccrued > cap,
   };
 }
 
@@ -68,7 +82,8 @@ export function calculateCarryover(
   currentBalance: number,
   employerSize: EmployerSize
 ): number {
-  const rules = employerSize === 'small' ? SMALL_EMPLOYER_RULES : LARGE_EMPLOYER_RULES;
+  const rules =
+    employerSize === 'small' ? SMALL_EMPLOYER_RULES : LARGE_EMPLOYER_RULES;
   return Math.min(currentBalance, rules.carryoverCap);
 }
 

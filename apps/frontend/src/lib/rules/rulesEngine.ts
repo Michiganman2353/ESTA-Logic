@@ -1,6 +1,16 @@
 /**
  * Flexible Rules Engine for ESTA Tracker
  * Supports versioned rules, multiple policy types, and tenant-specific configurations
+ *
+ * @deprecated This module violates the microkernel architecture.
+ * Policy configuration and accrual calculations should be performed by the kernel.
+ *
+ * ARCHITECTURAL NOTE (2025-12):
+ * Per the ESTA-Logic Architecture Enforcement Report, the frontend should
+ * not contain a rules engine. Policy management and calculation should be
+ * delegated to the kernel layer.
+ *
+ * See: docs/ARCHITECTURE_ENFORCEMENT_REPORT.md
  */
 
 import { EmployerSize } from './types';
@@ -139,7 +149,8 @@ export const DEFAULT_POLICIES: Record<string, AccrualPolicy> = {
  */
 export class RulesEngine {
   private policies: Map<string, AccrualPolicy> = new Map();
-  private tenantConfigurations: Map<string, TenantPolicyConfiguration> = new Map();
+  private tenantConfigurations: Map<string, TenantPolicyConfiguration> =
+    new Map();
 
   constructor() {
     // Load default policies
@@ -285,7 +296,8 @@ export class RulesEngine {
     return {
       accrued,
       remaining,
-      capped: currentYearlyAccrued >= cap || currentYearlyAccrued + rawAccrued > cap,
+      capped:
+        currentYearlyAccrued >= cap || currentYearlyAccrued + rawAccrued > cap,
     };
   }
 
@@ -315,7 +327,10 @@ export class RulesEngine {
       errors.push('Frontload amount is required for frontload policies');
     }
 
-    if (!policy.rules.maxPaidHoursPerYear || policy.rules.maxPaidHoursPerYear <= 0) {
+    if (
+      !policy.rules.maxPaidHoursPerYear ||
+      policy.rules.maxPaidHoursPerYear <= 0
+    ) {
       errors.push('Max paid hours per year must be greater than 0');
     }
 
