@@ -11,8 +11,8 @@
     "infra/*"
   ],
   "scripts": {
-    "wasm:build": "nx run accrual:wasm-build",
-    "wasm:test": "nx run accrual:wasm-test",
+    "wasm:build": "nx run accrual-engine:wasm-build",
+    "wasm:test": "nx run accrual-engine:wasm-test",
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
     "dev": "nx run-many --target=dev --all",
