@@ -159,6 +159,10 @@ export function minutesToHours(minutes: number): number {
  * @deprecated Use requestAccrualCalculation() instead.
  * This function performs client-side calculation which violates the
  * microkernel architecture. It will be removed in a future release.
+ *
+ * WARNING: Returns 0 to force migration to kernel invocation.
+ * If you see 0 accrual values, this is intentional - migrate to
+ * requestAccrualCalculation() which invokes the kernel.
  */
 export function calculateAccrualForHours(
   _hoursWorked: number,
@@ -166,9 +170,11 @@ export function calculateAccrualForHours(
 ): number {
   console.warn(
     '[DEPRECATED] calculateAccrualForHours() performs client-side calculation. ' +
-      'Use requestAccrualCalculation() to invoke the kernel instead.'
+      'Use requestAccrualCalculation() to invoke the kernel instead. ' +
+      'Returning 0 to force migration.'
   );
   // Return 0 to force migration to kernel invocation
+  // This is intentional - callers must migrate to requestAccrualCalculation()
   return 0;
 }
 

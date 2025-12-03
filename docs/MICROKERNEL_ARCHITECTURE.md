@@ -104,11 +104,15 @@ ESTA-Logic is a **microkernel compliance OS** where:
 The kernel:
 
 - Owns execution orchestration
-- Owns module lifecycle
+- Owns module lifecycle (loading, running, terminating WASM modules)
 - Owns capability issuance and enforcement
-- Does NOT contain business rules
-- Does NOT contain policy logic
+- **Orchestrates** but does NOT **implement** business rules
+- Does NOT contain policy logic implementation
 - Must remain minimal, deterministic, and side-effect-free
+
+**Clarification**: The kernel is the _conductor_, while WASM modules are the _performers_.
+The kernel decides _when_ and _how_ to execute modules, but the modules contain the
+actual ESTA compliance logic (accrual rates, caps, carryover rules, etc.).
 
 ### 2. WASM Modules Must Be Pure and Deterministic
 

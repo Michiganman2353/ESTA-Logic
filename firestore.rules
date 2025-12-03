@@ -194,6 +194,10 @@ service cloud.firestore {
     // Business logic validation (e.g., hours constraints, accrual calculations)
     // is enforced by the kernel, NOT by Firestore rules. These rules
     // only enforce access control and basic data integrity.
+    //
+    // Upper bounds (e.g., max hours per day) are validated by the kernel
+    // before data reaches this persistence layer. Unreasonable values
+    // will be rejected by kernel validation.
     // =====================================================
     match /workLogs/{logId} {
       // Employers can read all logs in their tenant
@@ -205,8 +209,9 @@ service cloud.firestore {
         isOwner(resource.data.userId);
       
       // Only employers can create/update/delete logs
-      // NOTE: Hour validation is performed by the kernel before persistence.
-      // The kernel is the sole authority for ESTA compliance calculations.
+      // NOTE: Hour validation (max hours per day, etc.) is performed by the 
+      // kernel before persistence. The kernel is the sole authority for
+      // ESTA compliance calculations. Unreasonable values are rejected there.
       allow create, update: if isEmployer() && 
         belongsToTenant(request.resource.data.employerId) &&
         isWithinSizeLimit() &&
@@ -228,6 +233,8 @@ service cloud.firestore {
     // only enforce access control and basic data integrity.
     // 
     // The kernel validates all requests before they reach persistence.
+    // ESTA-specific limits (e.g., 72-hour cap for large employers) are
+    // enforced by the kernel/WASM module, not here.
     // =====================================================
     match /sickTimeRequests/{requestId} {
       // Employers can read all requests in their tenant
@@ -239,7 +246,7 @@ service cloud.firestore {
         isOwner(resource.data.userId);
       
       // Employees can create requests for themselves
-      // NOTE: Business logic validation (hour limits per ESTA) is performed
+      // NOTE: Business logic validation (ESTA hour limits, caps) is performed
       // by the kernel before the request reaches persistence. The kernel
       // is the sole authority for compliance validation.
       allow create: if isEmployee() && 
