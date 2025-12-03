@@ -14,14 +14,18 @@
       },
       "fs": {
         "all": false,
-        "readFile": false,
-        "writeFile": false,
+        "readFile": true,
+        "writeFile": true,
         "readDir": false,
         "copyFile": false,
         "createDir": false,
         "removeDir": false,
         "removeFile": false,
         "renameFile": false
+      },
+      "invoke": {
+        "all": false,
+        "invokeKernel": true
       },
       "http": {
         "all": false,
@@ -84,7 +88,7 @@
     "windows": [{ "title": "ESTA Rainforest", "width": 1200, "height": 800 }],
     "security": {
       "dangerousDisableAssetCspModification": false,
-      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com"
+      "csp": "default-src 'self' 'unsafe-inline'; frame-src 'self';"
     }
   },
   "bundle": {
