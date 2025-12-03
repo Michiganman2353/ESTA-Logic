@@ -4,18 +4,33 @@ flowchart LR
     UI[React WebView]
   end
   subgraph Kernel_Process
-    Kernel[esta-kernel (Rust)]
-    Audit[Audit Sink]
-    Registry[Module Registry]
+    Kernel[esta-kernel<br/>Rust]
+    Audit[Audit Sink<br/>Immutable Log]
+    Registry[Module Registry<br/>Lifecycle Mgmt]
+    Verifier[Manifest Verifier<br/>Ed25519 Signatures]
   end
   subgraph WASM_Userland
     Accrual[accrual.wasm]
     Persistence[persistence-firestore.wasm]
     Notifier[notifier.wasm]
   end
+  subgraph Manifests
+    SignedManifest[Signed Manifest<br/>JSON + Ed25519 Sig]
+    Checksum[SHA-256 Checksum]
+  end
+  
   UI -->|invokeKernel| Kernel
-  Kernel --> Accrual
-  Kernel --> Persistence
-  Kernel --> Audit
+  SignedManifest -->|verify| Verifier
+  Verifier -->|load| Kernel
+  Checksum -->|validate| Kernel
+  Kernel -->|instantiate| Accrual
+  Kernel -->|instantiate| Persistence
+  Kernel -->|track| Registry
+  Registry -->|lifecycle| Accrual
   Accrual -->|capability-limited| Persistence
   Accrual -->|emit| Audit
+  Kernel -->|emit| Audit
+  
+  style Audit fill:#f9f,stroke:#333,stroke-width:2px
+  style Verifier fill:#bbf,stroke:#333,stroke-width:2px
+  style SignedManifest fill:#bfb,stroke:#333,stroke-width:2px

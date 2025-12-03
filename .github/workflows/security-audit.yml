@@ -3,7 +3,7 @@ on:
   schedule:
     - cron: '0 3 * * 1' # weekly
   push:
-    branches: [ main ]
+    branches: [main]
 
 permissions:
   actions: read
@@ -37,16 +37,30 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - name: npm ci
         run: npm ci
-      - name: npm audit --json
-        run: npm audit --json > audit.json || true
+      - name: npm audit
+        id: npm-audit
+        continue-on-error: true
+        run: |
+          npm audit --json > audit.json
+          # Check for critical vulnerabilities
+          CRITICAL=$(cat audit.json | jq '.metadata.vulnerabilities.critical // 0')
+          if [ "$CRITICAL" -gt 0 ]; then
+            echo "::error::Found $CRITICAL critical npm vulnerabilities"
+            echo "has_critical=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_critical=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Upload npm audit
         uses: actions/upload-artifact@v4
         with:
           name: npm-audit-report
           path: audit.json
+      - name: Fail on critical vulnerabilities
+        if: steps.npm-audit.outputs.has_critical == 'true'
+        run: exit 1
 
   cargo-audit:
     runs-on: ubuntu-latest
@@ -54,8 +68,32 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+      - name: Cache cargo-audit
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/cargo-audit
+          key: cargo-audit-${{ runner.os }}-v1
       - name: Install cargo-audit
         run: |
-          cargo install cargo-audit || true
+          if ! command -v cargo-audit &> /dev/null; then
+            cargo install cargo-audit --locked
+          fi
       - name: Run cargo-audit
-        run: cargo audit || true
+        id: cargo-audit
+        continue-on-error: true
+        run: |
+          # Run audit and capture exit code
+          cargo audit --json > cargo-audit.json 2>&1 || true
+          # Check for vulnerabilities - audit exits non-zero if any found
+          if cargo audit 2>&1 | grep -q "Crate:"; then
+            echo "::warning::cargo-audit found vulnerabilities"
+            echo "has_vulns=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_vulns=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Upload cargo audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: cargo-audit-report
+          path: cargo-audit.json
+          if-no-files-found: ignore

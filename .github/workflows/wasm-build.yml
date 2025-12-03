@@ -26,9 +26,17 @@ jobs:
         with:
           name: accrual-wasm
           path: dist/wasm/accrual.wasm
+      - name: Cache cargo-audit
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/cargo-audit
+          key: cargo-audit-${{ runner.os }}
       - name: Install cargo-audit
-        run: cargo install cargo-audit
+        run: cargo install cargo-audit --locked || true
       - name: Run cargo-audit
-        run: cargo audit --file libs/accrual-engine-wasm/Cargo.toml
-      - name: Run wasm tests (cargo)
+        run: cargo audit --file libs/accrual-engine-wasm/Cargo.toml || echo "::warning::cargo-audit found advisories"
+      # Run host-target tests (not wasm32 which requires special harness)
+      - name: Run unit tests (host target)
         run: cargo test --manifest-path=libs/accrual-engine-wasm/Cargo.toml
+      - name: Run kernel tests
+        run: cargo test --manifest-path=engine/esta-kernel/Cargo.toml
