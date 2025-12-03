@@ -1,8 +1,18 @@
 /**
  * Adapter Isolation Layer
  *
+ * ============================================================================
+ * MICROKERNEL ARCHITECTURE - PERSISTENCE ADAPTER BOUNDARY
+ * ============================================================================
+ *
  * This module defines the formal interfaces for persistence adapters.
  * All persistence operations MUST go through these interfaces.
+ *
+ * ARCHITECTURAL ROLE: Capability-Bounded I/O
+ * - Adapters are EXTERNAL, UNTRUSTED providers
+ * - They CANNOT execute business logic
+ * - They CANNOT perform ESTA compliance calculations
+ * - All operations require capability tokens from the kernel
  *
  * Key Design Principles:
  * 1. No business logic may import Firebase SDK or raw types directly
@@ -15,6 +25,10 @@
  * - Testability through mock implementations
  * - Portability to different storage backends
  * - Consistent error handling
+ * - Kernel-controlled access via capabilities
+ *
+ * Reference: docs/ENGINEERING_PRINCIPLES.md
+ * ============================================================================
  *
  * @module adapter
  */

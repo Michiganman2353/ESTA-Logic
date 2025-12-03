@@ -1,11 +1,30 @@
 /**
  * ESTA Kernel Client Service
  *
+ * ============================================================================
+ * MICROKERNEL ARCHITECTURE - FRONTEND KERNEL INTERFACE
+ * ============================================================================
+ *
  * This module provides the client-side API for communicating with the
  * ESTA Rust microkernel via Tauri IPC.
  *
+ * ARCHITECTURAL ROLE: Untrusted Client Interface
+ * - Frontend is an UNTRUSTED CLIENT
+ * - All compliance calculations are delegated to the kernel
+ * - Frontend NEVER performs business logic directly
+ * - All operations go through: UI → Kernel → WASM Module → Result
+ *
+ * The kernel provides:
+ * - Deterministic WASM execution with fuel metering
+ * - Capability-based access control
+ * - Ed25519 signature verification for modules
+ * - Audit logging of all operations
+ *
  * All kernel operations go through validated handlers with proper
  * error handling and type safety.
+ *
+ * Reference: docs/ENGINEERING_PRINCIPLES.md
+ * ============================================================================
  */
 
 // Type definitions for kernel API
@@ -88,7 +107,10 @@ const isTauri = (): boolean => {
 };
 
 // Type for Tauri invoke function
-type TauriInvokeFn = <T>(cmd: string, args?: Record<string, unknown>) => Promise<T>;
+type TauriInvokeFn = <T>(
+  cmd: string,
+  args?: Record<string, unknown>
+) => Promise<T>;
 
 // Type for Tauri module structure
 interface TauriModule {
@@ -104,7 +126,9 @@ const getTauriInvoke = async (): Promise<TauriInvokeFn | null> => {
     // Dynamic import to avoid bundling issues when not in Tauri
     // The module path is checked at runtime when in Tauri environment
     const modulePath = '@tauri-apps/api';
-    const tauriModule: TauriModule = await import(/* webpackIgnore: true */ modulePath);
+    const tauriModule: TauriModule = await import(
+      /* webpackIgnore: true */ modulePath
+    );
     return tauriModule.invoke;
   } catch {
     return null;
@@ -269,7 +293,9 @@ export class KernelClient {
   /**
    * Load a WASM module
    */
-  async loadModule(manifestPath: string): Promise<KernelResponse<{ loaded: boolean }>> {
+  async loadModule(
+    manifestPath: string
+  ): Promise<KernelResponse<{ loaded: boolean }>> {
     return this.invoke('kernel_load_module', {
       request: { manifest_path: manifestPath },
     });

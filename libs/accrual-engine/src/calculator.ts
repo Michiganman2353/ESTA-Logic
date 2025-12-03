@@ -1,6 +1,32 @@
 /**
  * Accrual Calculator
  *
+ * ============================================================================
+ * MICROKERNEL ARCHITECTURE - AUTHORITATIVE COMPLIANCE MODULE
+ * ============================================================================
+ *
+ * This module contains the AUTHORITATIVE implementation of Michigan ESTA
+ * accrual calculations. It is a pure function library with NO side effects.
+ *
+ * ARCHITECTURAL ROLE: Pure Compliance Logic
+ * - Deterministic calculations based on ESTA 2025 law
+ * - No I/O, no network calls, no time access
+ * - Identical inputs ALWAYS produce identical outputs
+ *
+ * USAGE:
+ * - Frontend: Must invoke via kernel service, NOT directly
+ * - Backend: May import directly for server-side validation
+ * - WASM: The sister module (libs/accrual-engine-wasm) provides
+ *         byte-identical results in a sandboxed WASM environment
+ *
+ * The kernel (engine/esta-kernel) orchestrates execution and provides:
+ * - Fuel metering for execution limits
+ * - Capability-based access control
+ * - Audit logging of all calculations
+ *
+ * Reference: docs/ENGINEERING_PRINCIPLES.md
+ * ============================================================================
+ *
  * Pure functions for calculating sick time accrual according to Michigan ESTA law
  */
 

@@ -1,14 +1,34 @@
 /**
  * ESTA 2025 Record-Keeping Compliance Service
- * 
- * This service implements the core compliance functionality required
- * by Michigan's ESTA 2025 Record-Keeping Regulations including:
- * - Retention policy enforcement
- * - Immutable audit logging
- * - Access logging
- * - Deletion safeguards
- * - Compliance reporting
- * 
+ *
+ * ============================================================================
+ * MICROKERNEL ARCHITECTURE COMPLIANCE
+ * ============================================================================
+ *
+ * This service implements record-keeping and audit functionality required
+ * by Michigan's ESTA 2025 Record-Keeping Regulations.
+ *
+ * ARCHITECTURAL ROLE: Backend Service Layer
+ * - This module is NOT part of the kernel
+ * - It does NOT perform ESTA accrual/compliance calculations
+ * - All ESTA business logic (accruals, caps, carryover) is in:
+ *   - libs/accrual-engine (TypeScript reference implementation)
+ *   - libs/accrual-engine-wasm (deterministic WASM module)
+ *   - engine/esta-kernel (Rust kernel for WASM orchestration)
+ *
+ * This service handles:
+ * - Retention policy enforcement (metadata, not calculations)
+ * - Immutable audit logging (append-only, hash-chained)
+ * - Access logging (who accessed what, when)
+ * - Deletion safeguards (legal holds, approval workflows)
+ * - Compliance reporting (report generation, not rule enforcement)
+ *
+ * The retention periods defined here are CONFIGURATION VALUES derived from
+ * ESTA 2025 legal requirements. They do not perform compliance calculations.
+ *
+ * Reference: docs/ENGINEERING_PRINCIPLES.md
+ * ============================================================================
+ *
  * @module complianceService
  */
 
@@ -18,9 +38,14 @@ import { createHash, randomUUID } from 'crypto';
 // Type Definitions (matching shared-types/compliance.ts)
 // ============================================================================
 
-export type ApplicationStatus = 'pending' | 'approved' | 'denied' | 'withdrawn' | 'cancelled';
+export type ApplicationStatus =
+  | 'pending'
+  | 'approved'
+  | 'denied'
+  | 'withdrawn'
+  | 'cancelled';
 
-export type RecordType = 
+export type RecordType =
   | 'sick_time_request'
   | 'work_log'
   | 'employee_profile'
@@ -35,13 +60,40 @@ export type RecordType =
   | 'government_request';
 
 export type AuditAction =
-  | 'CREATE' | 'READ' | 'UPDATE' | 'DELETE' | 'ARCHIVE' | 'RESTORE'
-  | 'LOGIN' | 'LOGOUT' | 'LOGIN_FAILED' | 'ACCESS_DENIED' | 'PERMISSION_GRANTED' | 'PERMISSION_REVOKED'
-  | 'REQUEST_SUBMITTED' | 'REQUEST_APPROVED' | 'REQUEST_DENIED' | 'REQUEST_WITHDRAWN' | 'REQUEST_CANCELLED'
-  | 'DOCUMENT_UPLOADED' | 'DOCUMENT_DOWNLOADED' | 'DOCUMENT_VIEWED' | 'DOCUMENT_DELETED'
-  | 'LEGAL_HOLD_PLACED' | 'LEGAL_HOLD_RELEASED' | 'RETENTION_EXTENDED' | 'COMPLIANCE_REPORT_GENERATED' | 'CERTIFICATION_SUBMITTED'
-  | 'ENCRYPTION_KEY_ROTATED' | 'DATA_EXPORT_REQUESTED' | 'DATA_EXPORT_COMPLETED' | 'BREACH_DETECTED' | 'BREACH_NOTIFICATION_SENT'
-  | 'SYSTEM_MAINTENANCE' | 'BACKUP_CREATED' | 'BACKUP_RESTORED';
+  | 'CREATE'
+  | 'READ'
+  | 'UPDATE'
+  | 'DELETE'
+  | 'ARCHIVE'
+  | 'RESTORE'
+  | 'LOGIN'
+  | 'LOGOUT'
+  | 'LOGIN_FAILED'
+  | 'ACCESS_DENIED'
+  | 'PERMISSION_GRANTED'
+  | 'PERMISSION_REVOKED'
+  | 'REQUEST_SUBMITTED'
+  | 'REQUEST_APPROVED'
+  | 'REQUEST_DENIED'
+  | 'REQUEST_WITHDRAWN'
+  | 'REQUEST_CANCELLED'
+  | 'DOCUMENT_UPLOADED'
+  | 'DOCUMENT_DOWNLOADED'
+  | 'DOCUMENT_VIEWED'
+  | 'DOCUMENT_DELETED'
+  | 'LEGAL_HOLD_PLACED'
+  | 'LEGAL_HOLD_RELEASED'
+  | 'RETENTION_EXTENDED'
+  | 'COMPLIANCE_REPORT_GENERATED'
+  | 'CERTIFICATION_SUBMITTED'
+  | 'ENCRYPTION_KEY_ROTATED'
+  | 'DATA_EXPORT_REQUESTED'
+  | 'DATA_EXPORT_COMPLETED'
+  | 'BREACH_DETECTED'
+  | 'BREACH_NOTIFICATION_SENT'
+  | 'SYSTEM_MAINTENANCE'
+  | 'BACKUP_CREATED'
+  | 'BACKUP_RESTORED';
 
 export type AuditSeverity = 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
 
@@ -162,8 +214,15 @@ export interface DeletionRequest {
 export interface ComplianceAlert {
   id: string;
   tenantId: string;
-  alertType: 'RETENTION_EXPIRING' | 'DELETION_BLOCKED' | 'LEGAL_HOLD' | 'BREACH_DETECTED' | 
-             'COMPLIANCE_DUE' | 'AUDIT_REQUIRED' | 'POLICY_CHANGE' | 'SYSTEM_FAILURE';
+  alertType:
+    | 'RETENTION_EXPIRING'
+    | 'DELETION_BLOCKED'
+    | 'LEGAL_HOLD'
+    | 'BREACH_DETECTED'
+    | 'COMPLIANCE_DUE'
+    | 'AUDIT_REQUIRED'
+    | 'POLICY_CHANGE'
+    | 'SYSTEM_FAILURE';
   severity: 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
   title: string;
   message: string;
@@ -181,7 +240,12 @@ export interface ComplianceAlert {
 export interface JustificationLog {
   id: string;
   tenantId: string;
-  decisionType: 'REQUEST_APPROVAL' | 'REQUEST_DENIAL' | 'POLICY_CHANGE' | 'EXCEPTION_GRANT' | 'DATA_DELETION';
+  decisionType:
+    | 'REQUEST_APPROVAL'
+    | 'REQUEST_DENIAL'
+    | 'POLICY_CHANGE'
+    | 'EXCEPTION_GRANT'
+    | 'DATA_DELETION';
   relatedRecordType: RecordType;
   relatedRecordId: string;
   decision: string;
@@ -267,7 +331,9 @@ export function getRetentionPeriodForStatus(status: ApplicationStatus): number {
 /**
  * Get retention period based on record type
  */
-export function getRetentionPeriodForRecordType(recordType: RecordType): number {
+export function getRetentionPeriodForRecordType(
+  recordType: RecordType
+): number {
   switch (recordType) {
     case 'sick_time_request':
       return RETENTION_PERIODS.APPROVED; // Will be recalculated based on status
@@ -313,7 +379,7 @@ export function createRetentionMetadata(params: {
   createdAt?: Date;
 }): RetentionMetadata {
   const now = params.createdAt || new Date();
-  
+
   // Calculate retention period
   let retentionYears: number;
   if (params.applicationStatus) {
@@ -321,11 +387,11 @@ export function createRetentionMetadata(params: {
   } else {
     retentionYears = getRetentionPeriodForRecordType(params.recordType);
   }
-  
+
   // Calculate retention end date
   const retentionEndDate = new Date(now);
   retentionEndDate.setFullYear(retentionEndDate.getFullYear() + retentionYears);
-  
+
   return {
     id: randomUUID(),
     recordType: params.recordType,
@@ -350,11 +416,11 @@ export function updateRetentionForStatusChange(
 ): RetentionMetadata {
   const now = new Date();
   const retentionYears = getRetentionPeriodForStatus(newStatus);
-  
+
   // Calculate new retention end date from finalization
   const retentionEndDate = new Date(now);
   retentionEndDate.setFullYear(retentionEndDate.getFullYear() + retentionYears);
-  
+
   return {
     ...metadata,
     applicationStatus: newStatus,
@@ -372,7 +438,7 @@ export function canDeleteRecord(metadata: RetentionMetadata): {
   reason?: string;
 } {
   const now = new Date();
-  
+
   // Check legal hold
   if (metadata.hasLegalHold) {
     return {
@@ -380,7 +446,7 @@ export function canDeleteRecord(metadata: RetentionMetadata): {
       reason: 'Record has an active legal hold',
     };
   }
-  
+
   // Check if within retention period
   if (now < metadata.retentionEndDate) {
     return {
@@ -388,7 +454,7 @@ export function canDeleteRecord(metadata: RetentionMetadata): {
       reason: `Record must be retained until ${metadata.retentionEndDate.toISOString()}`,
     };
   }
-  
+
   // Check if locked
   if (metadata.isLocked) {
     return {
@@ -396,7 +462,7 @@ export function canDeleteRecord(metadata: RetentionMetadata): {
       reason: 'Record is locked and requires unlock approval',
     };
   }
-  
+
   return { canDelete: true };
 }
 
@@ -425,7 +491,9 @@ export function placeLegalHold(
 /**
  * Release a legal hold on a record
  */
-export function releaseLegalHold(metadata: RetentionMetadata): RetentionMetadata {
+export function releaseLegalHold(
+  metadata: RetentionMetadata
+): RetentionMetadata {
   return {
     ...metadata,
     hasLegalHold: false,
@@ -439,19 +507,19 @@ export function releaseLegalHold(metadata: RetentionMetadata): RetentionMetadata
 
 /**
  * Audit entry sequence counter.
- * 
+ *
  * NOTE: In production, this should be replaced with a distributed counter
  * (e.g., Redis INCR, database sequence, or Cloud Firestore counter).
  * The in-memory counter is suitable for single-instance deployments
  * and testing scenarios.
- * 
+ *
  * @see https://firebase.google.com/docs/firestore/solutions/counters
  */
 let auditSequenceCounter = 0;
 
 /**
  * Last audit entry hash for chain integrity.
- * 
+ *
  * NOTE: In production, this should be stored in a persistent store
  * (e.g., database, Redis) to maintain chain integrity across restarts
  * and multiple instances. The chain should be initialized by reading
@@ -470,7 +538,9 @@ export function _resetAuditState(): void {
 /**
  * Generate integrity hash for audit entry
  */
-function generateIntegrityHash(entry: Omit<ImmutableAuditEntry, 'integrityHash' | 'isVerified'>): string {
+function generateIntegrityHash(
+  entry: Omit<ImmutableAuditEntry, 'integrityHash' | 'isVerified'>
+): string {
   const dataToHash = JSON.stringify({
     id: entry.id,
     timestamp: entry.timestamp.toISOString(),
@@ -482,7 +552,7 @@ function generateIntegrityHash(entry: Omit<ImmutableAuditEntry, 'integrityHash' 
     previousEntryHash: entry.previousEntryHash,
     sequenceNumber: entry.sequenceNumber,
   });
-  
+
   return createHash('sha256').update(dataToHash).digest('hex');
 }
 
@@ -515,7 +585,7 @@ export function createImmutableAuditEntry(params: {
   const id = randomUUID();
   const timestamp = new Date();
   const sequenceNumber = ++auditSequenceCounter;
-  
+
   const baseEntry = {
     id,
     timestamp,
@@ -528,10 +598,10 @@ export function createImmutableAuditEntry(params: {
     sequenceNumber,
     dataResidency: 'US' as const,
   };
-  
+
   const integrityHash = generateIntegrityHash(baseEntry);
   lastAuditEntryHash = integrityHash;
-  
+
   return {
     ...baseEntry,
     integrityHash,
@@ -555,7 +625,7 @@ export function verifyAuditEntryIntegrity(entry: ImmutableAuditEntry): boolean {
     sequenceNumber: entry.sequenceNumber,
     dataResidency: entry.dataResidency,
   });
-  
+
   return expectedHash === entry.integrityHash;
 }
 
@@ -570,14 +640,16 @@ export function verifyAuditChainIntegrity(entries: ImmutableAuditEntry[]): {
   if (entries.length === 0) {
     return { isValid: true };
   }
-  
+
   // Sort by sequence number
-  const sorted = [...entries].sort((a, b) => a.sequenceNumber - b.sequenceNumber);
-  
+  const sorted = [...entries].sort(
+    (a, b) => a.sequenceNumber - b.sequenceNumber
+  );
+
   for (let i = 0; i < sorted.length; i++) {
     const entry = sorted[i];
     if (!entry) continue;
-    
+
     // Verify individual entry integrity
     if (!verifyAuditEntryIntegrity(entry)) {
       return {
@@ -586,11 +658,14 @@ export function verifyAuditChainIntegrity(entries: ImmutableAuditEntry[]): {
         reason: `Entry ${entry.id} failed integrity check`,
       };
     }
-    
+
     // Verify chain linkage (skip first entry)
     if (i > 0) {
       const previousEntry = sorted[i - 1];
-      if (previousEntry && entry.previousEntryHash !== previousEntry.integrityHash) {
+      if (
+        previousEntry &&
+        entry.previousEntryHash !== previousEntry.integrityHash
+      ) {
         return {
           isValid: false,
           brokenAt: i,
@@ -599,7 +674,7 @@ export function verifyAuditChainIntegrity(entries: ImmutableAuditEntry[]): {
       }
     }
   }
-  
+
   return { isValid: true };
 }
 
@@ -664,7 +739,7 @@ export function createDeletionRequest(params: {
   requiredApprovers: string[];
 }): DeletionRequest {
   const deleteCheck = canDeleteRecord(params.retentionMetadata);
-  
+
   return {
     id: randomUUID(),
     tenantId: params.tenantId,
@@ -717,22 +792,23 @@ export function processDeletionApproval(
       notes: approval.notes,
     },
   ];
-  
+
   // Check if all required approvers have approved
   const allApproved = request.approvalWorkflow.requiredApprovers.every(
-    (approverId) => updatedApprovals.some((a) => a.approverId === approverId && a.approved)
+    (approverId) =>
+      updatedApprovals.some((a) => a.approverId === approverId && a.approved)
   );
-  
+
   // Check if any approver denied
   const anyDenied = updatedApprovals.some((a) => !a.approved);
-  
+
   let newStatus = request.status;
   if (anyDenied) {
     newStatus = 'DENIED';
   } else if (allApproved && request.retentionCheck.canBeDeleted) {
     newStatus = 'APPROVED';
   }
-  
+
   return {
     ...request,
     status: newStatus,
@@ -905,7 +981,7 @@ export function validateUSDataResidency(storageLocation: string): boolean {
     'us-west4',
     'us-south1',
   ];
-  
+
   return usRegions.some((region) => storageLocation.includes(region));
 }
 
@@ -931,6 +1007,6 @@ export function verifyAES256Encryption(encryptionAlgorithm: string): boolean {
     'AES-256-CBC',
     'RSA_DECRYPT_OAEP_4096_SHA256', // KMS algorithm
   ];
-  
+
   return aes256Algorithms.includes(encryptionAlgorithm);
 }
