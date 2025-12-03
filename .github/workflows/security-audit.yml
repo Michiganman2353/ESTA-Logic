@@ -3,7 +3,7 @@ on:
   schedule:
     - cron: '0 3 * * 1' # weekly
   push:
-    branches: [main]
+    branches: [Master]
 
 permissions:
   actions: read
