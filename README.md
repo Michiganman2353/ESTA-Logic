@@ -1,8 +1,19 @@
-# ESTA Tracker 🚀
+# ESTA-Logic 🚀
 
-> **"The HR Power Small Businesses Deserve – Without the Department."**
+> **"A WASM-native microkernel compliance engine for deterministic, secure, and modular execution of employer policies and state sick-time laws."**
 
-ESTA Tracker is a full-stack SaaS platform that automates compliance with the Michigan Earned Sick Time Act (ESTA) of 2025, helping employers track, calculate, and document paid sick time without the complexity.
+**ESTA-Logic is a WASM-native microkernel compliance engine that provides deterministic, secure, isolated execution of employer policies and state sick-time laws inside a Tauri-powered runtime.**
+
+ESTA-Logic is no longer a monolithic application. It is now a WASM-powered, microkernel-orchestrated compliance engine designed for deterministic, secure, and modular execution of state-level employee sick time rules (example: Michigan ESTA 2025 / MCL 408.963).
+
+### Key Properties
+
+- **Microkernel core (esta-kernel):** minimal Rust kernel that orchestrates message passing, capabilities, and module lifecycle.
+- **WASM logic modules:** business logic (accruals, compliance checks, policy plugins) compiled to WASM and executed in a sandbox.
+- **Tauri runtime host:** secure desktop/web host providing native capabilities and an IPC bridge for UI ⇄ kernel communication.
+- **Deterministic and auditable:** identical inputs produce identical outputs; kernel logs provide verifiable audit trails.
+
+See [`docs/architecture.md`](./docs/architecture/architecture.md) for a full technical overview and migration plan.
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/Michiganman2353/ESTA-Logic/ci.yml?branch=master)](https://github.com/Michiganman2353/ESTA-Logic/actions)
 [![CI Status](https://github.com/Michiganman2353/ESTA-Logic/actions/workflows/ci.yml/badge.svg)](https://github.com/Michiganman2353/ESTA-Logic/actions/workflows/ci.yml)
@@ -13,6 +24,7 @@ ESTA Tracker is a full-stack SaaS platform that automates compliance with the Mi
 
 ## Table of Contents
 
+- [Key Properties](#key-properties)
 - [Quick Start](#quick-start)
 - [Features](#features)
 - [Technology Stack](#technology-stack)
