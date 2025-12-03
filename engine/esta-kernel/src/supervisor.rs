@@ -4,7 +4,7 @@
 //! The supervisor monitors running modules and handles:
 //! - Crash detection and restart
 //! - Escalation when restart limits are exceeded
-//! - Linear backoff between restart attempts
+//! - Exponential backoff between restart attempts
 //! - Graceful shutdown
 //!
 //! Reference: docs/abi/kernel_contract.md

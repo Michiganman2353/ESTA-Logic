@@ -21,6 +21,7 @@ use tokio::task::JoinHandle;
 use wasmtime::{Caller, Config, Engine, Linker, Module, Store, StoreLimits, StoreLimitsBuilder};
 
 use crate::security::{AuditLog, SignatureVerifier};
+use crate::security::audit::{AuditEvent, AuditEventType};
 
 /// Configuration for deterministic WASM execution
 #[derive(Debug, Clone)]
@@ -481,8 +482,8 @@ impl Kernel {
     pub async fn shutdown(&self) -> Result<()> {
         info!("Kernel shutdown initiated");
         
-        self.audit_log.append(crate::security::audit::AuditEvent::new(
-            crate::security::audit::AuditEventType::KernelShutdown { 
+        self.audit_log.append(AuditEvent::new(
+            AuditEventType::KernelShutdown { 
                 reason: "normal shutdown".into() 
             },
             "kernel",

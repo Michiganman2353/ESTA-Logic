@@ -134,17 +134,16 @@ fn validate_request(request: &KernelRequest) -> Result<(), String> {
     Ok(())
 }
 
+/// MI-ESTA accrual rate: 1 minute per 30 minutes worked
+const ACCRUAL_RATE: u64 = 30;
+
 /// Calculate accrued sick time based on MI-ESTA rules
 fn calculate_accrual(minutes_worked: u64, employer_size: &str) -> u64 {
     // MI-ESTA: 1 hour of sick time per 30 hours worked
     // For simplicity, we use 1 minute per 30 minutes
-    let rate = match employer_size {
-        "small" => 30, // 1:30 for all employers under ESTA
-        "large" => 30, // Same rate, but may have different caps
-        _ => 30,
-    };
-    
-    minutes_worked / rate
+    // Note: employer_size may affect caps in future, but rate is same for all
+    let _ = employer_size; // Currently unused, rate is the same
+    minutes_worked / ACCRUAL_RATE
 }
 
 /// Invoke the ESTA kernel with a validated request.

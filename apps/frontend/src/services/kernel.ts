@@ -90,6 +90,11 @@ const isTauri = (): boolean => {
 // Type for Tauri invoke function
 type TauriInvokeFn = <T>(cmd: string, args?: Record<string, unknown>) => Promise<T>;
 
+// Type for Tauri module structure
+interface TauriModule {
+  invoke: TauriInvokeFn;
+}
+
 // Dynamic import for Tauri
 const getTauriInvoke = async (): Promise<TauriInvokeFn | null> => {
   if (!isTauri()) {
@@ -97,9 +102,10 @@ const getTauriInvoke = async (): Promise<TauriInvokeFn | null> => {
   }
   try {
     // Dynamic import to avoid bundling issues when not in Tauri
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const tauriModule = await import('@tauri-apps/api' as any);
-    return tauriModule.invoke as TauriInvokeFn;
+    // The module path is checked at runtime when in Tauri environment
+    const modulePath = '@tauri-apps/api';
+    const tauriModule: TauriModule = await import(/* webpackIgnore: true */ modulePath);
+    return tauriModule.invoke;
   } catch {
     return null;
   }

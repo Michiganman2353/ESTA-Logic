@@ -280,12 +280,15 @@ impl CapabilityManager {
     }
 
     /// Generate a cryptographically random secret
+    /// 
+    /// # Panics
+    /// Panics if the system RNG fails. This is a critical error that should
+    /// not be silently handled as it would compromise security.
     pub fn generate_secret() -> Vec<u8> {
-        use sha2::Sha256;
         let rng = ring::rand::SystemRandom::new();
         let random_bytes: [u8; 32] = ring::rand::generate(&rng)
-            .map(|b| b.expose())
-            .unwrap_or([0u8; 32]);
+            .expect("System RNG failed - cannot generate secure secret")
+            .expose();
         random_bytes.to_vec()
     }
 
