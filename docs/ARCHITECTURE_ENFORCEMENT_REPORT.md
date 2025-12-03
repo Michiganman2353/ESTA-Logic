@@ -246,13 +246,13 @@ private async invoke<T>(
 #### 9. Message Bus Uses Math.random()
 
 **File**: `libs/kernel-boundary/src/ipc.ts`  
-**Lines**: 588-592  
+**Lines**: 597-601  
 **Category**: DV  
 **Severity**: P3  
 **Violation**: Message ID generation uses non-deterministic random
 
 ```typescript
-// Line 590-591: Non-deterministic ID generation
+// Lines 597-601: Non-deterministic ID generation
 export function generateMessageId(timestamp: number): MessageId {
   return {
     high: timestamp,
@@ -268,24 +268,26 @@ export function generateMessageId(timestamp: number): MessageId {
 
 ---
 
-#### 10. In-Memory Repository Uses Date.now()
+#### 10. In-Memory Repository Uses Math.random()
 
 **File**: `libs/kernel-boundary/src/adapter.ts`  
-**Lines**: 622-624  
+**Lines**: 631-632  
 **Category**: DV  
 **Severity**: P3  
-**Violation**: Mock repository generates IDs with time-based function
+**Violation**: Mock repository generates IDs with non-deterministic random
 
 ```typescript
-// Line 623-624: Non-deterministic ID generation
+// Lines 631-632: Non-deterministic ID generation (context.now applied, Math.random remains)
 const generateId = (): string =>
-  `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 11)}`;
+  `${context.now.toString(36)}-${Math.random().toString(36).slice(2, 11)}`;
 ```
+
+**Note**: The Date.now() was already replaced with context.now, but Math.random() still violates determinism.
 
 **Remediation**:
 
-1. Accept timestamp from context rather than calling Date.now()
-2. ID generation should use context.now for determinism
+1. Accept ID generator from context for full determinism
+2. Use seeded PRNG for predictable test behavior
 
 ---
 
