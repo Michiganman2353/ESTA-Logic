@@ -27,8 +27,8 @@ pub extern "C" fn allocate_input(_ptr: *const u8, _len: usize) -> i32 {
 
 // Example pure function - for WASM: prefer an ABI via wasm-bindgen or WASI.
 pub fn accrue(input: AccrualInput) -> AccrualOutput {
-    // Deterministic sample: 1 hour (60 minutes) yields 2 minutes accrual per 60 min => 1:30 = 2
-    // Delta report: 1:30 accrual ratio.
+    // Deterministic calculation using 1:30 ratio
+    // 60 minutes worked yields 2 minutes accrued (60/30=2)
     let rate_num = 1u64;
     let rate_den = 30u64;
     let accrued = input.minutes_worked * rate_num / rate_den;
