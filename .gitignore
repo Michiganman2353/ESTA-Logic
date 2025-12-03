@@ -199,3 +199,9 @@ docs/archive/
 **/*.beam
 **/gleam.lock
 **/_gleam_artefacts/
+
+# ==================== #
+# Rust Build Artifacts
+# ==================== #
+**/target/
+Cargo.lock
