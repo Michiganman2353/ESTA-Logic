@@ -14,9 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: stable
           components: rustfmt, clippy
       - name: Install wasm32 target
         run: rustup target add wasm32-unknown-unknown
@@ -27,9 +26,9 @@ jobs:
         with:
           name: accrual-wasm
           path: dist/wasm/accrual.wasm
+      - name: Install cargo-audit
+        run: cargo install cargo-audit
       - name: Run cargo-audit
-        uses: actions-rs/audit-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+        run: cargo audit --file libs/accrual-engine-wasm/Cargo.toml
       - name: Run wasm tests (cargo)
-        run: cargo test --manifest-path=libs/accrual-engine-wasm/Cargo.toml --target wasm32-unknown-unknown
+        run: cargo test --manifest-path=libs/accrual-engine-wasm/Cargo.toml
