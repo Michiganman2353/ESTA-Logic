@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add WASM-native microkernel prototype (esta-kernel)
+- Add accrual WASM module prototype and property tests
+- Add Tauri allowlist + security CSP
+- Add GitHub Actions for wasm build & security auditing
 - **@esta/core package**: Pure business logic for Michigan ESTA compliance calculations
   - `calculateAccruedHours()` - Calculate sick time accrual (1 hour per 30 hours worked)
   - `calculateCappedAccrual()` - Apply employer size caps (40h small, 72h large)

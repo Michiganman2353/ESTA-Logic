@@ -1,0 +1,21 @@
+flowchart LR
+  subgraph Host
+    Tauri[Tauri Host]
+    UI[React WebView]
+  end
+  subgraph Kernel_Process
+    Kernel[esta-kernel (Rust)]
+    Audit[Audit Sink]
+    Registry[Module Registry]
+  end
+  subgraph WASM_Userland
+    Accrual[accrual.wasm]
+    Persistence[persistence-firestore.wasm]
+    Notifier[notifier.wasm]
+  end
+  UI -->|invokeKernel| Kernel
+  Kernel --> Accrual
+  Kernel --> Persistence
+  Kernel --> Audit
+  Accrual -->|capability-limited| Persistence
+  Accrual -->|emit| Audit
