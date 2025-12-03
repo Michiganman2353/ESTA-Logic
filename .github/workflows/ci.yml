@@ -129,9 +129,19 @@ jobs:
       - name: Security Audit
         run: |
           echo "Running security audit for production packages..."
+          npm audit --json > /tmp/npm-audit-report.json 2>&1 || true
           npm audit --audit-level=high --omit=dev || echo "⚠️ Some vulnerabilities found (non-blocking)"
           echo "✅ Security audit complete"
         continue-on-error: true
+
+      - name: Upload Audit Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: npm-audit-report
+          path: /tmp/npm-audit-report.json
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Validate JSON Configuration Files
         run: |

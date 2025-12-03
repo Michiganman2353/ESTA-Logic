@@ -29,17 +29,20 @@ ESTA Tracker is a Michigan-specific compliance and workforce-management applicat
 
 1. Fork the repository on GitHub
 2. Clone your fork locally:
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/ESTA-Logic.git
    cd ESTA-Logic
    ```
 
 3. Install dependencies:
+
    ```bash
    npm install
    ```
 
 4. Set up environment variables:
+
    ```bash
    cp .env.example .env
    # Edit .env with your configuration
@@ -147,6 +150,7 @@ npm run typecheck           # Check TypeScript types
 - Don't comment obvious code
 
 Example:
+
 ```typescript
 /**
  * Calculate sick time accrual based on hours worked
@@ -157,7 +161,7 @@ Example:
 function calculateAccrual(hoursWorked: number, employerSize: number): number {
   // Michigan ESTA: 1 hour per 30 hours worked
   const baseAccrual = hoursWorked / 30;
-  
+
   // Apply cap based on employer size
   const cap = employerSize > 50 ? 72 : 40;
   return Math.min(baseAccrual, cap);
@@ -220,6 +224,7 @@ For detailed architecture information, see [docs/architecture/architecture.md](.
 ### Writing Tests
 
 Example unit test:
+
 ```typescript
 import { describe, it, expect } from 'vitest';
 import { calculateAccrual } from './accrual';
@@ -267,6 +272,7 @@ npm run test:frontend -- --ui
 The project uses a centralized Firebase authentication system with employer profiles. When testing auth flows:
 
 **Testing Employer Registration:**
+
 ```typescript
 // Mock Firebase helpers
 import { createEmployerProfile } from '@esta/firebase';
@@ -279,9 +285,13 @@ import { createEmployerProfile } from '@esta/firebase';
 ```
 
 **Testing Employee Registration:**
+
 ```typescript
 // Mock Firebase helpers
-import { getEmployerProfileByCode, linkEmployeeToEmployer } from '@esta/firebase';
+import {
+  getEmployerProfileByCode,
+  linkEmployeeToEmployer,
+} from '@esta/firebase';
 
 // Test should verify:
 // 1. Employer code is validated
@@ -291,6 +301,7 @@ import { getEmployerProfileByCode, linkEmployeeToEmployer } from '@esta/firebase
 ```
 
 **Testing with Mocks:**
+
 ```typescript
 import { vi } from 'vitest';
 
@@ -307,6 +318,7 @@ vi.mock('@esta/firebase', () => ({
 **Smoke Tests:**
 
 Fast, dependency-free tests for critical logic:
+
 ```bash
 # Run employer code generation smoke test
 node scripts/smoke-test-employer-code.mjs
@@ -317,14 +329,18 @@ These tests run in CI before the full test suite and don't require Firebase cred
 ## Submission Guidelines
 
 # Run tests in watch mode (for active development)
+
 npm run test:frontend -- --watch
 
 # Run with coverage
+
 npm run test:frontend -- --coverage
 
 # Run specific test file
+
 npm run test:frontend -- src/lib/accrual.test.ts
-```
+
+````
 
 ## Submission Guidelines
 
@@ -333,7 +349,7 @@ npm run test:frontend -- src/lib/accrual.test.ts
 1. **Create a feature branch**:
    ```bash
    git checkout -b feature/your-feature-name
-   ```
+````
 
 2. **Make your changes**:
    - Follow the code style guidelines
@@ -341,13 +357,17 @@ npm run test:frontend -- src/lib/accrual.test.ts
    - Update documentation if needed
 
 3. **Test your changes**:
+
    ```bash
    npm run lint
    npm test
    npm run build
    ```
 
+   **For dependency changes**: Run `npm run audit` before submitting PRs that modify dependencies to check for known vulnerabilities. Address any critical or high severity issues before merging.
+
 4. **Commit your changes**:
+
    ```bash
    git add .
    git commit -m "feat: add new feature"
@@ -363,6 +383,7 @@ npm run test:frontend -- src/lib/accrual.test.ts
    - `chore:` - Build process or auxiliary tool changes
 
 5. **Push to your fork**:
+
    ```bash
    git push origin feature/your-feature-name
    ```
@@ -412,6 +433,7 @@ npm run test:frontend -- src/lib/accrual.test.ts
 ### Reporting Issues
 
 When reporting bugs, please include:
+
 - Clear description of the issue
 - Steps to reproduce
 - Expected vs actual behavior
@@ -421,6 +443,7 @@ When reporting bugs, please include:
 ### Suggesting Features
 
 Feature requests should include:
+
 - Clear use case and problem statement
 - Proposed solution
 - Alternative approaches considered
