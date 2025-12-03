@@ -1,0 +1,35 @@
+name: WASM Build & Test
+
+on:
+  push:
+    branches:
+      - feature/wasm-microkernel-prototype
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+      - name: Install wasm32 target
+        run: rustup target add wasm32-unknown-unknown
+      - name: Build accrual wasm
+        run: bash scripts/build-wasm.sh
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: accrual-wasm
+          path: dist/wasm/accrual.wasm
+      - name: Run cargo-audit
+        uses: actions-rs/audit-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Run wasm tests (cargo)
+        run: cargo test --manifest-path=libs/accrual-engine-wasm/Cargo.toml --target wasm32-unknown-unknown

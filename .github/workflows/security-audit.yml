@@ -1,0 +1,48 @@
+name: Security & CodeQL
+on:
+  schedule:
+    - cron: '0 3 * * 1' # weekly
+  push:
+    branches: [ main ]
+
+jobs:
+  codeql:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript, typescript, rust
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+  npm-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: npm ci
+        run: npm ci
+      - name: npm audit --json
+        run: npm audit --json > audit.json || true
+      - name: Upload npm audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-report
+          path: audit.json
+
+  cargo-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install cargo-audit
+        run: |
+          cargo install cargo-audit || true
+      - name: Run cargo-audit
+        run: cargo audit || true
