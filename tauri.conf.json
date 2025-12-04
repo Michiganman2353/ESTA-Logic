@@ -26,7 +26,7 @@
         "removeFile": false,
         "renameFile": false,
         "exists": true,
-        "scope": ["$APP/**", "$DOCUMENT/**"]
+        "scope": ["$APP/data/**", "$DOCUMENT/ESTAData/**"]
       },
       "dialog": {
         "all": false,
