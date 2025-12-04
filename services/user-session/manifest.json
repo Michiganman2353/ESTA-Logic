@@ -6,7 +6,7 @@
     "type": "typescript",
     "module": "@esta/kernel-boundary",
     "path": "libs/kernel-boundary/src/index.ts",
-    "exports": ["validateCapability", "createCapability", "revokeCapability"]
+    "exports": ["generateCapabilityId", "attenuateRights", "hasRequiredRights"]
   },
   "backend_routes": {
     "path": "apps/backend/src/routes/auth.ts",
