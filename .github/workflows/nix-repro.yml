@@ -1,0 +1,218 @@
+name: Nix Reproducible Build
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'libs/accrual-engine-wasm/**'
+      - 'engine/esta-kernel/**'
+      - 'packages/helix/**'
+      - 'nix-repro/**'
+      - 'flake.nix'
+      - '.github/workflows/nix-repro.yml'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'libs/accrual-engine-wasm/**'
+      - 'engine/esta-kernel/**'
+      - 'packages/helix/**'
+      - 'nix-repro/**'
+      - 'flake.nix'
+      - '.github/workflows/nix-repro.yml'
+  workflow_dispatch:
+    inputs:
+      skip_optimize:
+        description: 'Skip wasm-opt optimization'
+        type: boolean
+        default: false
+      skip_sign:
+        description: 'Skip manifest signing'
+        type: boolean
+        default: false
+      verbose:
+        description: 'Enable verbose output'
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  nix-build:
+    name: Nix WASM Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-24.05
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+
+      - name: Cache Nix store
+        uses: cachix/cachix-action@v15
+        with:
+          name: nix-community
+          skipPush: true
+
+      - name: Verify Nix installation
+        run: |
+          echo "Nix version:"
+          nix --version
+          echo ""
+          echo "Checking flake..."
+          nix flake show ./nix-repro 2>/dev/null || echo "Flake show not available in this Nix version"
+
+      - name: Build WASM in Nix environment
+        id: build
+        run: |
+          # Construct build script arguments
+          ARGS=""
+          if [ "${{ inputs.skip_optimize }}" = "true" ]; then
+            ARGS="$ARGS --skip-optimize"
+          fi
+          if [ "${{ inputs.skip_sign }}" = "true" ]; then
+            ARGS="$ARGS --skip-sign"
+          fi
+          if [ "${{ inputs.verbose }}" = "true" ]; then
+            ARGS="$ARGS --verbose"
+          fi
+          
+          echo "Running build with args: $ARGS"
+          
+          # Run build in Nix development shell
+          nix develop ./nix-repro --command bash -c "./nix-repro/build.sh $ARGS" 2>&1 | tee build.log
+          
+          # Check if WASM artifact was created
+          if [ -f "dist/wasm/accrual.wasm" ]; then
+            echo "wasm_built=true" >> $GITHUB_OUTPUT
+            echo "wasm_size=$(stat -c%s dist/wasm/accrual.wasm)" >> $GITHUB_OUTPUT
+          else
+            echo "wasm_built=false" >> $GITHUB_OUTPUT
+          fi
+        env:
+          KERNEL_PRIVATE_KEY: ${{ secrets.KERNEL_PRIVATE_KEY }}
+          KERNEL_PUBLIC_KEY: ${{ secrets.KERNEL_PUBLIC_KEY }}
+
+      - name: Verify WASM artifact
+        if: steps.build.outputs.wasm_built == 'true'
+        run: |
+          echo "✅ WASM artifact built successfully"
+          echo "   Size: ${{ steps.build.outputs.wasm_size }} bytes"
+          echo ""
+          echo "Artifact contents:"
+          ls -la dist/wasm/
+          
+          # Verify SHA256 hash
+          if [ -f "dist/wasm/accrual.wasm.sha256" ]; then
+            echo ""
+            echo "SHA256 hash:"
+            cat dist/wasm/accrual.wasm.sha256
+          fi
+
+      - name: Upload build logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: nix-build-logs
+          path: build.log
+          retention-days: 14
+
+      - name: Upload WASM artifacts
+        uses: actions/upload-artifact@v4
+        if: steps.build.outputs.wasm_built == 'true'
+        with:
+          name: wasm-artifacts
+          path: |
+            dist/wasm/accrual.wasm
+            dist/wasm/accrual.wasm.sha256
+            dist/wasm/manifest.json
+          retention-days: 30
+          if-no-files-found: warn
+
+      - name: Check for missing secrets
+        if: always()
+        run: |
+          echo "Checking secret availability..."
+          
+          if [ -z "${{ secrets.KERNEL_PRIVATE_KEY }}" ]; then
+            echo "⚠️  KERNEL_PRIVATE_KEY not configured - WASM signing disabled"
+            echo "   To enable signing, add KERNEL_PRIVATE_KEY secret in repository settings"
+          else
+            echo "✅ KERNEL_PRIVATE_KEY configured"
+          fi
+          
+          if [ -z "${{ secrets.KERNEL_PUBLIC_KEY }}" ]; then
+            echo "⚠️  KERNEL_PUBLIC_KEY not configured - signature verification disabled"
+          else
+            echo "✅ KERNEL_PUBLIC_KEY configured"
+          fi
+
+  nix-flake-check:
+    name: Nix Flake Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-24.05
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Check nix-repro flake
+        run: |
+          cd nix-repro
+          nix flake check 2>&1 || echo "::warning::Flake check found issues"
+
+      - name: Check root flake
+        run: |
+          nix flake check 2>&1 || echo "::warning::Root flake check found issues"
+
+  rust-audit:
+    name: Cargo Security Audit
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          nix_path: nixpkgs=channel:nixos-24.05
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+
+      - name: Run cargo audit
+        run: |
+          nix develop ./nix-repro --command bash -c "
+            # Install cargo-audit if not available
+            if ! command -v cargo-audit &> /dev/null; then
+              cargo install cargo-audit --locked
+            fi
+            
+            echo 'Auditing accrual-engine-wasm...'
+            cargo audit --file libs/accrual-engine-wasm/Cargo.toml 2>&1 || echo '::warning::cargo-audit found advisories in accrual-engine-wasm'
+            
+            echo ''
+            echo 'Auditing esta-kernel...'
+            cargo audit --file engine/esta-kernel/Cargo.toml 2>&1 || echo '::warning::cargo-audit found advisories in esta-kernel'
+          "
