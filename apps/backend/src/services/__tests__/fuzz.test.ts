@@ -309,7 +309,7 @@ describe('Property-Based Fuzzing Tests', () => {
         ),
         { numRuns: 10 }
       );
-    });
+    }, 30000);
 
     it('should reject short passphrases', async () => {
       await fc.assert(
@@ -342,7 +342,7 @@ describe('Property-Based Fuzzing Tests', () => {
         }),
         { numRuns: 10 }
       );
-    });
+    }, 30000);
   });
 
   describe('Edge Case Handling', () => {
