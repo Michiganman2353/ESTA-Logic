@@ -1,0 +1,19 @@
+{
+  "capabilities": [
+    {
+      "name": "ui:push",
+      "description": "Push state updates to UI",
+      "scope": "all_ui_components"
+    },
+    {
+      "name": "messaging:send",
+      "description": "Send UI events to services",
+      "scope": "all_services"
+    },
+    {
+      "name": "messaging:receive",
+      "description": "Receive state updates from services",
+      "scope": "all_services"
+    }
+  ]
+}

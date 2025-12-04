@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+#
+# estactl - ESTA Logic Command Line Tool
+#
+# Usage: estactl <command> [options]
+#
+# Commands:
+#   list-modules      List all loaded modules
+#   trace-ipc         Trace inter-process communication
+#   bench-service     Benchmark a service
+#   show-capabilities Show capabilities for a module
+#
+# Version: 1.0.0
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+usage() {
+    echo "Usage: estactl <command> [options]"
+    echo ""
+    echo "Commands:"
+    echo "  list-modules      List all loaded modules"
+    echo "  trace-ipc         Trace inter-process communication"
+    echo "  bench-service     Benchmark a service"
+    echo "  show-capabilities Show capabilities for a module"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help        Show this help message"
+    echo "  -v, --version     Show version"
+}
+
+version() {
+    echo "estactl version 1.0.0"
+}
+
+case "${1:-}" in
+    list-modules)
+        echo "Listing modules..."
+        ;;
+    trace-ipc)
+        echo "Tracing IPC..."
+        ;;
+    bench-service)
+        echo "Benchmarking service..."
+        ;;
+    show-capabilities)
+        echo "Showing capabilities..."
+        ;;
+    -h|--help)
+        usage
+        ;;
+    -v|--version)
+        version
+        ;;
+    *)
+        usage
+        exit 1
+        ;;
+esac

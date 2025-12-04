@@ -1,0 +1,19 @@
+{
+  "capabilities": [
+    {
+      "name": "file:read",
+      "description": "Read CSV files from QuickBooks exports",
+      "scope": "uploads"
+    },
+    {
+      "name": "db:write",
+      "description": "Write imported data to database",
+      "scope": "employee_records,hours_records"
+    },
+    {
+      "name": "messaging:send",
+      "description": "Send import completion events",
+      "scope": "employer-engine"
+    }
+  ]
+}

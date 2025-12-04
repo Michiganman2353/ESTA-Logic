@@ -1,0 +1,16 @@
+{
+  "name": "user-session",
+  "version": "1.0.0",
+  "description": "ESTA Logic User Session Service",
+  "entry_point": "service_init.main",
+  "runtime": "wasm32",
+  "dependencies": [],
+  "capabilities_required": [
+    "auth:validate",
+    "session:manage",
+    "messaging:send",
+    "messaging:receive"
+  ],
+  "priority": "normal",
+  "preload": true
+}

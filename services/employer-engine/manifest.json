@@ -1,0 +1,16 @@
+{
+  "name": "employer-engine",
+  "version": "1.0.0",
+  "description": "ESTA Logic Employer Engine Service",
+  "entry_point": "service_init.main",
+  "runtime": "wasm32",
+  "dependencies": ["accrual-engine", "compliance-engine"],
+  "capabilities_required": [
+    "db:read",
+    "db:write",
+    "messaging:send",
+    "messaging:receive"
+  ],
+  "priority": "normal",
+  "preload": true
+}

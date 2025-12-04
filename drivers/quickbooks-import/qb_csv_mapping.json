@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "mappings": {
+    "employee_id": {
+      "source_columns": ["Employee ID", "EmpID", "ID"],
+      "type": "string",
+      "required": true
+    },
+    "employee_name": {
+      "source_columns": ["Employee Name", "Name", "Full Name"],
+      "type": "string",
+      "required": true
+    },
+    "hours_worked": {
+      "source_columns": ["Hours", "Regular Hours", "Total Hours"],
+      "type": "float",
+      "required": true
+    },
+    "pay_date": {
+      "source_columns": ["Pay Date", "Check Date", "Date"],
+      "type": "date",
+      "format": "MM/DD/YYYY",
+      "required": true
+    },
+    "pay_period": {
+      "source_columns": ["Pay Period", "Period"],
+      "type": "string",
+      "required": false
+    }
+  }
+}

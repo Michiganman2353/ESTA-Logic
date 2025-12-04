@@ -1,0 +1,15 @@
+{
+  "name": "quickbooks-import",
+  "version": "1.0.0",
+  "description": "QuickBooks Data Import Driver",
+  "entry_point": "service_init.main",
+  "runtime": "wasm32",
+  "dependencies": [],
+  "capabilities_required": [
+    "file:read",
+    "db:write",
+    "messaging:send"
+  ],
+  "priority": "normal",
+  "preload": false
+}

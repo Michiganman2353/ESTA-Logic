@@ -1,0 +1,29 @@
+{
+  "capabilities": [
+    {
+      "name": "db:read",
+      "description": "Read employee and accrual data",
+      "scope": "employee_records,accrual_records"
+    },
+    {
+      "name": "db:write",
+      "description": "Write accrual calculations",
+      "scope": "accrual_records"
+    },
+    {
+      "name": "time:read",
+      "description": "Read current time for accrual calculations",
+      "scope": "system"
+    },
+    {
+      "name": "messaging:send",
+      "description": "Send accrual results to other services",
+      "scope": "compliance-engine,ui-sync-service"
+    },
+    {
+      "name": "messaging:receive",
+      "description": "Receive accrual requests",
+      "scope": "employer-engine,user-session"
+    }
+  ]
+}

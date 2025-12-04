@@ -1,0 +1,17 @@
+[workspace]
+members = [
+    "tauri-shell",
+    "engine/esta-kernel"
+]
+resolver = "2"
+
+[workspace.package]
+version = "1.0.0"
+authors = ["ESTA Logic Team"]
+edition = "2021"
+license = "MIT"
+
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1", features = ["full"] }

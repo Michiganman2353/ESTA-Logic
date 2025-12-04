@@ -1,0 +1,15 @@
+{
+  "name": "ui-sync-service",
+  "version": "1.0.0",
+  "description": "ESTA Logic UI Sync Service",
+  "entry_point": "service_init.main",
+  "runtime": "wasm32",
+  "dependencies": [],
+  "capabilities_required": [
+    "ui:push",
+    "messaging:send",
+    "messaging:receive"
+  ],
+  "priority": "normal",
+  "preload": true
+}

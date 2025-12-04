@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "common_rules": [
+    {
+      "id": "common-eligible-employee",
+      "description": "Employee eligibility requirements",
+      "conditions": [
+        "works_in_state",
+        "not_exempt"
+      ]
+    },
+    {
+      "id": "common-accrual-start",
+      "description": "Accrual begins on first day of employment",
+      "start_on": "hire_date"
+    },
+    {
+      "id": "common-usage-wait",
+      "description": "Usage begins after probationary period",
+      "wait_days": 90
+    }
+  ]
+}

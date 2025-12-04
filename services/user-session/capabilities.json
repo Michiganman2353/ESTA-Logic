@@ -1,0 +1,24 @@
+{
+  "capabilities": [
+    {
+      "name": "auth:validate",
+      "description": "Validate user authentication tokens",
+      "scope": "all_users"
+    },
+    {
+      "name": "session:manage",
+      "description": "Create and manage user sessions",
+      "scope": "all_sessions"
+    },
+    {
+      "name": "messaging:send",
+      "description": "Send session events",
+      "scope": "all_services"
+    },
+    {
+      "name": "messaging:receive",
+      "description": "Receive login/logout requests",
+      "scope": "ui-sync-service"
+    }
+  ]
+}

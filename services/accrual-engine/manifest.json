@@ -1,0 +1,17 @@
+{
+  "name": "accrual-engine",
+  "version": "1.0.0",
+  "description": "ESTA Logic Accrual Engine Service",
+  "entry_point": "service_init.main",
+  "runtime": "wasm32",
+  "dependencies": [],
+  "capabilities_required": [
+    "db:read",
+    "db:write",
+    "time:read",
+    "messaging:send",
+    "messaging:receive"
+  ],
+  "priority": "high",
+  "preload": true
+}

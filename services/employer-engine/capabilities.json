@@ -1,0 +1,24 @@
+{
+  "capabilities": [
+    {
+      "name": "db:read",
+      "description": "Read employer and employee data",
+      "scope": "employer_records,employee_records"
+    },
+    {
+      "name": "db:write",
+      "description": "Write employer and employee updates",
+      "scope": "employer_records,employee_records"
+    },
+    {
+      "name": "messaging:send",
+      "description": "Send employer events",
+      "scope": "accrual-engine,compliance-engine,ui-sync-service"
+    },
+    {
+      "name": "messaging:receive",
+      "description": "Receive employer requests",
+      "scope": "user-session,ui-sync-service"
+    }
+  ]
+}

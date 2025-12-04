@@ -1,0 +1,34 @@
+{
+  "capabilities": [
+    {
+      "name": "db:read",
+      "description": "Read compliance data",
+      "scope": "compliance_records,policy_records"
+    },
+    {
+      "name": "db:write",
+      "description": "Write compliance results",
+      "scope": "compliance_records"
+    },
+    {
+      "name": "rules:evaluate",
+      "description": "Evaluate compliance rules",
+      "scope": "all_rules"
+    },
+    {
+      "name": "audit:write",
+      "description": "Write audit log entries",
+      "scope": "audit_log"
+    },
+    {
+      "name": "messaging:send",
+      "description": "Send compliance results",
+      "scope": "ui-sync-service,employer-engine"
+    },
+    {
+      "name": "messaging:receive",
+      "description": "Receive evaluation requests",
+      "scope": "accrual-engine,employer-engine"
+    }
+  ]
+}
