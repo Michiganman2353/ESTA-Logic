@@ -6,7 +6,7 @@
     "type": "typescript",
     "module": "@esta/kernel-boundary",
     "path": "libs/kernel-boundary/src/ipc.ts",
-    "exports": ["sendMessage", "receiveMessage", "createChannel"]
+    "exports": ["createMessage", "createCommand", "createQuery", "createEvent", "createLocalMessageBus"]
   },
   "frontend_integration": {
     "kernel_service": "apps/frontend/src/services/kernel.ts",
