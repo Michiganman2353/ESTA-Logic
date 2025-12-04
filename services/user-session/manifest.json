@@ -5,7 +5,7 @@
   "implementation": {
     "type": "typescript",
     "module": "@esta/kernel-boundary",
-    "path": "libs/kernel-boundary/src/index.ts",
+    "path": "@libs/kernel-boundary/src/index.ts",
     "exports": ["generateCapabilityId", "attenuateRights", "hasRequiredRights"]
   },
   "backend_routes": {
