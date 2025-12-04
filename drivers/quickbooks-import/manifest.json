@@ -1,15 +1,20 @@
 {
   "name": "quickbooks-import",
   "version": "1.0.0",
-  "description": "QuickBooks Data Import Driver",
-  "entry_point": "service_init.main",
+  "description": "QuickBooks Data Import Driver - Delegates to libs/csv-processor",
+  "implementation": {
+    "type": "typescript",
+    "module": "@esta/csv-processor",
+    "path": "libs/csv-processor/src/index.ts",
+    "exports": ["parseCSV", "validateCSV", "sanitizeCSV"]
+  },
+  "background_jobs": {
+    "csv_import": "api/background/csv-import.ts"
+  },
+  "mapping_config": "drivers/quickbooks-import/qb_csv_mapping.json",
   "runtime": "wasm32",
   "dependencies": [],
-  "capabilities_required": [
-    "file:read",
-    "db:write",
-    "messaging:send"
-  ],
+  "capabilities_required": ["file:read", "db:write", "messaging:send"],
   "priority": "normal",
   "preload": false
 }

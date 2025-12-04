@@ -1,8 +1,28 @@
 {
   "name": "compliance-engine",
   "version": "1.0.0",
-  "description": "ESTA Logic Compliance Engine Service",
-  "entry_point": "service_init.main",
+  "description": "ESTA Logic Compliance Engine Service - Delegates to libs/accrual-engine/compliance-engine",
+  "implementation": {
+    "type": "typescript",
+    "module": "@esta/accrual-engine",
+    "path": "libs/accrual-engine/src/compliance-engine.ts",
+    "exports": [
+      "loadRuleset",
+      "validateRulesetIntegrity",
+      "checkEffectiveDate",
+      "calculateAccrualV2",
+      "validateCarryoverV2",
+      "determineEmployerSize"
+    ]
+  },
+  "rules_config": {
+    "ruleset_file": "libs/accrual-engine/src/esta2025-ruleset.json",
+    "additional_rules": [
+      "services/compliance-engine/rules/michigan_2025.json",
+      "services/compliance-engine/rules/michigan_exceptions.json",
+      "services/compliance-engine/rules/common_rules.json"
+    ]
+  },
   "runtime": "wasm32",
   "dependencies": ["accrual-engine"],
   "capabilities_required": [

@@ -1,8 +1,23 @@
 {
   "name": "employer-engine",
   "version": "1.0.0",
-  "description": "ESTA Logic Employer Engine Service",
-  "entry_point": "service_init.main",
+  "description": "ESTA Logic Employer Engine Service - Manages employer profiles and policies",
+  "implementation": {
+    "type": "typescript",
+    "module": "backend-services",
+    "path": "apps/backend/src/routes/employer.ts",
+    "related_services": [
+      "apps/backend/src/services/complianceService.ts",
+      "apps/backend/src/services/complianceReportingService.ts"
+    ]
+  },
+  "api_handlers": {
+    "employer_registration": "api/v1/auth/register/manager.ts"
+  },
+  "background_jobs": {
+    "bulk_employee_update": "api/background/bulk-employee-update.ts",
+    "csv_import": "api/background/csv-import.ts"
+  },
   "runtime": "wasm32",
   "dependencies": ["accrual-engine", "compliance-engine"],
   "capabilities_required": [

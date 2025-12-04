@@ -1,29 +1,51 @@
 {
+  "$schema": "https://esta-logic.dev/schemas/capability-manifest.json",
+  "service_id": "accrual-engine",
+  "version": "1.0.0",
+  "kernel_boundary_integration": {
+    "module": "@esta/kernel-boundary",
+    "capability_validator": "libs/kernel-boundary/src/capability.ts"
+  },
   "capabilities": [
     {
-      "name": "db:read",
+      "id": "db:read:employee_records",
+      "resource_type": "database",
+      "rights": ["read", "list"],
       "description": "Read employee and accrual data",
-      "scope": "employee_records,accrual_records"
+      "scope": ["employee_records", "accrual_records"],
+      "delegatable": false
     },
     {
-      "name": "db:write",
+      "id": "db:write:accrual_records",
+      "resource_type": "database",
+      "rights": ["write", "create"],
       "description": "Write accrual calculations",
-      "scope": "accrual_records"
+      "scope": ["accrual_records"],
+      "delegatable": false
     },
     {
-      "name": "time:read",
+      "id": "time:read:system",
+      "resource_type": "timer",
+      "rights": ["read"],
       "description": "Read current time for accrual calculations",
-      "scope": "system"
+      "scope": ["system"],
+      "delegatable": false
     },
     {
-      "name": "messaging:send",
+      "id": "messaging:send:ipc",
+      "resource_type": "channel",
+      "rights": ["write"],
       "description": "Send accrual results to other services",
-      "scope": "compliance-engine,ui-sync-service"
+      "scope": ["compliance-engine", "ui-sync-service"],
+      "delegatable": true
     },
     {
-      "name": "messaging:receive",
+      "id": "messaging:receive:ipc",
+      "resource_type": "channel",
+      "rights": ["read"],
       "description": "Receive accrual requests",
-      "scope": "employer-engine,user-session"
+      "scope": ["employer-engine", "user-session"],
+      "delegatable": false
     }
   ]
 }

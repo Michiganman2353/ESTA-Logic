@@ -1,8 +1,22 @@
 {
   "name": "user-session",
   "version": "1.0.0",
-  "description": "ESTA Logic User Session Service",
-  "entry_point": "service_init.main",
+  "description": "ESTA Logic User Session Service - Delegates to kernel-boundary capability system",
+  "implementation": {
+    "type": "typescript",
+    "module": "@esta/kernel-boundary",
+    "path": "libs/kernel-boundary/src/index.ts",
+    "exports": ["validateCapability", "createCapability", "revokeCapability"]
+  },
+  "backend_routes": {
+    "path": "apps/backend/src/routes/auth.ts",
+    "endpoints": ["POST /auth/login", "POST /auth/logout", "GET /auth/me"]
+  },
+  "api_handlers": {
+    "login": "api/v1/auth/login.ts",
+    "logout": "api/v1/auth/logout.ts",
+    "me": "api/v1/auth/me.ts"
+  },
   "runtime": "wasm32",
   "dependencies": [],
   "capabilities_required": [

@@ -1,8 +1,18 @@
 {
   "name": "accrual-engine",
   "version": "1.0.0",
-  "description": "ESTA Logic Accrual Engine Service",
-  "entry_point": "service_init.main",
+  "description": "ESTA Logic Accrual Engine Service - Delegates to libs/accrual-engine",
+  "implementation": {
+    "type": "typescript",
+    "module": "@esta/accrual-engine",
+    "path": "libs/accrual-engine/src/index.ts",
+    "exports": ["calculateAccrual", "calculateCarryover", "validateAccrual"]
+  },
+  "wasm_module": {
+    "type": "rust",
+    "path": "libs/accrual-engine-wasm/",
+    "entry_point": "esta_accrual_wasm::calculate"
+  },
   "runtime": "wasm32",
   "dependencies": [],
   "capabilities_required": [

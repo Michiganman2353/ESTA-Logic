@@ -1,19 +1,35 @@
 {
+  "$schema": "https://esta-logic.dev/schemas/capability-manifest.json",
+  "service_id": "quickbooks-import",
+  "version": "1.0.0",
+  "kernel_boundary_integration": {
+    "module": "@esta/kernel-boundary",
+    "capability_validator": "libs/kernel-boundary/src/capability.ts"
+  },
   "capabilities": [
     {
-      "name": "file:read",
+      "id": "file:read:uploads",
+      "resource_type": "file",
+      "rights": ["read"],
       "description": "Read CSV files from QuickBooks exports",
-      "scope": "uploads"
+      "scope": ["uploads"],
+      "delegatable": false
     },
     {
-      "name": "db:write",
+      "id": "db:write:import",
+      "resource_type": "database",
+      "rights": ["write", "create"],
       "description": "Write imported data to database",
-      "scope": "employee_records,hours_records"
+      "scope": ["employee_records", "hours_records"],
+      "delegatable": false
     },
     {
-      "name": "messaging:send",
+      "id": "messaging:send:ipc",
+      "resource_type": "channel",
+      "rights": ["write"],
       "description": "Send import completion events",
-      "scope": "employer-engine"
+      "scope": ["employer-engine"],
+      "delegatable": true
     }
   ]
 }

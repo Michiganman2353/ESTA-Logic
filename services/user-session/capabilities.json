@@ -1,24 +1,43 @@
 {
+  "$schema": "https://esta-logic.dev/schemas/capability-manifest.json",
+  "service_id": "user-session",
+  "version": "1.0.0",
+  "kernel_boundary_integration": {
+    "module": "@esta/kernel-boundary",
+    "capability_validator": "libs/kernel-boundary/src/capability.ts"
+  },
   "capabilities": [
     {
-      "name": "auth:validate",
+      "id": "auth:validate:tokens",
+      "resource_type": "process",
+      "rights": ["execute", "read"],
       "description": "Validate user authentication tokens",
-      "scope": "all_users"
+      "scope": ["all_users"],
+      "delegatable": false
     },
     {
-      "name": "session:manage",
+      "id": "session:manage:lifecycle",
+      "resource_type": "memory",
+      "rights": ["read", "write", "create", "delete"],
       "description": "Create and manage user sessions",
-      "scope": "all_sessions"
+      "scope": ["all_sessions"],
+      "delegatable": false
     },
     {
-      "name": "messaging:send",
+      "id": "messaging:send:ipc",
+      "resource_type": "channel",
+      "rights": ["write"],
       "description": "Send session events",
-      "scope": "all_services"
+      "scope": ["all_services"],
+      "delegatable": true
     },
     {
-      "name": "messaging:receive",
+      "id": "messaging:receive:ipc",
+      "resource_type": "channel",
+      "rights": ["read"],
       "description": "Receive login/logout requests",
-      "scope": "ui-sync-service"
+      "scope": ["ui-sync-service"],
+      "delegatable": false
     }
   ]
 }

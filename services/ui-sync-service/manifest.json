@@ -1,15 +1,20 @@
 {
   "name": "ui-sync-service",
   "version": "1.0.0",
-  "description": "ESTA Logic UI Sync Service",
-  "entry_point": "service_init.main",
+  "description": "ESTA Logic UI Sync Service - Manages frontend state synchronization via kernel IPC",
+  "implementation": {
+    "type": "typescript",
+    "module": "@esta/kernel-boundary",
+    "path": "libs/kernel-boundary/src/ipc.ts",
+    "exports": ["sendMessage", "receiveMessage", "createChannel"]
+  },
+  "frontend_integration": {
+    "kernel_service": "apps/frontend/src/services/kernel.ts",
+    "firebase_service": "apps/frontend/src/services/firebase.ts"
+  },
   "runtime": "wasm32",
   "dependencies": [],
-  "capabilities_required": [
-    "ui:push",
-    "messaging:send",
-    "messaging:receive"
-  ],
+  "capabilities_required": ["ui:push", "messaging:send", "messaging:receive"],
   "priority": "normal",
   "preload": true
 }
