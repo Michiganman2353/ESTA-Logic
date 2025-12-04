@@ -65,9 +65,11 @@ list_modules() {
     done
     echo ""
     echo "Kernel Components (estalogic_kernel):"
-    find "$PROJECT_ROOT/estalogic_kernel/src" -name "*.gleam" -type f 2>/dev/null | while read -r gleam_file; do
-        echo "  - $(basename "$gleam_file" .gleam)"
-    done
+    if [ -d "$PROJECT_ROOT/estalogic_kernel/src" ]; then
+        find "$PROJECT_ROOT/estalogic_kernel/src" -name "*.gleam" -type f 2>/dev/null | while read -r gleam_file; do
+            echo "  - $(basename "$gleam_file" .gleam)"
+        done || true
+    fi
 }
 
 show_capabilities() {
