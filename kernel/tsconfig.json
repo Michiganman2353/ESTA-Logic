@@ -7,7 +7,7 @@
     "declarationMap": true,
     "composite": true,
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "Bundler",
     "target": "ES2022",
     "strict": true,
     "esModuleInterop": true,
