@@ -10,7 +10,7 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  # Use Mozilla's Rust overlay for better WASM support
+  # Use oxalica's Rust overlay for better WASM support
   rustOverlay = import (builtins.fetchTarball {
     url = "https://github.com/oxalica/rust-overlay/archive/master.tar.gz";
   });
