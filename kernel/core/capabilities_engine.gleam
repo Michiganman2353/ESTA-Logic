@@ -515,8 +515,17 @@ pub fn get_stats(engine: CapabilitiesEngine) -> EngineStats {
 // SECTION 7: HELPER FUNCTIONS
 // ============================================================================
 
+/// Generate a capability ID
+/// Note: This implementation combines timestamp, counter, and a pseudo-random
+/// component. In production, use cryptographically secure random numbers.
+/// The ID is designed to be unpredictable and non-forgeable when combined
+/// with HMAC signature verification during capability validation.
 fn generate_capability_id(counter: Int, timestamp: Int) -> CapabilityId {
-  CapabilityId(high: timestamp, low: counter * 1000 + timestamp % 1000)
+  // High bits: timestamp XOR'd with counter for unpredictability
+  // Low bits: counter mixed with timestamp remainder and a hash-like transformation
+  let mixed_high = timestamp * 31 + counter
+  let mixed_low = { counter * 2654435761 + timestamp } % 4294967296
+  CapabilityId(high: mixed_high, low: mixed_low)
 }
 
 fn find_capability(

@@ -78,6 +78,7 @@ pub type Router(payload) {
     mailboxes: List(Mailbox(payload)),
     next_sequence: Int,
     pending_acks: List(PendingAck),
+    pending_acks_count: Int,
     stats: RouterStats,
     config: RouterConfig,
   )
@@ -151,6 +152,7 @@ pub fn new_with_config(config: RouterConfig) -> Router(payload) {
     mailboxes: [],
     next_sequence: 1,
     pending_acks: [],
+    pending_acks_count: 0,
     stats: RouterStats(
       messages_sent: 0,
       messages_delivered: 0,
@@ -226,8 +228,8 @@ pub fn send(
   case find_mailbox(router.mailboxes, target) {
     Error(Nil) -> #(router, TargetNotFound)
     Ok(mailbox) -> {
-      // Check backpressure
-      case require_ack && list_length(router.pending_acks) >= router.config.max_pending_acks {
+      // Check backpressure using O(1) counter instead of O(n) list_length
+      case require_ack && router.pending_acks_count >= router.config.max_pending_acks {
         True -> #(router, BackpressureTriggered)
         False -> {
           // Check mailbox capacity
@@ -336,12 +338,18 @@ pub fn acknowledge(
   sequence: SequenceNumber,
 ) -> Router(payload) {
   let pending = remove_pending_ack(router.pending_acks, sequence)
+  let new_count = router.pending_acks_count - 1
+  let new_count = case new_count < 0 {
+    True -> 0
+    False -> new_count
+  }
   Router(
     ..router,
     pending_acks: pending,
+    pending_acks_count: new_count,
     stats: RouterStats(
       ..router.stats,
-      acks_pending: list_length(pending),
+      acks_pending: new_count,
     ),
   )
 }
@@ -353,13 +361,20 @@ pub fn check_ack_timeouts(
 ) -> #(Router(payload), List(SequenceNumber)) {
   let #(timed_out, remaining) = partition_timeouts(router.pending_acks, now_ns)
   let timeout_sequences = extract_sequences(timed_out)
+  let timeout_count = list_length(timed_out)
+  let remaining_count = router.pending_acks_count - timeout_count
+  let remaining_count = case remaining_count < 0 {
+    True -> 0
+    False -> remaining_count
+  }
   let new_router = Router(
     ..router,
     pending_acks: remaining,
+    pending_acks_count: remaining_count,
     stats: RouterStats(
       ..router.stats,
-      acks_pending: list_length(remaining),
-      acks_timeout: router.stats.acks_timeout + list_length(timed_out),
+      acks_pending: remaining_count,
+      acks_timeout: router.stats.acks_timeout + timeout_count,
     ),
   )
   #(new_router, timeout_sequences)
@@ -395,8 +410,8 @@ fn deliver_message(
   let new_mailbox = Mailbox(..mailbox, messages: new_messages)
   
   // Update pending acks if needed
-  let pending = case require_ack {
-    True -> [
+  let #(pending, new_count) = case require_ack {
+    True -> #([
       PendingAck(
         sequence: sequence,
         source: source,
@@ -405,18 +420,19 @@ fn deliver_message(
         timeout_ns: now_ns + router.config.ack_timeout_ns,
       ),
       ..router.pending_acks
-    ]
-    False -> router.pending_acks
+    ], router.pending_acks_count + 1)
+    False -> #(router.pending_acks, router.pending_acks_count)
   }
   
   let new_router = Router(
     ..update_mailbox(router, new_mailbox),
     next_sequence: router.next_sequence + 1,
     pending_acks: pending,
+    pending_acks_count: new_count,
     stats: RouterStats(
       ..router.stats,
       messages_sent: router.stats.messages_sent + 1,
-      acks_pending: list_length(pending),
+      acks_pending: new_count,
     ),
   )
   

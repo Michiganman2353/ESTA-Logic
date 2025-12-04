@@ -2,6 +2,7 @@
   "version": "2025.1",
   "state": "michigan",
   "effective_date": "2025-02-21",
+  "_comment_effective_date": "Michigan ESTA law effective date per state legislation. The system should check current date against this value to determine if rules apply.",
   "rules": [
     {
       "id": "mi-esta-accrual-rate",

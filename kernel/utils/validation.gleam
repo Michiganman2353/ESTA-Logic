@@ -90,15 +90,16 @@ pub fn map(
 }
 
 // Helper functions
+// Note: These are simplified implementations. In a real Gleam project,
+// use gleam/string and gleam/int from the standard library.
+
+import gleam/string
+import gleam/int
+
 fn string_length(s: String) -> Int {
-  string_length_helper(s, 0)
+  string.length(s)
 }
 
-fn string_length_helper(_s: String, acc: Int) -> Int {
-  // Placeholder - in real implementation would count characters
-  acc
-}
-
-fn int_to_string(_n: Int) -> String {
-  "0"
+fn int_to_string(n: Int) -> String {
+  int.to_string(n)
 }

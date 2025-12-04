@@ -1,4 +1,4 @@
-//// tests/unit/test_firestorm_driver.gleam
+//// tests/unit/test_firestore_driver.gleam
 ////
 //// Unit Test: Firestore Driver
 ////
