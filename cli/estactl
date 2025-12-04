@@ -158,9 +158,21 @@ check_health() {
         node scripts/health-check.js
     else
         echo "Running basic checks..."
-        echo "✓ services/ manifests: $(find services -name 'manifest.json' | wc -l) found"
-        echo "✓ drivers/ manifests: $(find drivers -name 'manifest.json' | wc -l) found"
-        echo "✓ libs/ packages: $(ls -d libs/*/ | wc -l) found"
+        if [ -d "services" ]; then
+            echo "✓ services/ manifests: $(find services -name 'manifest.json' | wc -l) found"
+        else
+            echo "✗ services/ directory not found"
+        fi
+        if [ -d "drivers" ]; then
+            echo "✓ drivers/ manifests: $(find drivers -name 'manifest.json' | wc -l) found"
+        else
+            echo "✗ drivers/ directory not found"
+        fi
+        if [ -d "libs" ]; then
+            echo "✓ libs/ packages: $(ls -d libs/*/ 2>/dev/null | wc -l) found"
+        else
+            echo "✗ libs/ directory not found"
+        fi
     fi
 }
 
