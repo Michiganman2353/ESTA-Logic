@@ -1,0 +1,54 @@
+{
+  "moduleId": "compliance-engine",
+  "version": "1.0.0",
+  "capabilities": {
+    "required": [
+      {
+        "resourceType": "channel",
+        "resourcePattern": "compliance.*",
+        "rights": ["read", "write"],
+        "reason": "Receive compliance check requests and emit results"
+      },
+      {
+        "resourceType": "channel",
+        "resourcePattern": "policy.*",
+        "rights": ["read"],
+        "reason": "Receive policy rule updates"
+      },
+      {
+        "resourceType": "audit_log",
+        "resourcePattern": "compliance.*",
+        "rights": ["write"],
+        "reason": "Log all compliance evaluations for regulatory audit"
+      }
+    ],
+    "optional": []
+  },
+  "syscalls": {
+    "allowed": ["sys.time.now", "sys.audit.log"],
+    "denied": ["sys.fs.*", "sys.net.*", "sys.db.*", "sys.crypto.*"]
+  },
+  "channels": {
+    "publish": ["compliance.*", "audit.compliance"],
+    "subscribe": ["compliance.*", "policy.*"]
+  },
+  "resourceLimits": {
+    "maxMemoryBytes": 16777216,
+    "maxExecutionTimeMs": 1000,
+    "maxQueueDepth": 200,
+    "maxConcurrentRequests": 50,
+    "cpuQuotaMs": 100
+  },
+  "isolation": {
+    "noDatabaseAccess": true,
+    "noUIAccess": true,
+    "noDirectHostCalls": true,
+    "deterministic": true
+  },
+  "compliance": {
+    "regulation": "Michigan ESTA 2025",
+    "auditRequired": true,
+    "versioned": true,
+    "policyDrivenRules": true
+  }
+}

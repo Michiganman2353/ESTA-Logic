@@ -1,0 +1,47 @@
+{
+  "moduleId": "accrual-engine",
+  "version": "1.0.0",
+  "capabilities": {
+    "required": [
+      {
+        "resourceType": "channel",
+        "resourcePattern": "accrual.*",
+        "rights": ["read", "write"],
+        "reason": "Receive accrual requests and emit results"
+      },
+      {
+        "resourceType": "audit_log",
+        "resourcePattern": "accrual.*",
+        "rights": ["write"],
+        "reason": "Log all accrual calculations for compliance"
+      }
+    ],
+    "optional": []
+  },
+  "syscalls": {
+    "allowed": ["sys.time.now", "sys.audit.log"],
+    "denied": ["sys.fs.*", "sys.net.*", "sys.db.*", "sys.crypto.*"]
+  },
+  "channels": {
+    "publish": ["accrual.*", "audit.accrual"],
+    "subscribe": ["accrual.*"]
+  },
+  "resourceLimits": {
+    "maxMemoryBytes": 8388608,
+    "maxExecutionTimeMs": 500,
+    "maxQueueDepth": 100,
+    "maxConcurrentRequests": 20,
+    "cpuQuotaMs": 50
+  },
+  "isolation": {
+    "noDatabaseAccess": true,
+    "noUIAccess": true,
+    "noDirectHostCalls": true,
+    "deterministic": true
+  },
+  "compliance": {
+    "regulation": "Michigan ESTA 2025",
+    "auditRequired": true,
+    "versioned": true
+  }
+}
