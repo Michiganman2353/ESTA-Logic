@@ -1,5 +1,5 @@
 {
-  "$schema": "https://esta-logic.dev/schemas/capability-manifest.json",
+  "$schema": "https://esta-logic.dev/schemas/v1/capability-manifest.json",
   "service_id": "employer-engine",
   "version": "1.0.0",
   "kernel_boundary_integration": {
