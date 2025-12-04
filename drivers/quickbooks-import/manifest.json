@@ -6,7 +6,7 @@
     "type": "typescript",
     "module": "@esta/csv-processor",
     "path": "libs/csv-processor/src/index.ts",
-    "exports": ["parseCSV", "validateCSV", "sanitizeCSV"]
+    "exports": ["parseCSV", "validateCSVData", "sanitizeCSVBatch"]
   },
   "background_jobs": {
     "csv_import": "api/background/csv-import.ts"
