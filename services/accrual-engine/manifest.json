@@ -6,7 +6,7 @@
     "type": "typescript",
     "module": "@esta/accrual-engine",
     "path": "libs/accrual-engine/src/index.ts",
-    "exports": ["calculateAccrual", "calculateCarryover", "validateAccrual"]
+    "exports": ["calculateAccrual", "calculateCarryover", "validateAccrualRequest"]
   },
   "wasm_module": {
     "type": "rust",
