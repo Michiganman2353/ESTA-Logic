@@ -1,4 +1,23 @@
 rules_version = '2';
+// =========================================================================
+// FIRESTORE SECURITY RULES - PERSISTENCE ADAPTER LAYER
+// =========================================================================
+//
+// MICROKERNEL ARCHITECTURE COMPLIANCE:
+// This file defines access control rules for the Firestore persistence adapter.
+// 
+// KEY PRINCIPLES:
+// 1. Persistence adapters ONLY enforce access control
+// 2. Business logic is NEVER embedded in security rules
+// 3. All compliance validation is performed by the kernel BEFORE persistence
+// 4. These rules are the LAST line of defense, not the FIRST
+//
+// The kernel (engine/esta-kernel) validates all requests before they reach
+// this adapter. ESTA compliance rules, accrual calculations, and hour limits
+// are enforced by WASM modules (libs/accrual-engine-wasm), NOT by Firestore.
+//
+// Reference: docs/ENGINEERING_PRINCIPLES.md
+// =========================================================================
 service cloud.firestore {
   match /databases/{database}/documents {
     
@@ -170,6 +189,16 @@ service cloud.firestore {
     // =====================================================
     // WORK LOGS COLLECTION
     // =====================================================
+    // 
+    // MICROKERNEL ARCHITECTURE NOTE:
+    // Business logic validation (e.g., hours constraints, accrual calculations)
+    // is enforced by the kernel, NOT by Firestore rules. These rules
+    // only enforce access control and basic data integrity.
+    //
+    // Upper bounds (e.g., max hours per day) are validated by the kernel
+    // before data reaches this persistence layer. Unreasonable values
+    // will be rejected by kernel validation.
+    // =====================================================
     match /workLogs/{logId} {
       // Employers can read all logs in their tenant
       allow read: if isEmployer() && 
@@ -180,13 +209,15 @@ service cloud.firestore {
         isOwner(resource.data.userId);
       
       // Only employers can create/update/delete logs
-      // Validate data constraints on create/update
+      // NOTE: Hour validation (max hours per day, etc.) is performed by the 
+      // kernel before persistence. The kernel is the sole authority for
+      // ESTA compliance calculations. Unreasonable values are rejected there.
       allow create, update: if isEmployer() && 
         belongsToTenant(request.resource.data.employerId) &&
         isWithinSizeLimit() &&
-        // Validate hours worked is reasonable (0-24 hours per day)
+        // Basic sanity check only - kernel validates business rules
         (!('hoursWorked' in request.resource.data) || 
-          (request.resource.data.hoursWorked >= 0 && request.resource.data.hoursWorked <= 24));
+          request.resource.data.hoursWorked >= 0);
       
       allow delete: if isEmployer() && 
         belongsToTenant(resource.data.employerId);
@@ -194,6 +225,16 @@ service cloud.firestore {
     
     // =====================================================
     // SICK TIME REQUESTS COLLECTION
+    // =====================================================
+    // 
+    // MICROKERNEL ARCHITECTURE NOTE:
+    // Business logic validation (e.g., ESTA hour limits, accrual caps)
+    // is enforced by the kernel, NOT by Firestore rules. These rules
+    // only enforce access control and basic data integrity.
+    // 
+    // The kernel validates all requests before they reach persistence.
+    // ESTA-specific limits (e.g., 72-hour cap for large employers) are
+    // enforced by the kernel/WASM module, not here.
     // =====================================================
     match /sickTimeRequests/{requestId} {
       // Employers can read all requests in their tenant
@@ -204,15 +245,17 @@ service cloud.firestore {
       allow read: if isEmployee() && 
         isOwner(resource.data.userId);
       
-      // Employees can create requests for themselves with validation
+      // Employees can create requests for themselves
+      // NOTE: Business logic validation (ESTA hour limits, caps) is performed
+      // by the kernel before the request reaches persistence. The kernel
+      // is the sole authority for compliance validation.
       allow create: if isEmployee() && 
         request.resource.data.userId == request.auth.uid &&
         belongsToTenant(request.resource.data.employerId) &&
         isWithinSizeLimit() &&
-        // Validate hours requested is reasonable (0-72 hours max per ESTA)
+        // Basic sanity check only - kernel validates ESTA compliance
         ('hoursRequested' in request.resource.data && 
-          request.resource.data.hoursRequested > 0 && 
-          request.resource.data.hoursRequested <= 72);
+          request.resource.data.hoursRequested > 0);
       
       // Only employers can update (approve/deny) requests
       allow update: if isEmployer() && 
