@@ -1,60 +1,54 @@
 {
-  "$schema": "https://esta-logic.dev/schemas/v1/capability-manifest.json",
-  "service_id": "compliance-engine",
+  "moduleId": "compliance-engine",
   "version": "1.0.0",
-  "kernel_boundary_integration": {
-    "module": "@esta/kernel-boundary",
-    "capability_validator": "libs/kernel-boundary/src/capability.ts",
-    "ruleset_source": "libs/accrual-engine/src/esta2025-ruleset.json"
+  "capabilities": {
+    "required": [
+      {
+        "resourceType": "channel",
+        "resourcePattern": "compliance.*",
+        "rights": ["read", "write"],
+        "reason": "Receive compliance check requests and emit results"
+      },
+      {
+        "resourceType": "channel",
+        "resourcePattern": "policy.*",
+        "rights": ["read"],
+        "reason": "Receive policy rule updates"
+      },
+      {
+        "resourceType": "audit_log",
+        "resourcePattern": "compliance.*",
+        "rights": ["write"],
+        "reason": "Log all compliance evaluations for regulatory audit"
+      }
+    ],
+    "optional": []
   },
-  "capabilities": [
-    {
-      "id": "db:read:compliance",
-      "resource_type": "database",
-      "rights": ["read", "list"],
-      "description": "Read compliance data",
-      "scope": ["compliance_records", "policy_records"],
-      "delegatable": false
-    },
-    {
-      "id": "db:write:compliance",
-      "resource_type": "database",
-      "rights": ["write", "create"],
-      "description": "Write compliance results",
-      "scope": ["compliance_records"],
-      "delegatable": false
-    },
-    {
-      "id": "rules:evaluate:all",
-      "resource_type": "wasm_module",
-      "rights": ["execute"],
-      "description": "Evaluate compliance rules via ruleset engine",
-      "scope": ["esta2025_ruleset", "michigan_rules"],
-      "delegatable": false
-    },
-    {
-      "id": "audit:write:log",
-      "resource_type": "audit_log",
-      "rights": ["write", "create"],
-      "description": "Write audit log entries for compliance checks",
-      "scope": ["audit_log"],
-      "delegatable": false
-    },
-    {
-      "id": "messaging:send:ipc",
-      "resource_type": "channel",
-      "rights": ["write"],
-      "description": "Send compliance results",
-      "scope": ["ui-sync-service", "employer-engine"],
-      "delegatable": true
-    },
-    {
-      "id": "messaging:receive:ipc",
-      "resource_type": "channel",
-      "rights": ["read"],
-      "description": "Receive evaluation requests",
-      "scope": ["accrual-engine", "employer-engine"],
-      "delegatable": false
-    }
-  ]
+  "syscalls": {
+    "allowed": ["sys.time.now", "sys.audit.log"],
+    "denied": ["sys.fs.*", "sys.net.*", "sys.db.*", "sys.crypto.*"]
+  },
+  "channels": {
+    "publish": ["compliance.*", "audit.compliance"],
+    "subscribe": ["compliance.*", "policy.*"]
+  },
+  "resourceLimits": {
+    "maxMemoryBytes": 16777216,
+    "maxExecutionTimeMs": 1000,
+    "maxQueueDepth": 200,
+    "maxConcurrentRequests": 50,
+    "cpuQuotaMs": 100
+  },
+  "isolation": {
+    "noDatabaseAccess": true,
+    "noUIAccess": true,
+    "noDirectHostCalls": true,
+    "deterministic": true
+  },
+  "compliance": {
+    "regulation": "Michigan ESTA 2025",
+    "auditRequired": true,
+    "versioned": true,
+    "policyDrivenRules": true
+  }
 }

@@ -1,51 +1,47 @@
 {
-  "$schema": "https://esta-logic.dev/schemas/v1/capability-manifest.json",
-  "service_id": "accrual-engine",
+  "moduleId": "accrual-engine",
   "version": "1.0.0",
-  "kernel_boundary_integration": {
-    "module": "@esta/kernel-boundary",
-    "capability_validator": "libs/kernel-boundary/src/capability.ts"
+  "capabilities": {
+    "required": [
+      {
+        "resourceType": "channel",
+        "resourcePattern": "accrual.*",
+        "rights": ["read", "write"],
+        "reason": "Receive accrual requests and emit results"
+      },
+      {
+        "resourceType": "audit_log",
+        "resourcePattern": "accrual.*",
+        "rights": ["write"],
+        "reason": "Log all accrual calculations for compliance"
+      }
+    ],
+    "optional": []
   },
-  "capabilities": [
-    {
-      "id": "db:read:employee_records",
-      "resource_type": "database",
-      "rights": ["read", "list"],
-      "description": "Read employee and accrual data",
-      "scope": ["employee_records", "accrual_records"],
-      "delegatable": false
-    },
-    {
-      "id": "db:write:accrual_records",
-      "resource_type": "database",
-      "rights": ["write", "create"],
-      "description": "Write accrual calculations",
-      "scope": ["accrual_records"],
-      "delegatable": false
-    },
-    {
-      "id": "time:read:system",
-      "resource_type": "timer",
-      "rights": ["read"],
-      "description": "Read current time for accrual calculations",
-      "scope": ["system"],
-      "delegatable": false
-    },
-    {
-      "id": "messaging:send:ipc",
-      "resource_type": "channel",
-      "rights": ["write"],
-      "description": "Send accrual results to other services",
-      "scope": ["compliance-engine", "ui-sync-service"],
-      "delegatable": true
-    },
-    {
-      "id": "messaging:receive:ipc",
-      "resource_type": "channel",
-      "rights": ["read"],
-      "description": "Receive accrual requests",
-      "scope": ["employer-engine", "user-session"],
-      "delegatable": false
-    }
-  ]
+  "syscalls": {
+    "allowed": ["sys.time.now", "sys.audit.log"],
+    "denied": ["sys.fs.*", "sys.net.*", "sys.db.*", "sys.crypto.*"]
+  },
+  "channels": {
+    "publish": ["accrual.*", "audit.accrual"],
+    "subscribe": ["accrual.*"]
+  },
+  "resourceLimits": {
+    "maxMemoryBytes": 8388608,
+    "maxExecutionTimeMs": 500,
+    "maxQueueDepth": 100,
+    "maxConcurrentRequests": 20,
+    "cpuQuotaMs": 50
+  },
+  "isolation": {
+    "noDatabaseAccess": true,
+    "noUIAccess": true,
+    "noDirectHostCalls": true,
+    "deterministic": true
+  },
+  "compliance": {
+    "regulation": "Michigan ESTA 2025",
+    "auditRequired": true,
+    "versioned": true
+  }
 }
