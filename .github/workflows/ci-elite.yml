@@ -261,6 +261,24 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
+      - name: Setup Gleam and Erlang
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: '26'
+          gleam-version: '1.6.3'
+
+      - name: Cache Gleam Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            packages/helix/build
+            logic/gleam-core/build
+            ~/.cache/gleam
+          key: ${{ runner.os }}-gleam-typecheck-${{ hashFiles('packages/helix/gleam.toml', 'logic/gleam-core/gleam.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-gleam-typecheck-
+            ${{ runner.os }}-gleam-
+
       - name: Install Dependencies
         run: npm ci
 
@@ -301,8 +319,9 @@ jobs:
         with:
           path: |
             packages/helix/build
+            logic/gleam-core/build
             ~/.cache/gleam
-          key: ${{ runner.os }}-gleam-${{ hashFiles('packages/helix/gleam.toml') }}
+          key: ${{ runner.os }}-gleam-${{ hashFiles('packages/helix/gleam.toml', 'logic/gleam-core/gleam.toml') }}
           restore-keys: |
             ${{ runner.os }}-gleam-
 
@@ -364,8 +383,9 @@ jobs:
         with:
           path: |
             packages/helix/build
+            logic/gleam-core/build
             ~/.cache/gleam
-          key: ${{ runner.os }}-gleam-build-${{ hashFiles('packages/helix/gleam.toml') }}
+          key: ${{ runner.os }}-gleam-build-${{ hashFiles('packages/helix/gleam.toml', 'logic/gleam-core/gleam.toml') }}
           restore-keys: |
             ${{ runner.os }}-gleam-build-
             ${{ runner.os }}-gleam-
