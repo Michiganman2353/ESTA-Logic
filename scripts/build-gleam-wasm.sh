@@ -48,14 +48,20 @@ if [ -d "$BUILD_OUTPUT" ]; then
 // ESTA-Logic Gleam Microkernel - JavaScript Entry Point
 // This module provides the compiled Gleam kernel functions
 
-export { version, compute_accrual, employer_cap, calculate_with_cap } from './kernel.mjs';
+import * as kernel from './kernel.mjs';
 
-// Re-export for compatibility
+// Named exports for direct usage
+export const version = kernel.version;
+export const compute_accrual = kernel.compute_accrual;
+export const employer_cap = kernel.employer_cap;
+export const calculate_with_cap = kernel.calculate_with_cap;
+
+// Default export as object for compatibility
 export default {
-  version: () => import('./kernel.mjs').then(m => m.version()),
-  compute_accrual: (hours) => import('./kernel.mjs').then(m => m.compute_accrual(hours)),
-  employer_cap: (size) => import('./kernel.mjs').then(m => m.employer_cap(size)),
-  calculate_with_cap: (hours, size) => import('./kernel.mjs').then(m => m.calculate_with_cap(hours, size)),
+  version: kernel.version,
+  compute_accrual: kernel.compute_accrual,
+  employer_cap: kernel.employer_cap,
+  calculate_with_cap: kernel.calculate_with_cap,
 };
 EOF
     

@@ -6,6 +6,15 @@
 
 import gleam/float
 
+/// Michigan ESTA accrual ratio: 1 hour of sick time per 35 hours worked
+const accrual_ratio = 35.0
+
+/// Cap for small employers (10 or fewer employees)
+const small_employer_cap = 40.0
+
+/// Cap for large employers (more than 10 employees)
+const large_employer_cap = 72.0
+
 /// Microkernel version string
 pub fn version() -> String {
   "ESTA-Logic Gleam Microkernel v0.1.0"
@@ -24,7 +33,9 @@ pub fn version() -> String {
 /// compute_accrual(34)  // Returns 0
 /// ```
 pub fn compute_accrual(hours_worked: Int) -> Int {
-  hours_worked / 35
+  // Use truncated accrual ratio for integer division
+  let ratio_int = float.truncate(accrual_ratio)
+  hours_worked / ratio_int
 }
 
 /// Accrual result with breakdown
@@ -36,8 +47,8 @@ pub type AccrualResult {
 /// Returns 72 hours for large employers (>10 employees), 40 hours for small.
 pub fn employer_cap(employer_size: Int) -> Float {
   case employer_size > 10 {
-    True -> 72.0
-    False -> 40.0
+    True -> large_employer_cap
+    False -> small_employer_cap
   }
 }
 
@@ -53,8 +64,7 @@ pub fn calculate_with_cap(
   hours_worked: Float,
   employer_size: Int,
 ) -> AccrualResult {
-  let ratio = 35.0
-  let base = hours_worked /. ratio
+  let base = hours_worked /. accrual_ratio
   let cap = employer_cap(employer_size)
   let total = float.min(base, cap)
   AccrualResult(hours_accrued: base, cap: cap, total: total)
