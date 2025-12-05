@@ -5,8 +5,8 @@
   "main": "gleam.toml",
   "description": "Pure functional Gleam accrual engine - compiles to WASM for Tauri pivot",
   "scripts": {
-    "build": "if which gleam > /dev/null 2>&1; then gleam deps download --all && gleam build; else echo 'Gleam not installed - skipping helix build'; fi",
-    "test": "if which gleam > /dev/null 2>&1; then gleam deps download --all && gleam test; else echo 'Gleam not installed - skipping helix tests'; fi",
-    "test:coverage": "if which gleam > /dev/null 2>&1; then gleam deps download --all && gleam test; else echo 'Gleam not installed - skipping helix coverage'; fi"
+    "build": "gleam deps download --all && gleam build",
+    "test": "gleam deps download --all && gleam test",
+    "test:coverage": "gleam deps download --all && gleam test"
   }
 }
