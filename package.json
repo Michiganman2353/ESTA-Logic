@@ -12,7 +12,6 @@
   ],
   "scripts": {
     "demo": "npx ts-node --project demo/tsconfig.json demo/kernel-demo.ts",
-    "demo:kernel": "npx ts-node --project demo/tsconfig.json demo/kernel-demo.ts",
     "wasm:build": "nx run accrual-engine:wasm-build",
     "wasm:test": "nx run accrual-engine:wasm-test",
     "tauri:dev": "tauri dev",

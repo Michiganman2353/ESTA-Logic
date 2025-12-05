@@ -8,7 +8,7 @@
  * 3. Sending IPC messages through the kernel
  * 4. Processing messages deterministically
  *
- * Run with: npx ts-node --esm demo/kernel-demo.ts
+ * Run with: npm run demo
  *
  * @module demo
  */
