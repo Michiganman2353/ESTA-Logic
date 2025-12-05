@@ -5,8 +5,8 @@
   "main": "gleam.toml",
   "description": "Pure functional Gleam accrual engine - compiles to WASM for Tauri pivot",
   "scripts": {
-    "build": "gleam build",
-    "test": "gleam deps download && gleam test",
-    "test:coverage": "gleam deps download && gleam test"
+    "build": "gleam deps download --all && gleam build",
+    "test": "gleam deps download --all && gleam test",
+    "test:coverage": "gleam deps download --all && gleam test"
   }
 }

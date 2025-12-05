@@ -8,15 +8,16 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "gleam build",
+        "command": "gleam deps download --all && gleam build",
         "cwd": "packages/helix"
       },
-      "outputs": ["{projectRoot}/build"]
+      "outputs": ["{projectRoot}/build"],
+      "inputs": ["{projectRoot}/src/**/*.gleam", "{projectRoot}/gleam.toml"]
     },
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "which gleam && gleam deps download --all && gleam test || echo 'Gleam not installed or tests failed - skipping'",
+        "command": "gleam deps download --all && gleam test",
         "cwd": "packages/helix"
       },
       "inputs": [
@@ -31,7 +32,7 @@
         "commands": [
           "mkdir -p ../../test-output",
           "gleam deps download --all",
-          "gleam test 2>&1 | tee ../../test-output/helix-tests.json || true"
+          "gleam test 2>&1 | tee ../../test-output/helix-tests.json"
         ],
         "cwd": "packages/helix",
         "parallel": false
@@ -96,7 +97,7 @@
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "which gleam && gleam deps download --all && gleam build || echo 'Gleam not installed - skipping typecheck'",
+        "command": "gleam deps download --all && gleam build",
         "cwd": "packages/helix"
       },
       "inputs": ["{projectRoot}/src/**/*.gleam", "{projectRoot}/gleam.toml"]
