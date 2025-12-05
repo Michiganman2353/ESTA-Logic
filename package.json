@@ -11,6 +11,7 @@
     "infra/*"
   ],
   "scripts": {
+    "demo": "npx ts-node --project demo/tsconfig.json demo/kernel-demo.ts",
     "wasm:build": "nx run accrual-engine:wasm-build",
     "wasm:test": "nx run accrual-engine:wasm-test",
     "tauri:dev": "tauri dev",
@@ -85,6 +86,7 @@
     "playwright": "^1.56.1",
     "prettier": "^3.2.0",
     "prettier-plugin-tailwindcss": "^0.6.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   },
   "lint-staged": {
