@@ -158,7 +158,10 @@ export function handleBalanceQuery(
     accruedThisYear: data.accruedThisYear,
     carryoverFromLastYear: data.carryoverFromLastYear,
     maxAllowed,
-    asOfDate: query.asOfDate ?? new Date().toISOString().split('T')[0],
+    asOfDate:
+      query.asOfDate ??
+      new Date().toISOString().split('T')[0] ??
+      new Date().toISOString(),
   };
 }
 
