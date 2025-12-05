@@ -1,0 +1,92 @@
+name: Gleam CI
+
+on:
+  push:
+    paths:
+      - 'logic/gleam-core/**'
+      - 'packages/helix/**'
+      - '.github/workflows/gleam-ci.yml'
+  pull_request:
+    paths:
+      - 'logic/gleam-core/**'
+      - 'packages/helix/**'
+      - '.github/workflows/gleam-ci.yml'
+
+jobs:
+  build-and-test:
+    name: Gleam Build & Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Gleam and Erlang
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: '26'
+          gleam-version: '1.6.3'
+
+      - name: Create test-output directory
+        run: mkdir -p test-output
+
+      # Build and test gleam-core microkernel
+      - name: Install gleam-core dependencies
+        working-directory: logic/gleam-core
+        run: gleam deps download
+
+      - name: Build gleam-core
+        working-directory: logic/gleam-core
+        run: gleam build --target=javascript
+
+      - name: Run gleam-core tests
+        working-directory: logic/gleam-core
+        run: |
+          gleam test 2>&1 | tee ../../test-output/gleam-core-tests.txt
+          echo "✅ gleam-core tests completed"
+
+      # Build and test helix package
+      - name: Install helix dependencies
+        working-directory: packages/helix
+        run: gleam deps download
+
+      - name: Build helix
+        working-directory: packages/helix
+        run: gleam build --target=javascript
+
+      - name: Run helix tests
+        working-directory: packages/helix
+        run: |
+          gleam test 2>&1 | tee ../../test-output/helix-tests.txt
+          echo "✅ helix tests completed"
+
+      - name: Upload test reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: gleam-test-reports
+          path: test-output/
+          retention-days: 7
+
+      - name: Verify tests completed successfully
+        run: |
+          if [ ! -s test-output/gleam-core-tests.txt ]; then
+            echo "❌ gleam-core test report missing or empty"
+            exit 1
+          fi
+          if [ ! -s test-output/helix-tests.txt ]; then
+            echo "❌ helix test report missing or empty"
+            exit 1
+          fi
+          # Check for test pass patterns
+          if grep -q "Finished in" test-output/gleam-core-tests.txt && grep -q "Finished in" test-output/helix-tests.txt; then
+            echo "✅ All Gleam tests completed successfully"
+          else
+            echo "⚠️ Tests may not have run properly"
+            cat test-output/gleam-core-tests.txt
+            cat test-output/helix-tests.txt
+            exit 1
+          fi

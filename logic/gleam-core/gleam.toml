@@ -1,0 +1,11 @@
+name = "esta_logic_core"
+version = "0.1.0"
+description = "Microkernel logic for ESTA-Logic. Compiles to WebAssembly."
+gleam = ">= 1.1.0"
+target = "javascript"
+
+[dependencies]
+gleam_stdlib = ">= 0.34.0 and < 2.0.0"
+
+[dev-dependencies]
+gleeunit = "~> 1.6.0"
