@@ -1,0 +1,56 @@
+{
+  "name": "@esta-logic/gleam-core",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "logic/gleam-core/src",
+  "projectType": "library",
+  "tags": ["scope:kernel", "type:library", "lang:gleam"],
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gleam deps download && gleam build --target=javascript",
+        "cwd": "logic/gleam-core"
+      },
+      "outputs": ["{projectRoot}/build"],
+      "inputs": ["{projectRoot}/src/**/*.gleam", "{projectRoot}/gleam.toml"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gleam deps download && gleam test",
+        "cwd": "logic/gleam-core"
+      },
+      "inputs": [
+        "{projectRoot}/src/**/*.gleam",
+        "{projectRoot}/test/**/*.gleam",
+        "{projectRoot}/gleam.toml"
+      ]
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "echo 'Gleam lint handled by compiler'",
+        "cwd": "logic/gleam-core"
+      },
+      "inputs": [
+        "{projectRoot}/src/**/*.gleam",
+        "{projectRoot}/test/**/*.gleam"
+      ]
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf build",
+        "cwd": "logic/gleam-core"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "gleam deps download && gleam build",
+        "cwd": "logic/gleam-core"
+      },
+      "inputs": ["{projectRoot}/src/**/*.gleam", "{projectRoot}/gleam.toml"]
+    }
+  }
+}

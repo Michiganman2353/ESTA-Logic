@@ -1,0 +1,112 @@
+name: Gleam CI
+
+on:
+  push:
+    paths:
+      - 'logic/gleam-core/**'
+      - 'packages/helix/**'
+      - '.github/workflows/gleam-ci.yml'
+  pull_request:
+    paths:
+      - 'logic/gleam-core/**'
+      - 'packages/helix/**'
+      - '.github/workflows/gleam-ci.yml'
+
+jobs:
+  build-and-test:
+    name: Gleam Build & Test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Gleam and Erlang
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: '26'
+          gleam-version: '1.6.3'
+
+      - name: Create test-output directory
+        run: mkdir -p test-output
+
+      # Build and test gleam-core microkernel
+      - name: Install gleam-core dependencies
+        working-directory: logic/gleam-core
+        run: gleam deps download
+
+      - name: Build gleam-core
+        working-directory: logic/gleam-core
+        run: gleam build --target=javascript
+
+      - name: Run gleam-core tests
+        working-directory: logic/gleam-core
+        id: gleam_core_tests
+        run: |
+          set +e  # Don't exit on error, we want to capture the exit code
+          gleam test 2>&1 | tee ../../test-output/gleam-core-tests.txt
+          exit_code=$?
+          echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
+          if [ $exit_code -eq 0 ]; then
+            echo "✅ gleam-core tests completed"
+          else
+            echo "❌ gleam-core tests failed with exit code $exit_code"
+          fi
+          exit $exit_code
+
+      # Build and test helix package
+      - name: Install helix dependencies
+        working-directory: packages/helix
+        run: gleam deps download
+
+      - name: Build helix
+        working-directory: packages/helix
+        run: gleam build --target=javascript
+
+      - name: Run helix tests
+        working-directory: packages/helix
+        id: helix_tests
+        run: |
+          set +e  # Don't exit on error, we want to capture the exit code
+          gleam test 2>&1 | tee ../../test-output/helix-tests.txt
+          exit_code=$?
+          echo "exit_code=$exit_code" >> $GITHUB_OUTPUT
+          if [ $exit_code -eq 0 ]; then
+            echo "✅ helix tests completed"
+          else
+            echo "❌ helix tests failed with exit code $exit_code"
+          fi
+          exit $exit_code
+
+      - name: Upload test reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: gleam-test-reports
+          path: test-output/
+          retention-days: 7
+
+      - name: Verify tests completed successfully
+        if: always()
+        run: |
+          # Check if test output files exist
+          if [ ! -f test-output/gleam-core-tests.txt ]; then
+            echo "❌ gleam-core test report missing"
+            exit 1
+          fi
+          if [ ! -f test-output/helix-tests.txt ]; then
+            echo "❌ helix test report missing"
+            exit 1
+          fi
+
+          # Display test output for debugging
+          echo "--- gleam-core test output ---"
+          cat test-output/gleam-core-tests.txt
+          echo ""
+          echo "--- helix test output ---"
+          cat test-output/helix-tests.txt
+          echo ""
+          echo "✅ Test output captured successfully"

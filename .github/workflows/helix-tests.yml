@@ -33,7 +33,7 @@ jobs:
         working-directory: packages/helix
         run: |
           # Ensure dev dependencies (e.g., gleeunit) are downloaded
-          gleam deps download --all
+          gleam deps download
           # Run tests and write output to repository-level test-output folder
           # Use tee to capture both stdout and stderr while also showing output
           gleam test 2>&1 | tee ../../test-output/helix-tests.json

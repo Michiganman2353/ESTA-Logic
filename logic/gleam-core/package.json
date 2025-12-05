@@ -1,0 +1,30 @@
+{
+  "name": "@esta-logic/gleam-core",
+  "version": "0.1.0",
+  "description": "ESTA-Logic Gleam Microkernel - Core accrual calculation logic",
+  "private": true,
+  "type": "module",
+  "main": "build/dev/javascript/esta_logic_core/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./build/dev/javascript/esta_logic_core/index.mjs",
+      "types": "./build/dev/javascript/esta_logic_core/index.d.mts"
+    },
+    "./kernel": {
+      "import": "./build/dev/javascript/esta_logic_core/kernel.mjs"
+    }
+  },
+  "scripts": {
+    "build": "gleam deps download && gleam build --target=javascript",
+    "test": "gleam deps download && gleam test",
+    "clean": "rm -rf build"
+  },
+  "keywords": [
+    "esta",
+    "gleam",
+    "microkernel",
+    "accrual",
+    "compliance"
+  ],
+  "license": "MIT"
+}

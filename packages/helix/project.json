@@ -8,7 +8,7 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "gleam deps download --all && gleam build",
+        "command": "gleam deps download && gleam build",
         "cwd": "packages/helix"
       },
       "outputs": ["{projectRoot}/build"],
@@ -17,7 +17,7 @@
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "gleam deps download --all && gleam test",
+        "command": "gleam deps download && gleam test",
         "cwd": "packages/helix"
       },
       "inputs": [
@@ -31,7 +31,7 @@
       "options": {
         "commands": [
           "mkdir -p ../../test-output",
-          "gleam deps download --all",
+          "gleam deps download",
           "gleam test 2>&1 | tee ../../test-output/helix-tests.json"
         ],
         "cwd": "packages/helix",
@@ -48,7 +48,7 @@
           "options": {
             "commands": [
               "mkdir -p ../../test-output",
-              "gleam deps download --all",
+              "gleam deps download",
               "gleam test 2>&1 | tee ../../test-output/helix-tests.json"
             ]
           }
@@ -58,7 +58,7 @@
     "ci": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["gleam deps download --all", "gleam test"],
+        "commands": ["gleam deps download", "gleam test"],
         "cwd": "packages/helix",
         "parallel": false
       }
@@ -66,7 +66,7 @@
     "test:coverage": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["gleam deps download --all", "gleam test"],
+        "commands": ["gleam deps download", "gleam test"],
         "cwd": "packages/helix",
         "parallel": false
       },
@@ -97,7 +97,7 @@
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "gleam deps download --all && gleam build",
+        "command": "gleam deps download && gleam build",
         "cwd": "packages/helix"
       },
       "inputs": ["{projectRoot}/src/**/*.gleam", "{projectRoot}/gleam.toml"]

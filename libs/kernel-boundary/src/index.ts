@@ -310,3 +310,19 @@ export {
   // Testing helpers
   createInMemoryRepository,
 } from './adapter.js';
+
+// ============================================================================
+// MICROKERNEL EXPORTS
+// ============================================================================
+
+export type {
+  AccrualResult,
+  MicrokernelAPI,
+  MicrokernelLoadResult,
+} from './microkernel.js';
+
+export {
+  DEFAULT_KERNEL_PATH,
+  loadMicrokernel,
+  createMockMicrokernel,
+} from './microkernel.js';
