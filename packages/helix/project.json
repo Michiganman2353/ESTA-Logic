@@ -8,7 +8,7 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "which gleam && gleam deps download --all && gleam build || echo 'Gleam not installed - skipping helix build'",
+        "command": "if which gleam > /dev/null 2>&1; then gleam deps download --all && gleam build; else echo 'Gleam not installed - skipping helix build'; fi",
         "cwd": "packages/helix"
       },
       "outputs": ["{projectRoot}/build"],
@@ -17,7 +17,7 @@
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "which gleam && gleam deps download --all && gleam test || echo 'Gleam not installed or tests failed - skipping'",
+        "command": "if which gleam > /dev/null 2>&1; then gleam deps download --all && gleam test; else echo 'Gleam not installed - skipping helix tests'; fi",
         "cwd": "packages/helix"
       },
       "inputs": [
@@ -31,7 +31,7 @@
       "options": {
         "commands": [
           "mkdir -p ../../test-output",
-          "which gleam && gleam deps download --all && gleam test 2>&1 | tee ../../test-output/helix-tests.json || echo 'Gleam not installed - skipping helix tests' | tee ../../test-output/helix-tests.json"
+          "if which gleam > /dev/null 2>&1; then gleam deps download --all && gleam test 2>&1 | tee ../../test-output/helix-tests.json; else echo 'Gleam not installed - skipping helix tests' > ../../test-output/helix-tests.json; fi"
         ],
         "cwd": "packages/helix",
         "parallel": false
@@ -58,7 +58,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "which gleam && gleam deps download --all && gleam test || echo 'Gleam not installed - skipping helix CI'"
+          "if which gleam > /dev/null 2>&1; then gleam deps download --all && gleam test; else echo 'Gleam not installed - skipping helix CI'; fi"
         ],
         "cwd": "packages/helix",
         "parallel": false
@@ -68,7 +68,7 @@
       "executor": "nx:run-commands",
       "options": {
         "commands": [
-          "which gleam && gleam deps download --all && gleam test || echo 'Gleam not installed - skipping helix coverage'"
+          "if which gleam > /dev/null 2>&1; then gleam deps download --all && gleam test; else echo 'Gleam not installed - skipping helix coverage'; fi"
         ],
         "cwd": "packages/helix",
         "parallel": false
@@ -100,7 +100,7 @@
     "typecheck": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "which gleam && gleam deps download --all && gleam build || echo 'Gleam not installed - skipping typecheck'",
+        "command": "if which gleam > /dev/null 2>&1; then gleam deps download --all && gleam build; else echo 'Gleam not installed - skipping typecheck'; fi",
         "cwd": "packages/helix"
       },
       "inputs": ["{projectRoot}/src/**/*.gleam", "{projectRoot}/gleam.toml"]
