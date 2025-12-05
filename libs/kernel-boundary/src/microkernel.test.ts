@@ -21,15 +21,15 @@ describe('Microkernel Mock', () => {
   });
 
   describe('compute_accrual', () => {
-    it('calculates 1 hour per 35 hours worked', () => {
-      expect(kernel.compute_accrual(35)).toBe(1);
-      expect(kernel.compute_accrual(70)).toBe(2);
-      expect(kernel.compute_accrual(105)).toBe(3);
+    it('calculates 1 hour per 30 hours worked', () => {
+      expect(kernel.compute_accrual(30)).toBe(1);
+      expect(kernel.compute_accrual(60)).toBe(2);
+      expect(kernel.compute_accrual(90)).toBe(3);
     });
 
     it('floors partial hours', () => {
-      expect(kernel.compute_accrual(34)).toBe(0);
-      expect(kernel.compute_accrual(69)).toBe(1);
+      expect(kernel.compute_accrual(29)).toBe(0);
+      expect(kernel.compute_accrual(59)).toBe(1);
     });
 
     it('handles zero hours', () => {
@@ -51,22 +51,22 @@ describe('Microkernel Mock', () => {
 
   describe('calculate_with_cap', () => {
     it('calculates accrual under cap', () => {
-      const result = kernel.calculate_with_cap(350, 15);
-      expect(result.hours_accrued).toBe(10); // 350 / 35
+      const result = kernel.calculate_with_cap(300, 15);
+      expect(result.hours_accrued).toBe(10); // 300 / 30
       expect(result.cap).toBe(72); // Large employer
       expect(result.total).toBe(10); // Under cap
     });
 
     it('enforces cap for small employers', () => {
-      const result = kernel.calculate_with_cap(1750, 5);
-      expect(result.hours_accrued).toBe(50); // 1750 / 35
+      const result = kernel.calculate_with_cap(1500, 5);
+      expect(result.hours_accrued).toBe(50); // 1500 / 30
       expect(result.cap).toBe(40); // Small employer
       expect(result.total).toBe(40); // Capped
     });
 
     it('enforces cap for large employers', () => {
-      const result = kernel.calculate_with_cap(3500, 50);
-      expect(result.hours_accrued).toBe(100); // 3500 / 35
+      const result = kernel.calculate_with_cap(3000, 50);
+      expect(result.hours_accrued).toBe(100); // 3000 / 30
       expect(result.cap).toBe(72); // Large employer
       expect(result.total).toBe(72); // Capped
     });

@@ -27,14 +27,17 @@ export interface MicrokernelAPI {
   /** Get the microkernel version string */
   version(): string;
 
-  /** Calculate sick time accrual based on hours worked (1 hour per 35 hours) */
+  /** Calculate sick time accrual based on hours worked (1 hour per 30 hours) */
   compute_accrual(hours_worked: number): number;
 
   /** Get employer cap based on size (>10 = 72 hours, <=10 = 40 hours) */
   employer_cap(employer_size: number): number;
 
   /** Calculate accrual with cap enforcement */
-  calculate_with_cap(hours_worked: number, employer_size: number): AccrualResult;
+  calculate_with_cap(
+    hours_worked: number,
+    employer_size: number
+  ): AccrualResult;
 }
 
 /**
@@ -69,7 +72,7 @@ export const DEFAULT_KERNEL_PATH = '/logic/wasm_build/index.mjs';
  * ```
  */
 export async function loadMicrokernel(
-  modulePath: string = DEFAULT_KERNEL_PATH,
+  modulePath: string = DEFAULT_KERNEL_PATH
 ): Promise<MicrokernelLoadResult> {
   try {
     // Dynamic import of the compiled Gleam module
@@ -86,7 +89,7 @@ export async function loadMicrokernel(
     for (const exportName of requiredExports) {
       if (typeof kernelModule[exportName] !== 'function') {
         throw new Error(
-          `Microkernel module missing required export: ${exportName}`,
+          `Microkernel module missing required export: ${exportName}`
         );
       }
     }
@@ -124,7 +127,7 @@ export function createMockMicrokernel(): MicrokernelAPI {
     version: () => 'ESTA-Logic Gleam Microkernel v0.1.0 (mock)',
 
     compute_accrual: (hours_worked: number): number => {
-      return Math.floor(hours_worked / 35);
+      return Math.floor(hours_worked / 30);
     },
 
     employer_cap: (employer_size: number): number => {
@@ -133,9 +136,9 @@ export function createMockMicrokernel(): MicrokernelAPI {
 
     calculate_with_cap: (
       hours_worked: number,
-      employer_size: number,
+      employer_size: number
     ): AccrualResult => {
-      const ratio = 35.0;
+      const ratio = 30.0;
       const base = hours_worked / ratio;
       const cap = employer_size > 10 ? 72.0 : 40.0;
       const total = Math.min(base, cap);

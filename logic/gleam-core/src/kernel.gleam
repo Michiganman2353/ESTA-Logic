@@ -6,8 +6,8 @@
 
 import gleam/float
 
-/// Michigan ESTA accrual ratio: 1 hour of sick time per 35 hours worked
-const accrual_ratio = 35.0
+/// Michigan ESTA accrual ratio: 1 hour of sick time per 30 hours worked
+const accrual_ratio = 30.0
 
 /// Cap for small employers (10 or fewer employees)
 const small_employer_cap = 40.0
@@ -23,14 +23,14 @@ pub fn version() -> String {
 /// Calculate sick time accrual based on hours worked.
 /// 
 /// Michigan ESTA law requires:
-/// - 1 hour of sick time per 35 hours worked
+/// - 1 hour of sick time per 30 hours worked
 /// 
 /// ## Examples
 /// 
 /// ```gleam
-/// compute_accrual(70)  // Returns 2
-/// compute_accrual(35)  // Returns 1
-/// compute_accrual(34)  // Returns 0
+/// compute_accrual(60)  // Returns 2
+/// compute_accrual(30)  // Returns 1
+/// compute_accrual(29)  // Returns 0
 /// ```
 pub fn compute_accrual(hours_worked: Int) -> Int {
   // Use truncated accrual ratio for integer division

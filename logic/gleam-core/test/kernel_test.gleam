@@ -16,21 +16,21 @@ pub fn version_test() {
   |> should.equal("ESTA-Logic Gleam Microkernel v0.1.0")
 }
 
-/// Test basic accrual calculation: 70 hours = 2 hours accrued (70 / 35)
-pub fn compute_accrual_70_hours_test() {
-  kernel.compute_accrual(70)
+/// Test basic accrual calculation: 60 hours = 2 hours accrued (60 / 30)
+pub fn compute_accrual_60_hours_test() {
+  kernel.compute_accrual(60)
   |> should.equal(2)
 }
 
-/// Test basic accrual calculation: 35 hours = 1 hour accrued
-pub fn compute_accrual_35_hours_test() {
-  kernel.compute_accrual(35)
+/// Test basic accrual calculation: 30 hours = 1 hour accrued
+pub fn compute_accrual_30_hours_test() {
+  kernel.compute_accrual(30)
   |> should.equal(1)
 }
 
-/// Test edge case: 34 hours = 0 hours accrued (not enough)
-pub fn compute_accrual_34_hours_test() {
-  kernel.compute_accrual(34)
+/// Test edge case: 29 hours = 0 hours accrued (not enough)
+pub fn compute_accrual_29_hours_test() {
+  kernel.compute_accrual(29)
   |> should.equal(0)
 }
 
@@ -60,9 +60,9 @@ pub fn employer_cap_large_test() {
 
 /// Test accrual with cap - under cap
 pub fn calculate_with_cap_under_cap_test() {
-  let result = kernel.calculate_with_cap(350.0, 15)
+  let result = kernel.calculate_with_cap(300.0, 15)
   
-  // 350 / 35 = 10 hours accrued
+  // 300 / 30 = 10 hours accrued
   result.hours_accrued
   |> should.equal(10.0)
   
@@ -77,8 +77,8 @@ pub fn calculate_with_cap_under_cap_test() {
 
 /// Test accrual with cap - at cap limit
 pub fn calculate_with_cap_at_limit_test() {
-  // 2520 / 35 = 72 exactly (at large employer cap)
-  let result = kernel.calculate_with_cap(2520.0, 11)
+  // 2160 / 30 = 72 exactly (at large employer cap)
+  let result = kernel.calculate_with_cap(2160.0, 11)
   
   result.hours_accrued
   |> should.equal(72.0)
@@ -89,8 +89,8 @@ pub fn calculate_with_cap_at_limit_test() {
 
 /// Test accrual with cap - exceeds cap
 pub fn calculate_with_cap_exceeds_cap_test() {
-  // 1750 / 35 = 50 hours, but small employer cap is 40
-  let result = kernel.calculate_with_cap(1750.0, 5)
+  // 1500 / 30 = 50 hours, but small employer cap is 40
+  let result = kernel.calculate_with_cap(1500.0, 5)
   
   result.hours_accrued
   |> should.equal(50.0)
