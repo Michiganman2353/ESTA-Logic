@@ -99,8 +99,8 @@ jobs:
       - name: Setup Gleam and Erlang
         uses: erlef/setup-beam@v1
         with:
-          otp-version: '26'
-          gleam-version: '1.6.3'
+          otp-version: '27'
+          gleam-version: '1.11.0'
 
       - name: Cache Gleam Dependencies
         uses: actions/cache@v4
