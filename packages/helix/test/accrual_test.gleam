@@ -1,6 +1,6 @@
 import gleeunit
 import gleeunit/should
-import helix/accrual.{Accrual}
+import accrual.{Accrual}
 
 /// Test suite for ESTA accrual calculations
 /// Run with `gleam test` – pure assertions for immutable accrual logic
