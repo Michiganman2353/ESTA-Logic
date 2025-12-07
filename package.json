@@ -12,6 +12,10 @@
     "infra/*"
   ],
   "scripts": {
+    "build:frontend": "npx nx build frontend",
+    "build:backend": "npx nx build backend",
+    "build": "npx nx run-many --target=build --all",
+    "test": "npx nx run-many --target=test --all",
     "demo": "npx ts-node --project demo/tsconfig.json demo/kernel-demo.ts",
     "gleam:build": "bash scripts/build-gleam-wasm.sh",
     "wasm:build": "nx run accrual-engine:wasm-build",
@@ -21,14 +25,10 @@
     "dev": "nx run-many --target=dev --all",
     "dev:frontend": "nx dev frontend",
     "dev:backend": "nx dev backend",
-    "build": "nx run-many --target=build --all",
     "build:all": "nx run-many --target=build --all --parallel=3",
-    "build:frontend": "nx build frontend",
-    "build:backend": "nx build backend",
     "build:libs": "nx run-many --target=build --projects=shared-types,shared-utils,accrual-engine,esta-firebase,csv-processor",
     "build:functions": "nx build functions",
     "build:affected": "nx affected --target=build",
-    "test": "nx run-many --target=test --all",
     "test:frontend": "nx test frontend",
     "test:backend": "nx test backend",
     "test:coverage": "nx run-many --target=test:coverage --all",
@@ -105,7 +105,7 @@
     }
   },
   "engines": {
-    "node": "22.x",
+    "node": "20.x",
     "npm": ">=10.0.0"
   },
   "packageManager": "npm@10.2.3"

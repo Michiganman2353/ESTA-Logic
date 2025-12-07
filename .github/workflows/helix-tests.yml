@@ -1,60 +1,46 @@
 name: Helix Gleam Tests
-
 on:
   push:
-    paths:
-      - 'packages/helix/**'
+    branches: [ master ]
   pull_request:
-    paths:
-      - 'packages/helix/**'
+    types: [opened, synchronize, reopened]
 
 jobs:
-  helix-test:
-    name: Run Gleam/Helix tests
+  helix-gleam:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Setup Gleam and Erlang
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install repo node deps (root workspace)
+        run: npm ci
+
+      - name: Setup Erlang/OTP (required by Gleam)
         uses: erlef/setup-beam@v1
         with:
-          otp-version: '27'
-          gleam-version: '1.11.0'
+          otp-version: '26.0'
 
-      - name: Create test-output dir
-        run: mkdir -p test-output
-
-      - name: Install dev deps & run Gleam tests
-        working-directory: packages/helix
+      - name: Install Gleam (pin)
+        env:
+          GLEAM_VERSION: 1.11.0
         run: |
-          # Ensure dev dependencies (e.g., gleeunit) are downloaded
-          gleam deps download
-          # Run tests and write output to repository-level test-output folder
-          # Use tee to capture both stdout and stderr while also showing output
-          gleam test 2>&1 | tee ../../test-output/helix-tests.json
+          chmod +x ./scripts/install-gleam.sh
+          ./scripts/install-gleam.sh
 
-      - name: Upload test report
-        uses: actions/upload-artifact@v4
-        with:
-          name: helix-tests
-          path: test-output/helix-tests.json
-
-      - name: Verify tests ran successfully
+      - name: Validate Gleam
         run: |
-          if [ ! -s test-output/helix-tests.json ]; then
-            echo "Helix test report missing or empty"
-            exit 1
-          fi
-          # Check for test pass patterns in the output
-          if grep -q "Finished in" test-output/helix-tests.json; then
-            echo "✅ Tests completed successfully"
-          else
-            echo "⚠️ Tests may not have run properly, please check the output"
-            cat test-output/helix-tests.json
-            exit 1
-          fi
+          gleam --version
+          rebar3 --version || true
+
+      - name: Run Gleam tests
+        working-directory: logic/gleam-core
+        run: |
+          gleam deps get
+          gleam test
