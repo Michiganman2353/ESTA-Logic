@@ -3,8 +3,8 @@ set -euo pipefail
 
 # Usage: GLEAM_VERSION=1.11.0 ./scripts/install-gleam.sh
 GLEAM_VERSION="${GLEAM_VERSION:-1.11.0}"
-TARGET_DIR="/usr/local/gleam-${GLEAM_VERSION}"
 TMP_TAR="/tmp/gleam-${GLEAM_VERSION}.tar.gz"
+INSTALL_DIR="/usr/local"
 
 echo "Installing Gleam ${GLEAM_VERSION}..."
 
@@ -12,13 +12,10 @@ echo "Installing Gleam ${GLEAM_VERSION}..."
 GITHUB_RELEASE="https://github.com/gleam-lang/gleam/releases/download/v${GLEAM_VERSION}/gleam-${GLEAM_VERSION}-x86_64-linux.tar.gz"
 
 curl -fsSL "${GITHUB_RELEASE}" -o "${TMP_TAR}"
-sudo rm -rf "${TARGET_DIR}"
-sudo mkdir -p "${TARGET_DIR}"
-sudo tar -C /usr/local -xzf "${TMP_TAR}"
-export PATH="/usr/local/gleam-${GLEAM_VERSION}/bin:${PATH}"
+sudo tar -C "${INSTALL_DIR}" -xzf "${TMP_TAR}"
 
-echo "Gleam installed at /usr/local/gleam-${GLEAM_VERSION}"
-gleam --version || (echo "gleam not found on PATH" && exit 2)
+echo "Gleam installed to ${INSTALL_DIR}/bin"
+${INSTALL_DIR}/bin/gleam --version || (echo "gleam not found at ${INSTALL_DIR}/bin/gleam" && exit 2)
 
 # ensure rebar3 is available (Gleam's test tooling sometimes needs it)
 if ! command -v rebar3 &>/dev/null; then
@@ -28,4 +25,4 @@ if ! command -v rebar3 &>/dev/null; then
   sudo chmod +x /usr/local/bin/rebar3
 fi
 
-echo "Gleam, rebar3 available"
+echo "Gleam and rebar3 installed successfully"
