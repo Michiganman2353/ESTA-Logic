@@ -17,8 +17,8 @@
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "gleam deps download && gleam test",
-        "cwd": "packages/helix"
+        "command": "bash ../../scripts/gleam-test.sh packages/helix",
+        "cwd": "{workspaceRoot}"
       },
       "inputs": [
         "{projectRoot}/src/**/*.gleam",
