@@ -1,0 +1,38 @@
+name: Typecheck + Gleam Setup
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install node deps (root)
+        run: npm ci
+
+      - name: Setup Erlang (OTP)
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: '27'
+
+      - name: Install Gleam for typecheck
+        env:
+          GLEAM_VERSION: 1.11.0
+        run: |
+          chmod +x ./scripts/install-gleam.sh
+          ./scripts/install-gleam.sh
+
+      - name: Run typecheck (TypeScript) for workspace
+        run: npx nx run-many --target=typecheck --all --parallel
