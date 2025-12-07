@@ -67,20 +67,6 @@ vi.mocked(navigator.mediaDevices.getUserMedia).mockRejectedValueOnce(
 );
 ```
 
-### 4. Encryption Utilities
-
-**Purpose**: Mock encryption/decryption functions to avoid expensive crypto operations in tests.
-
-**Special Test Inputs**:
-- `bad-key` → Triggers decryption failure
-- `bad-data` → Triggers decryption failure
-
-**Mocked Functions**:
-- `encryptHybrid(input)` → Returns `{ encrypted: 'encrypted-{input}', iv: 'test-iv' }`
-- `decryptHybrid(encrypted, key)` → Returns `'decrypted-{encrypted}'` or throws if bad key/data
-- `encryptFile(file)` → Returns mock encrypted blob and test keys
-- `decryptBlob(blob, keys)` → Returns mock decrypted blob or throws if bad keys
-
 ## Configuration
 
 The setup file is registered in vitest config files across the monorepo:
@@ -107,8 +93,6 @@ Each mock supports special inputs to trigger error conditions:
 | Firebase Auth | `invalid@example.com` | Invalid credentials error |
 | Firebase Auth | `network-error@example.com` | Network error |
 | Firebase Auth | `unauthorized@example.com` | 401 status error |
-| Encryption | `bad-key` parameter | Decryption failure |
-| Encryption | `bad-data` parameter | Decryption failure |
 
 ## Best Practices
 

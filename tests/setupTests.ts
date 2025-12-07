@@ -26,20 +26,25 @@ export function createTestToken(payload = { userId: 'test-user' }, options = {})
 
 // Mock jwt.verify to only accept tokens signed with TEST_JWT_SECRET
 // This ensures tokens don't expire during test runs
+// Tests can still override these mocks using vi.mocked() if needed
 vi.mock('jsonwebtoken', async () => {
   const actual = await vi.importActual<typeof import('jsonwebtoken')>('jsonwebtoken');
   return {
     ...actual,
     sign: (payload: any, secret: string, opts: any) => {
-      // Delegate to actual but force secret for local usage
-      return actual.sign(payload, TEST_JWT_SECRET, opts);
+      // Use TEST_JWT_SECRET by default, but allow tests to override
+      // by checking if secret is explicitly different
+      const secretToUse = secret === undefined || secret === '' ? TEST_JWT_SECRET : secret;
+      return actual.sign(payload, secretToUse, opts);
     },
     verify: (token: string, secretOrPublicKey: any, optionsOrCb?: any, cb?: any) => {
       try {
-        // Use the actual verify but only allow TEST_JWT_SECRET
-        return actual.verify(token, TEST_JWT_SECRET, optionsOrCb, cb);
+        // Use TEST_JWT_SECRET by default for deterministic testing
+        // Tests that need to verify with wrong secrets can mock this function directly
+        const secretToUse = secretOrPublicKey === undefined ? TEST_JWT_SECRET : secretOrPublicKey;
+        return actual.verify(token, secretToUse, optionsOrCb, cb);
       } catch (err) {
-        // If tests passed a callback signature, throw same error to keep behavior
+        // Preserve the original error
         throw err;
       }
     },
