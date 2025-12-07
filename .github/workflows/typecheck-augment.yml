@@ -25,7 +25,7 @@ jobs:
       - name: Setup Erlang (OTP)
         uses: erlef/setup-beam@v1
         with:
-          otp-version: '26.0'
+          otp-version: '27'
 
       - name: Install Gleam for typecheck
         env:

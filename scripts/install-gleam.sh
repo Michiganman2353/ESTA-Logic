@@ -3,13 +3,13 @@ set -euo pipefail
 
 # Usage: GLEAM_VERSION=1.11.0 ./scripts/install-gleam.sh
 GLEAM_VERSION="${GLEAM_VERSION:-1.11.0}"
-TMP_TAR="/tmp/gleam-${GLEAM_VERSION}.tar.gz"
+TMP_TAR="/tmp/gleam-v${GLEAM_VERSION}.tar.gz"
 INSTALL_DIR="/usr/local"
 
 echo "Installing Gleam ${GLEAM_VERSION}..."
 
-# Fetch release tarball (Linux x86_64). If you need mac/arm64, adapt accordingly.
-GITHUB_RELEASE="https://github.com/gleam-lang/gleam/releases/download/v${GLEAM_VERSION}/gleam-${GLEAM_VERSION}-x86_64-linux.tar.gz"
+# Fetch release tarball (Linux x86_64 musl). If you need mac/arm64, adapt accordingly.
+GITHUB_RELEASE="https://github.com/gleam-lang/gleam/releases/download/v${GLEAM_VERSION}/gleam-v${GLEAM_VERSION}-x86_64-unknown-linux-musl.tar.gz"
 
 curl -fsSL "${GITHUB_RELEASE}" -o "${TMP_TAR}"
 sudo tar -C "${INSTALL_DIR}" -xzf "${TMP_TAR}"
@@ -26,3 +26,4 @@ if ! command -v rebar3 &>/dev/null; then
 fi
 
 echo "Gleam and rebar3 installed successfully"
+echo "If running locally and 'gleam' is not found, run: export PATH=\"${INSTALL_DIR}/bin:\$PATH\""

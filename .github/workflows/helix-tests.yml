@@ -27,7 +27,7 @@ jobs:
       - name: Setup Erlang/OTP (required by Gleam)
         uses: erlef/setup-beam@v1
         with:
-          otp-version: '26.0'
+          otp-version: '27'
 
       - name: Install Gleam (pin)
         env:
@@ -41,8 +41,14 @@ jobs:
           gleam --version
           rebar3 --version || true
 
-      - name: Run Gleam tests
+      - name: Run Gleam tests (gleam-core)
         working-directory: logic/gleam-core
         run: |
-          gleam deps get
+          gleam deps download
+          gleam test
+
+      - name: Run Gleam tests (helix)
+        working-directory: packages/helix
+        run: |
+          gleam deps download
           gleam test
