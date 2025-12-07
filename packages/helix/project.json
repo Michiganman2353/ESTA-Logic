@@ -17,7 +17,7 @@
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "bash ../../scripts/gleam-test.sh packages/helix",
+        "command": "bash scripts/gleam-test.sh packages/helix",
         "cwd": "{workspaceRoot}"
       },
       "inputs": [
