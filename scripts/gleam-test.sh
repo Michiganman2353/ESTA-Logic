@@ -1,11 +1,28 @@
 #!/usr/bin/env bash
 # Wrapper script for gleam test that ignores extra arguments
 # This allows CI to pass --coverage and --passWithNoTests flags which gleam doesn't support
+#
+# Usage: bash scripts/gleam-test.sh <project-directory>
+# Example: bash scripts/gleam-test.sh packages/helix
+#
+# Note: This script has executable permissions set via git attributes
 
 set -e
 
-# Get the project directory from first argument
-PROJECT_DIR="${1:-.}"
+# Validate that a project directory is provided
+if [ -z "$1" ]; then
+  echo "Error: Project directory is required"
+  echo "Usage: $0 <project-directory>"
+  exit 1
+fi
+
+PROJECT_DIR="$1"
+
+# Validate that the directory exists
+if [ ! -d "$PROJECT_DIR" ]; then
+  echo "Error: Directory '$PROJECT_DIR' does not exist"
+  exit 1
+fi
 
 # Change to project directory
 cd "$PROJECT_DIR"
