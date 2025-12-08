@@ -218,6 +218,7 @@ packages/                # Additional packages
 - ✅ **White-Label Branding** - Employers can customize with logo, company name, and colors
 - ✅ **Secure Employee Linking** - Employees link to employers via 4-digit code during registration
 - ✅ **PTO Request Workflow** - Employee requests, manager approval, automatic deductions
+- ✅ **Advanced Document Scanner** - Web-based document scanning with edge detection and perspective correction
 - ✅ **Secure Document Upload** - Medical notes and documentation with immutability after approval
 - ✅ **Role-Based Access Control** - Employer, Manager, Employee, and Auditor roles
 - ✅ **Compliance Tracking** - Automatic cap enforcement (40/72 hours based on employer size)
@@ -225,12 +226,24 @@ packages/                # Additional packages
 - ✅ **Hours Import** - CSV upload or API integration
 - ✅ **Multi-Tenant Architecture** - Complete data isolation between employers
 
+### Document Scanner Features
+
+- 📸 **Web Camera Access** - Rear camera preference for mobile devices
+- 🎯 **Live Alignment Guide** - Visual overlay to guide document positioning
+- 🔍 **Auto Edge Detection** - OpenCV.js-powered document boundary detection
+- 📐 **Perspective Correction** - Automatic straightening of skewed documents
+- 🗜️ **WebP Compression** - Configurable quality for optimal file sizes
+- 🔐 **Client-Side Encryption** - Optional AES-GCM encryption before upload
+- ☁️ **Resumable Uploads** - Firebase Storage with progress tracking
+- 📱 **Mobile Native Support** - Capacitor integration for native camera access
+
 ### Security
 
 - 🔐 **Google Cloud KMS Encryption** - Hardware-backed security for sensitive data
 - 🔐 **AES-256-GCM + RSA-OAEP** - Industry-standard hybrid encryption
 - 🔐 **Signed URLs** - Secure direct-to-storage uploads
 - 🔐 **Comprehensive Audit Logging** - Track all data access and modifications
+- 🔐 **Document Immutability** - Uploaded documents cannot be modified after approval
 
 See [Security Documentation](./docs/security/) for complete security details.
 
