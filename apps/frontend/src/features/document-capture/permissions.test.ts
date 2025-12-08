@@ -10,7 +10,7 @@ import {
   requiresUserInteraction,
   getPermissionErrorMessage,
   CameraPermissions,
-} from '../permissions';
+} from './permissions';
 
 describe('Camera Permissions', () => {
   beforeEach(() => {
@@ -135,7 +135,8 @@ describe('Camera Permissions', () => {
   describe('requiresUserInteraction', () => {
     it('should return true for Safari', () => {
       Object.defineProperty(navigator, 'userAgent', {
-        value: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Safari/605.1.15',
+        value:
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Safari/605.1.15',
         writable: true,
       });
 
@@ -144,7 +145,8 @@ describe('Camera Permissions', () => {
 
     it('should return true for iOS', () => {
       Object.defineProperty(navigator, 'userAgent', {
-        value: 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1',
+        value:
+          'Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1',
         writable: true,
       });
 
@@ -153,7 +155,8 @@ describe('Camera Permissions', () => {
 
     it('should return false for Chrome', () => {
       Object.defineProperty(navigator, 'userAgent', {
-        value: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        value:
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         writable: true,
       });
 

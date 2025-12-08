@@ -1,6 +1,6 @@
 /**
  * Antivirus Scanning Integration
- * 
+ *
  * Provides hooks for antivirus scanning:
  * - ClamAV integration
  * - VirusTotal API integration
@@ -32,7 +32,7 @@ export async function scanFile(
   filename: string,
   options: ScanOptions = {}
 ): Promise<ScanResult> {
-  const { scanner = 'mock', timeout = 30000 } = options;
+  const { scanner = 'mock' } = options;
 
   const startTime = Date.now();
 
@@ -69,11 +69,16 @@ export async function scanFile(
  */
 async function mockScan(fileBuffer: Buffer): Promise<ScanResult> {
   // Simulate scan delay
-  await new Promise(resolve => setTimeout(resolve, 100));
+  await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Check for test virus signature (EICAR test file)
-  const eicarSignature = 'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
-  const content = fileBuffer.toString('utf-8', 0, Math.min(fileBuffer.length, 1024));
+  const eicarSignature =
+    'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
+  const content = fileBuffer.toString(
+    'utf-8',
+    0,
+    Math.min(fileBuffer.length, 1024)
+  );
 
   if (content.includes(eicarSignature)) {
     return {
@@ -98,17 +103,15 @@ async function scanWithClamAV(
   fileBuffer: Buffer,
   options: ScanOptions
 ): Promise<ScanResult> {
-  const { clamavHost = 'localhost', clamavPort = 3310 } = options;
-
   // Note: This is a placeholder. Actual implementation would:
   // 1. Connect to ClamAV daemon via TCP
   // 2. Send INSTREAM command
   // 3. Stream file data
   // 4. Parse response
-  
+
   // For now, return mock result with warning
   console.warn('ClamAV integration not fully implemented - using mock scan');
-  
+
   return {
     clean: true,
     scanTime: 0,
@@ -134,9 +137,11 @@ async function scanWithVirusTotal(
   // 1. Upload file to VirusTotal
   // 2. Poll for scan results
   // 3. Parse detection results from multiple engines
-  
-  console.warn('VirusTotal integration not fully implemented - using mock scan');
-  
+
+  console.warn(
+    'VirusTotal integration not fully implemented - using mock scan'
+  );
+
   return {
     clean: true,
     scanTime: 0,
@@ -199,8 +204,8 @@ export async function scheduleBackgroundScan(
   // 3. Scans file
   // 4. Updates file metadata with scan result
   // 5. Triggers webhook/notification if threats found
-  
+
   console.log(`Background scan scheduled for ${fileId} at ${storagePath}`);
-  
+
   // Placeholder - actual implementation would queue job
 }

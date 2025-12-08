@@ -1,6 +1,6 @@
 /**
  * Document Image Processor using OpenCV.js
- * 
+ *
  * Provides image processing pipeline:
  * - Edge detection for document boundaries
  * - Auto-crop to document area
@@ -199,16 +199,20 @@ export async function processDocument(
 /**
  * Detects document edges using OpenCV edge detection
  */
-function detectDocumentEdges(
-  src: any
-): { x: number; y: number }[] | null {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function detectDocumentEdges(src: any): { x: number; y: number }[] | null {
   if (!window.cv) return null;
 
-  const gray = new window.cv.Mat();
-  const blur = new window.cv.Mat();
-  const edges = new window.cv.Mat();
-  const contours = new window.cv.MatVector();
-  const hierarchy = new window.cv.Mat();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const gray = new (window.cv.Mat as any)();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const blur = new (window.cv.Mat as any)();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const edges = new (window.cv.Mat as any)();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const contours = new (window.cv.MatVector as any)();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const hierarchy = new (window.cv.Mat as any)();
 
   try {
     // Convert to grayscale
@@ -282,10 +286,8 @@ function detectDocumentEdges(
 /**
  * Crops image to detected document boundaries
  */
-function cropToDocument(
-  src: any,
-  corners: { x: number; y: number }[]
-): any {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function cropToDocument(src: any, _corners: { x: number; y: number }[]): any {
   // For now, return src as-is
   // Full implementation would extract the region
   return src;
@@ -294,10 +296,8 @@ function cropToDocument(
 /**
  * Applies perspective correction to deskew document
  */
-function deskewDocument(
-  src: any,
-  corners: { x: number; y: number }[]
-): any {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function deskewDocument(src: any, corners: { x: number; y: number }[]): any {
   if (!window.cv || corners.length !== 4) return src;
 
   try {
@@ -316,18 +316,26 @@ function deskewDocument(
 
     // Source points
     const srcPoints = window.cv.matFromArray(4, 1, window.cv.CV_32FC2, [
-      sorted[0].x, sorted[0].y,
-      sorted[1].x, sorted[1].y,
-      sorted[2].x, sorted[2].y,
-      sorted[3].x, sorted[3].y,
+      sorted[0].x,
+      sorted[0].y,
+      sorted[1].x,
+      sorted[1].y,
+      sorted[2].x,
+      sorted[2].y,
+      sorted[3].x,
+      sorted[3].y,
     ]);
 
     // Destination points (rectangle)
     const dstPoints = window.cv.matFromArray(4, 1, window.cv.CV_32FC2, [
-      0, 0,
-      width, 0,
-      width, height,
-      0, height,
+      0,
+      0,
+      width,
+      0,
+      width,
+      height,
+      0,
+      height,
     ]);
 
     // Get perspective transform matrix
@@ -361,6 +369,7 @@ function deskewDocument(
 /**
  * Enhances image contrast
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function enhanceContrast(src: any): any {
   // Simple brightness/contrast adjustment
   // More advanced: histogram equalization
@@ -370,11 +379,8 @@ function enhanceContrast(src: any): any {
 /**
  * Resizes document to target dimensions
  */
-function resizeDocument(
-  src: any,
-  maxWidth: number,
-  maxHeight: number
-): any {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function resizeDocument(src: any, maxWidth: number, maxHeight: number): any {
   if (!window.cv) return src;
 
   const ratio = Math.min(maxWidth / src.cols, maxHeight / src.rows);
@@ -409,7 +415,10 @@ function sortCorners(
 /**
  * Helper: Calculate distance between two points
  */
-function distance(p1: { x: number; y: number }, p2: { x: number; y: number }): number {
+function distance(
+  p1: { x: number; y: number },
+  p2: { x: number; y: number }
+): number {
   return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 }
 
@@ -438,6 +447,7 @@ function loadImageFromBlob(blob: Blob): Promise<HTMLImageElement> {
 // Type declaration for OpenCV (matches component)
 declare global {
   interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     cv: any;
   }
 }

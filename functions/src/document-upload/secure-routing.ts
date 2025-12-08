@@ -1,6 +1,6 @@
 /**
  * Secure Upload Routing with Signed URLs
- * 
+ *
  * Provides secure upload endpoints:
  * - Signed URL generation with short TTL
  * - No direct client writes to storage
@@ -160,7 +160,7 @@ export async function verifyUploadCompleted(
     const [metadata] = await file.getMetadata();
 
     // Verify size
-    const actualSize = parseInt(metadata.size || '0', 10);
+    const actualSize = parseInt(String(metadata.size || '0'), 10);
     if (Math.abs(actualSize - expectedSize) > 1024) {
       // Allow 1KB difference
       return {
@@ -209,12 +209,26 @@ export async function getFileMetadata(path: string): Promise<{
   const file = bucket.file(path);
   const [metadata] = await file.getMetadata();
 
+  // Safely extract size with proper typing
+  const sizeValue = metadata.size;
+  const size =
+    typeof sizeValue === 'string'
+      ? parseInt(sizeValue, 10)
+      : Number(sizeValue) || 0;
+
+  // Safely extract custom metadata
+  const customMeta = metadata.metadata || {};
+  const customMetadata: Record<string, string> = {};
+  for (const [key, value] of Object.entries(customMeta)) {
+    customMetadata[key] = String(value);
+  }
+
   return {
-    size: parseInt(metadata.size || '0', 10),
+    size,
     contentType: metadata.contentType || '',
-    created: new Date(metadata.timeCreated),
-    updated: new Date(metadata.updated),
-    customMetadata: metadata.metadata || {},
+    created: new Date(metadata.timeCreated || Date.now()),
+    updated: new Date(metadata.updated || Date.now()),
+    customMetadata,
   };
 }
 

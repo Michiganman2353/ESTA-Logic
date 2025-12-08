@@ -1,6 +1,6 @@
 /**
  * Secure Upload Pipeline
- * 
+ *
  * Hardened client-side upload to backend/Firebase:
  * - Encrypted transit (HTTPS enforced)
  * - Preflight MIME/size checks
@@ -30,6 +30,7 @@ export interface UploadResult {
   downloadUrl?: string;
   path?: string;
   error?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata?: Record<string, any>;
 }
 
@@ -145,7 +146,8 @@ export async function validateMagicBytes(file: File): Promise<{
   } catch (error) {
     return {
       valid: false,
-      error: error instanceof Error ? error.message : 'Magic byte validation failed',
+      error:
+        error instanceof Error ? error.message : 'Magic byte validation failed',
     };
   }
 }
@@ -156,7 +158,8 @@ export async function validateMagicBytes(file: File): Promise<{
 export async function uploadToFirebase(
   file: File,
   storagePath: string,
-  storageRef: any, // Firebase storage reference
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  storageRef: any, // Firebase storage reference - typed by Firebase SDK
   options: UploadOptions = {}
 ): Promise<UploadResult> {
   const {
@@ -215,20 +218,19 @@ export async function uploadToFirebase(
       });
 
       // Track progress
-      uploadTask.on(
-        'state_changed',
-        (snapshot: any) => {
-          if (onProgress) {
-            const percentage = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            onProgress({
-              bytesTransferred: snapshot.bytesTransferred,
-              totalBytes: snapshot.totalBytes,
-              percentage,
-              stage: 'uploading',
-            });
-          }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      uploadTask.on('state_changed', (snapshot: any) => {
+        if (onProgress) {
+          const percentage =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          onProgress({
+            bytesTransferred: snapshot.bytesTransferred,
+            totalBytes: snapshot.totalBytes,
+            percentage,
+            stage: 'uploading',
+          });
         }
-      );
+      });
 
       // Wait for completion
       await uploadTask;
@@ -349,7 +351,8 @@ export async function uploadWithSignedUrl(
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Failed to get signed URL',
+      error:
+        error instanceof Error ? error.message : 'Failed to get signed URL',
     };
   }
 
@@ -448,7 +451,7 @@ export async function uploadWithSignedUrl(
  * Helper: Sleep for specified milliseconds
  */
 function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 /**

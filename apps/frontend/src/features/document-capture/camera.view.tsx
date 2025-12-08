@@ -1,6 +1,6 @@
 /**
  * Camera View Component
- * 
+ *
  * UI for document capture with:
  * - Live camera preview
  * - Capture, retake, upload controls
@@ -30,7 +30,8 @@ export interface CameraViewProps {
   onUploadComplete: (result: UploadResult) => void;
   onCancel?: () => void;
   uploadOptions?: UploadOptions;
-  firebaseStorageRef?: any; // Firebase storage reference
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  firebaseStorageRef?: any; // Firebase storage reference - typed by Firebase SDK
   signedUrlEndpoint?: string;
   authToken?: string;
   storagePath?: string;
@@ -51,7 +52,9 @@ export const CameraView: React.FC<CameraViewProps> = ({
   const [capturedImageUrl, setCapturedImageUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(null);
+  const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(
+    null
+  );
   const [useFallback] = useState(() => needsMobileFallback());
   const [captureStrategy] = useState(() => getRecommendedCaptureStrategy());
 
@@ -71,11 +74,13 @@ export const CameraView: React.FC<CameraViewProps> = ({
       } catch (err) {
         const permissionManager = cameraController.getPermissionManager();
         const status = permissionManager.currentStatus;
-        
+
         if (status) {
           setError(getPermissionErrorMessage(status));
         } else {
-          setError(err instanceof Error ? err.message : 'Failed to start camera');
+          setError(
+            err instanceof Error ? err.message : 'Failed to start camera'
+          );
         }
       } finally {
         setIsLoading(false);
@@ -105,7 +110,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
 
       const blob = await cameraController.captureFrame();
       setCapturedImage(blob);
-      
+
       const url = URL.createObjectURL(blob);
       setCapturedImageUrl(url);
     } catch (err) {
@@ -181,7 +186,7 @@ export const CameraView: React.FC<CameraViewProps> = ({
       // Process image with orientation correction
       const processed = await processImageFile(file);
       setCapturedImage(processed.blob);
-      
+
       const url = URL.createObjectURL(processed.blob);
       setCapturedImageUrl(url);
     } catch (err) {
@@ -310,7 +315,8 @@ export const CameraView: React.FC<CameraViewProps> = ({
           </div>
           <span>
             {uploadProgress.stage === 'validating' && 'Validating...'}
-            {uploadProgress.stage === 'uploading' && `Uploading: ${Math.round(uploadProgress.percentage)}%`}
+            {uploadProgress.stage === 'uploading' &&
+              `Uploading: ${Math.round(uploadProgress.percentage)}%`}
             {uploadProgress.stage === 'complete' && 'Complete!'}
             {uploadProgress.stage === 'error' && 'Upload failed'}
           </span>

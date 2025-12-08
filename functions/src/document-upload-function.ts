@@ -1,6 +1,6 @@
 /**
  * Cloud Function: Generate Signed Upload URL
- * 
+ *
  * HTTP endpoint for generating signed URLs for secure document uploads
  */
 
@@ -28,96 +28,94 @@ interface GenerateUploadUrlRequest {
  * Generates a signed URL for document upload
  * Requires authentication
  */
-export const generateUploadUrl = functions.https.onRequest(
-  async (req, res) => {
-    // Enable CORS
-    res.set('Access-Control-Allow-Origin', '*');
-    res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+export const generateUploadUrl = functions.https.onRequest(async (req, res) => {
+  // Enable CORS
+  res.set('Access-Control-Allow-Origin', '*');
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
-    // Handle preflight
-    if (req.method === 'OPTIONS') {
-      res.status(204).send('');
-      return;
-    }
-
-    // Only allow POST
-    if (req.method !== 'POST') {
-      res.status(405).json({ error: 'Method not allowed' });
-      return;
-    }
-
-    try {
-      // Extract auth token
-      const authHeader = req.headers.authorization;
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        res.status(401).json({ error: 'Unauthorized' });
-        return;
-      }
-
-      const token = authHeader.substring(7);
-
-      // Verify token
-      const decodedToken = await admin.auth().verifyIdToken(token);
-      const userId = decodedToken.uid;
-      const tenantId = decodedToken.tenantId || decodedToken.tenant_id;
-
-      if (!tenantId) {
-        res.status(400).json({ error: 'Tenant ID not found in token' });
-        return;
-      }
-
-      // Parse request body
-      const body: GenerateUploadUrlRequest = req.body;
-
-      if (!body.fileName || !body.fileType || !body.fileSize) {
-        res.status(400).json({
-          error: 'Missing required fields: fileName, fileType, fileSize',
-        });
-        return;
-      }
-
-      // Rate limiting check (basic)
-      // In production, use Redis or Firestore for distributed rate limiting
-      const rateLimitKey = `upload_rate_${userId}`;
-      // TODO: Implement proper rate limiting
-
-      // Generate signed URL
-      const result = await generateSignedUploadUrl(
-        userId,
-        tenantId,
-        {
-          fileName: body.fileName,
-          fileType: body.fileType,
-          fileSize: body.fileSize,
-          metadata: body.metadata,
-        },
-        {
-          ttlMinutes: 15,
-          maxFileSize: 10 * 1024 * 1024, // 10MB
-        }
-      );
-
-      res.status(200).json(result);
-    } catch (error) {
-      console.error('Error generating signed URL:', error);
-
-      // Log security event for failed attempts
-      if (error instanceof Error) {
-        await logSecurityEvent(
-          'unknown',
-          'unknown',
-          `Failed to generate signed URL: ${error.message}`,
-          'medium'
-        ).catch(console.error);
-      }
-
-      res.status(500).json({
-        error: error instanceof Error ? error.message : 'Internal server error',
-      });
-    }
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    res.status(204).send('');
+    return;
   }
-);
+
+  // Only allow POST
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: 'Method not allowed' });
+    return;
+  }
+
+  try {
+    // Extract auth token
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const token = authHeader.substring(7);
+
+    // Verify token
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    const userId = decodedToken.uid;
+    const tenantId = decodedToken.tenantId || decodedToken.tenant_id;
+
+    if (!tenantId) {
+      res.status(400).json({ error: 'Tenant ID not found in token' });
+      return;
+    }
+
+    // Parse request body
+    const body: GenerateUploadUrlRequest = req.body;
+
+    if (!body.fileName || !body.fileType || !body.fileSize) {
+      res.status(400).json({
+        error: 'Missing required fields: fileName, fileType, fileSize',
+      });
+      return;
+    }
+
+    // Rate limiting check (basic)
+    // In production, use Redis or Firestore for distributed rate limiting
+    // TODO: Implement proper rate limiting
+    // const rateLimitKey = `upload_rate_${userId}`;
+
+    // Generate signed URL
+    const result = await generateSignedUploadUrl(
+      userId,
+      tenantId,
+      {
+        fileName: body.fileName,
+        fileType: body.fileType,
+        fileSize: body.fileSize,
+        metadata: body.metadata,
+      },
+      {
+        ttlMinutes: 15,
+        maxFileSize: 10 * 1024 * 1024, // 10MB
+      }
+    );
+
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error generating signed URL:', error);
+
+    // Log security event for failed attempts
+    if (error instanceof Error) {
+      await logSecurityEvent(
+        'unknown',
+        'unknown',
+        `Failed to generate signed URL: ${error.message}`,
+        'medium'
+      ).catch(console.error);
+    }
+
+    res.status(500).json({
+      error: error instanceof Error ? error.message : 'Internal server error',
+    });
+  }
+});
 
 /**
  * Webhook handler for post-upload processing
@@ -161,7 +159,7 @@ export const onDocumentUploaded = functions.storage
       console.log('Post-upload processing completed for:', filePath);
     } catch (error) {
       console.error('Post-upload processing failed:', error);
-      
+
       await logUploadFailure(
         userId,
         tenantId,
