@@ -16,7 +16,7 @@
     "test": "echo 'No tests configured'"
   },
   "engines": {
-    "node": "20.x"
+    "node": "22.x"
   },
   "dependencies": {
     "@esta/firebase": "file:../libs/esta-firebase",
