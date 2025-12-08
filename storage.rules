@@ -22,11 +22,34 @@ service firebase.storage {
     
     function isValidFileType() {
       return request.resource.contentType.matches('image/.*') ||
-             request.resource.contentType.matches('application/pdf');
+             request.resource.contentType.matches('application/pdf') ||
+             request.resource.contentType == 'application/octet-stream'; // For encrypted files
     }
     
     function isValidFileSize() {
       return request.resource.size < 10 * 1024 * 1024; // 10MB max
+    }
+    
+    // Enhanced validation for scanned documents
+    function isValidScannedDocument() {
+      return (request.resource.contentType.matches('image/webp') ||
+              request.resource.contentType.matches('image/jpeg') ||
+              request.resource.contentType.matches('image/png') ||
+              request.resource.contentType == 'application/octet-stream') && // Encrypted
+             request.resource.size < 10 * 1024 * 1024; // 10MB max
+    }
+    
+    // Check for encrypted document metadata
+    function isEncryptedDocument() {
+      return 'encrypted' in request.resource.metadata && 
+             request.resource.metadata.encrypted == 'true';
+    }
+    
+    // Rate limiting check (requires metadata tracking)
+    function isWithinRateLimit() {
+      // This is a placeholder - actual rate limiting should be done server-side
+      // Check upload timestamp metadata to prevent rapid uploads
+      return true;
     }
     
     // Check if a PTO request is approved (requires Firestore lookup)
@@ -86,8 +109,8 @@ service firebase.storage {
       // Documents cannot be uploaded if already marked as approved
       allow create: if isOwner(employeeId) && 
                        belongsToTenant(tenantId) &&
-                       isValidFileType() &&
-                       isValidFileSize();
+                       isValidScannedDocument() &&
+                       isWithinRateLimit();
       
       // Updates and deletes are not allowed once created (immutability for compliance)
       // Exception: can update metadata if not approved
@@ -97,6 +120,30 @@ service firebase.storage {
       
       // Only employers can delete documents, and only if not approved
       allow delete: if isEmployer() && 
+                       belongsToTenant(tenantId) &&
+                       isDocumentMutable();
+    }
+    
+    // NEW: Scanned documents from DocumentScanner component
+    // Supports both direct uploads and encrypted uploads
+    match /scanned-documents/{tenantId}/{userId}/{documentId}/{fileName} {
+      // Read access: owner or employer in same tenant
+      allow read: if (isOwner(userId) && belongsToTenant(tenantId)) ||
+                     (isEmployer() && belongsToTenant(tenantId));
+      
+      // Create: authenticated user uploading to their own folder with valid document
+      allow create: if isOwner(userId) && 
+                       belongsToTenant(tenantId) &&
+                       isValidScannedDocument() &&
+                       isWithinRateLimit();
+      
+      // Update: only metadata updates for owner, not file content
+      allow update: if isOwner(userId) && 
+                       belongsToTenant(tenantId) &&
+                       request.resource.size == resource.size; // No file content change
+      
+      // Delete: only owner or employer (with restrictions)
+      allow delete: if (isOwner(userId) || isEmployer()) && 
                        belongsToTenant(tenantId) &&
                        isDocumentMutable();
     }

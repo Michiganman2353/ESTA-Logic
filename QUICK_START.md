@@ -338,4 +338,106 @@ Once all items are checked, you're ready to develop!
 | Validate everything | `npm run ci:validate` |
 | Clean everything | `npm run clean` |
 
+---
+
+## DocumentScanner Component Usage
+
+The DocumentScanner component provides advanced document scanning capabilities:
+
+### Quick Example
+
+```tsx
+import { DocumentScanner } from './components/DocumentScanner';
+import { getStorage, ref } from 'firebase/storage';
+
+function DocumentUploadPage() {
+  const storage = getStorage();
+  const userId = 'user123';
+  const tenantId = 'tenant456';
+
+  const handleDocumentScanned = (file: File, metadata) => {
+    console.log('Document uploaded:', file.name);
+    console.log('Metadata:', metadata);
+    // Handle success - update UI, notify user, etc.
+  };
+
+  const storageRef = ref(
+    storage,
+    `scanned-documents/${tenantId}/${userId}/${Date.now()}.webp`
+  );
+
+  return (
+    <DocumentScanner
+      onDocumentScanned={handleDocumentScanned}
+      firebaseStorageRef={storageRef}
+      enableEdgeDetection={true}
+      enablePerspectiveCorrection={true}
+      compressionQuality={0.92}
+    />
+  );
+}
+```
+
+### Features
+
+- ✅ Web camera access with rear camera preference
+- ✅ Live alignment guide overlay
+- ✅ Zoom control (1x - 3x)
+- ✅ Auto edge detection (OpenCV.js)
+- ✅ Perspective correction
+- ✅ WebP compression
+- ✅ Optional AES-GCM encryption
+- ✅ Resumable Firebase Storage uploads
+- ✅ Signed URL upload support
+
+### Setup Requirements
+
+1. **Add OpenCV.js** to `apps/frontend/public/`:
+   ```bash
+   curl -L https://docs.opencv.org/4.x/opencv.js -o apps/frontend/public/opencv.js
+   ```
+
+2. **Enable Firebase Storage** in your Firebase project
+
+3. **Deploy Storage Rules**:
+   ```bash
+   firebase deploy --only storage
+   ```
+
+4. **Grant Camera Permissions** - The component will request camera access when started
+
+### Props Reference
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `onDocumentScanned` | `(file: File, metadata?: DocumentMetadata) => void` | Required | Callback when document is scanned |
+| `onCancel` | `() => void` | Optional | Callback when user cancels |
+| `firebaseStorageRef` | Firebase StorageReference | Optional | Direct Firebase Storage upload |
+| `fetchSignedUploadUrl` | `() => Promise<string>` | Optional | Fetch signed URL for upload |
+| `requestEphemeralKey` | `() => Promise<CryptoKey>` | Optional | Request encryption key |
+| `enableEncryption` | `boolean` | `false` | Enable client-side AES-GCM encryption |
+| `compressionQuality` | `number` | `0.92` | WebP quality (0-1) |
+| `maxFileSize` | `number` | 10MB | Maximum file size in bytes |
+| `enableEdgeDetection` | `boolean` | `true` | Enable auto edge detection |
+| `enablePerspectiveCorrection` | `boolean` | `true` | Enable perspective correction |
+
+### Troubleshooting
+
+**Camera not working?**
+- Ensure you're using HTTPS (required for `getUserMedia`)
+- Check browser permissions
+- Try a different browser
+
+**OpenCV errors?**
+- Verify `opencv.js` is in the `public/` folder
+- Check browser console for loading errors
+- Try disabling edge detection temporarily
+
+**Upload failures?**
+- Verify Firebase Storage rules are deployed
+- Check file size limits
+- Ensure user is authenticated
+
+For detailed integration instructions, see [MIGRATION.md](./MIGRATION.md#documentscanner-component-migration-guide).
+
 Happy coding! 🚀
