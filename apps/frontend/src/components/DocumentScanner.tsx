@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import './DocumentScanner.css';
 
 /**
  * DocumentScanner Component
@@ -18,8 +19,67 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 // OpenCV.js types (loaded from CDN or public/)
 declare global {
   interface Window {
-    cv: any;
+    cv: OpenCVInstance | undefined;
   }
+}
+
+interface OpenCVInstance {
+  Mat: unknown;
+  matFromImageData: (imageData: ImageData) => unknown;
+  cvtColor: (src: unknown, dst: unknown, code: number) => void;
+  GaussianBlur: (
+    src: unknown,
+    dst: unknown,
+    size: unknown,
+    sigma: number
+  ) => void;
+  Canny: (
+    src: unknown,
+    dst: unknown,
+    threshold1: number,
+    threshold2: number
+  ) => void;
+  findContours: (
+    image: unknown,
+    contours: unknown,
+    hierarchy: unknown,
+    mode: number,
+    method: number
+  ) => void;
+  contourArea: (contour: unknown) => number;
+  arcLength: (curve: unknown, closed: boolean) => number;
+  approxPolyDP: (
+    curve: unknown,
+    approx: unknown,
+    epsilon: number,
+    closed: boolean
+  ) => void;
+  getPerspectiveTransform: (src: unknown, dst: unknown) => unknown;
+  warpPerspective: (
+    src: unknown,
+    dst: unknown,
+    M: unknown,
+    dsize: unknown,
+    flags: number,
+    borderMode: number,
+    borderValue: unknown
+  ) => void;
+  imshow: (canvasElement: HTMLCanvasElement, mat: unknown) => void;
+  MatVector: new () => unknown;
+  Size: new (width: number, height: number) => unknown;
+  Scalar: new () => unknown;
+  COLOR_RGBA2GRAY: number;
+  RETR_EXTERNAL: number;
+  CHAIN_APPROX_SIMPLE: number;
+  INTER_LINEAR: number;
+  BORDER_CONSTANT: number;
+  CV_32FC2: number;
+  matFromArray: (
+    rows: number,
+    cols: number,
+    type: number,
+    data: number[]
+  ) => unknown;
 }
 
 export interface DocumentScannerProps {
@@ -28,7 +88,19 @@ export interface DocumentScannerProps {
   /** Optional cancel callback */
   onCancel?: () => void;
   /** Firebase Storage reference for direct upload */
-  firebaseStorageRef?: any;
+  firebaseStorageRef?: {
+    put: (file: File) => {
+      on: (
+        event: string,
+        onProgress: (snapshot: {
+          bytesTransferred: number;
+          totalBytes: number;
+        }) => void,
+        onError: (error: Error) => void,
+        onComplete: () => void
+      ) => void;
+    };
+  };
   /** Endpoint to fetch signed upload URL */
   fetchSignedUploadUrl?: () => Promise<string>;
   /** Endpoint to request ephemeral encryption key */
@@ -130,7 +202,7 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
           };
           document.body.appendChild(script);
         }
-      } catch (err) {
+      } catch (_err) {
         console.warn('OpenCV.js not available, edge detection disabled');
       }
     };
@@ -279,8 +351,8 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
         approx.delete();
 
         return points;
-      } catch (err) {
-        console.error('Edge detection error:', err);
+      } catch (_err) {
+        console.error('Edge detection error:', _err);
         return null;
       }
     },
@@ -291,10 +363,7 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
    * Apply perspective correction using OpenCV.js
    */
   const applyPerspectiveCorrection = useCallback(
-    (
-      imageData: ImageData,
-      edges: EdgePoints
-    ): HTMLCanvasElement | null => {
+    (imageData: ImageData, edges: EdgePoints): HTMLCanvasElement | null => {
       if (!opencvReady || !window.cv) return null;
 
       try {
@@ -376,8 +445,8 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
         dst.delete();
 
         return canvas;
-      } catch (err) {
-        console.error('Perspective correction error:', err);
+      } catch (_err) {
+        console.error('Perspective correction error:', _err);
         return null;
       }
     },
@@ -431,10 +500,7 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
         setDetectedEdges(edges);
 
         // Apply perspective correction if edges detected
-        if (
-          edges &&
-          enablePerspectiveCorrection
-        ) {
+        if (edges && enablePerspectiveCorrection) {
           const correctedCanvas = applyPerspectiveCorrection(imageData, edges);
           if (correctedCanvas) {
             processedCanvas = correctedCanvas;
@@ -488,10 +554,7 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
   /**
    * Encrypt blob using AES-GCM
    */
-  const encryptBlob = async (
-    blob: Blob,
-    key: CryptoKey
-  ): Promise<Blob> => {
+  const encryptBlob = async (blob: Blob, key: CryptoKey): Promise<Blob> => {
     const arrayBuffer = await blob.arrayBuffer();
     const iv = crypto.getRandomValues(new Uint8Array(12));
 
@@ -521,7 +584,7 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
 
     try {
       let finalBlob = scannedBlob;
-      let finalMetadata = { ...metadata };
+      const finalMetadata = { ...metadata };
 
       // Encrypt if enabled
       if (enableEncryption && requestEphemeralKey) {
@@ -558,17 +621,32 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
   /**
    * Upload to Firebase Storage (resumable)
    */
-  const uploadToFirebase = async (file: File, storageRef: any) => {
+  const uploadToFirebase = async (
+    file: File,
+    storageRef: {
+      put: (file: File) => {
+        on: (
+          event: string,
+          onProgress: (snapshot: {
+            bytesTransferred: number;
+            totalBytes: number;
+          }) => void,
+          onError: (error: Error) => void,
+          onComplete: () => void
+        ) => void;
+      };
+    }
+  ) => {
     const uploadTask = storageRef.put(file);
 
     uploadTask.on(
       'state_changed',
-      (snapshot: any) => {
+      (snapshot: { bytesTransferred: number; totalBytes: number }) => {
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         setUploadProgress(progress);
       },
-      (error: any) => {
+      (error: Error) => {
         throw error;
       },
       () => {

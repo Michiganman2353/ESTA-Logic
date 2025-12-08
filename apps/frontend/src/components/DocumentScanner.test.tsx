@@ -16,9 +16,10 @@ global.URL.revokeObjectURL = vi.fn();
 
 // Mock crypto.subtle
 const mockEncrypt = vi.fn();
-global.crypto.subtle = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(global.crypto.subtle as any) = {
   encrypt: mockEncrypt,
-} as any;
+};
 
 // Mock crypto.getRandomValues
 global.crypto.getRandomValues = vi.fn((arr: Uint8Array) => {
@@ -76,7 +77,9 @@ describe('DocumentScanner Component', () => {
 
       expect(screen.getByText('Document Scanner')).toBeInTheDocument();
       expect(screen.getByText('Start Camera')).toBeInTheDocument();
-      expect(screen.getByText(/Position document on a flat surface/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Position document on a flat surface/i)
+      ).toBeInTheDocument();
     });
 
     it('should show edge detection info when enabled', () => {
@@ -88,16 +91,15 @@ describe('DocumentScanner Component', () => {
         />
       );
 
-      expect(screen.getByText(/Auto edge detection enabled/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Auto edge detection enabled/i)
+      ).toBeInTheDocument();
     });
 
     it('should render cancel button', () => {
       const onCancel = vi.fn();
       render(
-        <DocumentScanner
-          onDocumentScanned={vi.fn()}
-          onCancel={onCancel}
-        />
+        <DocumentScanner onDocumentScanned={vi.fn()} onCancel={onCancel} />
       );
 
       const cancelButton = screen.getByText('Cancel');
@@ -144,7 +146,9 @@ describe('DocumentScanner Component', () => {
       fireEvent.click(startButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Unable to access camera/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Unable to access camera/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -158,7 +162,9 @@ describe('DocumentScanner Component', () => {
       fireEvent.click(startButton);
 
       await waitFor(() => {
-        expect(screen.getByText(/Unable to access camera/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Unable to access camera/i)
+        ).toBeInTheDocument();
       });
     });
   });
@@ -251,7 +257,10 @@ describe('DocumentScanner Component', () => {
       mockGetUserMedia.mockResolvedValue(mockStream);
 
       mockToBlob.mockImplementation((callback) => {
-        setTimeout(() => callback(new Blob(['test'], { type: 'image/webp' })), 100);
+        setTimeout(
+          () => callback(new Blob(['test'], { type: 'image/webp' })),
+          100
+        );
       });
 
       const onDocumentScanned = vi.fn();
@@ -277,7 +286,9 @@ describe('DocumentScanner Component', () => {
       mockGetUserMedia.mockResolvedValue(mockStream);
 
       // Create large blob (11MB)
-      const largeBlob = new Blob(['a'.repeat(11 * 1024 * 1024)], { type: 'image/webp' });
+      const largeBlob = new Blob(['a'.repeat(11 * 1024 * 1024)], {
+        type: 'image/webp',
+      });
       mockToBlob.mockImplementation((callback) => callback(largeBlob));
 
       const onDocumentScanned = vi.fn();
@@ -428,10 +439,7 @@ describe('DocumentScanner Component', () => {
     it('should call onCancel when cancel button is clicked', () => {
       const onCancel = vi.fn();
       render(
-        <DocumentScanner
-          onDocumentScanned={vi.fn()}
-          onCancel={onCancel}
-        />
+        <DocumentScanner onDocumentScanned={vi.fn()} onCancel={onCancel} />
       );
 
       const cancelButton = screen.getByText('Cancel');
@@ -449,10 +457,7 @@ describe('DocumentScanner Component', () => {
 
       const onCancel = vi.fn();
       render(
-        <DocumentScanner
-          onDocumentScanned={vi.fn()}
-          onCancel={onCancel}
-        />
+        <DocumentScanner onDocumentScanned={vi.fn()} onCancel={onCancel} />
       );
 
       const startButton = screen.getByText('Start Camera');
@@ -504,7 +509,9 @@ describe('DocumentScanner Component', () => {
         />
       );
 
-      expect(screen.queryByText(/Auto edge detection enabled/i)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Auto edge detection enabled/i)
+      ).not.toBeInTheDocument();
     });
 
     it('should work with perspective correction disabled', () => {
