@@ -209,12 +209,19 @@ export async function getFileMetadata(path: string): Promise<{
   const file = bucket.file(path);
   const [metadata] = await file.getMetadata();
 
-  // Safely extract size with proper typing
+  // Safely extract size with proper typing and validation
   const sizeValue = metadata.size;
-  const size =
-    typeof sizeValue === 'string'
-      ? parseInt(sizeValue, 10)
-      : Number(sizeValue) || 0;
+  let size = 0;
+
+  if (typeof sizeValue === 'string') {
+    size = parseInt(sizeValue, 10);
+  } else if (typeof sizeValue === 'number') {
+    size = sizeValue;
+  }
+
+  if (isNaN(size) || size < 0) {
+    throw new Error(`Invalid file size: ${sizeValue}`);
+  }
 
   // Safely extract custom metadata
   const customMeta = metadata.metadata || {};

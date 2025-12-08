@@ -181,9 +181,10 @@ export function shouldAcceptFile(scanResult: ScanResult): {
 /**
  * Creates a scan result cache key
  */
+import * as crypto from 'crypto';
+
 export function createScanCacheKey(fileBuffer: Buffer): string {
   // Use SHA-256 hash of file content as cache key
-  const crypto = require('crypto');
   const hash = crypto.createHash('sha256');
   hash.update(fileBuffer);
   return hash.digest('hex');

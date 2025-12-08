@@ -4,6 +4,31 @@
 
 The document capture feature provides production-grade document scanning and upload capabilities with security hardening, mobile fallbacks, and comprehensive validation.
 
+## Important Notes
+
+### Feature Status
+
+**Implemented:**
+
+- Camera access and control (desktop & mobile)
+- Permission management
+- Image capture and preview
+- EXIF orientation correction
+- Secure upload with validation
+- Mobile fallbacks (iOS Safari, Android WebView)
+- Backend file validation (magic bytes, size, MIME type)
+- Audit logging framework
+- Signed URL generation
+
+**In Development (Placeholder APIs):**
+
+- Advanced OpenCV processing (auto-crop, deskew, contrast enhancement)
+- ClamAV/VirusTotal antivirus integration
+- Rate limiting implementation
+- Post-upload processing pipeline
+
+These placeholder features have been designed and stubbed for future implementation. See CONTRIBUTING.md for implementation guidelines.
+
 ## Client-Side Configuration
 
 ### Environment Variables
@@ -83,6 +108,7 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ### Firebase Storage Rules
 
 The storage rules have been updated to include a new `/documents/{tenantId}/{userId}/` path with:
+
 - Content type restrictions (JPEG, PNG, WebP, PDF only)
 - Size limit (10MB max)
 - Authentication required
@@ -97,7 +123,10 @@ The storage rules have been updated to include a new `/documents/{tenantId}/{use
 2. Export it from `functions/src/index.ts`:
 
 ```typescript
-export { generateUploadUrl, onDocumentUploaded } from './document-upload-function';
+export {
+  generateUploadUrl,
+  onDocumentUploaded,
+} from './document-upload-function';
 ```
 
 3. Deploy:
@@ -127,6 +156,7 @@ ANTIVIRUS_SCANNER=mock
 ### Option 2: ClamAV (Self-Hosted)
 
 1. Install ClamAV:
+
 ```bash
 # Ubuntu/Debian
 sudo apt-get install clamav clamav-daemon
@@ -136,11 +166,13 @@ brew install clamav
 ```
 
 2. Start ClamAV daemon:
+
 ```bash
 sudo systemctl start clamav-daemon
 ```
 
 3. Configure:
+
 ```bash
 ANTIVIRUS_SCANNER=clamav
 CLAMAV_HOST=localhost
@@ -151,6 +183,7 @@ CLAMAV_PORT=3310
 
 1. Get API key: https://www.virustotal.com/gui/my-apikey
 2. Configure:
+
 ```bash
 ANTIVIRUS_SCANNER=virustotal
 VIRUSTOTAL_API_KEY=your-api-key-here
@@ -208,6 +241,7 @@ const logs = await queryAuditLogs({
 ### Cloud Monitoring
 
 Set up alerts for:
+
 - Failed uploads
 - Virus detections
 - Rate limit violations
@@ -272,6 +306,7 @@ Increase Cloud Function timeout:
 ## Support
 
 For issues or questions:
+
 1. Check the troubleshooting section above
 2. Review Firebase documentation
 3. Check OpenCV.js documentation
