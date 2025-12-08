@@ -150,6 +150,34 @@ service firebase.storage {
                        isDocumentMutable();
     }
     
+    // NEW: Document capture with tightened security
+    // Path: documents/{tenantId}/{userId}/{timestamp}-{filename}
+    match /documents/{tenantId}/{userId}/{fileName} {
+      // Read: owner or employer in same tenant
+      allow read: if (isOwner(userId) && belongsToTenant(tenantId)) ||
+                     (isEmployer() && belongsToTenant(tenantId));
+      
+      // Create: authenticated user uploading to their own folder
+      // Requires valid document type and size
+      allow create: if isOwner(userId) && 
+                       belongsToTenant(tenantId) &&
+                       (request.resource.contentType == 'image/jpeg' ||
+                        request.resource.contentType == 'image/png' ||
+                        request.resource.contentType == 'image/webp' ||
+                        request.resource.contentType == 'application/pdf') &&
+                       request.resource.size < 10 * 1024 * 1024 && // 10MB max
+                       request.resource.size > 0; // Not empty
+      
+      // Update: metadata only, no file content changes
+      allow update: if isOwner(userId) && 
+                       belongsToTenant(tenantId) &&
+                       request.resource.size == resource.size;
+      
+      // Delete: only owner or employer
+      allow delete: if (isOwner(userId) || isEmployer()) && 
+                       belongsToTenant(tenantId);
+    }
+    
     // Default: deny all other access
     match /{allPaths=**} {
       allow read, write: if false;
