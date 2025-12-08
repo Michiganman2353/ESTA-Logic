@@ -30,8 +30,10 @@ interface PermissionStatus {
 }
 
 // Lazy-loaded Camera and Capacitor modules
-let Camera: typeof import('@capacitor/camera').Camera | null = null;
-let Capacitor: typeof import('@capacitor/core').Capacitor | null = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let Camera: any = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let Capacitor: any = null;
 
 // Attempt to load Capacitor modules
 try {

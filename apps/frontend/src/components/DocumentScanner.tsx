@@ -115,6 +115,8 @@ export interface DocumentScannerProps {
   enableEdgeDetection?: boolean;
   /** Enable perspective correction */
   enablePerspectiveCorrection?: boolean;
+  /** OpenCV.js URL (default: /opencv.js) */
+  opencvUrl?: string;
 }
 
 export interface DocumentMetadata {
@@ -135,6 +137,18 @@ export interface EdgePoints {
 
 type ScanStep = 'setup' | 'capture' | 'process' | 'preview' | 'upload';
 
+/**
+ * Format bytes to human-readable size
+ */
+const formatBytes = (bytes: number, decimals = 2): string => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+};
+
 export const DocumentScanner: React.FC<DocumentScannerProps> = ({
   onDocumentScanned,
   onCancel,
@@ -146,6 +160,7 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
   maxFileSize = 10 * 1024 * 1024, // 10MB default
   enableEdgeDetection = true,
   enablePerspectiveCorrection = true,
+  opencvUrl = '/opencv.js',
 }) => {
   const [step, setStep] = useState<ScanStep>('setup');
   const [error, setError] = useState<string | null>(null);
@@ -190,7 +205,7 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
         } else {
           // Load from CDN or public folder
           const script = document.createElement('script');
-          script.src = '/opencv.js'; // Should be in public/
+          script.src = opencvUrl;
           script.async = true;
           script.onload = () => {
             if (window.cv && window.cv.Mat) {
@@ -214,7 +229,7 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
     return () => {
       stopCamera();
     };
-  }, [enableEdgeDetection]);
+  }, [enableEdgeDetection, opencvUrl]);
 
   /**
    * Start camera with rear-facing preference
@@ -269,12 +284,18 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
       if (!opencvReady || !window.cv) return null;
 
       try {
-        const cv = window.cv;
-        const src = cv.matFromImageData(imageData);
-        const gray = new cv.Mat();
-        const edges = new cv.Mat();
-        const contours = new cv.MatVector();
-        const hierarchy = new cv.Mat();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const cv: any = window.cv;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const src: any = cv.matFromImageData(imageData);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const gray: any = new cv.Mat();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const edges: any = new cv.Mat();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const contours: any = new cv.MatVector();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const hierarchy: any = new cv.Mat();
 
         // Convert to grayscale
         cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
@@ -319,7 +340,8 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
 
         // Get the corner points
         const contour = contours.get(maxContourIndex);
-        const approx = new cv.Mat();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const approx: any = new cv.Mat();
         const peri = cv.arcLength(contour, true);
         cv.approxPolyDP(contour, approx, 0.02 * peri, true);
 
@@ -336,10 +358,22 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
 
         // Extract corner points
         const points: EdgePoints = {
-          topLeft: { x: approx.data32S[0], y: approx.data32S[1] },
-          topRight: { x: approx.data32S[2], y: approx.data32S[3] },
-          bottomRight: { x: approx.data32S[4], y: approx.data32S[5] },
-          bottomLeft: { x: approx.data32S[6], y: approx.data32S[7] },
+          topLeft: {
+            x: approx.data32S?.[0] ?? 0,
+            y: approx.data32S?.[1] ?? 0,
+          },
+          topRight: {
+            x: approx.data32S?.[2] ?? 0,
+            y: approx.data32S?.[3] ?? 0,
+          },
+          bottomRight: {
+            x: approx.data32S?.[4] ?? 0,
+            y: approx.data32S?.[5] ?? 0,
+          },
+          bottomLeft: {
+            x: approx.data32S?.[6] ?? 0,
+            y: approx.data32S?.[7] ?? 0,
+          },
         };
 
         // Cleanup
@@ -367,8 +401,10 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
       if (!opencvReady || !window.cv) return null;
 
       try {
-        const cv = window.cv;
-        const src = cv.matFromImageData(imageData);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const cv: any = window.cv;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const src: any = cv.matFromImageData(imageData);
 
         // Calculate destination dimensions
         const width = Math.max(
@@ -393,7 +429,8 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
         );
 
         // Source points
-        const srcPoints = cv.matFromArray(4, 1, cv.CV_32FC2, [
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const srcPoints: any = cv.matFromArray(4, 1, cv.CV_32FC2, [
           edges.topLeft.x,
           edges.topLeft.y,
           edges.topRight.x,
@@ -405,7 +442,8 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
         ]);
 
         // Destination points
-        const dstPoints = cv.matFromArray(4, 1, cv.CV_32FC2, [
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const dstPoints: any = cv.matFromArray(4, 1, cv.CV_32FC2, [
           0,
           0,
           width,
@@ -417,10 +455,12 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
         ]);
 
         // Get perspective transform matrix
-        const M = cv.getPerspectiveTransform(srcPoints, dstPoints);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const M: any = cv.getPerspectiveTransform(srcPoints, dstPoints);
 
         // Apply transform
-        const dst = new cv.Mat();
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const dst: any = new cv.Mat();
         cv.warpPerspective(
           src,
           dst,
@@ -523,7 +563,7 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
       // Check file size
       if (blob.size > maxFileSize) {
         throw new Error(
-          `File size (${(blob.size / 1024 / 1024).toFixed(2)}MB) exceeds maximum (${(maxFileSize / 1024 / 1024).toFixed(2)}MB)`
+          `File size (${formatBytes(blob.size)}) exceeds maximum (${formatBytes(maxFileSize)})`
         );
       }
 

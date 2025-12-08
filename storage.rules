@@ -47,8 +47,10 @@ service firebase.storage {
     
     // Rate limiting check (requires metadata tracking)
     function isWithinRateLimit() {
-      // This is a placeholder - actual rate limiting should be done server-side
-      // Check upload timestamp metadata to prevent rapid uploads
+      // NOTE: This is a placeholder - actual rate limiting MUST be done server-side
+      // Storage rules cannot directly query Firestore for rate limit checks
+      // Server-side Cloud Functions should track and enforce rate limits
+      // See examples/server-side-upload-verification.ts for implementation
       return true;
     }
     

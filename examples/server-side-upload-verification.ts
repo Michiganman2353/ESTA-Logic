@@ -270,7 +270,7 @@ export const verifyDocumentUpload = functions.storage
  * Scheduled function to remove expired encryption keys.
  */
 export const cleanupExpiredKeys = functions.pubsub
-  .schedule('every 1 hours')
+  .schedule('every 1 hour')
   .onRun(async (context) => {
     const now = admin.firestore.Timestamp.now();
 
