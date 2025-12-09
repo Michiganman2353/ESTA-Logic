@@ -3,7 +3,7 @@
  *
  * The public-facing home page for ESTA Tracker that explains the service
  * and provides clear paths to registration for both employers and employees.
- * 
+ *
  * Features enterprise-grade blue design system with ESTA branding.
  */
 
@@ -14,7 +14,7 @@ export default function Landing() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen gradient-bg">
+    <div className="gradient-bg min-h-screen">
       {/* Navigation with ESTA branding */}
       <div className="fixed left-0 right-0 top-0 z-50">
         <Navigation />
@@ -26,7 +26,7 @@ export default function Landing() {
         <div className="pointer-events-none absolute left-0 top-0 h-full w-full overflow-hidden">
           <div className="bg-royal-400/20 animate-float absolute right-10 top-20 h-72 w-72 rounded-full blur-3xl"></div>
           <div
-            className="bg-sky-400/20 animate-float absolute bottom-10 left-10 h-96 w-96 rounded-full blur-3xl"
+            className="animate-float absolute bottom-10 left-10 h-96 w-96 rounded-full bg-sky-400/20 blur-3xl"
             style={{ animationDelay: '1s' }}
           ></div>
         </div>
@@ -34,19 +34,16 @@ export default function Landing() {
         <div className="relative z-10 mx-auto max-w-7xl pt-12">
           <div className="mx-auto max-w-4xl text-center">
             {/* Logo Integration */}
-            <div className="mb-8 flex justify-center animate-fade-in">
-              <img 
-                src="/logo-icon.svg" 
-                alt="ESTA Tracker" 
-                className="h-20 w-20 sm:h-24 sm:w-24 blue-glow"
+            <div className="animate-fade-in mb-8 flex justify-center">
+              <img
+                src="/logo-icon.svg"
+                alt="ESTA Tracker"
+                className="blue-glow h-20 w-20 sm:h-24 sm:w-24"
               />
             </div>
-            
+
             <h1 className="animate-fade-in-down mb-6 text-4xl font-extrabold text-gray-900 sm:text-5xl md:text-6xl dark:text-white">
-              Michigan{' '}
-              <span className="gradient-header">
-                ESTA Compliance
-              </span>{' '}
+              Michigan <span className="gradient-header">ESTA Compliance</span>{' '}
               Made Simple
             </h1>
             <p
@@ -57,14 +54,13 @@ export default function Landing() {
               Michigan&apos;s Earned Sick Time Act, and give your employees easy
               access to their balances. No more spreadsheets, no more guesswork.
             </p>
-            </p>
             <div
               className="animate-fade-in-up flex flex-col justify-center gap-4 sm:flex-row"
               style={{ animationDelay: '0.4s' }}
             >
               <button
                 onClick={() => navigate('/register')}
-                className="btn btn-primary px-8 py-4 text-lg shadow-lg shadow-royal-500/30 hover:shadow-xl hover:shadow-royal-500/40"
+                className="btn btn-primary shadow-royal-500/30 hover:shadow-royal-500/40 px-8 py-4 text-lg shadow-lg hover:shadow-xl"
                 data-testid="hero-get-started"
               >
                 Start Your Free Trial
@@ -87,7 +83,7 @@ export default function Landing() {
       </section>
 
       {/* Trust Indicators */}
-      <section className="border-y border-royal-200/50 bg-white/50 py-12 dark:border-royal-700/50 dark:bg-gray-800/50">
+      <section className="border-royal-200/50 dark:border-royal-700/50 border-y bg-white/50 py-12 dark:bg-gray-800/50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 gap-8 text-center md:grid-cols-4">
             <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
