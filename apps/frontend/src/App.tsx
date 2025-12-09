@@ -42,6 +42,7 @@ import { User } from '@/types';
 import { MaintenanceMode } from '@/components/MaintenanceMode';
 import { DebugPanel } from '@/components/DebugPanel';
 import { SkipLinks, FocusAnchor } from '@/components/SkipLinks';
+import { PageLoader } from '@/components/DesignSystem';
 
 // Eagerly load critical components that appear on first render
 import Login from '@/pages/Login';
@@ -57,6 +58,7 @@ const EmployerDashboard = lazy(() => import('@/pages/EmployerDashboard'));
 const AuditLog = lazy(() => import('@/pages/AuditLog'));
 const Settings = lazy(() => import('@/pages/Settings'));
 const Pricing = lazy(() => import('@/pages/Pricing'));
+const UIShowcase = lazy(() => import('@/pages/UIShowcase'));
 
 /**
  * Focus management component for route changes
@@ -84,22 +86,12 @@ function FocusManager() {
 /**
  * Loading fallback component for lazy-loaded routes
  */
-const PageLoader = () => (
-  <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
-    <div className="space-y-4 text-center">
-      <div className="relative">
-        <div className="border-primary-200 border-t-primary-600 mx-auto h-16 w-16 animate-spin rounded-full border-4"></div>
-      </div>
-      <div>
-        <div className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
-          Loading...
-        </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          Please wait while we load the page
-        </p>
-      </div>
-    </div>
-  </div>
+const PageLoaderFallback = () => (
+  <PageLoader
+    message="Loading..."
+    hint="Please wait while we load the page"
+    overlay={false}
+  />
 );
 
 function App() {
@@ -153,33 +145,13 @@ function App() {
   // Enhanced loading screen with progress indicator
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="space-y-4 text-center">
-          <div className="relative">
-            {/* Animated spinner */}
-            <div className="border-primary-200 border-t-primary-600 mx-auto h-16 w-16 animate-spin rounded-full border-4"></div>
-          </div>
-          <div>
-            <div className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
-              Loading ESTA Tracker
-            </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              {authLoading
-                ? 'Checking authentication...'
-                : 'Connecting to server...'}
-            </div>
-          </div>
-          {/* Show helpful info if loading takes too long */}
-          {retryCount > 0 && (
-            <div className="mx-auto mt-4 max-w-md rounded-lg bg-yellow-50 p-3 dark:bg-yellow-900/20">
-              <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                This is taking longer than expected. Please check your internet
-                connection.
-              </p>
-            </div>
-          )}
-        </div>
-      </div>
+      <PageLoader
+        message="Loading ESTA Tracker"
+        hint={
+          authLoading ? 'Checking authentication...' : 'Connecting to server...'
+        }
+        overlay={false}
+      />
     );
   }
 
@@ -280,7 +252,7 @@ function App() {
       {/* Main content area with focus anchor */}
       <FocusAnchor id="main-content" label="Main content" />
 
-      <Suspense fallback={<PageLoader />}>
+      <Suspense fallback={<PageLoaderFallback />}>
         <Routes>
           {/* Public routes - accessible without authentication */}
           <Route
@@ -318,6 +290,9 @@ function App() {
             }
           />
           <Route path="/pricing" element={<Pricing />} />
+
+          {/* UI Showcase (Development/Design) */}
+          <Route path="/ui-showcase" element={<UIShowcase />} />
 
           {/* Protected routes - require authentication */}
           {user ? (
