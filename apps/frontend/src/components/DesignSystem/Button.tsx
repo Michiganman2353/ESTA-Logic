@@ -23,12 +23,13 @@ import { ButtonHTMLAttributes, ReactNode } from 'react';
 import clsx from 'clsx';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'success';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   fullWidth?: boolean;
   leftIcon?: ReactNode;
   rightIcon?: ReactNode;
+  withGlow?: boolean;
 }
 
 export function Button({
@@ -39,17 +40,19 @@ export function Button({
   fullWidth = false,
   leftIcon,
   rightIcon,
+  withGlow = false,
   className,
   disabled,
   ...props
 }: ButtonProps) {
-  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transform';
   
   const variantClasses = {
-    primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 disabled:hover:bg-primary-600',
-    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 focus:ring-gray-500',
-    danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 disabled:hover:bg-red-600',
-    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 focus:ring-gray-500',
+    primary: 'bg-gradient-to-r from-royal-500 to-royal-600 text-white hover:from-royal-600 hover:to-royal-700 hover:shadow-lg hover:shadow-royal-500/30 focus:ring-royal-500 disabled:hover:from-royal-500 disabled:hover:to-royal-600 hover:scale-105 active:scale-95',
+    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 focus:ring-gray-500 hover:scale-105 active:scale-95',
+    danger: 'bg-red-600 text-white hover:bg-red-700 hover:shadow-lg hover:shadow-red-500/30 focus:ring-red-500 disabled:hover:bg-red-600 hover:scale-105 active:scale-95',
+    ghost: 'bg-transparent text-royal-600 hover:bg-royal-50 dark:text-royal-400 dark:hover:bg-royal-900/20 focus:ring-royal-500 hover:scale-105 active:scale-95',
+    success: 'bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 hover:shadow-lg hover:shadow-green-500/30 focus:ring-green-500 hover:scale-105 active:scale-95',
   };
 
   const sizeClasses = {
@@ -59,6 +62,7 @@ export function Button({
   };
 
   const widthClass = fullWidth ? 'w-full' : '';
+  const glowClass = withGlow && variant === 'primary' ? 'blue-glow hover:blue-glow-strong' : '';
 
   return (
     <button
@@ -67,6 +71,7 @@ export function Button({
         variantClasses[variant],
         sizeClasses[size],
         widthClass,
+        glowClass,
         className
       )}
       disabled={disabled || isLoading}
