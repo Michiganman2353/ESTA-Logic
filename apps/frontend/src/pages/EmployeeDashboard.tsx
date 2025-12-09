@@ -7,6 +7,7 @@ import {
   useAccrualNotifications,
   createESTANotification,
 } from '@/components/AccrualNotificationBanner.utils';
+import { Navigation } from '@/components/Navigation';
 
 interface EmployeeDashboardProps {
   user: User;
@@ -63,13 +64,16 @@ export default function EmployeeDashboard({ user }: EmployeeDashboardProps) {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <header className="bg-white shadow dark:bg-gray-800" role="banner">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+    <div className="gradient-bg min-h-screen">
+      {/* Navigation */}
+      <Navigation user={user} />
+
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="animate-fade-in-down mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+              <h1 className="gradient-header text-3xl font-bold">
                 My Sick Time
               </h1>
               <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
@@ -84,26 +88,19 @@ export default function EmployeeDashboard({ user }: EmployeeDashboardProps) {
             <nav className="mt-4 sm:mt-0" aria-label="Breadcrumb navigation">
               <a
                 href="/"
-                className="text-primary-600 hover:text-primary-700 focus:ring-primary-500 rounded text-sm focus:outline-none focus:ring-2 focus:ring-offset-2"
+                className="text-royal-600 hover:text-royal-700 focus:ring-royal-500 rounded text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
               >
                 ← Back to Dashboard
               </a>
             </nav>
           </div>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main
-        className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8"
-        role="main"
-        aria-label="Employee sick time dashboard"
-      >
         {/* Real-time Notifications */}
         <AccrualNotificationBanner
           notifications={notifications}
           onDismiss={removeNotification}
-          className="mb-6"
+          className="animate-fade-in mb-6"
         />
 
         {/* Quick Stats */}
