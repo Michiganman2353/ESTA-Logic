@@ -3,90 +3,48 @@
  *
  * The public-facing home page for ESTA Tracker that explains the service
  * and provides clear paths to registration for both employers and employees.
+ * 
+ * Features enterprise-grade blue design system with ESTA branding.
  */
 
 import { useNavigate } from 'react-router-dom';
+import { Navigation } from '@/components/Navigation';
 
 export default function Landing() {
   const navigate = useNavigate();
 
   return (
-    <div className="to-primary-50 min-h-screen bg-gradient-to-br from-gray-50 via-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      {/* Navigation Header */}
-      <header className="fixed left-0 right-0 top-0 z-50 border-b border-gray-200 bg-white/80 backdrop-blur-md dark:border-gray-700 dark:bg-gray-900/80">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <svg
-                className="text-primary-600 h-8 w-8"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-              </svg>
-              <span className="text-xl font-bold text-gray-900 dark:text-white">
-                ESTA Tracker
-              </span>
-            </div>
-            <nav className="hidden items-center space-x-6 md:flex">
-              <a
-                href="#features"
-                className="hover:text-primary-600 dark:hover:text-primary-400 text-gray-600 transition-colors dark:text-gray-300"
-              >
-                Features
-              </a>
-              <a
-                href="#how-it-works"
-                className="hover:text-primary-600 dark:hover:text-primary-400 text-gray-600 transition-colors dark:text-gray-300"
-              >
-                How It Works
-              </a>
-              <button
-                onClick={() => navigate('/pricing')}
-                className="hover:text-primary-600 dark:hover:text-primary-400 text-gray-600 transition-colors dark:text-gray-300"
-              >
-                Pricing
-              </button>
-              <button
-                onClick={() => navigate('/login')}
-                className="hover:text-primary-600 dark:hover:text-primary-400 text-gray-600 transition-colors dark:text-gray-300"
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => navigate('/register')}
-                className="btn btn-primary"
-              >
-                Get Started
-              </button>
-            </nav>
-            <div className="md:hidden">
-              <button
-                onClick={() => navigate('/register')}
-                className="btn btn-primary text-sm"
-              >
-                Get Started
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen gradient-bg">
+      {/* Navigation with ESTA branding */}
+      <div className="fixed left-0 right-0 top-0 z-50">
+        <Navigation />
+      </div>
 
       {/* Hero Section */}
       <section className="relative overflow-hidden px-4 pb-16 pt-24 sm:px-6 lg:px-8">
+        {/* Animated Background Orbs */}
         <div className="pointer-events-none absolute left-0 top-0 h-full w-full overflow-hidden">
-          <div className="bg-primary-400/20 animate-float absolute right-10 top-20 h-72 w-72 rounded-full blur-3xl"></div>
+          <div className="bg-royal-400/20 animate-float absolute right-10 top-20 h-72 w-72 rounded-full blur-3xl"></div>
           <div
-            className="bg-accent-400/20 animate-float absolute bottom-10 left-10 h-96 w-96 rounded-full blur-3xl"
+            className="bg-sky-400/20 animate-float absolute bottom-10 left-10 h-96 w-96 rounded-full blur-3xl"
             style={{ animationDelay: '1s' }}
           ></div>
         </div>
 
-        <div className="relative z-10 mx-auto max-w-7xl">
+        <div className="relative z-10 mx-auto max-w-7xl pt-12">
           <div className="mx-auto max-w-4xl text-center">
+            {/* Logo Integration */}
+            <div className="mb-8 flex justify-center animate-fade-in">
+              <img 
+                src="/logo-icon.svg" 
+                alt="ESTA Tracker" 
+                className="h-20 w-20 sm:h-24 sm:w-24 blue-glow"
+              />
+            </div>
+            
             <h1 className="animate-fade-in-down mb-6 text-4xl font-extrabold text-gray-900 sm:text-5xl md:text-6xl dark:text-white">
               Michigan{' '}
-              <span className="from-primary-600 to-accent-600 bg-gradient-to-r bg-clip-text text-transparent">
+              <span className="gradient-header">
                 ESTA Compliance
               </span>{' '}
               Made Simple
@@ -99,20 +57,21 @@ export default function Landing() {
               Michigan&apos;s Earned Sick Time Act, and give your employees easy
               access to their balances. No more spreadsheets, no more guesswork.
             </p>
+            </p>
             <div
               className="animate-fade-in-up flex flex-col justify-center gap-4 sm:flex-row"
               style={{ animationDelay: '0.4s' }}
             >
               <button
                 onClick={() => navigate('/register')}
-                className="btn btn-primary btn-lg px-8 py-4 text-lg"
+                className="btn btn-primary px-8 py-4 text-lg shadow-lg shadow-royal-500/30 hover:shadow-xl hover:shadow-royal-500/40"
                 data-testid="hero-get-started"
               >
                 Start Your Free Trial
               </button>
               <button
                 onClick={() => navigate('/pricing')}
-                className="btn btn-secondary btn-lg px-8 py-4 text-lg"
+                className="btn btn-secondary px-8 py-4 text-lg"
               >
                 View Pricing
               </button>
@@ -128,35 +87,35 @@ export default function Landing() {
       </section>
 
       {/* Trust Indicators */}
-      <section className="border-y border-gray-200 bg-white/50 py-12 dark:border-gray-700 dark:bg-gray-800/50">
+      <section className="border-y border-royal-200/50 bg-white/50 py-12 dark:border-royal-700/50 dark:bg-gray-800/50">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 gap-8 text-center md:grid-cols-4">
-            <div>
-              <div className="text-primary-600 dark:text-primary-400 text-3xl font-bold">
+            <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
+              <div className="text-royal-600 dark:text-royal-400 text-3xl font-bold">
                 100%
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 ESTA Compliant
               </div>
             </div>
-            <div>
-              <div className="text-primary-600 dark:text-primary-400 text-3xl font-bold">
+            <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              <div className="text-royal-600 dark:text-royal-400 text-3xl font-bold">
                 24/7
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 Employee Access
               </div>
             </div>
-            <div>
-              <div className="text-primary-600 dark:text-primary-400 text-3xl font-bold">
+            <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
+              <div className="text-royal-600 dark:text-royal-400 text-3xl font-bold">
                 Auto
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
                 Accrual Tracking
               </div>
             </div>
-            <div>
-              <div className="text-primary-600 dark:text-primary-400 text-3xl font-bold">
+            <div className="animate-fade-in" style={{ animationDelay: '0.4s' }}>
+              <div className="text-royal-600 dark:text-royal-400 text-3xl font-bold">
                 Safe
               </div>
               <div className="text-sm text-gray-600 dark:text-gray-400">
@@ -181,10 +140,10 @@ export default function Landing() {
           </div>
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <div className="glass-card group p-8 transition-all duration-300 hover:shadow-xl">
-              <div className="from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-800 mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br transition-transform group-hover:scale-110">
+            <div className="glass-card-hover group p-8">
+              <div className="from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br transition-transform group-hover:scale-110">
                 <svg
-                  className="text-primary-600 dark:text-primary-400 h-7 w-7"
+                  className="text-royal-600 dark:text-royal-400 h-7 w-7"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -206,7 +165,7 @@ export default function Landing() {
               </p>
             </div>
 
-            <div className="glass-card group p-8 transition-all duration-300 hover:shadow-xl">
+            <div className="glass-card-hover group p-8">
               <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-green-100 to-green-200 transition-transform group-hover:scale-110 dark:from-green-900 dark:to-green-800">
                 <svg
                   className="h-7 w-7 text-green-600 dark:text-green-400"
@@ -231,10 +190,10 @@ export default function Landing() {
               </p>
             </div>
 
-            <div className="glass-card group p-8 transition-all duration-300 hover:shadow-xl">
-              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 transition-transform group-hover:scale-110 dark:from-purple-900 dark:to-purple-800">
+            <div className="glass-card-hover group p-8">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-sky-100 to-sky-200 transition-transform group-hover:scale-110 dark:from-sky-900 dark:to-sky-800">
                 <svg
-                  className="h-7 w-7 text-purple-600 dark:text-purple-400"
+                  className="h-7 w-7 text-sky-600 dark:text-sky-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

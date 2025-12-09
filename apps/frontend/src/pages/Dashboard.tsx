@@ -24,6 +24,7 @@
 import { User } from '@/types';
 import { Link } from 'react-router-dom';
 import { TrustBadgeGroup } from '@/components/Settings';
+import { Navigation } from '@/components/Navigation';
 
 interface DashboardProps {
   user: User;
@@ -32,37 +33,7 @@ interface DashboardProps {
 export default function Dashboard({ user }: DashboardProps) {
   return (
     <div className="min-h-screen gradient-bg">
-      <nav className="glass-card shadow-lg backdrop-blur-md bg-white/70 dark:bg-gray-800/70 animate-fade-in-down">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-lg sm:text-xl font-bold gradient-header">
-                ESTA Tracker
-              </h1>
-            </div>
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <Link
-                to="/settings"
-                className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hidden sm:inline transition-colors"
-              >
-                Settings
-              </Link>
-              <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 truncate max-w-[150px] sm:max-w-none">
-                {user.name} ({user.role})
-              </span>
-              <button
-                onClick={() => {
-                  localStorage.removeItem('auth_token');
-                  window.location.href = '/login';
-                }}
-                className="btn btn-secondary text-xs sm:text-sm px-2 py-1 sm:px-4 sm:py-2"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navigation user={user} />
 
       <main className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
         <div className="px-0 sm:px-0">
@@ -103,9 +74,9 @@ export default function Dashboard({ user }: DashboardProps) {
               <Link to="/employee" className="glass-card-hover p-4 sm:p-6 group animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
                 <div className="flex items-start space-x-3 sm:space-x-4">
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-800 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                       <svg
-                        className="w-6 h-6 sm:w-7 sm:h-7 text-primary-600 dark:text-primary-400"
+                        className="w-6 h-6 sm:w-7 sm:h-7 text-royal-600 dark:text-royal-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -120,7 +91,7 @@ export default function Dashboard({ user }: DashboardProps) {
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 group-hover:text-royal-600 dark:group-hover:text-royal-400 transition-colors">
                       Employee Dashboard
                     </h3>
                     <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
@@ -135,9 +106,9 @@ export default function Dashboard({ user }: DashboardProps) {
               <Link to="/employer" className="glass-card-hover p-4 sm:p-6 group animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
                 <div className="flex items-start space-x-3 sm:space-x-4">
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-800 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                       <svg
-                        className="w-6 h-6 sm:w-7 sm:h-7 text-primary-600 dark:text-primary-400"
+                        className="w-6 h-6 sm:w-7 sm:h-7 text-royal-600 dark:text-royal-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -152,7 +123,7 @@ export default function Dashboard({ user }: DashboardProps) {
                     </div>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 group-hover:text-royal-600 dark:group-hover:text-royal-400 transition-colors">
                       Employer Dashboard
                     </h3>
                     <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
@@ -166,9 +137,9 @@ export default function Dashboard({ user }: DashboardProps) {
             <Link to="/audit" className="glass-card-hover p-4 sm:p-6 group animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <div className="flex items-start space-x-3 sm:space-x-4">
                 <div className="flex-shrink-0">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-800 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                     <svg
-                      className="w-6 h-6 sm:w-7 sm:h-7 text-primary-600 dark:text-primary-400"
+                      className="w-6 h-6 sm:w-7 sm:h-7 text-royal-600 dark:text-royal-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -183,7 +154,7 @@ export default function Dashboard({ user }: DashboardProps) {
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 group-hover:text-royal-600 dark:group-hover:text-royal-400 transition-colors">
                     Audit Trail
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
@@ -196,9 +167,9 @@ export default function Dashboard({ user }: DashboardProps) {
             <Link to="/settings" className="glass-card-hover p-4 sm:p-6 group animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
               <div className="flex items-start space-x-3 sm:space-x-4">
                 <div className="flex-shrink-0">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-800 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
                     <svg
-                      className="w-6 h-6 sm:w-7 sm:h-7 text-primary-600 dark:text-primary-400"
+                      className="w-6 h-6 sm:w-7 sm:h-7 text-royal-600 dark:text-royal-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -219,7 +190,7 @@ export default function Dashboard({ user }: DashboardProps) {
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 group-hover:text-royal-600 dark:group-hover:text-royal-400 transition-colors">
                     Settings
                   </h3>
                   <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">

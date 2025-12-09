@@ -73,7 +73,7 @@ export function LoadingSpinner({
     className
   );
 
-  const colorClass = color || 'text-primary-600';
+  const colorClass = color || 'text-royal-500';
 
   const renderSpinner = () => {
     switch (variant) {
@@ -240,22 +240,36 @@ export function PageLoader({
       className={clsx(
         'flex min-h-screen items-center justify-center',
         overlay
-          ? 'fixed inset-0 z-50 bg-gray-50/80 backdrop-blur-sm dark:bg-gray-900/80'
-          : 'bg-gray-50 dark:bg-gray-900'
+          ? 'fixed inset-0 z-50 bg-gradient-to-br from-royal-50/90 via-sky-50/90 to-white/90 backdrop-blur-sm dark:from-navy-900/90 dark:via-navy-800/90 dark:to-gray-900/90'
+          : 'gradient-bg'
       )}
       role="status"
       aria-live="polite"
       aria-label={message}
     >
-      <div className="space-y-4 text-center">
-        <LoadingSpinner variant="circular" size="xl" />
+      <div className="space-y-6 text-center animate-fade-in">
+        {/* Branded Logo Loader */}
+        <div className="relative inline-block">
+          <div className="absolute inset-0 blue-glow animate-glow rounded-full"></div>
+          <img 
+            src="/logo-icon.svg" 
+            alt="ESTA Tracker" 
+            className="w-24 h-24 animate-pulse relative z-10"
+          />
+        </div>
         <div>
-          <div className="mb-2 text-xl font-semibold text-gray-900 dark:text-white">
+          <div className="mb-2 text-2xl font-bold gradient-header animate-slide-up">
             {message}
           </div>
           {hint && (
-            <p className="text-sm text-gray-600 dark:text-gray-400">{hint}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+              {hint}
+            </p>
           )}
+        </div>
+        {/* Loading bar */}
+        <div className="w-64 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mx-auto">
+          <div className="h-full bg-gradient-to-r from-royal-500 to-sky-400 animate-shimmer" style={{ width: '40%' }}></div>
         </div>
       </div>
     </div>

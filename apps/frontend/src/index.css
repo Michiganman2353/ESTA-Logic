@@ -7,6 +7,12 @@
   line-height: 1.5;
   font-weight: 400;
 
+  /* ESTA Tracker Blue Theme Variables */
+  --color-navy-deep: #0A1E45;
+  --color-royal-blue: #1E63FF;
+  --color-sky-blue: #74B7FF;
+  --color-graphite: #1B1B1B;
+  
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424;
@@ -15,6 +21,26 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 body {
@@ -33,26 +59,52 @@ body {
 @layer components {
   .btn {
     @apply px-4 py-2 rounded-lg font-medium transition-all duration-300 transform;
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
 
   .btn-primary {
-    @apply bg-gradient-to-r from-primary-600 to-primary-700 text-white hover:from-primary-700 hover:to-primary-800 hover:shadow-lg hover:scale-105 active:scale-95 disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100;
+    @apply bg-gradient-to-r from-royal-500 to-royal-600 text-white;
+    @apply hover:from-royal-600 hover:to-royal-700 hover:shadow-lg hover:shadow-royal-500/30;
+    @apply hover:scale-105 active:scale-95;
+    @apply disabled:bg-gray-400 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:shadow-none;
+    @apply focus:ring-royal-500;
   }
 
   .btn-secondary {
-    @apply bg-gray-200 text-gray-900 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600 hover:shadow-md hover:scale-105 active:scale-95;
+    @apply bg-gray-200 text-gray-900 hover:bg-gray-300;
+    @apply dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600;
+    @apply hover:shadow-md hover:scale-105 active:scale-95;
+    @apply focus:ring-gray-500;
   }
 
   .btn-danger {
-    @apply bg-red-600 text-white hover:bg-red-700 hover:shadow-lg hover:scale-105 active:scale-95;
+    @apply bg-red-600 text-white hover:bg-red-700;
+    @apply hover:shadow-lg hover:shadow-red-500/30 hover:scale-105 active:scale-95;
+    @apply focus:ring-red-500;
   }
 
   .btn-success {
-    @apply bg-gradient-to-r from-green-600 to-green-700 text-white hover:from-green-700 hover:to-green-800 hover:shadow-lg;
+    @apply bg-gradient-to-r from-green-600 to-green-700 text-white;
+    @apply hover:from-green-700 hover:to-green-800 hover:shadow-lg hover:shadow-green-500/30;
+    @apply focus:ring-green-500;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-royal-600 hover:bg-royal-50;
+    @apply dark:text-royal-400 dark:hover:bg-royal-900/20;
+    @apply hover:scale-105 active:scale-95;
+    @apply focus:ring-royal-500;
   }
 
   .input {
-    @apply px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 dark:bg-gray-800 dark:border-gray-600 dark:text-white transition-all duration-300;
+    @apply px-3 py-2 border border-gray-300 rounded-lg;
+    @apply focus:outline-none focus:ring-2 focus:ring-royal-500 focus:border-transparent;
+    @apply text-gray-900 dark:bg-gray-800 dark:border-gray-600 dark:text-white;
+    @apply transition-all duration-300;
+  }
+
+  .input:focus {
+    @apply shadow-md shadow-royal-500/20;
   }
 
   .input-floating {
@@ -60,7 +112,10 @@ body {
   }
 
   .label-floating {
-    @apply absolute left-3 -top-2.5 bg-white dark:bg-gray-900 px-1 text-sm text-gray-600 dark:text-gray-400 transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-primary-600;
+    @apply absolute left-3 -top-2.5 bg-white dark:bg-gray-900 px-1 text-sm text-gray-600 dark:text-gray-400;
+    @apply transition-all;
+    @apply peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2;
+    @apply peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-royal-600;
   }
 
   .card {
@@ -71,26 +126,50 @@ body {
     @apply card hover:shadow-xl hover:scale-[1.02] hover:-translate-y-1;
   }
 
+  .card-gradient {
+    @apply card;
+    @apply bg-gradient-to-br from-white via-royal-50/30 to-sky-50/30;
+    @apply dark:from-gray-800 dark:via-navy-900/30 dark:to-royal-900/20;
+  }
+
   .glass-card {
-    @apply backdrop-blur-md bg-white/70 dark:bg-gray-800/70 rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 transition-all duration-300;
+    @apply backdrop-blur-md bg-white/70 dark:bg-gray-800/70;
+    @apply rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50;
+    @apply transition-all duration-300;
   }
 
   .glass-card-hover {
-    @apply glass-card hover:shadow-2xl hover:bg-white/80 dark:hover:bg-gray-800/80 hover:scale-[1.02] hover:-translate-y-1;
+    @apply glass-card hover:shadow-2xl;
+    @apply hover:bg-white/80 dark:hover:bg-gray-800/80;
+    @apply hover:scale-[1.02] hover:-translate-y-1;
   }
 
   .gradient-header {
-    @apply bg-gradient-to-r from-primary-600 via-purple-600 to-accent-600 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-navy-900 via-royal-500 to-sky-400;
+    @apply bg-clip-text text-transparent;
   }
 
   .gradient-bg {
-    @apply bg-gradient-to-br from-primary-50 via-purple-50 to-accent-50 dark:from-gray-900 dark:via-primary-900/20 dark:to-accent-900/20;
+    @apply bg-gradient-to-br from-royal-50 via-sky-50 to-white;
+    @apply dark:from-gray-900 dark:via-navy-900 dark:to-gray-800;
+  }
+
+  .gradient-bg-dark {
+    @apply bg-gradient-to-br from-navy-900 via-navy-800 to-royal-900;
   }
 
   .shimmer-bg {
     @apply bg-gradient-to-r from-transparent via-white/60 dark:via-white/10 to-transparent;
     background-size: 1000px 100%;
     animation: shimmer 2s linear infinite;
+  }
+
+  .blue-glow {
+    box-shadow: 0 0 20px rgba(30, 99, 255, 0.3), 0 0 40px rgba(30, 99, 255, 0.1);
+  }
+
+  .blue-glow-strong {
+    box-shadow: 0 0 30px rgba(30, 99, 255, 0.5), 0 0 60px rgba(30, 99, 255, 0.2);
   }
 
   .animated-border {
