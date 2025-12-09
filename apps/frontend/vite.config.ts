@@ -86,6 +86,8 @@ export default defineConfig(({ mode }) => {
       sourcemap: true,
       // Target modern browsers that support ES modules
       target: 'es2020',
+      // Enable CSS code splitting
+      cssCodeSplit: true,
       // Performance optimizations
       rollupOptions: {
         output: {
@@ -93,11 +95,43 @@ export default defineConfig(({ mode }) => {
             // Split vendor code for better caching
             'react-vendor': ['react', 'react-dom', 'react-router-dom'],
             'date-vendor': ['date-fns'],
+            'firebase-vendor': [
+              'firebase/app',
+              'firebase/auth',
+              'firebase/firestore',
+              'firebase/storage',
+            ],
           },
+          // Optimize asset file names for better caching
+          assetFileNames: (assetInfo) => {
+            const info = assetInfo.name?.split('.') ?? [];
+            const ext = info[info.length - 1];
+            // Separate CSS and other assets for better caching
+            if (ext === 'css') {
+              return 'assets/css/[name]-[hash][extname]';
+            }
+            // Images and other assets
+            if (/png|jpe?g|svg|gif|tiff|bmp|ico/i.test(ext)) {
+              return 'assets/images/[name]-[hash][extname]';
+            }
+            // Fonts
+            if (/woff2?|eot|ttf|otf/i.test(ext)) {
+              return 'assets/fonts/[name]-[hash][extname]';
+            }
+            // Default
+            return 'assets/[name]-[hash][extname]';
+          },
+          // Optimize chunk file names
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          entryFileNames: 'assets/js/[name]-[hash].js',
         },
       },
       // Chunk size warning limit
       chunkSizeWarningLimit: 1000,
+      // Minify settings
+      minify: 'esbuild',
+      // CSS minify
+      cssMinify: true,
     },
   };
 });
