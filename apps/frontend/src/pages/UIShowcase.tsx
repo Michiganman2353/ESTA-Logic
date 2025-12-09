@@ -21,10 +21,12 @@ import {
   InlineLoader,
   SkeletonLoader,
   SkeletonCard,
+} from '@/components/DesignSystem';
+import {
   ResponsiveCard,
   ResponsiveGrid,
   ResponsiveStatCard,
-} from '@/components/DesignSystem';
+} from '@/components/ResponsiveCard';
 import { LoadingButton } from '@/components/LoadingButton';
 
 export default function UIShowcase() {
