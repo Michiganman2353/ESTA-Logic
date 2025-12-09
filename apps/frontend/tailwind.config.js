@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -74,11 +71,15 @@ export default {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'gradient-conic':
+          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
         'gradient-mesh': 'linear-gradient(135deg, var(--tw-gradient-stops))',
-        'gradient-navy-royal': 'linear-gradient(135deg, #0A1E45 0%, #1E63FF 100%)',
-        'gradient-royal-sky': 'linear-gradient(135deg, #1E63FF 0%, #74B7FF 100%)',
-        'gradient-blue-glow': 'radial-gradient(circle at center, #1E63FF 0%, transparent 70%)',
+        'gradient-navy-royal':
+          'linear-gradient(135deg, #0A1E45 0%, #1E63FF 100%)',
+        'gradient-royal-sky':
+          'linear-gradient(135deg, #1E63FF 0%, #74B7FF 100%)',
+        'gradient-blue-glow':
+          'radial-gradient(circle at center, #1E63FF 0%, transparent 70%)',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
@@ -86,16 +87,16 @@ export default {
         'fade-in-down': 'fadeInDown 0.6s ease-out',
         'slide-in-right': 'slideInRight 0.5s ease-out',
         'slide-in-left': 'slideInLeft 0.5s ease-out',
+        'slide-up': 'slideUp 0.4s ease-out',
         'scale-in': 'scaleIn 0.3s ease-out',
         'bounce-soft': 'bounceSoft 0.5s ease-in-out',
-        'shimmer': 'shimmer 2s linear infinite',
-        'float': 'float 3s ease-in-out infinite',
+        shimmer: 'shimmer 2s linear infinite',
+        float: 'float 3s ease-in-out infinite',
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-        'shake': 'shake 0.5s ease-in-out',
-        'glow': 'glow 2s ease-in-out infinite',
-        'slide-up': 'slideUp 0.4s ease-out',
-        'counter': 'counter 0.8s ease-out',
-        'ripple': 'ripple 0.6s ease-out',
+        shake: 'shake 0.5s ease-in-out',
+        glow: 'glow 2s ease-in-out infinite',
+        counter: 'counter 0.8s ease-out',
+        ripple: 'ripple 0.6s ease-out',
       },
       keyframes: {
         fadeIn: {
@@ -140,11 +141,13 @@ export default {
           '20%, 40%, 60%, 80%': { transform: 'translateX(5px)' },
         },
         glow: {
-          '0%, 100%': { 
-            boxShadow: '0 0 20px rgba(30, 99, 255, 0.3), 0 0 40px rgba(30, 99, 255, 0.1)',
+          '0%, 100%': {
+            boxShadow:
+              '0 0 20px rgba(30, 99, 255, 0.3), 0 0 40px rgba(30, 99, 255, 0.1)',
           },
-          '50%': { 
-            boxShadow: '0 0 30px rgba(30, 99, 255, 0.5), 0 0 60px rgba(30, 99, 255, 0.2)',
+          '50%': {
+            boxShadow:
+              '0 0 30px rgba(30, 99, 255, 0.5), 0 0 60px rgba(30, 99, 255, 0.2)',
           },
         },
         slideUp: {
@@ -166,7 +169,5 @@ export default {
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/container-queries'),
-  ],
-}
+  plugins: [require('@tailwindcss/container-queries')],
+};
