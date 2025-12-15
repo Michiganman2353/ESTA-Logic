@@ -3,6 +3,13 @@
   "linter": { "enabled": true },
   "javascript": { "formatter": { "quoteStyle": "single" } },
   "files": {
-    "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.json", "**/*.gleam"]
+    "include": [
+      "**/*.ts",
+      "**/*.tsx",
+      "**/*.js",
+      "**/*.jsx",
+      "**/*.json",
+      "**/*.gleam"
+    ]
   }
 }
