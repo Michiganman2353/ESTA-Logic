@@ -88,7 +88,11 @@ describe('Secure Uploader', () => {
       const file = new File([blob], 'test.jpg', { type: 'image/jpeg' });
       if (!file.slice(0, 12).arrayBuffer) {
         // Polyfill for test environment
-        (file.slice(0, 12) as any).arrayBuffer = async () => jpegHeader.buffer;
+        (
+          file.slice(0, 12) as unknown as {
+            arrayBuffer: () => Promise<ArrayBuffer>;
+          }
+        ).arrayBuffer = async () => jpegHeader.buffer;
       }
 
       const result = await validateMagicBytes(file);
@@ -105,7 +109,11 @@ describe('Secure Uploader', () => {
       const file = new File([blob], 'test.png', { type: 'image/png' });
 
       // Polyfill for test environment
-      (file.slice(0, 12) as any).arrayBuffer = async () => pngHeader.buffer;
+      (
+        file.slice(0, 12) as unknown as {
+          arrayBuffer: () => Promise<ArrayBuffer>;
+        }
+      ).arrayBuffer = async () => pngHeader.buffer;
 
       const result = await validateMagicBytes(file);
 
@@ -132,7 +140,11 @@ describe('Secure Uploader', () => {
       const file = new File([blob], 'test.webp', { type: 'image/webp' });
 
       // Polyfill for test environment
-      (file.slice(0, 12) as any).arrayBuffer = async () => webpHeader.buffer;
+      (
+        file.slice(0, 12) as unknown as {
+          arrayBuffer: () => Promise<ArrayBuffer>;
+        }
+      ).arrayBuffer = async () => webpHeader.buffer;
 
       const result = await validateMagicBytes(file);
 
@@ -146,7 +158,11 @@ describe('Secure Uploader', () => {
       const file = new File([blob], 'test.pdf', { type: 'application/pdf' });
 
       // Polyfill for test environment
-      (file.slice(0, 12) as any).arrayBuffer = async () => pdfHeader.buffer;
+      (
+        file.slice(0, 12) as unknown as {
+          arrayBuffer: () => Promise<ArrayBuffer>;
+        }
+      ).arrayBuffer = async () => pdfHeader.buffer;
 
       const result = await validateMagicBytes(file);
 
@@ -162,7 +178,11 @@ describe('Secure Uploader', () => {
       });
 
       // Polyfill for test environment
-      (file.slice(0, 12) as any).arrayBuffer = async () => unknownHeader.buffer;
+      (
+        file.slice(0, 12) as unknown as {
+          arrayBuffer: () => Promise<ArrayBuffer>;
+        }
+      ).arrayBuffer = async () => unknownHeader.buffer;
 
       const result = await validateMagicBytes(file);
 
