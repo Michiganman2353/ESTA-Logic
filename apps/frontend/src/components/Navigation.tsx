@@ -1,9 +1,9 @@
 /**
  * Navigation Component
- * 
+ *
  * Enterprise-grade navigation bar with ESTA Tracker branding.
  * Features responsive design with mobile drawer menu.
- * 
+ *
  * Features:
  * - Branded logo integration
  * - Responsive mobile/desktop layouts
@@ -45,22 +45,22 @@ export function Navigation({ user, onLogout, className }: NavigationProps) {
     <nav
       id="main-navigation"
       className={clsx(
-        'glass-card shadow-lg backdrop-blur-md animate-fade-in-down',
-        'border-b border-royal-500/20',
+        'glass-card animate-fade-in-down shadow-lg backdrop-blur-md',
+        'border-royal-500/20 border-b',
         className
       )}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo Section */}
-          <Link to="/" className="flex items-center space-x-3 group">
+          <Link to="/" className="group flex items-center space-x-3">
             <img
               src="/logo-icon.svg"
               alt="ESTA Tracker"
               className="h-10 w-10 transition-transform group-hover:scale-110"
             />
             <div className="hidden sm:block">
-              <span className="text-xl font-bold gradient-header">
+              <span className="gradient-header text-xl font-bold">
                 ESTA Tracker
               </span>
               <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -71,10 +71,10 @@ export function Navigation({ user, onLogout, className }: NavigationProps) {
 
           {/* Desktop Navigation */}
           {user ? (
-            <div className="hidden md:flex items-center space-x-6">
+            <div className="hidden items-center space-x-6 md:flex">
               <Link
                 to="/settings"
-                className="text-sm text-gray-700 dark:text-gray-300 hover:text-royal-600 dark:hover:text-royal-400 transition-colors"
+                className="hover:text-royal-600 dark:hover:text-royal-400 text-sm text-gray-700 transition-colors dark:text-gray-300"
               >
                 Settings
               </Link>
@@ -89,17 +89,17 @@ export function Navigation({ user, onLogout, className }: NavigationProps) {
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="btn btn-secondary text-sm px-4 py-2"
+                  className="btn btn-secondary px-4 py-2 text-sm"
                 >
                   Logout
                 </button>
               </div>
             </div>
           ) : (
-            <div className="hidden md:flex items-center space-x-4">
+            <div className="hidden items-center space-x-4 md:flex">
               <button
                 onClick={() => navigate('/login')}
-                className="text-sm text-gray-700 dark:text-gray-300 hover:text-royal-600 dark:hover:text-royal-400 transition-colors"
+                className="hover:text-royal-600 dark:hover:text-royal-400 text-sm text-gray-700 transition-colors dark:text-gray-300"
               >
                 Sign In
               </button>
@@ -116,7 +116,7 @@ export function Navigation({ user, onLogout, className }: NavigationProps) {
           <div className="md:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-royal-50 dark:hover:bg-royal-900/20 transition-colors"
+              className="hover:bg-royal-50 dark:hover:bg-royal-900/20 rounded-lg p-2 text-gray-700 transition-colors dark:text-gray-300"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
@@ -155,24 +155,24 @@ export function Navigation({ user, onLogout, className }: NavigationProps) {
 
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-gray-200 dark:border-gray-700 animate-slide-in-right">
-          <div className="px-4 py-4 space-y-4 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md">
+        <div className="animate-slide-in-right border-t border-gray-200 md:hidden dark:border-gray-700">
+          <div className="space-y-4 bg-white/90 px-4 py-4 backdrop-blur-md dark:bg-gray-800/90">
             {user ? (
               <>
-                <div className="pb-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="border-b border-gray-200 pb-4 dark:border-gray-700">
                   <p className="text-sm font-medium text-gray-900 dark:text-white">
                     {user.name}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     {user.email}
                   </p>
-                  <p className="text-xs text-royal-600 dark:text-royal-400 mt-1">
+                  <p className="text-royal-600 dark:text-royal-400 mt-1 text-xs">
                     {user.role}
                   </p>
                 </div>
                 <Link
                   to="/settings"
-                  className="block text-sm text-gray-700 dark:text-gray-300 hover:text-royal-600 dark:hover:text-royal-400 transition-colors"
+                  className="hover:text-royal-600 dark:hover:text-royal-400 block text-sm text-gray-700 transition-colors dark:text-gray-300"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   Settings
@@ -194,7 +194,7 @@ export function Navigation({ user, onLogout, className }: NavigationProps) {
                     navigate('/login');
                     setMobileMenuOpen(false);
                   }}
-                  className="block w-full text-left text-sm text-gray-700 dark:text-gray-300 hover:text-royal-600 dark:hover:text-royal-400 transition-colors"
+                  className="hover:text-royal-600 dark:hover:text-royal-400 block w-full text-left text-sm text-gray-700 transition-colors dark:text-gray-300"
                 >
                   Sign In
                 </button>

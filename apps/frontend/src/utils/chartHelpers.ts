@@ -1,27 +1,33 @@
 /**
  * Chart Helper Utilities
- * 
+ *
  * Provides utility functions for preparing and formatting data
  * for charts and visualizations in the ESTA Tracker application.
- * 
+ *
  * Features:
  * - Data aggregation by time period (daily, weekly, monthly)
  * - Color scheme generation for charts
  * - Data formatting for common chart types
  * - Trend calculation utilities
  * - Responsive chart configuration helpers
- * 
+ *
  * Uses:
  * - Date-fns for date manipulation (if available)
  * - Pure functions for testability
- * 
+ *
  * Best Practices:
  * - Keep chart data structures consistent
  * - Use semantic color schemes
  * - Handle edge cases (empty data, single data point)
  */
 
-import { format, parseISO, startOfWeek, startOfMonth, startOfYear } from 'date-fns';
+import {
+  format,
+  parseISO,
+  startOfWeek,
+  startOfMonth,
+  startOfYear,
+} from 'date-fns';
 
 export interface ChartDataPoint {
   label: string;
@@ -142,7 +148,7 @@ export function formatPieChartData(
   return data.map((item, index) => {
     const value = item[valueKey] as number;
     const percentage = total > 0 ? (value / total) * 100 : 0;
-    
+
     return {
       label: `${item[labelKey]} (${percentage.toFixed(1)}%)`,
       value,
@@ -157,18 +163,22 @@ export function formatPieChartData(
  * @param windowSize - Size of the moving average window
  * @returns Array of moving average values
  */
-export function calculateMovingAverage(data: number[], windowSize: number): number[] {
+export function calculateMovingAverage(
+  data: number[],
+  windowSize: number
+): number[] {
   const result: number[] = [];
 
   for (let i = 0; i < data.length; i++) {
     const currentValue = data[i];
     if (currentValue === undefined) continue;
-    
+
     if (i < windowSize - 1) {
       result.push(currentValue); // Not enough data for average yet
     } else {
       const window = data.slice(i - windowSize + 1, i + 1);
-      const average = window.reduce((sum, val) => sum + (val ?? 0), 0) / windowSize;
+      const average =
+        window.reduce((sum, val) => sum + (val ?? 0), 0) / windowSize;
       result.push(average);
     }
   }
@@ -243,8 +253,8 @@ export function prepareTimeSeriesData(
   fillMissingDates: boolean = false
 ): TimeSeriesDataPoint[] {
   // Sort by date
-  const sorted = [...data].sort((a, b) => 
-    new Date(a.date).getTime() - new Date(b.date).getTime()
+  const sorted = [...data].sort(
+    (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
   if (!fillMissingDates || sorted.length < 2) {

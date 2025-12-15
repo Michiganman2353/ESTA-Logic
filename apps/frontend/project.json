@@ -15,11 +15,7 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "node ../../scripts/check-envs.js",
-          "tsc",
-          "vite build"
-        ],
+        "commands": ["node ../../scripts/check-envs.js", "tsc", "vite build"],
         "cwd": "apps/frontend",
         "parallel": false
       },

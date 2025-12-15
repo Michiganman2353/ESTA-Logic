@@ -50,20 +50,20 @@ function parseCSV(csvData: string): EmployeeRow[] {
   if (!firstLine) {
     throw new Error('CSV file is empty or has no header row');
   }
-  const headers = firstLine.split(',').map(h => h.trim().toLowerCase());
-  
+  const headers = firstLine.split(',').map((h) => h.trim().toLowerCase());
+
   const employees: EmployeeRow[] = [];
-  
+
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i];
     if (!line) continue;
-    const values = line.split(',').map(v => v.trim());
+    const values = line.split(',').map((v) => v.trim());
     const employee: any = {};
-    
+
     headers.forEach((header, index) => {
       employee[header] = values[index] || '';
     });
-    
+
     if (employee.firstname && employee.lastname && employee.email) {
       employees.push({
         firstName: employee.firstname,
@@ -75,7 +75,7 @@ function parseCSV(csvData: string): EmployeeRow[] {
       });
     }
   }
-  
+
   return employees;
 }
 
@@ -96,7 +96,10 @@ async function processCSVImport(
     let decodedCSV = csvData;
     if (csvData.startsWith('data:') || csvData.match(/^[A-Za-z0-9+/=]+$/)) {
       try {
-        decodedCSV = Buffer.from(csvData.replace(/^data:.*,/, ''), 'base64').toString('utf-8');
+        decodedCSV = Buffer.from(
+          csvData.replace(/^data:.*,/, ''),
+          'base64'
+        ).toString('utf-8');
       } catch (e) {
         // If decoding fails, assume it's already plain text
         decodedCSV = csvData;
@@ -104,8 +107,17 @@ async function processCSVImport(
     }
 
     const employees = parseCSV(decodedCSV);
-    await updateJobProgress(jobId, 15, undefined, `Parsed ${employees.length} employees from CSV`);
-    await writeJobLog(jobId, 'info', `Found ${employees.length} valid employee records`);
+    await updateJobProgress(
+      jobId,
+      15,
+      undefined,
+      `Parsed ${employees.length} employees from CSV`
+    );
+    await writeJobLog(
+      jobId,
+      'info',
+      `Found ${employees.length} valid employee records`
+    );
 
     if (employees.length === 0) {
       throw new Error('No valid employee records found in CSV');
@@ -127,7 +139,11 @@ async function processCSVImport(
       const progress = 15 + Math.floor((i / totalEmployees) * 70);
 
       try {
-        await writeJobLog(jobId, 'info', `Processing employee ${i + 1}/${totalEmployees}: ${employee.email}`);
+        await writeJobLog(
+          jobId,
+          'info',
+          `Processing employee ${i + 1}/${totalEmployees}: ${employee.email}`
+        );
 
         // Check if employee already exists
         const existingEmployee = await db
@@ -138,7 +154,11 @@ async function processCSVImport(
           .get();
 
         if (!existingEmployee.empty) {
-          await writeJobLog(jobId, 'warn', `Employee ${employee.email} already exists, skipping`);
+          await writeJobLog(
+            jobId,
+            'warn',
+            `Employee ${employee.email} already exists, skipping`
+          );
           errorCount++;
           errors.push(`${employee.email}: Already exists`);
           continue;
@@ -153,7 +173,9 @@ async function processCSVImport(
           role: employee.role || 'employee',
           tenantId,
           employerId: tenantId,
-          hireDate: admin.firestore.Timestamp.fromDate(new Date(employee.hireDate)),
+          hireDate: admin.firestore.Timestamp.fromDate(
+            new Date(employee.hireDate)
+          ),
           department: employee.department || 'General',
           status: 'pending', // Requires email verification
           emailVerified: false,
@@ -174,12 +196,22 @@ async function processCSVImport(
         });
 
         importedCount++;
-        await updateJobProgress(jobId, progress, undefined, `Imported ${importedCount}/${totalEmployees} employees`);
+        await updateJobProgress(
+          jobId,
+          progress,
+          undefined,
+          `Imported ${importedCount}/${totalEmployees} employees`
+        );
       } catch (error) {
         errorCount++;
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+        const errorMsg =
+          error instanceof Error ? error.message : 'Unknown error';
         errors.push(`${employee.email}: ${errorMsg}`);
-        await writeJobLog(jobId, 'error', `Failed to import ${employee.email}: ${errorMsg}`);
+        await writeJobLog(
+          jobId,
+          'error',
+          `Failed to import ${employee.email}: ${errorMsg}`
+        );
       }
     }
 
@@ -192,14 +224,26 @@ async function processCSVImport(
     };
 
     await markJobCompleted(jobId, result);
-    await writeJobLog(jobId, 'info', `CSV import completed: ${importedCount} successful, ${errorCount} failed`);
+    await writeJobLog(
+      jobId,
+      'info',
+      `CSV import completed: ${importedCount} successful, ${errorCount} failed`
+    );
 
     // Send notification
-    const message = errorCount > 0
-      ? `CSV import completed with ${importedCount} successful and ${errorCount} failed imports`
-      : `CSV import completed successfully. ${importedCount} employees imported`;
-    
-    await sendJobNotification(userId, tenantId, jobId, 'CSV Import', 'completed', message);
+    const message =
+      errorCount > 0
+        ? `CSV import completed with ${importedCount} successful and ${errorCount} failed imports`
+        : `CSV import completed successfully. ${importedCount} employees imported`;
+
+    await sendJobNotification(
+      userId,
+      tenantId,
+      jobId,
+      'CSV Import',
+      'completed',
+      message
+    );
 
     // Create audit log
     await db.collection('auditLogs').add({
@@ -213,7 +257,14 @@ async function processCSVImport(
     const errorMsg = error instanceof Error ? error.message : 'Unknown error';
     await markJobFailed(jobId, errorMsg);
     await writeJobLog(jobId, 'error', `CSV import failed: ${errorMsg}`);
-    await sendJobNotification(userId, tenantId, jobId, 'CSV Import', 'failed', `Import failed: ${errorMsg}`);
+    await sendJobNotification(
+      userId,
+      tenantId,
+      jobId,
+      'CSV Import',
+      'failed',
+      `Import failed: ${errorMsg}`
+    );
   }
 }
 
@@ -223,14 +274,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { action, tenantId, userId, csvData, jobId } = req.body as CSVImportRequest;
+    const { action, tenantId, userId, csvData, jobId } =
+      req.body as CSVImportRequest;
 
     if (!tenantId || !userId) {
       return res.status(400).json({ error: 'Missing tenantId or userId' });
     }
 
     // Verify user permission
-    const hasPermission = await verifyUserPermission(userId, tenantId, 'employer');
+    const hasPermission = await verifyUserPermission(
+      userId,
+      tenantId,
+      'employer'
+    );
     if (!hasPermission) {
       return res.status(403).json({ error: 'Insufficient permissions' });
     }
@@ -238,7 +294,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Handle status check
     if (action === 'status') {
       if (!jobId) {
-        return res.status(400).json({ error: 'Missing jobId for status check' });
+        return res
+          .status(400)
+          .json({ error: 'Missing jobId for status check' });
       }
 
       const status = await getJobStatus(jobId);
@@ -261,7 +319,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
 
       // Start processing in the background (don't await)
-      processCSVImport(newJobId, tenantId, userId, csvData).catch(err => {
+      processCSVImport(newJobId, tenantId, userId, csvData).catch((err) => {
         console.error('Background job error:', err);
       });
 

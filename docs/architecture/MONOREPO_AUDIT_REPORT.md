@@ -40,16 +40,16 @@ ESTA-Logic/
 
 ### 1.2 Package Analysis
 
-| Package | Version | Purpose | Status |
-|---------|---------|---------|--------|
-| `@esta-tracker/frontend` | 2.0.0 | React SPA | ✅ Good |
-| `@esta-tracker/backend` | 2.0.0 | Express API server | ✅ Good |
-| `@esta-tracker/shared-types` | 1.0.0 | Type definitions | ✅ Good |
-| `@esta-tracker/shared-utils` | 1.0.0 | Utilities | ⚠️ No tests |
-| `@esta-tracker/accrual-engine` | 1.0.0 | Business logic | ⚠️ No tests |
-| `@esta-tracker/csv-processor` | 1.0.0 | CSV processing | ⚠️ No tests |
-| `esta-tracker-api` | 1.0.0 | Vercel functions | ⚠️ Not in workspace |
-| `functions` | 1.0.0 | Firebase functions | ⚠️ Not in workspace |
+| Package                        | Version | Purpose            | Status              |
+| ------------------------------ | ------- | ------------------ | ------------------- |
+| `@esta-tracker/frontend`       | 2.0.0   | React SPA          | ✅ Good             |
+| `@esta-tracker/backend`        | 2.0.0   | Express API server | ✅ Good             |
+| `@esta-tracker/shared-types`   | 1.0.0   | Type definitions   | ✅ Good             |
+| `@esta-tracker/shared-utils`   | 1.0.0   | Utilities          | ⚠️ No tests         |
+| `@esta-tracker/accrual-engine` | 1.0.0   | Business logic     | ⚠️ No tests         |
+| `@esta-tracker/csv-processor`  | 1.0.0   | CSV processing     | ⚠️ No tests         |
+| `esta-tracker-api`             | 1.0.0   | Vercel functions   | ⚠️ Not in workspace |
+| `functions`                    | 1.0.0   | Firebase functions | ⚠️ Not in workspace |
 
 ---
 
@@ -58,6 +58,7 @@ ESTA-Logic/
 ### 🔴 CRITICAL #1: Vercel API Functions Not in Workspace
 
 **Problem:**
+
 - `api/` directory has its own `package.json` but is NOT included in npm workspaces
 - Leads to duplicate dependencies and version mismatches
 - Cannot leverage Turborepo caching or task orchestration
@@ -66,23 +67,21 @@ ESTA-Logic/
 **Impact:** HIGH - Breaks monorepo benefits, increases maintenance burden
 
 **Current State:**
+
 ```json
 // Root package.json
 {
   "workspaces": [
-    "packages/*"  // ❌ api/ not included
+    "packages/*" // ❌ api/ not included
   ]
 }
 ```
 
 **Recommendation:**
+
 ```json
 {
-  "workspaces": [
-    "packages/*",
-    "api",
-    "functions"
-  ]
+  "workspaces": ["packages/*", "api", "functions"]
 }
 ```
 
@@ -91,6 +90,7 @@ ESTA-Logic/
 ### 🔴 CRITICAL #2: Multiple Firebase Admin Initializations
 
 **Problem:**
+
 - Firebase Admin SDK initialized in 3 separate locations:
   - `packages/backend/src/services/firebase.ts`
   - `api/background/*.ts` (inline initialization)
@@ -101,6 +101,7 @@ ESTA-Logic/
 **Impact:** HIGH - Code duplication, inconsistent error handling, maintenance nightmare
 
 **Locations Found:**
+
 ```typescript
 // packages/backend/src/services/firebase.ts
 admin.initializeApp({ credential: admin.credential.applicationDefault() });
@@ -117,9 +118,10 @@ Create `@esta-tracker/firebase` package with centralized initialization.
 
 ---
 
-### 🔴 CRITICAL #3: VITE_ Environment Variables Used in Backend API
+### 🔴 CRITICAL #3: VITE\_ Environment Variables Used in Backend API
 
 **Problem:**
+
 - Backend Vercel functions reference `VITE_FIREBASE_*` variables
 - `VITE_` prefix is for frontend Vite bundler, NOT server-side code
 - Found in `api/health.ts` and `api/registration-diagnostic.ts`
@@ -128,16 +130,18 @@ Create `@esta-tracker/firebase` package with centralized initialization.
 **Impact:** HIGH - Environment configuration confusion, potential deployment failures
 
 **Evidence:**
+
 ```typescript
 // api/health.ts (LINE 24-29)
 const envVars = [
-  'VITE_FIREBASE_API_KEY',    // ❌ WRONG - server using frontend vars
+  'VITE_FIREBASE_API_KEY', // ❌ WRONG - server using frontend vars
   'VITE_FIREBASE_AUTH_DOMAIN',
   'VITE_FIREBASE_PROJECT_ID',
 ];
 ```
 
 **Recommendation:**
+
 - Backend should use `FIREBASE_PROJECT_ID`, `FIREBASE_STORAGE_BUCKET`, etc.
 - Frontend should exclusively use `VITE_FIREBASE_*`
 - Create clear environment variable documentation
@@ -147,6 +151,7 @@ const envVars = [
 ### 🔴 CRITICAL #4: Weak Dependency Boundary Enforcement
 
 **Problem:**
+
 - No mechanism to prevent cross-boundary imports
 - Frontend could potentially import backend code (compilation would fail, but no lint-time check)
 - Packages can reach into each other's internals
@@ -155,6 +160,7 @@ const envVars = [
 **Impact:** HIGH - Architectural boundaries can be violated accidentally
 
 **Current State:**
+
 ```json
 // packages/shared-types/package.json
 {
@@ -171,6 +177,7 @@ const envVars = [
 ```
 
 **Recommendation:**
+
 - Add strict `exports` to all packages
 - Use ESLint plugin `@typescript-eslint/no-restricted-imports`
 - Document import boundaries
@@ -180,6 +187,7 @@ const envVars = [
 ### 🔴 CRITICAL #5: Incomplete Test Coverage Strategy
 
 **Problem:**
+
 - Multiple packages have vitest configured but ZERO tests:
   - `shared-utils` - 0 tests (vitest configured)
   - `csv-processor` - 0 tests (vitest configured)
@@ -190,6 +198,7 @@ const envVars = [
 **Impact:** HIGH - Cannot validate code quality, blocks CI/CD pipeline
 
 **Current Test Status:**
+
 ```bash
 $ npm run test
 # ❌ @esta-tracker/shared-utils#test exited (1) - No test files found
@@ -199,6 +208,7 @@ $ npm run test
 ```
 
 **Recommendation:**
+
 - Either add tests or remove test script from packages
 - Update turbo.json to skip test task for packages without tests
 - Create test infrastructure for all business logic packages
@@ -210,12 +220,14 @@ $ npm run test
 ### ⚠️ MODERATE #1: Turborepo Cache Configuration Incomplete
 
 **Problem:**
+
 - Some tasks missing proper `outputs` configuration
 - `dev` task marked as `persistent: true` but no timeout
 - No remote cache configured (using local cache only)
 - Task dependencies could be optimized
 
 **Current Configuration:**
+
 ```json
 {
   "tasks": {
@@ -240,6 +252,7 @@ $ npm run test
 ```
 
 **Recommendation:**
+
 ```json
 {
   "tasks": {
@@ -272,6 +285,7 @@ $ npm run test
 ### ⚠️ MODERATE #2: No Centralized Configuration Package
 
 **Problem:**
+
 - Environment variable parsing scattered across packages
 - No centralized config validation
 - Each package handles env vars independently
@@ -279,6 +293,7 @@ $ npm run test
 
 **Recommendation:**
 Create `@esta-tracker/config` package:
+
 ```typescript
 // packages/config/src/index.ts
 export { getFirebaseConfig } from './firebase';
@@ -292,16 +307,19 @@ export { validateEnvironment } from './validation';
 ### ⚠️ MODERATE #3: Missing Path Aliases in tsconfig
 
 **Problem:**
+
 - No TypeScript path aliases configured
 - Long relative imports: `../../../shared-types`
 - Makes refactoring harder
 
 **Current:**
+
 ```typescript
 import { Employee } from '../../../shared-types/src/employee';
 ```
 
 **Recommended:**
+
 ```json
 // tsconfig.base.json
 {
@@ -320,11 +338,13 @@ import { Employee } from '../../../shared-types/src/employee';
 ### ⚠️ MODERATE #4: Package Versioning Inconsistency
 
 **Problem:**
+
 - Some packages are version 2.0.0 (frontend, backend)
 - Some packages are version 1.0.0 (shared-types, shared-utils)
 - No clear versioning strategy documented
 
 **Recommendation:**
+
 - Synchronize all package versions to 2.0.0
 - Document versioning strategy (independent vs. synchronized)
 - Consider using `lerna` or `changesets` for version management
@@ -334,6 +354,7 @@ import { Employee } from '../../../shared-types/src/employee';
 ### ⚠️ MODERATE #5: No Dedicated E2E Package
 
 **Problem:**
+
 - E2E tests in root `/e2e` directory
 - Not part of workspace
 - Cannot import shared utilities or types easily
@@ -346,6 +367,7 @@ Move to `packages/e2e-tests` or keep in root but add to workspace.
 ### ⚠️ MODERATE #6: Firebase Storage Rules Not Validated
 
 **Problem:**
+
 - `storage.rules` file exists but no validation in CI
 - Could deploy with syntax errors
 
@@ -357,6 +379,7 @@ Add `firebase emulators:start` test to CI to validate rules.
 ### ⚠️ MODERATE #7: Duplicate Dependencies
 
 **Problem:**
+
 - `firebase-admin` appears in:
   - Root `package.json`
   - `api/package.json`
@@ -364,12 +387,14 @@ Add `firebase emulators:start` test to CI to validate rules.
 - `date-fns` in multiple packages at different versions
 
 **Found:**
+
 ```
 firebase-admin@^12.0.0 in 3 locations
 date-fns@^4.1.0 in frontend, backend, shared-utils
 ```
 
 **Recommendation:**
+
 - Hoist common dependencies to root
 - Use workspace protocol: `"firebase-admin": "workspace:*"`
 
@@ -378,11 +403,13 @@ date-fns@^4.1.0 in frontend, backend, shared-utils
 ### ⚠️ MODERATE #8: Build Command Inconsistency
 
 **Problem:**
+
 - Root package scripts use Turbo
 - `vercel.json` uses direct npm commands
 - Potential for build discrepancies
 
 **vercel.json:**
+
 ```json
 {
   "buildCommand": "npm install && cd api && npm install && cd .. && npm run build:frontend"
@@ -390,6 +417,7 @@ date-fns@^4.1.0 in frontend, backend, shared-utils
 ```
 
 **Recommendation:**
+
 ```json
 {
   "buildCommand": "npm install && turbo build --filter=@esta-tracker/frontend"
@@ -491,16 +519,16 @@ ESTA-Logic/
 
 ### 5.3 Shared Package Boundaries
 
-| Package | Can Import From | Cannot Import From |
-|---------|----------------|-------------------|
-| `frontend` | types, utils, config | backend, api, functions |
-| `backend` | types, utils, config, firebase | frontend |
-| `api` | types, utils, config, firebase | frontend, backend |
-| `functions` | types, utils, config, firebase | frontend, backend, api |
-| `shared-types` | NONE | ALL |
-| `shared-utils` | types | ALL |
-| `firebase` | config | ALL |
-| `config` | NONE | ALL |
+| Package        | Can Import From                | Cannot Import From      |
+| -------------- | ------------------------------ | ----------------------- |
+| `frontend`     | types, utils, config           | backend, api, functions |
+| `backend`      | types, utils, config, firebase | frontend                |
+| `api`          | types, utils, config, firebase | frontend, backend       |
+| `functions`    | types, utils, config, firebase | frontend, backend, api  |
+| `shared-types` | NONE                           | ALL                     |
+| `shared-utils` | types                          | ALL                     |
+| `firebase`     | config                         | ALL                     |
+| `config`       | NONE                           | ALL                     |
 
 ---
 
@@ -509,6 +537,7 @@ ESTA-Logic/
 ### 6.1 Current Environment Variables
 
 **Frontend (Public - Exposed to Browser):**
+
 ```env
 ✅ VITE_FIREBASE_API_KEY           # OK - Public API key (restricted by Firebase rules)
 ✅ VITE_FIREBASE_AUTH_DOMAIN       # OK - Public
@@ -520,6 +549,7 @@ ESTA-Logic/
 ```
 
 **Backend (Private - Server-Only):**
+
 ```env
 ✅ FIREBASE_PROJECT_ID             # Good - Server-side Firebase config
 ✅ FIREBASE_SERVICE_ACCOUNT        # Good - Private credentials
@@ -531,6 +561,7 @@ ESTA-Logic/
 ```
 
 **Issues Found:**
+
 ```env
 ❌ VITE_FIREBASE_API_KEY used in api/health.ts     # Wrong prefix
 ❌ VITE_FIREBASE_AUTH_DOMAIN used in api/health.ts # Wrong prefix
@@ -539,6 +570,7 @@ ESTA-Logic/
 ### 6.2 Environment Variable Recommendations
 
 **Create `.env.frontend.example`:**
+
 ```env
 # Frontend Environment Variables (Public - Safe to Expose)
 VITE_FIREBASE_API_KEY=
@@ -552,6 +584,7 @@ VITE_API_URL=
 ```
 
 **Create `.env.backend.example`:**
+
 ```env
 # Backend Environment Variables (Private - Server Only)
 FIREBASE_PROJECT_ID=
@@ -566,14 +599,15 @@ GOOGLE_APPLICATION_CREDENTIALS=
 ```
 
 **Update `turbo.json` to be explicit:**
+
 ```json
 {
   "tasks": {
     "build": {
       "env": [
         "NODE_ENV",
-        "VITE_*",        // ✅ Only frontend gets these
-        "FIREBASE_*",    // ✅ Only backend gets these
+        "VITE_*", // ✅ Only frontend gets these
+        "FIREBASE_*", // ✅ Only backend gets these
         "VERCEL_*"
       ]
     }
@@ -588,12 +622,14 @@ GOOGLE_APPLICATION_CREDENTIALS=
 ### 7.1 Current Pipeline Analysis
 
 **Build Order:**
+
 1. `shared-types` builds first (no dependencies)
 2. `shared-utils` builds next (no dependencies)
 3. `accrual-engine`, `csv-processor` build (depend on shared packages)
 4. `backend`, `frontend` build last
 
 **Time Analysis:**
+
 ```
 shared-types:   2.1s
 shared-utils:   1.8s
@@ -606,6 +642,7 @@ Total:          13.8s (from audit run)
 ```
 
 **Parallelization:**
+
 - ✅ Shared packages build in parallel (good)
 - ✅ Dependent packages wait correctly
 - ⚠️ No remote caching configured
@@ -615,22 +652,13 @@ Total:          13.8s (from audit run)
 ```json
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [
-    ".env",
-    ".env.local",
-    "tsconfig.base.json"
-  ],
+  "globalDependencies": [".env", ".env.local", "tsconfig.base.json"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", "build/**", ".next/**", "out/**"],
       "inputs": ["src/**", "package.json", "tsconfig.json"],
-      "env": [
-        "NODE_ENV",
-        "VITE_*",
-        "FIREBASE_*",
-        "VERCEL_*"
-      ]
+      "env": ["NODE_ENV", "VITE_*", "FIREBASE_*", "VERCEL_*"]
     },
     "test": {
       "outputs": ["coverage/**"],
@@ -698,6 +726,7 @@ Total:          13.8s (from audit run)
 **Purpose:** Centralized Firebase Admin SDK initialization and utilities
 
 **Structure:**
+
 ```
 packages/firebase/
 ├── package.json
@@ -716,6 +745,7 @@ packages/firebase/
 **Key Files:**
 
 **`packages/firebase/package.json`:**
+
 ```json
 {
   "name": "@esta-tracker/firebase",
@@ -754,6 +784,7 @@ packages/firebase/
 ```
 
 **`packages/firebase/src/admin.ts`:**
+
 ```typescript
 import admin from 'firebase-admin';
 
@@ -765,7 +796,9 @@ export interface FirebaseConfig {
   serviceAccount?: string | admin.ServiceAccount;
 }
 
-export function initializeFirebaseAdmin(config?: FirebaseConfig): admin.app.App {
+export function initializeFirebaseAdmin(
+  config?: FirebaseConfig
+): admin.app.App {
   if (firebaseApp) {
     return firebaseApp;
   }
@@ -785,7 +818,8 @@ export function initializeFirebaseAdmin(config?: FirebaseConfig): admin.app.App 
     firebaseApp = admin.initializeApp({
       credential,
       projectId: config?.projectId || process.env.FIREBASE_PROJECT_ID,
-      storageBucket: config?.storageBucket || process.env.FIREBASE_STORAGE_BUCKET,
+      storageBucket:
+        config?.storageBucket || process.env.FIREBASE_STORAGE_BUCKET,
     });
 
     console.log('✅ Firebase Admin initialized');
@@ -817,6 +851,7 @@ export function getStorage(): admin.storage.Storage {
 ```
 
 **Usage:**
+
 ```typescript
 // In api/background/csv-import.ts
 import { initializeFirebaseAdmin, getFirestore } from '@esta-tracker/firebase';
@@ -835,6 +870,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 **Purpose:** Centralized configuration management with validation
 
 **Structure:**
+
 ```
 packages/config/
 ├── package.json
@@ -850,6 +886,7 @@ packages/config/
 ```
 
 **`packages/config/src/client.ts`:**
+
 ```typescript
 import { z } from 'zod';
 
@@ -887,6 +924,7 @@ export function getClientConfig(): ClientConfig {
 ```
 
 **`packages/config/src/server.ts`:**
+
 ```typescript
 import { z } from 'zod';
 
@@ -896,13 +934,15 @@ const ServerConfigSchema = z.object({
     storageBucket: z.string().optional(),
     serviceAccount: z.string().optional(),
   }),
-  kms: z.object({
-    projectId: z.string().min(1),
-    keyringName: z.string().min(1),
-    location: z.string().min(1),
-    encryptionKeyName: z.string().min(1),
-    keyVersion: z.string().default('1'),
-  }).optional(),
+  kms: z
+    .object({
+      projectId: z.string().min(1),
+      keyringName: z.string().min(1),
+      location: z.string().min(1),
+      encryptionKeyName: z.string().min(1),
+      keyVersion: z.string().default('1'),
+    })
+    .optional(),
   nodeEnv: z.enum(['development', 'production', 'test']).default('development'),
 });
 
@@ -915,13 +955,15 @@ export function getServerConfig(): ServerConfig {
       storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
       serviceAccount: process.env.FIREBASE_SERVICE_ACCOUNT,
     },
-    kms: process.env.GCP_PROJECT_ID ? {
-      projectId: process.env.GCP_PROJECT_ID,
-      keyringName: process.env.KMS_KEYRING_NAME,
-      location: process.env.KMS_LOCATION,
-      encryptionKeyName: process.env.KMS_ENCRYPTION_KEY_NAME,
-      keyVersion: process.env.KMS_KEY_VERSION,
-    } : undefined,
+    kms: process.env.GCP_PROJECT_ID
+      ? {
+          projectId: process.env.GCP_PROJECT_ID,
+          keyringName: process.env.KMS_KEYRING_NAME,
+          location: process.env.KMS_LOCATION,
+          encryptionKeyName: process.env.KMS_ENCRYPTION_KEY_NAME,
+          keyVersion: process.env.KMS_KEY_VERSION,
+        }
+      : undefined,
     nodeEnv: process.env.NODE_ENV,
   };
 
@@ -934,27 +976,32 @@ export function getServerConfig(): ServerConfig {
 ### 8.3 Migration Plan for Shared Packages
 
 **Phase 1: Create New Packages**
+
 1. Create `packages/firebase/` with Firebase Admin logic
 2. Create `packages/config/` with config validation
 3. Build both packages
 4. Add to workspace dependencies
 
 **Phase 2: Migrate Backend**
+
 1. Update `packages/backend/src/services/firebase.ts` to use `@esta-tracker/firebase`
 2. Remove duplicate initialization code
 3. Test backend server
 
 **Phase 3: Migrate API Functions**
+
 1. Add `@esta-tracker/firebase` to `api/package.json`
 2. Update all `api/background/*.ts` files
 3. Update `api/lib/*.ts` files
-4. Remove VITE_* references, use FIREBASE_* instead
+4. Remove VITE*\* references, use FIREBASE*\* instead
 
 **Phase 4: Migrate Firebase Functions**
+
 1. Update `functions/src/index.ts` to use `@esta-tracker/firebase`
 2. Test Cloud Functions locally with emulator
 
 **Phase 5: Validation & Testing**
+
 1. Run full test suite
 2. Test local dev environment
 3. Deploy to staging
@@ -965,6 +1012,7 @@ export function getServerConfig(): ServerConfig {
 ## 9. Long-Term Scaling Roadmap (6-12 Months)
 
 ### Phase 1: Foundation (Months 1-2)
+
 - ✅ Fix critical architectural issues
 - ✅ Centralize Firebase Admin
 - ✅ Create config package
@@ -972,12 +1020,14 @@ export function getServerConfig(): ServerConfig {
 - ✅ Enable Turbo remote caching
 
 ### Phase 2: Modularization (Months 3-4)
+
 - Split frontend into feature modules
 - Create `@esta-tracker/ui` component library
 - Extract business logic to domain packages
 - Add Storybook for UI component development
 
 ### Phase 3: Multi-State Support (Months 5-7)
+
 - Create state-specific rule packages:
   - `@esta-tracker/rules-michigan`
   - `@esta-tracker/rules-california`
@@ -986,18 +1036,21 @@ export function getServerConfig(): ServerConfig {
 - Add state selection to frontend
 
 ### Phase 4: Enterprise Features (Months 8-10)
+
 - Multi-tenant architecture improvements
 - Advanced analytics package
 - API rate limiting & monitoring
 - Audit trail improvements
 
 ### Phase 5: Performance & Scale (Months 11-12)
+
 - Database migration to PostgreSQL
 - Add Redis caching layer
 - Implement queue system (Bull/BullMQ)
 - Horizontal scaling preparation
 
 ### Future Packages (12+ Months)
+
 ```
 packages/
 ├── ui/                       # Component library
@@ -1017,13 +1070,15 @@ packages/
 ## 10. Implementation Priority Matrix
 
 ### Critical (Do Immediately)
+
 1. **Move api/ and functions/ to workspace** - 2 hours
 2. **Create @esta-tracker/firebase package** - 4 hours
-3. **Fix VITE_* environment variable misuse** - 1 hour
+3. **Fix VITE\_\* environment variable misuse** - 1 hour
 4. **Add tests or remove test scripts** - 2 hours
 5. **Update turbo.json with optimized config** - 1 hour
 
 ### High Priority (This Sprint)
+
 6. **Create @esta-tracker/config package** - 3 hours
 7. **Add TypeScript path aliases** - 1 hour
 8. **Enable remote caching** - 2 hours
@@ -1031,6 +1086,7 @@ packages/
 10. **Document dependency boundaries** - 2 hours
 
 ### Medium Priority (Next Sprint)
+
 11. **Synchronize package versions** - 1 hour
 12. **Add pre-commit hooks** - 1 hour
 13. **Upgrade ESLint to v9** - 3 hours
@@ -1038,6 +1094,7 @@ packages/
 15. **Consolidate duplicate dependencies** - 2 hours
 
 ### Low Priority (Future)
+
 16. **Create UI component library** - 40 hours
 17. **Add Storybook** - 8 hours
 18. **Implement changesets** - 4 hours
@@ -1048,7 +1105,9 @@ packages/
 ## 11. Architectural Principles for Scale
 
 ### 1. Dependency Direction Rule
+
 **ALL dependencies flow inward toward shared core:**
+
 ```
 Frontend ──┐
 Backend ───┼──→ Firebase ──→ Config
@@ -1057,11 +1116,14 @@ Functions ─┘
 ```
 
 ### 2. Zero Circular Dependencies
+
 - Use dependency graph tool to detect cycles
 - Fail CI if circular dependency detected
 
 ### 3. Explicit Exports
+
 Every package MUST define explicit exports:
+
 ```json
 {
   "exports": {
@@ -1072,6 +1134,7 @@ Every package MUST define explicit exports:
 ```
 
 ### 4. Layered Architecture
+
 ```
 ┌─────────────────────────────────────┐
 │         Application Layer           │ ← Frontend, API endpoints
@@ -1085,7 +1148,8 @@ Every package MUST define explicit exports:
 ```
 
 ### 5. Environment Separation
-- **Frontend:** Only VITE_* variables (public)
+
+- **Frontend:** Only VITE\_\* variables (public)
 - **Backend:** Only server-side variables (private)
 - **Never mix the two**
 
@@ -1093,19 +1157,20 @@ Every package MUST define explicit exports:
 
 ## 12. Risk Assessment
 
-| Risk | Probability | Impact | Mitigation |
-|------|------------|--------|------------|
-| Breaking changes during refactor | HIGH | HIGH | Comprehensive test coverage, gradual migration |
-| Performance regression | MEDIUM | MEDIUM | Load testing, monitoring |
-| Dependency conflicts | MEDIUM | LOW | Lock file management, CI checks |
-| Developer confusion | HIGH | MEDIUM | Clear documentation, migration guide |
-| Deployment issues | MEDIUM | HIGH | Staging environment, rollback plan |
+| Risk                             | Probability | Impact | Mitigation                                     |
+| -------------------------------- | ----------- | ------ | ---------------------------------------------- |
+| Breaking changes during refactor | HIGH        | HIGH   | Comprehensive test coverage, gradual migration |
+| Performance regression           | MEDIUM      | MEDIUM | Load testing, monitoring                       |
+| Dependency conflicts             | MEDIUM      | LOW    | Lock file management, CI checks                |
+| Developer confusion              | HIGH        | MEDIUM | Clear documentation, migration guide           |
+| Deployment issues                | MEDIUM      | HIGH   | Staging environment, rollback plan             |
 
 ---
 
 ## 13. Success Metrics
 
 ### Before Refactor
+
 - Build time: ~14s
 - Test coverage: ~30%
 - Package independence: 40%
@@ -1113,6 +1178,7 @@ Every package MUST define explicit exports:
 - Developer onboarding: 2 days
 
 ### After Refactor (Target)
+
 - Build time: <10s (with remote cache <3s)
 - Test coverage: >80%
 - Package independence: 100%
@@ -1126,6 +1192,7 @@ Every package MUST define explicit exports:
 The ESTA Tracker monorepo has a **solid foundation** but requires **architectural improvements** before it's production-ready. The critical issues—fragmented workspace configuration, duplicate Firebase initialization, and weak dependency boundaries—must be addressed immediately.
 
 The proposed refactoring will:
+
 1. ✅ Improve maintainability by 60%
 2. ✅ Reduce build times by 30-70% (with remote cache)
 3. ✅ Enable confident scaling to multi-state support
@@ -1141,6 +1208,7 @@ The proposed refactoring will:
 ## Appendix A: File Changes Summary
 
 ### Files to Create
+
 - `packages/firebase/` (new package)
 - `packages/config/` (new package)
 - `docs/architecture/DEPENDENCY_DIAGRAM.md`
@@ -1148,17 +1216,19 @@ The proposed refactoring will:
 - `.env.backend.example`
 
 ### Files to Modify
+
 - `package.json` (add api/ and functions/ to workspaces)
 - `turbo.json` (optimize configuration)
 - `tsconfig.base.json` (add path aliases)
 - `packages/backend/src/services/firebase.ts` (use new package)
 - All `api/background/*.ts` files (use new firebase package, fix env vars)
-- `api/health.ts` (fix VITE_* usage)
-- `api/registration-diagnostic.ts` (fix VITE_* usage)
+- `api/health.ts` (fix VITE\_\* usage)
+- `api/registration-diagnostic.ts` (fix VITE\_\* usage)
 - `functions/src/index.ts` (use new firebase package)
 - All `package.json` files in packages/ (bump to 2.0.0)
 
 ### Files to Delete
+
 - None (all current files remain, but some will be refactored)
 
 ---
@@ -1188,4 +1258,4 @@ index abc123..def456 100644
 
 **End of Audit Report**
 
-*This report should be reviewed with the development team and product owner before implementation.*
+_This report should be reviewed with the development team and product owner before implementation._

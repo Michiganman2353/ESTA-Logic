@@ -1,6 +1,6 @@
 /**
  * File Validation Utilities
- * 
+ *
  * Backend validation for uploaded files:
  * - Magic byte MIME detection
  * - Allowed extensions check
@@ -40,12 +40,8 @@ const DEFAULT_ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.pdf'];
  * Magic byte signatures for common file types
  */
 const MAGIC_BYTES: Record<string, number[][]> = {
-  'image/jpeg': [
-    [0xff, 0xd8, 0xff],
-  ],
-  'image/png': [
-    [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
-  ],
+  'image/jpeg': [[0xff, 0xd8, 0xff]],
+  'image/png': [[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]],
   'image/webp': [
     // RIFF....WEBP
     [0x52, 0x49, 0x46, 0x46, -1, -1, -1, -1, 0x57, 0x45, 0x42, 0x50],

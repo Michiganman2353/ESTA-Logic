@@ -103,8 +103,10 @@ describe('ESTA 2025 Compliance Service', () => {
 
       const expectedEndDate = new Date(now);
       expectedEndDate.setFullYear(expectedEndDate.getFullYear() + 7);
-      
-      expect(metadata.retentionEndDate.getFullYear()).toBe(expectedEndDate.getFullYear());
+
+      expect(metadata.retentionEndDate.getFullYear()).toBe(
+        expectedEndDate.getFullYear()
+      );
     });
 
     it('should update retention when status changes', () => {
@@ -116,7 +118,7 @@ describe('ESTA 2025 Compliance Service', () => {
       });
 
       const updated = updateRetentionForStatusChange(metadata, 'denied');
-      
+
       expect(updated.applicationStatus).toBe('denied');
       expect(updated.retentionYears).toBe(5);
       expect(updated.finalizedAt).toBeDefined();
@@ -139,7 +141,7 @@ describe('ESTA 2025 Compliance Service', () => {
       });
 
       const result = canDeleteRecord(metadata);
-      
+
       expect(result.canDelete).toBe(false);
       expect(result.reason).toContain('retained until');
     });
@@ -158,7 +160,7 @@ describe('ESTA 2025 Compliance Service', () => {
       });
 
       const result = canDeleteRecord(withHold);
-      
+
       expect(result.canDelete).toBe(false);
       expect(result.reason).toBe('Record has an active legal hold');
     });
@@ -182,7 +184,7 @@ describe('ESTA 2025 Compliance Service', () => {
       };
 
       const result = canDeleteRecord(expiredMetadata);
-      
+
       expect(result.canDelete).toBe(true);
     });
 
@@ -203,7 +205,7 @@ describe('ESTA 2025 Compliance Service', () => {
       expect(withHold.legalHoldDetails?.holdId).toBe('hold-456');
 
       const released = releaseLegalHold(withHold);
-      
+
       expect(released.hasLegalHold).toBe(false);
       expect(released.legalHoldDetails).toBeUndefined();
     });
@@ -318,7 +320,7 @@ describe('ESTA 2025 Compliance Service', () => {
       });
 
       const result = verifyAuditChainIntegrity([entry1, entry2, entry3]);
-      
+
       expect(result.isValid).toBe(true);
     });
   });
@@ -456,13 +458,17 @@ describe('ESTA 2025 Compliance Service', () => {
       });
 
       const acknowledged = acknowledgeComplianceAlert(alert, 'admin-123');
-      
+
       expect(acknowledged.acknowledgedAt).toBeDefined();
       expect(acknowledged.acknowledgedBy).toBe('admin-123');
       expect(acknowledged.isActive).toBe(true);
 
-      const resolved = resolveComplianceAlert(acknowledged, 'admin-123', 'Certification completed');
-      
+      const resolved = resolveComplianceAlert(
+        acknowledged,
+        'admin-123',
+        'Certification completed'
+      );
+
       expect(resolved.resolvedAt).toBeDefined();
       expect(resolved.resolution).toBe('Certification completed');
       expect(resolved.isActive).toBe(false);
@@ -480,7 +486,8 @@ describe('ESTA 2025 Compliance Service', () => {
         relatedRecordType: 'sick_time_request',
         relatedRecordId: 'request-123',
         decision: 'Denied',
-        justification: 'Insufficient documentation provided. Employee did not submit required medical certification.',
+        justification:
+          'Insufficient documentation provided. Employee did not submit required medical certification.',
         decidedBy: 'manager-123',
         supportingDocuments: ['policy-doc-1'],
       });
@@ -532,7 +539,7 @@ describe('ESTA 2025 Compliance Service', () => {
       });
 
       const activated = activatePolicyVersion(version);
-      
+
       expect(activated.isActive).toBe(true);
     });
   });

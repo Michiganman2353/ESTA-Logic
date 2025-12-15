@@ -15,19 +15,29 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { jobId, userId, tenantId } = req.query;
 
     if (!jobId || typeof jobId !== 'string') {
-      return res.status(400).json({ error: 'Missing or invalid jobId parameter' });
+      return res
+        .status(400)
+        .json({ error: 'Missing or invalid jobId parameter' });
     }
 
     if (!userId || typeof userId !== 'string') {
-      return res.status(400).json({ error: 'Missing or invalid userId parameter' });
+      return res
+        .status(400)
+        .json({ error: 'Missing or invalid userId parameter' });
     }
 
     if (!tenantId || typeof tenantId !== 'string') {
-      return res.status(400).json({ error: 'Missing or invalid tenantId parameter' });
+      return res
+        .status(400)
+        .json({ error: 'Missing or invalid tenantId parameter' });
     }
 
     // Verify user permission
-    const hasPermission = await verifyUserPermission(userId, tenantId, 'employee');
+    const hasPermission = await verifyUserPermission(
+      userId,
+      tenantId,
+      'employee'
+    );
     if (!hasPermission) {
       return res.status(403).json({ error: 'Insufficient permissions' });
     }

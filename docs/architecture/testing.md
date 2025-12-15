@@ -154,7 +154,7 @@ To get these values:
 2. **Login to Vercel**: `vercel login`
 3. **Link Project**: `vercel link` in your project directory
 4. **Find IDs**: Check `.vercel/project.json` for `orgId` and `projectId`
-5. **Generate Token**: 
+5. **Generate Token**:
    - Visit [Vercel Account Tokens](https://vercel.com/account/tokens)
    - Click "Create" and name it appropriately
    - Set expiration (optional, recommended for security)

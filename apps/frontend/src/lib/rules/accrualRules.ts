@@ -4,7 +4,10 @@
  */
 
 import { AccrualCalculation, EmployerSize } from './types';
-import { LARGE_EMPLOYER_RULES, SMALL_EMPLOYER_RULES } from './employerSizeRules';
+import {
+  LARGE_EMPLOYER_RULES,
+  SMALL_EMPLOYER_RULES,
+} from './employerSizeRules';
 
 /**
  * Calculate accrual for a work period with proper capping
@@ -18,7 +21,8 @@ export function calculateAccrual(
   employerSize: EmployerSize,
   yearlyAccrued: number
 ): AccrualCalculation {
-  const rules = employerSize === 'small' ? SMALL_EMPLOYER_RULES : LARGE_EMPLOYER_RULES;
+  const rules =
+    employerSize === 'small' ? SMALL_EMPLOYER_RULES : LARGE_EMPLOYER_RULES;
   const cap = rules.maxPaidHoursPerYear;
 
   if (employerSize === 'small') {
@@ -41,7 +45,7 @@ export function calculateAccrual(
     accrued,
     cap,
     remaining,
-    capped: yearlyAccrued >= cap || (yearlyAccrued + rawAccrued) > cap,
+    capped: yearlyAccrued >= cap || yearlyAccrued + rawAccrued > cap,
   };
 }
 
@@ -68,7 +72,8 @@ export function calculateCarryover(
   currentBalance: number,
   employerSize: EmployerSize
 ): number {
-  const rules = employerSize === 'small' ? SMALL_EMPLOYER_RULES : LARGE_EMPLOYER_RULES;
+  const rules =
+    employerSize === 'small' ? SMALL_EMPLOYER_RULES : LARGE_EMPLOYER_RULES;
   return Math.min(currentBalance, rules.carryoverCap);
 }
 

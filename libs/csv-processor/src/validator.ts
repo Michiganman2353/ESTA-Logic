@@ -1,8 +1,8 @@
 /**
  * CSV Validator
- * 
+ *
  * Validate CSV data against schemas
- * 
+ *
  * TODO: Migrate to Rust/WASM for high-performance validation
  */
 
@@ -34,7 +34,7 @@ export interface CSVSchema {
 
 /**
  * Validate CSV data against a schema
- * 
+ *
  * @param headers - CSV headers
  * @param rows - CSV data rows
  * @param schema - Validation schema

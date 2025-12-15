@@ -1,10 +1,10 @@
 /**
  * SecuritySection Component
- * 
+ *
  * Displays comprehensive security and privacy information for ESTA Tracker.
  * Builds trust with compliance-conscious businesses by highlighting
  * encryption, audit logging, and data protection measures.
- * 
+ *
  * Features:
  * - Encryption details (AES-256-GCM, Google Cloud KMS)
  * - Audit logging capabilities
@@ -12,7 +12,7 @@
  * - Compliance certifications
  * - Security best practices
  * - Expandable sections for detailed information
- * 
+ *
  * Uses:
  * - Design system Card component
  * - Tooltip component for additional context
@@ -35,24 +35,25 @@ export function SecuritySection() {
     <div className="space-y-6">
       <Card>
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
             Security & Privacy
           </h2>
           <p className="text-gray-600 dark:text-gray-400">
-            Your data security is our top priority. ESTA Tracker implements enterprise-grade
-            security measures to protect your sensitive employee information.
+            Your data security is our top priority. ESTA Tracker implements
+            enterprise-grade security measures to protect your sensitive
+            employee information.
           </p>
         </div>
 
         {/* Encryption Section */}
-        <div className="mb-4 border-b border-gray-200 dark:border-gray-700 pb-4">
+        <div className="mb-4 border-b border-gray-200 pb-4 dark:border-gray-700">
           <button
             onClick={() => toggleSection('encryption')}
-            className="w-full flex items-center justify-between text-left"
+            className="flex w-full items-center justify-between text-left"
           >
             <div className="flex items-center">
               <svg
-                className="w-6 h-6 text-primary-600 dark:text-primary-400 mr-3"
+                className="text-primary-600 dark:text-primary-400 mr-3 h-6 w-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -70,7 +71,7 @@ export function SecuritySection() {
               <TooltipIcon content="We use the same encryption standards as major financial institutions" />
             </div>
             <svg
-              className={`w-5 h-5 text-gray-500 transform transition-transform ${
+              className={`h-5 w-5 transform text-gray-500 transition-transform ${
                 expandedSection === 'encryption' ? 'rotate-180' : ''
               }`}
               fill="none"
@@ -86,34 +87,37 @@ export function SecuritySection() {
             </svg>
           </button>
           {expandedSection === 'encryption' && (
-            <div className="mt-4 ml-9 text-gray-600 dark:text-gray-400 space-y-3">
+            <div className="ml-9 mt-4 space-y-3 text-gray-600 dark:text-gray-400">
               <div>
-                <p className="font-medium text-gray-900 dark:text-white mb-1">
+                <p className="mb-1 font-medium text-gray-900 dark:text-white">
                   Encryption at Rest (AES-256-GCM)
                 </p>
                 <p className="text-sm">
-                  All sensitive data is encrypted using AES-256-GCM (Advanced Encryption Standard
-                  with 256-bit keys in Galois/Counter Mode). This military-grade encryption
-                  ensures your data is unreadable even if physical storage is compromised.
+                  All sensitive data is encrypted using AES-256-GCM (Advanced
+                  Encryption Standard with 256-bit keys in Galois/Counter Mode).
+                  This military-grade encryption ensures your data is unreadable
+                  even if physical storage is compromised.
                 </p>
               </div>
               <div>
-                <p className="font-medium text-gray-900 dark:text-white mb-1">
+                <p className="mb-1 font-medium text-gray-900 dark:text-white">
                   Google Cloud KMS (Key Management Service)
                 </p>
                 <p className="text-sm">
-                  Encryption keys are managed by Google Cloud KMS with hardware security modules
-                  (HSMs). This prevents anyone, including our team, from accessing your encrypted
-                  data without proper authorization.
+                  Encryption keys are managed by Google Cloud KMS with hardware
+                  security modules (HSMs). This prevents anyone, including our
+                  team, from accessing your encrypted data without proper
+                  authorization.
                 </p>
               </div>
               <div>
-                <p className="font-medium text-gray-900 dark:text-white mb-1">
+                <p className="mb-1 font-medium text-gray-900 dark:text-white">
                   Encryption in Transit (TLS 1.3)
                 </p>
                 <p className="text-sm">
-                  All data transmission between your browser and our servers uses TLS 1.3
-                  encryption, protecting your information from interception during transfer.
+                  All data transmission between your browser and our servers
+                  uses TLS 1.3 encryption, protecting your information from
+                  interception during transfer.
                 </p>
               </div>
             </div>
@@ -121,14 +125,14 @@ export function SecuritySection() {
         </div>
 
         {/* Audit Logging Section */}
-        <div className="mb-4 border-b border-gray-200 dark:border-gray-700 pb-4">
+        <div className="mb-4 border-b border-gray-200 pb-4 dark:border-gray-700">
           <button
             onClick={() => toggleSection('audit')}
-            className="w-full flex items-center justify-between text-left"
+            className="flex w-full items-center justify-between text-left"
           >
             <div className="flex items-center">
               <svg
-                className="w-6 h-6 text-primary-600 dark:text-primary-400 mr-3"
+                className="text-primary-600 dark:text-primary-400 mr-3 h-6 w-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -146,7 +150,7 @@ export function SecuritySection() {
               <TooltipIcon content="Every action is logged for compliance and security" />
             </div>
             <svg
-              className={`w-5 h-5 text-gray-500 transform transition-transform ${
+              className={`h-5 w-5 transform text-gray-500 transition-transform ${
                 expandedSection === 'audit' ? 'rotate-180' : ''
               }`}
               fill="none"
@@ -162,30 +166,32 @@ export function SecuritySection() {
             </svg>
           </button>
           {expandedSection === 'audit' && (
-            <div className="mt-4 ml-9 text-gray-600 dark:text-gray-400 space-y-3">
+            <div className="ml-9 mt-4 space-y-3 text-gray-600 dark:text-gray-400">
               <div>
-                <p className="font-medium text-gray-900 dark:text-white mb-1">
+                <p className="mb-1 font-medium text-gray-900 dark:text-white">
                   Complete Activity Trail
                 </p>
                 <p className="text-sm">
-                  Every action in the system is logged with timestamp, user identity, IP address,
-                  and action details. This creates an immutable audit trail for compliance purposes.
+                  Every action in the system is logged with timestamp, user
+                  identity, IP address, and action details. This creates an
+                  immutable audit trail for compliance purposes.
                 </p>
               </div>
               <div>
-                <p className="font-medium text-gray-900 dark:text-white mb-1">
+                <p className="mb-1 font-medium text-gray-900 dark:text-white">
                   3-Year Retention
                 </p>
                 <p className="text-sm">
-                  Audit logs are retained for 3 years as required by Michigan ESTA law, ensuring
-                  you have access to historical records for state audits and investigations.
+                  Audit logs are retained for 3 years as required by Michigan
+                  ESTA law, ensuring you have access to historical records for
+                  state audits and investigations.
                 </p>
               </div>
               <div>
-                <p className="font-medium text-gray-900 dark:text-white mb-1">
+                <p className="mb-1 font-medium text-gray-900 dark:text-white">
                   Logged Events Include
                 </p>
-                <ul className="text-sm list-disc list-inside space-y-1">
+                <ul className="list-inside list-disc space-y-1 text-sm">
                   <li>User login and logout activities</li>
                   <li>Sick time accrual calculations</li>
                   <li>PTO requests and approvals</li>
@@ -200,14 +206,14 @@ export function SecuritySection() {
         </div>
 
         {/* Data Protection Section */}
-        <div className="mb-4 border-b border-gray-200 dark:border-gray-700 pb-4">
+        <div className="mb-4 border-b border-gray-200 pb-4 dark:border-gray-700">
           <button
             onClick={() => toggleSection('protection')}
-            className="w-full flex items-center justify-between text-left"
+            className="flex w-full items-center justify-between text-left"
           >
             <div className="flex items-center">
               <svg
-                className="w-6 h-6 text-primary-600 dark:text-primary-400 mr-3"
+                className="text-primary-600 dark:text-primary-400 mr-3 h-6 w-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -225,7 +231,7 @@ export function SecuritySection() {
               <TooltipIcon content="Your data is protected by multiple security layers" />
             </div>
             <svg
-              className={`w-5 h-5 text-gray-500 transform transition-transform ${
+              className={`h-5 w-5 transform text-gray-500 transition-transform ${
                 expandedSection === 'protection' ? 'rotate-180' : ''
               }`}
               fill="none"
@@ -241,41 +247,45 @@ export function SecuritySection() {
             </svg>
           </button>
           {expandedSection === 'protection' && (
-            <div className="mt-4 ml-9 text-gray-600 dark:text-gray-400 space-y-3">
+            <div className="ml-9 mt-4 space-y-3 text-gray-600 dark:text-gray-400">
               <div>
-                <p className="font-medium text-gray-900 dark:text-white mb-1">
+                <p className="mb-1 font-medium text-gray-900 dark:text-white">
                   Multi-Tenant Isolation
                 </p>
                 <p className="text-sm">
-                  Each employer's data is completely isolated at the database level. No employer
-                  can access another employer's data under any circumstances.
+                  Each employer's data is completely isolated at the database
+                  level. No employer can access another employer's data under
+                  any circumstances.
                 </p>
               </div>
               <div>
-                <p className="font-medium text-gray-900 dark:text-white mb-1">
+                <p className="mb-1 font-medium text-gray-900 dark:text-white">
                   Role-Based Access Control (RBAC)
                 </p>
                 <p className="text-sm">
-                  Users can only access data appropriate to their role (Employee, Manager, Employer,
-                  Auditor). Permissions are enforced at both the application and database level.
+                  Users can only access data appropriate to their role
+                  (Employee, Manager, Employer, Auditor). Permissions are
+                  enforced at both the application and database level.
                 </p>
               </div>
               <div>
-                <p className="font-medium text-gray-900 dark:text-white mb-1">
+                <p className="mb-1 font-medium text-gray-900 dark:text-white">
                   Regular Security Audits
                 </p>
                 <p className="text-sm">
-                  We conduct regular security audits and penetration testing to identify and
-                  address potential vulnerabilities before they can be exploited.
+                  We conduct regular security audits and penetration testing to
+                  identify and address potential vulnerabilities before they can
+                  be exploited.
                 </p>
               </div>
               <div>
-                <p className="font-medium text-gray-900 dark:text-white mb-1">
+                <p className="mb-1 font-medium text-gray-900 dark:text-white">
                   Backup & Disaster Recovery
                 </p>
                 <p className="text-sm">
-                  Daily automated backups with point-in-time recovery ensure your data is never lost.
-                  Our disaster recovery plan guarantees 99.9% uptime.
+                  Daily automated backups with point-in-time recovery ensure
+                  your data is never lost. Our disaster recovery plan guarantees
+                  99.9% uptime.
                 </p>
               </div>
             </div>
@@ -286,11 +296,11 @@ export function SecuritySection() {
         <div>
           <button
             onClick={() => toggleSection('compliance')}
-            className="w-full flex items-center justify-between text-left"
+            className="flex w-full items-center justify-between text-left"
           >
             <div className="flex items-center">
               <svg
-                className="w-6 h-6 text-primary-600 dark:text-primary-400 mr-3"
+                className="text-primary-600 dark:text-primary-400 mr-3 h-6 w-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -308,7 +318,7 @@ export function SecuritySection() {
               <TooltipIcon content="Industry-standard compliance and best practices" />
             </div>
             <svg
-              className={`w-5 h-5 text-gray-500 transform transition-transform ${
+              className={`h-5 w-5 transform text-gray-500 transition-transform ${
                 expandedSection === 'compliance' ? 'rotate-180' : ''
               }`}
               fill="none"
@@ -324,32 +334,35 @@ export function SecuritySection() {
             </svg>
           </button>
           {expandedSection === 'compliance' && (
-            <div className="mt-4 ml-9 text-gray-600 dark:text-gray-400 space-y-3">
+            <div className="ml-9 mt-4 space-y-3 text-gray-600 dark:text-gray-400">
               <div>
-                <p className="font-medium text-gray-900 dark:text-white mb-1">
+                <p className="mb-1 font-medium text-gray-900 dark:text-white">
                   Michigan ESTA Compliance
                 </p>
                 <p className="text-sm">
-                  Our system is built specifically to comply with the Michigan Earned Sick Time
-                  Act of 2025, with automatic updates as regulations evolve.
+                  Our system is built specifically to comply with the Michigan
+                  Earned Sick Time Act of 2025, with automatic updates as
+                  regulations evolve.
                 </p>
               </div>
               <div>
-                <p className="font-medium text-gray-900 dark:text-white mb-1">
+                <p className="mb-1 font-medium text-gray-900 dark:text-white">
                   GDPR & Privacy Standards
                 </p>
                 <p className="text-sm">
-                  We follow GDPR principles for data privacy, including data minimization,
-                  purpose limitation, and user rights to access and deletion.
+                  We follow GDPR principles for data privacy, including data
+                  minimization, purpose limitation, and user rights to access
+                  and deletion.
                 </p>
               </div>
               <div>
-                <p className="font-medium text-gray-900 dark:text-white mb-1">
+                <p className="mb-1 font-medium text-gray-900 dark:text-white">
                   SOC 2 Type II (In Progress)
                 </p>
                 <p className="text-sm">
-                  We are working towards SOC 2 Type II certification to demonstrate our commitment
-                  to security, availability, and confidentiality controls.
+                  We are working towards SOC 2 Type II certification to
+                  demonstrate our commitment to security, availability, and
+                  confidentiality controls.
                 </p>
               </div>
             </div>
@@ -359,13 +372,13 @@ export function SecuritySection() {
 
       {/* Security Best Practices */}
       <Card>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
           Security Best Practices for Users
         </h3>
         <div className="space-y-3 text-gray-600 dark:text-gray-400">
           <div className="flex items-start">
             <svg
-              className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0"
+              className="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-green-500"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -376,16 +389,18 @@ export function SecuritySection() {
               />
             </svg>
             <div>
-              <p className="font-medium text-gray-900 dark:text-white">Use Strong Passwords</p>
+              <p className="font-medium text-gray-900 dark:text-white">
+                Use Strong Passwords
+              </p>
               <p className="text-sm">
-                Create unique passwords with at least 12 characters, including uppercase, lowercase,
-                numbers, and symbols.
+                Create unique passwords with at least 12 characters, including
+                uppercase, lowercase, numbers, and symbols.
               </p>
             </div>
           </div>
           <div className="flex items-start">
             <svg
-              className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0"
+              className="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-green-500"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -396,15 +411,18 @@ export function SecuritySection() {
               />
             </svg>
             <div>
-              <p className="font-medium text-gray-900 dark:text-white">Enable Two-Factor Authentication</p>
+              <p className="font-medium text-gray-900 dark:text-white">
+                Enable Two-Factor Authentication
+              </p>
               <p className="text-sm">
-                Add an extra layer of security by enabling 2FA in your account settings.
+                Add an extra layer of security by enabling 2FA in your account
+                settings.
               </p>
             </div>
           </div>
           <div className="flex items-start">
             <svg
-              className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0"
+              className="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-green-500"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -415,15 +433,18 @@ export function SecuritySection() {
               />
             </svg>
             <div>
-              <p className="font-medium text-gray-900 dark:text-white">Log Out on Shared Devices</p>
+              <p className="font-medium text-gray-900 dark:text-white">
+                Log Out on Shared Devices
+              </p>
               <p className="text-sm">
-                Always log out after using ESTA Tracker on shared or public computers.
+                Always log out after using ESTA Tracker on shared or public
+                computers.
               </p>
             </div>
           </div>
           <div className="flex items-start">
             <svg
-              className="w-5 h-5 text-green-500 mr-3 mt-0.5 flex-shrink-0"
+              className="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-green-500"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -434,9 +455,12 @@ export function SecuritySection() {
               />
             </svg>
             <div>
-              <p className="font-medium text-gray-900 dark:text-white">Review Audit Logs</p>
+              <p className="font-medium text-gray-900 dark:text-white">
+                Review Audit Logs
+              </p>
               <p className="text-sm">
-                Regularly review your audit logs to ensure all activity is authorized.
+                Regularly review your audit logs to ensure all activity is
+                authorized.
               </p>
             </div>
           </div>

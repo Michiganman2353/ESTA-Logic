@@ -58,10 +58,7 @@ const policyRulesSchema = z
  */
 export const policyCreateSchema = z
   .object({
-    basePolicyId: z
-      .string()
-      .trim()
-      .min(1, 'Base policy ID is required'),
+    basePolicyId: z.string().trim().min(1, 'Base policy ID is required'),
     customizations: z
       .object({
         name: z
@@ -83,10 +80,7 @@ export type PolicyCreateInput = z.infer<typeof policyCreateSchema>;
  */
 export const policyActivateSchema = z
   .object({
-    policyId: z
-      .string()
-      .trim()
-      .min(1, 'Policy ID is required'),
+    policyId: z.string().trim().min(1, 'Policy ID is required'),
     customizations: z
       .object({
         rules: policyRulesSchema.optional(),

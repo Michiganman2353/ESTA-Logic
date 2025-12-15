@@ -65,16 +65,20 @@ export function getComplianceRules(
   accrualMethod?: AccrualMethod
 ): ComplianceRules {
   const size = determineEmployerSize(employeeCount);
-  const baseRules = size === 'small' ? SMALL_EMPLOYER_RULES : LARGE_EMPLOYER_RULES;
-  
+  const baseRules =
+    size === 'small' ? SMALL_EMPLOYER_RULES : LARGE_EMPLOYER_RULES;
+
   if (accrualMethod) {
     return {
       ...baseRules,
       accrualMethod,
-      frontloadAmount: accrualMethod === 'frontload' ? baseRules.maxPaidHoursPerYear : undefined,
+      frontloadAmount:
+        accrualMethod === 'frontload'
+          ? baseRules.maxPaidHoursPerYear
+          : undefined,
     };
   }
-  
+
   return baseRules;
 }
 

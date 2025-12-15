@@ -5,14 +5,11 @@ import { setCorsHeaders, handlePreflight } from '../../lib/cors';
 /**
  * Login API Endpoint
  * POST /api/v1/auth/login
- * 
+ *
  * Production: Uses Firebase ID token from client-side authentication
  * Development: Supports email/password for testing (should be disabled in production)
  */
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Set CORS headers
   const origin = req.headers.origin || '';
   setCorsHeaders(res, origin);
@@ -48,12 +45,16 @@ export default async function handler(
     } else {
       // Development path: Lookup user by email
       // WARNING: This bypasses Firebase Auth's security and should NOT be used in production
-      if (process.env.NODE_ENV === 'production' || process.env.VERCEL_ENV === 'production') {
+      if (
+        process.env.NODE_ENV === 'production' ||
+        process.env.VERCEL_ENV === 'production'
+      ) {
         return res.status(400).json({
-          message: 'Email/password login is not supported in production. Please use the Firebase Auth client SDK.',
+          message:
+            'Email/password login is not supported in production. Please use the Firebase Auth client SDK.',
         });
       }
-      
+
       const userRecord = await auth.getUserByEmail(email);
       uid = userRecord.uid;
     }

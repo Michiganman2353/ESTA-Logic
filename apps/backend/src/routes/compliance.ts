@@ -1,6 +1,6 @@
 /**
  * ESTA 2025 Compliance API Routes
- * 
+ *
  * Provides REST endpoints for compliance management including:
  * - Retention status and metadata
  * - Audit log access
@@ -8,7 +8,7 @@
  * - Annual certification
  * - Deletion request workflow
  * - Compliance alerts
- * 
+ *
  * @module compliance
  */
 
@@ -68,7 +68,7 @@ complianceRouter.get('/retention/config', (_req: Request, res: Response) => {
 complianceRouter.post('/retention/metadata', (req: Request, res: Response) => {
   try {
     const { recordType, recordId, tenantId, applicationStatus } = req.body;
-    
+
     if (!recordType || !recordId || !tenantId) {
       res.status(400).json({
         success: false,
@@ -76,14 +76,14 @@ complianceRouter.post('/retention/metadata', (req: Request, res: Response) => {
       });
       return;
     }
-    
+
     const metadata = createRetentionMetadata({
       recordType,
       recordId,
       tenantId,
       applicationStatus,
     });
-    
+
     res.status(201).json({
       success: true,
       metadata,
@@ -100,38 +100,41 @@ complianceRouter.post('/retention/metadata', (req: Request, res: Response) => {
  * Check if a record can be deleted
  * POST /api/v1/compliance/retention/check-delete
  */
-complianceRouter.post('/retention/check-delete', (req: Request, res: Response) => {
-  try {
-    const { metadata } = req.body;
-    
-    if (!metadata) {
-      res.status(400).json({
-        success: false,
-        error: 'Retention metadata is required',
+complianceRouter.post(
+  '/retention/check-delete',
+  (req: Request, res: Response) => {
+    try {
+      const { metadata } = req.body;
+
+      if (!metadata) {
+        res.status(400).json({
+          success: false,
+          error: 'Retention metadata is required',
+        });
+        return;
+      }
+
+      // Ensure dates are Date objects
+      const metadataWithDates = {
+        ...metadata,
+        createdAt: new Date(metadata.createdAt),
+        retentionEndDate: new Date(metadata.retentionEndDate),
+      };
+
+      const result = canDeleteRecord(metadataWithDates);
+
+      res.json({
+        success: true,
+        ...result,
       });
-      return;
+    } catch (_error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to check deletion eligibility',
+      });
     }
-    
-    // Ensure dates are Date objects
-    const metadataWithDates = {
-      ...metadata,
-      createdAt: new Date(metadata.createdAt),
-      retentionEndDate: new Date(metadata.retentionEndDate),
-    };
-    
-    const result = canDeleteRecord(metadataWithDates);
-    
-    res.json({
-      success: true,
-      ...result,
-    });
-  } catch (_error) {
-    res.status(500).json({
-      success: false,
-      error: 'Failed to check deletion eligibility',
-    });
   }
-});
+);
 
 // ============================================================================
 // Legal Hold Endpoints
@@ -144,7 +147,7 @@ complianceRouter.post('/retention/check-delete', (req: Request, res: Response) =
 complianceRouter.post('/legal-hold/place', (req: Request, res: Response) => {
   try {
     const { metadata, holdId, reason, placedBy, expiresAt } = req.body;
-    
+
     if (!metadata || !holdId || !reason || !placedBy) {
       res.status(400).json({
         success: false,
@@ -152,30 +155,34 @@ complianceRouter.post('/legal-hold/place', (req: Request, res: Response) => {
       });
       return;
     }
-    
+
     // Ensure dates are Date objects
     const metadataWithDates = {
       ...metadata,
       createdAt: new Date(metadata.createdAt),
       retentionEndDate: new Date(metadata.retentionEndDate),
     };
-    
+
     const updated = placeLegalHold(metadataWithDates, {
       holdId,
       reason,
       placedBy,
       expiresAt: expiresAt ? new Date(expiresAt) : undefined,
     });
-    
+
     // Log the legal hold placement
     createImmutableAuditEntry({
       action: 'LEGAL_HOLD_PLACED',
       severity: 'WARNING',
       actor: { userId: placedBy, role: 'admin' },
-      resource: { type: metadata.recordType, id: metadata.recordId, tenantId: metadata.tenantId },
+      resource: {
+        type: metadata.recordType,
+        id: metadata.recordId,
+        tenantId: metadata.tenantId,
+      },
       details: { description: `Legal hold placed: ${reason}` },
     });
-    
+
     res.status(201).json({
       success: true,
       metadata: updated,
@@ -195,7 +202,7 @@ complianceRouter.post('/legal-hold/place', (req: Request, res: Response) => {
 complianceRouter.post('/legal-hold/release', (req: Request, res: Response) => {
   try {
     const { metadata, releasedBy } = req.body;
-    
+
     if (!metadata || !releasedBy) {
       res.status(400).json({
         success: false,
@@ -203,25 +210,29 @@ complianceRouter.post('/legal-hold/release', (req: Request, res: Response) => {
       });
       return;
     }
-    
+
     // Ensure dates are Date objects
     const metadataWithDates = {
       ...metadata,
       createdAt: new Date(metadata.createdAt),
       retentionEndDate: new Date(metadata.retentionEndDate),
     };
-    
+
     const updated = releaseLegalHold(metadataWithDates);
-    
+
     // Log the legal hold release
     createImmutableAuditEntry({
       action: 'LEGAL_HOLD_RELEASED',
       severity: 'INFO',
       actor: { userId: releasedBy, role: 'admin' },
-      resource: { type: metadata.recordType, id: metadata.recordId, tenantId: metadata.tenantId },
+      resource: {
+        type: metadata.recordType,
+        id: metadata.recordId,
+        tenantId: metadata.tenantId,
+      },
       details: { description: 'Legal hold released' },
     });
-    
+
     res.json({
       success: true,
       metadata: updated,
@@ -244,23 +255,40 @@ complianceRouter.post('/legal-hold/release', (req: Request, res: Response) => {
  */
 complianceRouter.post('/deletion/request', (req: Request, res: Response) => {
   try {
-    const { tenantId, recordType, recordId, requestedBy, reason, retentionMetadata, requiredApprovers } = req.body;
-    
-    if (!tenantId || !recordType || !recordId || !requestedBy || !reason || !retentionMetadata || !requiredApprovers) {
+    const {
+      tenantId,
+      recordType,
+      recordId,
+      requestedBy,
+      reason,
+      retentionMetadata,
+      requiredApprovers,
+    } = req.body;
+
+    if (
+      !tenantId ||
+      !recordType ||
+      !recordId ||
+      !requestedBy ||
+      !reason ||
+      !retentionMetadata ||
+      !requiredApprovers
+    ) {
       res.status(400).json({
         success: false,
-        error: 'All fields are required: tenantId, recordType, recordId, requestedBy, reason, retentionMetadata, requiredApprovers',
+        error:
+          'All fields are required: tenantId, recordType, recordId, requestedBy, reason, retentionMetadata, requiredApprovers',
       });
       return;
     }
-    
+
     // Ensure dates are Date objects
     const metadataWithDates = {
       ...retentionMetadata,
       createdAt: new Date(retentionMetadata.createdAt),
       retentionEndDate: new Date(retentionMetadata.retentionEndDate),
     };
-    
+
     const request = createDeletionRequest({
       tenantId,
       recordType,
@@ -270,7 +298,7 @@ complianceRouter.post('/deletion/request', (req: Request, res: Response) => {
       retentionMetadata: metadataWithDates,
       requiredApprovers,
     });
-    
+
     res.status(201).json({
       success: true,
       deletionRequest: request,
@@ -290,21 +318,22 @@ complianceRouter.post('/deletion/request', (req: Request, res: Response) => {
 complianceRouter.post('/deletion/approve', (req: Request, res: Response) => {
   try {
     const { deletionRequest, approverId, approved, notes } = req.body;
-    
+
     if (!deletionRequest || !approverId || typeof approved !== 'boolean') {
       res.status(400).json({
         success: false,
-        error: 'deletionRequest, approverId, and approved (boolean) are required',
+        error:
+          'deletionRequest, approverId, and approved (boolean) are required',
       });
       return;
     }
-    
+
     const updated = processDeletionApproval(deletionRequest, {
       approverId,
       approved,
       notes,
     });
-    
+
     res.json({
       success: true,
       deletionRequest: updated,
@@ -325,53 +354,59 @@ complianceRouter.post('/deletion/approve', (req: Request, res: Response) => {
  * Get ESTA certification requirements
  * GET /api/v1/compliance/certification/requirements
  */
-complianceRouter.get('/certification/requirements', (_req: Request, res: Response) => {
-  try {
-    res.json({
-      success: true,
-      requirements: ESTA_CERTIFICATION_REQUIREMENTS,
-    });
-  } catch (_error) {
-    res.status(500).json({
-      success: false,
-      error: 'Failed to retrieve certification requirements',
-    });
+complianceRouter.get(
+  '/certification/requirements',
+  (_req: Request, res: Response) => {
+    try {
+      res.json({
+        success: true,
+        requirements: ESTA_CERTIFICATION_REQUIREMENTS,
+      });
+    } catch (_error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve certification requirements',
+      });
+    }
   }
-});
+);
 
 /**
  * Create annual certification
  * POST /api/v1/compliance/certification/create
  */
-complianceRouter.post('/certification/create', (req: Request, res: Response) => {
-  try {
-    const { tenantId, certificationYear, preparedBy } = req.body;
-    
-    if (!tenantId || !certificationYear || !preparedBy) {
-      res.status(400).json({
-        success: false,
-        error: 'tenantId, certificationYear, and preparedBy are required',
+complianceRouter.post(
+  '/certification/create',
+  (req: Request, res: Response) => {
+    try {
+      const { tenantId, certificationYear, preparedBy } = req.body;
+
+      if (!tenantId || !certificationYear || !preparedBy) {
+        res.status(400).json({
+          success: false,
+          error: 'tenantId, certificationYear, and preparedBy are required',
+        });
+        return;
+      }
+
+      const certification = createAnnualCertification({
+        tenantId,
+        certificationYear,
+        preparedBy,
       });
-      return;
+
+      res.status(201).json({
+        success: true,
+        certification,
+      });
+    } catch (_error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to create annual certification',
+      });
     }
-    
-    const certification = createAnnualCertification({
-      tenantId,
-      certificationYear,
-      preparedBy,
-    });
-    
-    res.status(201).json({
-      success: true,
-      certification,
-    });
-  } catch (_error) {
-    res.status(500).json({
-      success: false,
-      error: 'Failed to create annual certification',
-    });
   }
-});
+);
 
 /**
  * Generate retention audit report
@@ -379,24 +414,36 @@ complianceRouter.post('/certification/create', (req: Request, res: Response) => 
  */
 complianceRouter.post('/reports/retention', (req: Request, res: Response) => {
   try {
-    const { tenantId, generatedBy, retentionRecords, startDate, endDate } = req.body;
-    
-    if (!tenantId || !generatedBy || !retentionRecords || !startDate || !endDate) {
+    const { tenantId, generatedBy, retentionRecords, startDate, endDate } =
+      req.body;
+
+    if (
+      !tenantId ||
+      !generatedBy ||
+      !retentionRecords ||
+      !startDate ||
+      !endDate
+    ) {
       res.status(400).json({
         success: false,
-        error: 'All fields are required: tenantId, generatedBy, retentionRecords, startDate, endDate',
+        error:
+          'All fields are required: tenantId, generatedBy, retentionRecords, startDate, endDate',
       });
       return;
     }
-    
+
     // Convert date strings to Date objects and ensure retention record dates are correct
-    const recordsWithDates = retentionRecords.map((r: Record<string, unknown>) => ({
-      ...r,
-      createdAt: new Date(r.createdAt as string),
-      retentionEndDate: new Date(r.retentionEndDate as string),
-      finalizedAt: r.finalizedAt ? new Date(r.finalizedAt as string) : undefined,
-    }));
-    
+    const recordsWithDates = retentionRecords.map(
+      (r: Record<string, unknown>) => ({
+        ...r,
+        createdAt: new Date(r.createdAt as string),
+        retentionEndDate: new Date(r.retentionEndDate as string),
+        finalizedAt: r.finalizedAt
+          ? new Date(r.finalizedAt as string)
+          : undefined,
+      })
+    );
+
     const report = generateRetentionAuditReport({
       tenantId,
       generatedBy,
@@ -404,7 +451,7 @@ complianceRouter.post('/reports/retention', (req: Request, res: Response) => {
       startDate: new Date(startDate),
       endDate: new Date(endDate),
     });
-    
+
     res.status(201).json({
       success: true,
       report,
@@ -434,7 +481,7 @@ complianceRouter.post('/gap-analysis', (req: Request, res: Response) => {
       hasLegalHold,
       hasDeletionSafeguards,
     } = req.body;
-    
+
     if (!tenantId) {
       res.status(400).json({
         success: false,
@@ -442,7 +489,7 @@ complianceRouter.post('/gap-analysis', (req: Request, res: Response) => {
       });
       return;
     }
-    
+
     const analysis = performComplianceGapAnalysis({
       tenantId,
       hasEncryption: hasEncryption ?? false,
@@ -454,7 +501,7 @@ complianceRouter.post('/gap-analysis', (req: Request, res: Response) => {
       hasLegalHold: hasLegalHold ?? false,
       hasDeletionSafeguards: hasDeletionSafeguards ?? false,
     });
-    
+
     res.json({
       success: true,
       analysis,
@@ -477,8 +524,16 @@ complianceRouter.post('/gap-analysis', (req: Request, res: Response) => {
  */
 complianceRouter.post('/alerts/create', (req: Request, res: Response) => {
   try {
-    const { tenantId, alertType, severity, title, message, relatedRecordType, relatedRecordId } = req.body;
-    
+    const {
+      tenantId,
+      alertType,
+      severity,
+      title,
+      message,
+      relatedRecordType,
+      relatedRecordId,
+    } = req.body;
+
     if (!tenantId || !alertType || !severity || !title || !message) {
       res.status(400).json({
         success: false,
@@ -486,7 +541,7 @@ complianceRouter.post('/alerts/create', (req: Request, res: Response) => {
       });
       return;
     }
-    
+
     const alert = createComplianceAlert({
       tenantId,
       alertType,
@@ -496,7 +551,7 @@ complianceRouter.post('/alerts/create', (req: Request, res: Response) => {
       relatedRecordType,
       relatedRecordId,
     });
-    
+
     res.status(201).json({
       success: true,
       alert,
@@ -516,7 +571,7 @@ complianceRouter.post('/alerts/create', (req: Request, res: Response) => {
 complianceRouter.post('/alerts/acknowledge', (req: Request, res: Response) => {
   try {
     const { alert, acknowledgedBy } = req.body;
-    
+
     if (!alert || !acknowledgedBy) {
       res.status(400).json({
         success: false,
@@ -524,15 +579,15 @@ complianceRouter.post('/alerts/acknowledge', (req: Request, res: Response) => {
       });
       return;
     }
-    
+
     // Ensure date is correct
     const alertWithDates = {
       ...alert,
       createdAt: new Date(alert.createdAt),
     };
-    
+
     const updated = acknowledgeComplianceAlert(alertWithDates, acknowledgedBy);
-    
+
     res.json({
       success: true,
       alert: updated,
@@ -552,7 +607,7 @@ complianceRouter.post('/alerts/acknowledge', (req: Request, res: Response) => {
 complianceRouter.post('/alerts/resolve', (req: Request, res: Response) => {
   try {
     const { alert, resolvedBy, resolution } = req.body;
-    
+
     if (!alert || !resolvedBy || !resolution) {
       res.status(400).json({
         success: false,
@@ -560,16 +615,22 @@ complianceRouter.post('/alerts/resolve', (req: Request, res: Response) => {
       });
       return;
     }
-    
+
     // Ensure date is correct
     const alertWithDates = {
       ...alert,
       createdAt: new Date(alert.createdAt),
-      acknowledgedAt: alert.acknowledgedAt ? new Date(alert.acknowledgedAt) : undefined,
+      acknowledgedAt: alert.acknowledgedAt
+        ? new Date(alert.acknowledgedAt)
+        : undefined,
     };
-    
-    const updated = resolveComplianceAlert(alertWithDates, resolvedBy, resolution);
-    
+
+    const updated = resolveComplianceAlert(
+      alertWithDates,
+      resolvedBy,
+      resolution
+    );
+
     res.json({
       success: true,
       alert: updated,
@@ -590,40 +651,61 @@ complianceRouter.post('/alerts/resolve', (req: Request, res: Response) => {
  * Create a justification log
  * POST /api/v1/compliance/justification/create
  */
-complianceRouter.post('/justification/create', (req: Request, res: Response) => {
-  try {
-    const { tenantId, decisionType, relatedRecordType, relatedRecordId, decision, justification, decidedBy, supportingDocuments } = req.body;
-    
-    if (!tenantId || !decisionType || !relatedRecordType || !relatedRecordId || !decision || !justification || !decidedBy) {
-      res.status(400).json({
-        success: false,
-        error: 'All fields are required: tenantId, decisionType, relatedRecordType, relatedRecordId, decision, justification, decidedBy',
+complianceRouter.post(
+  '/justification/create',
+  (req: Request, res: Response) => {
+    try {
+      const {
+        tenantId,
+        decisionType,
+        relatedRecordType,
+        relatedRecordId,
+        decision,
+        justification,
+        decidedBy,
+        supportingDocuments,
+      } = req.body;
+
+      if (
+        !tenantId ||
+        !decisionType ||
+        !relatedRecordType ||
+        !relatedRecordId ||
+        !decision ||
+        !justification ||
+        !decidedBy
+      ) {
+        res.status(400).json({
+          success: false,
+          error:
+            'All fields are required: tenantId, decisionType, relatedRecordType, relatedRecordId, decision, justification, decidedBy',
+        });
+        return;
+      }
+
+      const log = createJustificationLog({
+        tenantId,
+        decisionType,
+        relatedRecordType,
+        relatedRecordId,
+        decision,
+        justification,
+        decidedBy,
+        supportingDocuments,
       });
-      return;
+
+      res.status(201).json({
+        success: true,
+        justificationLog: log,
+      });
+    } catch (_error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to create justification log',
+      });
     }
-    
-    const log = createJustificationLog({
-      tenantId,
-      decisionType,
-      relatedRecordType,
-      relatedRecordId,
-      decision,
-      justification,
-      decidedBy,
-      supportingDocuments,
-    });
-    
-    res.status(201).json({
-      success: true,
-      justificationLog: log,
-    });
-  } catch (_error) {
-    res.status(500).json({
-      success: false,
-      error: 'Failed to create justification log',
-    });
   }
-});
+);
 
 // ============================================================================
 // Data Residency & Security Validation Endpoints
@@ -633,35 +715,38 @@ complianceRouter.post('/justification/create', (req: Request, res: Response) => 
  * Validate US data residency for a storage location
  * POST /api/v1/compliance/validate/data-residency
  */
-complianceRouter.post('/validate/data-residency', (req: Request, res: Response) => {
-  try {
-    const { storageLocation } = req.body;
-    
-    if (!storageLocation) {
-      res.status(400).json({
-        success: false,
-        error: 'storageLocation is required',
+complianceRouter.post(
+  '/validate/data-residency',
+  (req: Request, res: Response) => {
+    try {
+      const { storageLocation } = req.body;
+
+      if (!storageLocation) {
+        res.status(400).json({
+          success: false,
+          error: 'storageLocation is required',
+        });
+        return;
+      }
+
+      const isCompliant = validateUSDataResidency(storageLocation);
+
+      res.json({
+        success: true,
+        storageLocation,
+        isCompliant,
+        message: isCompliant
+          ? 'Storage location is compliant with US data residency requirements'
+          : 'Storage location is NOT compliant with US data residency requirements',
       });
-      return;
+    } catch (_error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to validate data residency',
+      });
     }
-    
-    const isCompliant = validateUSDataResidency(storageLocation);
-    
-    res.json({
-      success: true,
-      storageLocation,
-      isCompliant,
-      message: isCompliant 
-        ? 'Storage location is compliant with US data residency requirements'
-        : 'Storage location is NOT compliant with US data residency requirements',
-    });
-  } catch (_error) {
-    res.status(500).json({
-      success: false,
-      error: 'Failed to validate data residency',
-    });
   }
-});
+);
 
 /**
  * Verify AES-256 encryption algorithm
@@ -670,7 +755,7 @@ complianceRouter.post('/validate/data-residency', (req: Request, res: Response) 
 complianceRouter.post('/validate/encryption', (req: Request, res: Response) => {
   try {
     const { encryptionAlgorithm } = req.body;
-    
+
     if (!encryptionAlgorithm) {
       res.status(400).json({
         success: false,
@@ -678,14 +763,14 @@ complianceRouter.post('/validate/encryption', (req: Request, res: Response) => {
       });
       return;
     }
-    
+
     const isCompliant = verifyAES256Encryption(encryptionAlgorithm);
-    
+
     res.json({
       success: true,
       encryptionAlgorithm,
       isCompliant,
-      message: isCompliant 
+      message: isCompliant
         ? 'Encryption algorithm meets ESTA 2025 AES-256 requirements'
         : 'Encryption algorithm does NOT meet ESTA 2025 AES-256 requirements',
     });

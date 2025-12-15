@@ -140,7 +140,11 @@ describe('Rules Engine', () => {
 
   describe('Accrual Calculations', () => {
     it('should calculate accrual for large employer', () => {
-      const result = engine.calculateAccrual('mi-esta-large-accrual-v1', 300, 0);
+      const result = engine.calculateAccrual(
+        'mi-esta-large-accrual-v1',
+        300,
+        0
+      );
 
       expect(result.accrued).toBe(10); // 300 / 30 = 10
       expect(result.remaining).toBe(72);
@@ -148,7 +152,11 @@ describe('Rules Engine', () => {
     });
 
     it('should respect annual cap', () => {
-      const result = engine.calculateAccrual('mi-esta-large-accrual-v1', 300, 70);
+      const result = engine.calculateAccrual(
+        'mi-esta-large-accrual-v1',
+        300,
+        70
+      );
 
       expect(result.accrued).toBe(2); // Only 2 more hours until cap
       expect(result.remaining).toBe(2);
@@ -156,7 +164,11 @@ describe('Rules Engine', () => {
     });
 
     it('should handle already capped accrual', () => {
-      const result = engine.calculateAccrual('mi-esta-large-accrual-v1', 300, 72);
+      const result = engine.calculateAccrual(
+        'mi-esta-large-accrual-v1',
+        300,
+        72
+      );
 
       expect(result.accrued).toBe(0);
       expect(result.remaining).toBe(0);
@@ -176,7 +188,11 @@ describe('Rules Engine', () => {
     });
 
     it('should handle small employer accrual', () => {
-      const result = engine.calculateAccrual('mi-esta-small-accrual-v1', 300, 0);
+      const result = engine.calculateAccrual(
+        'mi-esta-small-accrual-v1',
+        300,
+        0
+      );
 
       expect(result.accrued).toBe(10);
       expect(result.remaining).toBe(40);
@@ -184,7 +200,11 @@ describe('Rules Engine', () => {
     });
 
     it('should respect small employer cap', () => {
-      const result = engine.calculateAccrual('mi-esta-small-accrual-v1', 300, 38);
+      const result = engine.calculateAccrual(
+        'mi-esta-small-accrual-v1',
+        300,
+        38
+      );
 
       expect(result.accrued).toBe(2);
       expect(result.remaining).toBe(2);
@@ -228,7 +248,9 @@ describe('Rules Engine', () => {
 
       const result = engine.validatePolicy(policy);
       expect(result.valid).toBe(false);
-      expect(result.errors.some((e) => e.includes('ID is required'))).toBe(true);
+      expect(result.errors.some((e) => e.includes('ID is required'))).toBe(
+        true
+      );
     });
 
     it('should detect missing accrual rate for accrual policy', () => {
@@ -274,7 +296,9 @@ describe('Rules Engine', () => {
 
       const result = engine.validatePolicy(policy);
       expect(result.valid).toBe(false);
-      expect(result.errors.some((e) => e.includes('Frontload amount'))).toBe(true);
+      expect(result.errors.some((e) => e.includes('Frontload amount'))).toBe(
+        true
+      );
     });
 
     it('should detect invalid max paid hours', () => {
@@ -298,7 +322,9 @@ describe('Rules Engine', () => {
 
       const result = engine.validatePolicy(policy);
       expect(result.valid).toBe(false);
-      expect(result.errors.some((e) => e.includes('Max paid hours'))).toBe(true);
+      expect(result.errors.some((e) => e.includes('Max paid hours'))).toBe(
+        true
+      );
     });
   });
 

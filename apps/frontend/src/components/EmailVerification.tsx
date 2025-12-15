@@ -6,7 +6,10 @@ interface EmailVerificationProps {
   onVerified?: () => void;
 }
 
-export default function EmailVerification({ email, onVerified: _onVerified }: EmailVerificationProps) {
+export default function EmailVerification({
+  email,
+  onVerified: _onVerified,
+}: EmailVerificationProps) {
   const navigate = useNavigate();
 
   // DEVELOPMENT MODE: Email verification is bypassed
@@ -16,7 +19,7 @@ export default function EmailVerification({ email, onVerified: _onVerified }: Em
       console.log('[DEV MODE] Auto-skipping email verification');
       navigate('/login');
     }, 3000);
-    
+
     return () => clearTimeout(timer);
   }, [navigate]);
 
@@ -221,14 +224,22 @@ export default function EmailVerification({ email, onVerified: _onVerified }: Em
   */
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8 dark:bg-gray-900">
+      <div className="w-full max-w-md space-y-8">
         {/* DEVELOPMENT MODE BANNER */}
-        <div className="rounded-md bg-yellow-50 dark:bg-yellow-900/20 p-4 border-2 border-yellow-400 dark:border-yellow-600">
+        <div className="rounded-md border-2 border-yellow-400 bg-yellow-50 p-4 dark:border-yellow-600 dark:bg-yellow-900/20">
           <div className="flex">
             <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              <svg
+                className="h-5 w-5 text-yellow-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
             <div className="ml-3">
@@ -236,16 +247,20 @@ export default function EmailVerification({ email, onVerified: _onVerified }: Em
                 Development Mode - Email Verification Bypassed
               </h3>
               <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
-                <p>Email verification is temporarily disabled. You will be redirected to login in 3 seconds, or click the button below to continue immediately.</p>
+                <p>
+                  Email verification is temporarily disabled. You will be
+                  redirected to login in 3 seconds, or click the button below to
+                  continue immediately.
+                </p>
               </div>
             </div>
           </div>
         </div>
 
         <div className="text-center">
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-primary-100 dark:bg-primary-900">
+          <div className="bg-primary-100 dark:bg-primary-900 mx-auto flex h-16 w-16 items-center justify-center rounded-full">
             <svg
-              className="h-8 w-8 text-primary-600 dark:text-primary-400"
+              className="text-primary-600 dark:text-primary-400 h-8 w-8"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -269,7 +284,7 @@ export default function EmailVerification({ email, onVerified: _onVerified }: Em
           </p>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 space-y-4">
+        <div className="space-y-4 rounded-lg bg-white p-6 shadow dark:bg-gray-800">
           <div className="space-y-3">
             <button
               onClick={() => navigate('/login')}
@@ -279,9 +294,10 @@ export default function EmailVerification({ email, onVerified: _onVerified }: Em
             </button>
           </div>
 
-          <div className="text-center pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="border-t border-gray-200 pt-4 text-center dark:border-gray-700">
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              Note: In production, you would need to verify your email before logging in.
+              Note: In production, you would need to verify your email before
+              logging in.
             </p>
           </div>
         </div>

@@ -1,13 +1,13 @@
 /**
  * ESTA 2025 Compliance Reporting Service
- * 
+ *
  * Generates compliance reports required by Michigan's ESTA 2025 regulations:
  * - Annual certification reports
  * - Retention audit reports
  * - Access audit reports
  * - Security audit reports
  * - Policy compliance reports
- * 
+ *
  * @module complianceReportingService
  */
 
@@ -22,7 +22,7 @@ import type {
 // Type Definitions for Reporting
 // ============================================================================
 
-export type ComplianceReportType = 
+export type ComplianceReportType =
   | 'ANNUAL_CERTIFICATION'
   | 'RETENTION_AUDIT'
   | 'ACCESS_AUDIT'
@@ -106,7 +106,7 @@ export function generateComplianceReport(params: {
   const now = new Date();
   const retentionEndDate = new Date(now);
   retentionEndDate.setFullYear(retentionEndDate.getFullYear() + 7); // 7-year retention
-  
+
   return {
     id: randomUUID(),
     tenantId: params.tenantId,
@@ -137,33 +137,38 @@ export function generateRetentionAuditReport(params: {
   startDate: Date;
   endDate: Date;
 }): ComplianceReport {
-  const { tenantId, generatedBy, retentionRecords, startDate, endDate } = params;
-  
+  const { tenantId, generatedBy, retentionRecords, startDate, endDate } =
+    params;
+
   // Calculate metrics
   const totalRecords = retentionRecords.length;
-  const lockedRecords = retentionRecords.filter(r => r.isLocked).length;
-  const legalHoldRecords = retentionRecords.filter(r => r.hasLegalHold).length;
-  const archivedRecords = retentionRecords.filter(r => r.isArchived).length;
-  
+  const lockedRecords = retentionRecords.filter((r) => r.isLocked).length;
+  const legalHoldRecords = retentionRecords.filter(
+    (r) => r.hasLegalHold
+  ).length;
+  const archivedRecords = retentionRecords.filter((r) => r.isArchived).length;
+
   const now = new Date();
-  const expiringIn30Days = retentionRecords.filter(r => {
-    const daysUntilExpiry = Math.ceil((r.retentionEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  const expiringIn30Days = retentionRecords.filter((r) => {
+    const daysUntilExpiry = Math.ceil(
+      (r.retentionEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+    );
     return daysUntilExpiry > 0 && daysUntilExpiry <= 30;
   }).length;
-  
-  const eligibleForDeletion = retentionRecords.filter(r => 
-    r.retentionEndDate <= now && !r.hasLegalHold && !r.isLocked
+
+  const eligibleForDeletion = retentionRecords.filter(
+    (r) => r.retentionEndDate <= now && !r.hasLegalHold && !r.isLocked
   ).length;
 
   // Group by record type
   const recordsByType: Record<string, number> = {};
-  retentionRecords.forEach(r => {
+  retentionRecords.forEach((r) => {
     recordsByType[r.recordType] = (recordsByType[r.recordType] || 0) + 1;
   });
 
   // Generate findings
   const findings: ComplianceReport['findings'] = [];
-  
+
   if (eligibleForDeletion > 0) {
     findings.push({
       category: 'Retention',
@@ -172,7 +177,7 @@ export function generateRetentionAuditReport(params: {
       recommendation: 'Review and delete records as per retention policy',
     });
   }
-  
+
   if (expiringIn30Days > 0) {
     findings.push({
       category: 'Retention',
@@ -181,7 +186,7 @@ export function generateRetentionAuditReport(params: {
       recommendation: 'Prepare for record archival or deletion',
     });
   }
-  
+
   if (legalHoldRecords > 0) {
     findings.push({
       category: 'Legal Hold',
@@ -223,31 +228,32 @@ export function generateAccessAuditReport(params: {
   endDate: Date;
 }): ComplianceReport {
   const { tenantId, generatedBy, accessLogs, startDate, endDate } = params;
-  
+
   // Calculate metrics
   const totalAccesses = accessLogs.length;
-  const successfulAccesses = accessLogs.filter(l => l.success).length;
-  const failedAccesses = accessLogs.filter(l => !l.success).length;
-  
+  const successfulAccesses = accessLogs.filter((l) => l.success).length;
+  const failedAccesses = accessLogs.filter((l) => !l.success).length;
+
   // Group by access type
   const accessByType: Record<string, number> = {};
-  accessLogs.forEach(l => {
+  accessLogs.forEach((l) => {
     accessByType[l.accessType] = (accessByType[l.accessType] || 0) + 1;
   });
-  
+
   // Group by user role
   const accessByRole: Record<string, number> = {};
-  accessLogs.forEach(l => {
+  accessLogs.forEach((l) => {
     accessByRole[l.userRole] = (accessByRole[l.userRole] || 0) + 1;
   });
-  
+
   // Unique users
-  const uniqueUsers = new Set(accessLogs.map(l => l.userId)).size;
-  
+  const uniqueUsers = new Set(accessLogs.map((l) => l.userId)).size;
+
   // Generate findings
   const findings: ComplianceReport['findings'] = [];
-  
-  const failureRate = totalAccesses > 0 ? (failedAccesses / totalAccesses) * 100 : 0;
+
+  const failureRate =
+    totalAccesses > 0 ? (failedAccesses / totalAccesses) * 100 : 0;
   if (failureRate > 5) {
     findings.push({
       category: 'Access Control',
@@ -256,16 +262,18 @@ export function generateAccessAuditReport(params: {
       recommendation: 'Investigate high access failure rate',
     });
   }
-  
+
   // Check for unusual access patterns (e.g., high number of DELETE operations)
   const deleteCount = accessByType['DELETE'] || 0;
-  const deleteRate = totalAccesses > 0 ? (deleteCount / totalAccesses) * 100 : 0;
+  const deleteRate =
+    totalAccesses > 0 ? (deleteCount / totalAccesses) * 100 : 0;
   if (deleteRate > 10) {
     findings.push({
       category: 'Data Integrity',
       description: `Delete operations account for ${deleteRate.toFixed(1)}% of all accesses`,
       severity: 'WARNING',
-      recommendation: 'Review delete operations for potential data loss concerns',
+      recommendation:
+        'Review delete operations for potential data loss concerns',
     });
   }
 
@@ -284,7 +292,9 @@ export function generateAccessAuditReport(params: {
       failedAccesses,
       uniqueUsers,
       ...accessByType,
-      ...Object.fromEntries(Object.entries(accessByRole).map(([k, v]) => [`role_${k}`, v])),
+      ...Object.fromEntries(
+        Object.entries(accessByRole).map(([k, v]) => [`role_${k}`, v])
+      ),
     },
   });
 }
@@ -300,40 +310,60 @@ export function generateSecurityAuditReport(params: {
   endDate: Date;
 }): ComplianceReport {
   const { tenantId, generatedBy, auditEntries, startDate, endDate } = params;
-  
+
   // Filter security-related events
-  const securityEvents = auditEntries.filter(e => 
-    ['LOGIN', 'LOGOUT', 'LOGIN_FAILED', 'ACCESS_DENIED', 'BREACH_DETECTED',
-     'ENCRYPTION_KEY_ROTATED', 'DATA_EXPORT_REQUESTED', 'LEGAL_HOLD_PLACED'].includes(e.action)
+  const securityEvents = auditEntries.filter((e) =>
+    [
+      'LOGIN',
+      'LOGOUT',
+      'LOGIN_FAILED',
+      'ACCESS_DENIED',
+      'BREACH_DETECTED',
+      'ENCRYPTION_KEY_ROTATED',
+      'DATA_EXPORT_REQUESTED',
+      'LEGAL_HOLD_PLACED',
+    ].includes(e.action)
   );
-  
+
   // Calculate metrics
   const totalEvents = securityEvents.length;
-  const loginAttempts = securityEvents.filter(e => e.action === 'LOGIN').length;
-  const failedLogins = securityEvents.filter(e => e.action === 'LOGIN_FAILED').length;
-  const accessDenied = securityEvents.filter(e => e.action === 'ACCESS_DENIED').length;
-  const breachEvents = securityEvents.filter(e => e.action === 'BREACH_DETECTED').length;
-  const keyRotations = securityEvents.filter(e => e.action === 'ENCRYPTION_KEY_ROTATED').length;
-  
+  const loginAttempts = securityEvents.filter(
+    (e) => e.action === 'LOGIN'
+  ).length;
+  const failedLogins = securityEvents.filter(
+    (e) => e.action === 'LOGIN_FAILED'
+  ).length;
+  const accessDenied = securityEvents.filter(
+    (e) => e.action === 'ACCESS_DENIED'
+  ).length;
+  const breachEvents = securityEvents.filter(
+    (e) => e.action === 'BREACH_DETECTED'
+  ).length;
+  const keyRotations = securityEvents.filter(
+    (e) => e.action === 'ENCRYPTION_KEY_ROTATED'
+  ).length;
+
   // Group by severity
   const eventsBySeverity: Record<string, number> = {};
-  securityEvents.forEach(e => {
+  securityEvents.forEach((e) => {
     eventsBySeverity[e.severity] = (eventsBySeverity[e.severity] || 0) + 1;
   });
-  
+
   // Generate findings
   const findings: ComplianceReport['findings'] = [];
-  
+
   if (breachEvents > 0) {
     findings.push({
       category: 'Security',
       description: `${breachEvents} breach events detected during the period`,
       severity: 'CRITICAL',
-      recommendation: 'Review all breach incidents and ensure proper remediation',
+      recommendation:
+        'Review all breach incidents and ensure proper remediation',
     });
   }
-  
-  const loginFailureRate = loginAttempts > 0 ? (failedLogins / loginAttempts) * 100 : 0;
+
+  const loginFailureRate =
+    loginAttempts > 0 ? (failedLogins / loginAttempts) * 100 : 0;
   if (loginFailureRate > 25) {
     findings.push({
       category: 'Authentication',
@@ -342,7 +372,7 @@ export function generateSecurityAuditReport(params: {
       recommendation: 'Investigate possible brute force attacks',
     });
   }
-  
+
   if (accessDenied > 50) {
     findings.push({
       category: 'Authorization',
@@ -351,9 +381,9 @@ export function generateSecurityAuditReport(params: {
       recommendation: 'Review access control policies',
     });
   }
-  
+
   // Check data residency compliance
-  const nonUSEvents = securityEvents.filter(e => e.dataResidency !== 'US');
+  const nonUSEvents = securityEvents.filter((e) => e.dataResidency !== 'US');
   if (nonUSEvents.length > 0) {
     findings.push({
       category: 'Data Residency',
@@ -396,7 +426,8 @@ export const ESTA_CERTIFICATION_REQUIREMENTS = [
   {
     id: 'retention_policy',
     requirement: 'Data Retention Policy',
-    description: 'Maintain records for required retention periods (7/5/3 years based on status)',
+    description:
+      'Maintain records for required retention periods (7/5/3 years based on status)',
   },
   {
     id: 'encryption_at_rest',
@@ -411,7 +442,8 @@ export const ESTA_CERTIFICATION_REQUIREMENTS = [
   {
     id: 'audit_logging',
     requirement: 'Audit Logging',
-    description: 'Immutable audit logs maintained for all data access and modifications',
+    description:
+      'Immutable audit logs maintained for all data access and modifications',
   },
   {
     id: 'data_residency',
@@ -421,7 +453,8 @@ export const ESTA_CERTIFICATION_REQUIREMENTS = [
   {
     id: 'breach_notification',
     requirement: 'Breach Notification',
-    description: 'Automated breach detection and notification workflow in place',
+    description:
+      'Automated breach detection and notification workflow in place',
   },
   {
     id: 'employee_access',
@@ -431,7 +464,8 @@ export const ESTA_CERTIFICATION_REQUIREMENTS = [
   {
     id: 'request_tracking',
     requirement: 'Request Documentation',
-    description: 'All sick time requests documented with approval/denial justifications',
+    description:
+      'All sick time requests documented with approval/denial justifications',
   },
   {
     id: 'legal_hold',
@@ -456,7 +490,7 @@ export function createAnnualCertification(params: {
   const now = new Date();
   // Use April 1st and subtract one day to always get March 31st correctly
   const dueDate = new Date(params.certificationYear, 3, 0); // Last day of March
-  
+
   return {
     id: randomUUID(),
     tenantId: params.tenantId,
@@ -464,7 +498,7 @@ export function createAnnualCertification(params: {
     status: 'PENDING',
     preparedBy: params.preparedBy,
     preparedAt: now,
-    certifications: ESTA_CERTIFICATION_REQUIREMENTS.map(req => ({
+    certifications: ESTA_CERTIFICATION_REQUIREMENTS.map((req) => ({
       requirement: req.requirement,
       description: req.description,
       compliant: false, // Must be explicitly verified
@@ -499,7 +533,7 @@ export function updateCertificationRequirement(
       notes: update.notes,
     };
   }
-  
+
   return {
     ...certification,
     certifications: updatedCertifications,
@@ -515,12 +549,14 @@ export function submitAnnualCertification(
   certification: AnnualCertification,
   certifiedBy: string
 ): AnnualCertification {
-  const allCompliant = certification.certifications.every(c => c.compliant);
-  
+  const allCompliant = certification.certifications.every((c) => c.compliant);
+
   if (!allCompliant) {
-    throw new Error('Cannot submit certification: Not all requirements are marked as compliant');
+    throw new Error(
+      'Cannot submit certification: Not all requirements are marked as compliant'
+    );
   }
-  
+
   const now = new Date();
   return {
     ...certification,
@@ -542,7 +578,7 @@ export function approveAnnualCertification(
   if (certification.status !== 'SUBMITTED') {
     throw new Error('Certification must be submitted before approval');
   }
-  
+
   const now = new Date();
   return {
     ...certification,
@@ -563,7 +599,7 @@ export function rejectAnnualCertification(
   if (certification.status !== 'SUBMITTED') {
     throw new Error('Certification must be submitted before rejection');
   }
-  
+
   return {
     ...certification,
     status: 'REJECTED',
@@ -601,7 +637,7 @@ export function submitComplianceReport(
   if (report.status !== 'APPROVED') {
     throw new Error('Report must be approved before submission');
   }
-  
+
   return {
     ...report,
     status: 'SUBMITTED',
@@ -613,7 +649,9 @@ export function submitComplianceReport(
 /**
  * Archive a compliance report
  */
-export function archiveComplianceReport(report: ComplianceReport): ComplianceReport {
+export function archiveComplianceReport(
+  report: ComplianceReport
+): ComplianceReport {
   return {
     ...report,
     status: 'ARCHIVED',
@@ -657,7 +695,7 @@ export function performComplianceGapAnalysis(params: {
 }): ComplianceGapAnalysis {
   const gaps: ComplianceGapAnalysis['gaps'] = [];
   const strengths: string[] = [];
-  
+
   // Check each compliance area
   if (params.hasEncryption) {
     strengths.push('AES-256 encryption implemented for data at rest');
@@ -670,7 +708,7 @@ export function performComplianceGapAnalysis(params: {
       estimatedEffort: 'HIGH',
     });
   }
-  
+
   if (params.hasAuditLogs) {
     strengths.push('Immutable audit logging in place');
   } else {
@@ -682,7 +720,7 @@ export function performComplianceGapAnalysis(params: {
       estimatedEffort: 'MEDIUM',
     });
   }
-  
+
   if (params.hasAccessControls) {
     strengths.push('Role-based access controls implemented');
   } else {
@@ -694,7 +732,7 @@ export function performComplianceGapAnalysis(params: {
       estimatedEffort: 'MEDIUM',
     });
   }
-  
+
   if (params.hasRetentionPolicy) {
     strengths.push('Retention policy enforcement active');
   } else {
@@ -706,7 +744,7 @@ export function performComplianceGapAnalysis(params: {
       estimatedEffort: 'MEDIUM',
     });
   }
-  
+
   if (params.hasBreachNotification) {
     strengths.push('Breach notification workflow configured');
   } else {
@@ -718,7 +756,7 @@ export function performComplianceGapAnalysis(params: {
       estimatedEffort: 'MEDIUM',
     });
   }
-  
+
   if (params.hasDataResidency) {
     strengths.push('US data residency compliance verified');
   } else {
@@ -730,7 +768,7 @@ export function performComplianceGapAnalysis(params: {
       estimatedEffort: 'HIGH',
     });
   }
-  
+
   if (params.hasLegalHold) {
     strengths.push('Legal hold capability available');
   } else {
@@ -742,7 +780,7 @@ export function performComplianceGapAnalysis(params: {
       estimatedEffort: 'LOW',
     });
   }
-  
+
   if (params.hasDeletionSafeguards) {
     strengths.push('Deletion safeguards active');
   } else {
@@ -754,12 +792,12 @@ export function performComplianceGapAnalysis(params: {
       estimatedEffort: 'LOW',
     });
   }
-  
+
   // Calculate overall compliance percentage
   const totalAreas = 8;
   const compliantAreas = strengths.length;
   const overallCompliance = Math.round((compliantAreas / totalAreas) * 100);
-  
+
   return {
     tenantId: params.tenantId,
     analyzedAt: new Date(),

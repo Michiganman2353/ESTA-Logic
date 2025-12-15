@@ -62,7 +62,9 @@ export type ImportValidateInput = z.infer<typeof importValidateSchema>;
  */
 export const employeeImportSchema = z
   .object({
-    data: z.array(employeeImportRowSchema).min(1, 'At least one employee is required'),
+    data: z
+      .array(employeeImportRowSchema)
+      .min(1, 'At least one employee is required'),
     metadata: importMetadataSchema,
   })
   .strict();
@@ -74,7 +76,9 @@ export type EmployeeImportInput = z.infer<typeof employeeImportSchema>;
  */
 export const hoursImportSchema = z
   .object({
-    data: z.array(hoursImportRowSchema).min(1, 'At least one hours entry is required'),
+    data: z
+      .array(hoursImportRowSchema)
+      .min(1, 'At least one hours entry is required'),
     metadata: importMetadataSchema,
   })
   .strict();

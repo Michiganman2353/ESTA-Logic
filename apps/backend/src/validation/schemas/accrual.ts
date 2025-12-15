@@ -9,17 +9,11 @@ import { z } from 'zod';
  */
 export const workLogCreateSchema = z
   .object({
-    employeeId: z
-      .string()
-      .trim()
-      .min(1, 'Employee ID is required'),
+    employeeId: z.string().trim().min(1, 'Employee ID is required'),
     date: z
       .string()
       .trim()
-      .regex(
-        /^\d{4}-\d{2}-\d{2}$/,
-        'Date must be in YYYY-MM-DD format'
-      )
+      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Date must be in YYYY-MM-DD format')
       .refine((val) => !Number.isNaN(Date.parse(val)), {
         message: 'Invalid date',
       }),
@@ -48,16 +42,8 @@ export type WorkLogCreateInput = z.infer<typeof workLogCreateSchema>;
  */
 export const workLogUpdateSchema = z
   .object({
-    hoursWorked: z
-      .number({ coerce: true })
-      .min(0)
-      .max(24)
-      .optional(),
-    overtimeHours: z
-      .number({ coerce: true })
-      .min(0)
-      .max(24)
-      .optional(),
+    hoursWorked: z.number({ coerce: true }).min(0).max(24).optional(),
+    overtimeHours: z.number({ coerce: true }).min(0).max(24).optional(),
     notes: z.string().trim().max(500).optional(),
   })
   .strict();
@@ -100,10 +86,7 @@ export type HoursImportRowInput = z.infer<typeof hoursImportRowSchema>;
  */
 export const balanceQuerySchema = z
   .object({
-    userId: z
-      .string()
-      .trim()
-      .min(1, 'User ID is required'),
+    userId: z.string().trim().min(1, 'User ID is required'),
   })
   .strict();
 

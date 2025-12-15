@@ -1,6 +1,6 @@
 /**
  * ESTA 2025 Record-Keeping Compliance Types and Schemas
- * 
+ *
  * This module defines all types required for Michigan ESTA 2025
  * Record-Keeping Regulations compliance including:
  * - Retention metadata and policies
@@ -9,7 +9,7 @@
  * - Documentation requirements
  * - Compliance reporting
  * - Penalty mitigation controls
- * 
+ *
  * @module compliance
  */
 
@@ -80,37 +80,37 @@ export const RetentionPeriodYears = {
 export interface RetentionMetadata {
   /** Unique identifier */
   id: string;
-  
+
   /** Type of record */
   recordType: RecordType;
-  
+
   /** Reference to the actual record */
   recordId: string;
-  
+
   /** Associated tenant/employer ID */
   tenantId: string;
-  
+
   /** Application status (for request records) */
   applicationStatus?: ApplicationStatus;
-  
+
   /** Date the record was created */
   createdAt: Date;
-  
+
   /** Date the status was finalized (for retention calculation) */
   finalizedAt?: Date;
-  
+
   /** Calculated retention end date */
   retentionEndDate: Date;
-  
+
   /** Retention period in years */
   retentionYears: number;
-  
+
   /** Whether record is locked from deletion */
   isLocked: boolean;
-  
+
   /** Whether record has a legal hold */
   hasLegalHold: boolean;
-  
+
   /** Legal hold details if applicable */
   legalHoldDetails?: {
     holdId: string;
@@ -119,16 +119,16 @@ export interface RetentionMetadata {
     placedAt: Date;
     expiresAt?: Date;
   };
-  
+
   /** Whether record has been archived */
   isArchived: boolean;
-  
+
   /** Archive date if archived */
   archivedAt?: Date;
-  
+
   /** Deletion eligibility date */
   eligibleForDeletionAt?: Date;
-  
+
   /** Last audit date for this retention record */
   lastAuditedAt?: Date;
 }
@@ -145,13 +145,15 @@ export const RetentionMetadataSchema = z.object({
   retentionYears: z.number().min(1).max(15),
   isLocked: z.boolean(),
   hasLegalHold: z.boolean(),
-  legalHoldDetails: z.object({
-    holdId: z.string(),
-    reason: z.string(),
-    placedBy: z.string(),
-    placedAt: z.date(),
-    expiresAt: z.date().optional(),
-  }).optional(),
+  legalHoldDetails: z
+    .object({
+      holdId: z.string(),
+      reason: z.string(),
+      placedBy: z.string(),
+      placedAt: z.date(),
+      expiresAt: z.date().optional(),
+    })
+    .optional(),
   isArchived: z.boolean(),
   archivedAt: z.date().optional(),
   eligibleForDeletionAt: z.date().optional(),
@@ -173,7 +175,7 @@ export const AuditActionSchema = z.enum([
   'DELETE',
   'ARCHIVE',
   'RESTORE',
-  
+
   // Authentication/Authorization
   'LOGIN',
   'LOGOUT',
@@ -181,34 +183,34 @@ export const AuditActionSchema = z.enum([
   'ACCESS_DENIED',
   'PERMISSION_GRANTED',
   'PERMISSION_REVOKED',
-  
+
   // Request workflow
   'REQUEST_SUBMITTED',
   'REQUEST_APPROVED',
   'REQUEST_DENIED',
   'REQUEST_WITHDRAWN',
   'REQUEST_CANCELLED',
-  
+
   // Document operations
   'DOCUMENT_UPLOADED',
   'DOCUMENT_DOWNLOADED',
   'DOCUMENT_VIEWED',
   'DOCUMENT_DELETED',
-  
+
   // Compliance operations
   'LEGAL_HOLD_PLACED',
   'LEGAL_HOLD_RELEASED',
   'RETENTION_EXTENDED',
   'COMPLIANCE_REPORT_GENERATED',
   'CERTIFICATION_SUBMITTED',
-  
+
   // Security events
   'ENCRYPTION_KEY_ROTATED',
   'DATA_EXPORT_REQUESTED',
   'DATA_EXPORT_COMPLETED',
   'BREACH_DETECTED',
   'BREACH_NOTIFICATION_SENT',
-  
+
   // System operations
   'SYSTEM_MAINTENANCE',
   'BACKUP_CREATED',
@@ -219,7 +221,12 @@ export type AuditAction = z.infer<typeof AuditActionSchema>;
 /**
  * Severity level for audit entries
  */
-export const AuditSeveritySchema = z.enum(['INFO', 'WARNING', 'ERROR', 'CRITICAL']);
+export const AuditSeveritySchema = z.enum([
+  'INFO',
+  'WARNING',
+  'ERROR',
+  'CRITICAL',
+]);
 export type AuditSeverity = z.infer<typeof AuditSeveritySchema>;
 
 /**
@@ -228,16 +235,16 @@ export type AuditSeverity = z.infer<typeof AuditSeveritySchema>;
 export interface ImmutableAuditEntry {
   /** Unique audit entry ID (UUID v4) */
   id: string;
-  
+
   /** Timestamp of the action (immutable) */
   timestamp: Date;
-  
+
   /** Action performed */
   action: AuditAction;
-  
+
   /** Severity level */
   severity: AuditSeverity;
-  
+
   /** Actor who performed the action */
   actor: {
     userId: string;
@@ -246,7 +253,7 @@ export interface ImmutableAuditEntry {
     ipAddress?: string;
     userAgent?: string;
   };
-  
+
   /** Resource affected */
   resource: {
     type: RecordType;
@@ -254,7 +261,7 @@ export interface ImmutableAuditEntry {
     tenantId: string;
     name?: string;
   };
-  
+
   /** Details of the action */
   details: {
     description: string;
@@ -262,19 +269,19 @@ export interface ImmutableAuditEntry {
     newValue?: unknown;
     metadata?: Record<string, unknown>;
   };
-  
+
   /** Cryptographic hash for integrity verification */
   integrityHash: string;
-  
+
   /** Hash of the previous entry (blockchain-like chain) */
   previousEntryHash?: string;
-  
+
   /** Sequence number for ordering */
   sequenceNumber: number;
-  
+
   /** Whether entry has been verified */
   isVerified: boolean;
-  
+
   /** US-only data residency confirmation */
   dataResidency: 'US';
 }
@@ -351,11 +358,13 @@ export const AccessLogEntrySchema = z.object({
   accessType: z.enum(['READ', 'WRITE', 'DELETE', 'DOWNLOAD', 'EXPORT']),
   ipAddress: z.string().optional(),
   userAgent: z.string().optional(),
-  geoLocation: z.object({
-    country: z.string(),
-    region: z.string().optional(),
-    city: z.string().optional(),
-  }).optional(),
+  geoLocation: z
+    .object({
+      country: z.string(),
+      region: z.string().optional(),
+      city: z.string().optional(),
+    })
+    .optional(),
   success: z.boolean(),
   failureReason: z.string().optional(),
   dataResidency: z.literal('US'),
@@ -368,7 +377,12 @@ export const AccessLogEntrySchema = z.object({
 /**
  * Breach severity levels
  */
-export const BreachSeveritySchema = z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']);
+export const BreachSeveritySchema = z.enum([
+  'LOW',
+  'MEDIUM',
+  'HIGH',
+  'CRITICAL',
+]);
 export type BreachSeverity = z.infer<typeof BreachSeveritySchema>;
 
 /**
@@ -427,27 +441,33 @@ export const BreachNotificationSchema = z.object({
   severity: BreachSeveritySchema,
   status: BreachStatusSchema,
   description: z.string(),
-  affectedRecords: z.array(z.object({
-    recordType: RecordTypeSchema,
-    recordCount: z.number().int().min(0),
-    tenantIds: z.array(z.string()),
-  })),
+  affectedRecords: z.array(
+    z.object({
+      recordType: RecordTypeSchema,
+      recordCount: z.number().int().min(0),
+      tenantIds: z.array(z.string()),
+    })
+  ),
   affectedUserCount: z.number().int().min(0),
   detectionMethod: z.string(),
-  containmentActions: z.array(z.object({
-    action: z.string(),
-    performedBy: z.string(),
-    performedAt: z.date(),
-    successful: z.boolean(),
-  })),
-  notifications: z.array(z.object({
-    recipientType: z.enum(['USER', 'REGULATOR', 'INTERNAL']),
-    recipientId: z.string().optional(),
-    notifiedAt: z.date(),
-    method: z.enum(['EMAIL', 'SMS', 'MAIL', 'PORTAL']),
-    template: z.string(),
-    successful: z.boolean(),
-  })),
+  containmentActions: z.array(
+    z.object({
+      action: z.string(),
+      performedBy: z.string(),
+      performedAt: z.date(),
+      successful: z.boolean(),
+    })
+  ),
+  notifications: z.array(
+    z.object({
+      recipientType: z.enum(['USER', 'REGULATOR', 'INTERNAL']),
+      recipientId: z.string().optional(),
+      notifiedAt: z.date(),
+      method: z.enum(['EMAIL', 'SMS', 'MAIL', 'PORTAL']),
+      template: z.string(),
+      successful: z.boolean(),
+    })
+  ),
   resolvedAt: z.date().optional(),
   resolution: z.string().optional(),
   lessonsLearned: z.string().optional(),
@@ -510,7 +530,12 @@ export const DocumentVersionSchema = z.object({
 export interface JustificationLog {
   id: string;
   tenantId: string;
-  decisionType: 'REQUEST_APPROVAL' | 'REQUEST_DENIAL' | 'POLICY_CHANGE' | 'EXCEPTION_GRANT' | 'DATA_DELETION';
+  decisionType:
+    | 'REQUEST_APPROVAL'
+    | 'REQUEST_DENIAL'
+    | 'POLICY_CHANGE'
+    | 'EXCEPTION_GRANT'
+    | 'DATA_DELETION';
   relatedRecordType: RecordType;
   relatedRecordId: string;
   decision: string;
@@ -552,14 +577,16 @@ export const JustificationLogSchema = z.object({
   reviewedBy: z.string().optional(),
   reviewedAt: z.date().optional(),
   isAppealed: z.boolean(),
-  appealDetails: z.object({
-    appealedAt: z.date(),
-    appealedBy: z.string(),
-    appealReason: z.string(),
-    appealDecision: z.string().optional(),
-    appealDecidedAt: z.date().optional(),
-    appealDecidedBy: z.string().optional(),
-  }).optional(),
+  appealDetails: z
+    .object({
+      appealedAt: z.date(),
+      appealedBy: z.string(),
+      appealReason: z.string(),
+      appealDecision: z.string().optional(),
+      appealDecidedAt: z.date().optional(),
+      appealDecidedBy: z.string().optional(),
+    })
+    .optional(),
   createdAt: z.date(),
 });
 
@@ -619,18 +646,24 @@ export const CommunicationArchiveSchema = z.object({
     name: z.string().optional(),
     system: z.string().optional(),
   }),
-  recipients: z.array(z.object({
-    userId: z.string().optional(),
-    email: z.string().email().optional(),
-    name: z.string().optional(),
-  })),
+  recipients: z.array(
+    z.object({
+      userId: z.string().optional(),
+      email: z.string().email().optional(),
+      name: z.string().optional(),
+    })
+  ),
   relatedRecordType: RecordTypeSchema.optional(),
   relatedRecordId: z.string().optional(),
-  attachments: z.array(z.object({
-    documentId: z.string(),
-    fileName: z.string(),
-    fileSize: z.number().int().min(0),
-  })).optional(),
+  attachments: z
+    .array(
+      z.object({
+        documentId: z.string(),
+        fileName: z.string(),
+        fileSize: z.number().int().min(0),
+      })
+    )
+    .optional(),
   sentAt: z.date(),
   deliveredAt: z.date().optional(),
   readAt: z.date().optional(),
@@ -699,13 +732,21 @@ export const ComplianceReportSchema = z.object({
   }),
   generatedAt: z.date(),
   generatedBy: z.string(),
-  status: z.enum(['DRAFT', 'PENDING_REVIEW', 'APPROVED', 'SUBMITTED', 'ARCHIVED']),
-  findings: z.array(z.object({
-    category: z.string(),
-    description: z.string(),
-    severity: z.enum(['INFO', 'WARNING', 'CRITICAL']),
-    recommendation: z.string().optional(),
-  })),
+  status: z.enum([
+    'DRAFT',
+    'PENDING_REVIEW',
+    'APPROVED',
+    'SUBMITTED',
+    'ARCHIVED',
+  ]),
+  findings: z.array(
+    z.object({
+      category: z.string(),
+      description: z.string(),
+      severity: z.enum(['INFO', 'WARNING', 'CRITICAL']),
+      recommendation: z.string().optional(),
+    })
+  ),
   metrics: z.record(z.union([z.number(), z.string()])),
   certifiedBy: z.string().optional(),
   certifiedAt: z.date().optional(),
@@ -776,23 +817,35 @@ export const GovernmentRequestSchema = z.object({
   dueDate: z.date().optional(),
   description: z.string(),
   scopeOfRequest: z.string(),
-  affectedRecords: z.array(z.object({
-    recordType: RecordTypeSchema,
-    recordIds: z.array(z.string()).optional(),
-    dateRange: z.object({
-      startDate: z.date(),
-      endDate: z.date(),
-    }).optional(),
-  })),
-  status: z.enum(['RECEIVED', 'IN_PROGRESS', 'RESPONDED', 'CLOSED', 'APPEALED']),
+  affectedRecords: z.array(
+    z.object({
+      recordType: RecordTypeSchema,
+      recordIds: z.array(z.string()).optional(),
+      dateRange: z
+        .object({
+          startDate: z.date(),
+          endDate: z.date(),
+        })
+        .optional(),
+    })
+  ),
+  status: z.enum([
+    'RECEIVED',
+    'IN_PROGRESS',
+    'RESPONDED',
+    'CLOSED',
+    'APPEALED',
+  ]),
   assignedTo: z.string(),
   legalCounsel: z.string().optional(),
-  response: z.object({
-    respondedAt: z.date(),
-    respondedBy: z.string(),
-    documentIds: z.array(z.string()),
-    notes: z.string(),
-  }).optional(),
+  response: z
+    .object({
+      respondedAt: z.date(),
+      respondedBy: z.string(),
+      documentIds: z.array(z.string()),
+      notes: z.string(),
+    })
+    .optional(),
   createdAt: z.date(),
   updatedAt: z.date(),
   retentionEndDate: z.date(),
@@ -826,18 +879,26 @@ export interface PolicyVersion {
 
 export const PolicyVersionSchema = z.object({
   id: z.string(),
-  policyType: z.enum(['ACCRUAL', 'RETENTION', 'ACCESS', 'SECURITY', 'NOTIFICATION']),
+  policyType: z.enum([
+    'ACCRUAL',
+    'RETENTION',
+    'ACCESS',
+    'SECURITY',
+    'NOTIFICATION',
+  ]),
   versionNumber: z.string(),
   effectiveDate: z.date(),
   expirationDate: z.date().optional(),
   isActive: z.boolean(),
   rules: z.record(z.unknown()),
-  changes: z.array(z.object({
-    field: z.string(),
-    previousValue: z.unknown(),
-    newValue: z.unknown(),
-    reason: z.string(),
-  })),
+  changes: z.array(
+    z.object({
+      field: z.string(),
+      previousValue: z.unknown(),
+      newValue: z.unknown(),
+      reason: z.string(),
+    })
+  ),
   approvedBy: z.string(),
   approvedAt: z.date(),
   createdAt: z.date(),
@@ -904,22 +965,26 @@ export const DeletionRequestSchema = z.object({
   }),
   approvalWorkflow: z.object({
     requiredApprovers: z.array(z.string()),
-    approvals: z.array(z.object({
-      approverId: z.string(),
-      approvedAt: z.date(),
-      approved: z.boolean(),
-      notes: z.string().optional(),
-    })),
+    approvals: z.array(
+      z.object({
+        approverId: z.string(),
+        approvedAt: z.date(),
+        approved: z.boolean(),
+        notes: z.string().optional(),
+      })
+    ),
     allApproved: z.boolean(),
   }),
   executedAt: z.date().optional(),
   executedBy: z.string().optional(),
-  auditTrail: z.array(z.object({
-    action: z.string(),
-    performedBy: z.string(),
-    performedAt: z.date(),
-    details: z.string(),
-  })),
+  auditTrail: z.array(
+    z.object({
+      action: z.string(),
+      performedBy: z.string(),
+      performedAt: z.date(),
+      details: z.string(),
+    })
+  ),
 });
 
 // ============================================================================
@@ -932,8 +997,15 @@ export const DeletionRequestSchema = z.object({
 export interface ComplianceAlert {
   id: string;
   tenantId: string;
-  alertType: 'RETENTION_EXPIRING' | 'DELETION_BLOCKED' | 'LEGAL_HOLD' | 'BREACH_DETECTED' | 
-             'COMPLIANCE_DUE' | 'AUDIT_REQUIRED' | 'POLICY_CHANGE' | 'SYSTEM_FAILURE';
+  alertType:
+    | 'RETENTION_EXPIRING'
+    | 'DELETION_BLOCKED'
+    | 'LEGAL_HOLD'
+    | 'BREACH_DETECTED'
+    | 'COMPLIANCE_DUE'
+    | 'AUDIT_REQUIRED'
+    | 'POLICY_CHANGE'
+    | 'SYSTEM_FAILURE';
   severity: 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
   title: string;
   message: string;
@@ -1012,16 +1084,24 @@ export const AnnualCertificationSchema = z.object({
   id: z.string(),
   tenantId: z.string(),
   certificationYear: z.number().int().min(2020).max(2100),
-  status: z.enum(['PENDING', 'IN_PROGRESS', 'SUBMITTED', 'APPROVED', 'REJECTED']),
+  status: z.enum([
+    'PENDING',
+    'IN_PROGRESS',
+    'SUBMITTED',
+    'APPROVED',
+    'REJECTED',
+  ]),
   preparedBy: z.string(),
   preparedAt: z.date(),
-  certifications: z.array(z.object({
-    requirement: z.string(),
-    description: z.string(),
-    compliant: z.boolean(),
-    evidence: z.array(z.string()).optional(),
-    notes: z.string().optional(),
-  })),
+  certifications: z.array(
+    z.object({
+      requirement: z.string(),
+      description: z.string(),
+      compliant: z.boolean(),
+      evidence: z.array(z.string()).optional(),
+      notes: z.string().optional(),
+    })
+  ),
   certifiedBy: z.string().optional(),
   certifiedAt: z.date().optional(),
   submittedAt: z.date().optional(),

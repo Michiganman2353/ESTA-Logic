@@ -26,12 +26,14 @@ const Settings = lazy(() => import('@/pages/Settings'));
 ```
 
 **Benefits:**
+
 - Smaller initial bundle size
 - Faster first contentful paint (FCP)
 - Better time to interactive (TTI)
 - Users only download code they need
 
 **Usage:**
+
 ```typescript
 <Suspense fallback={<PageLoader />}>
   <Routes>
@@ -43,11 +45,13 @@ const Settings = lazy(() => import('@/pages/Settings'));
 ### Bundle Size Optimization
 
 **Current Strategy:**
+
 - Vite handles tree-shaking automatically
 - Production builds are minified
 - Source maps are generated for debugging
 
 **Analysis:**
+
 ```bash
 # Build and analyze bundle
 npm run build
@@ -57,6 +61,7 @@ ls -lh apps/frontend/dist/assets/
 ```
 
 **Target Sizes:**
+
 - Initial JS bundle: < 200KB (gzipped)
 - Lazy-loaded chunks: < 50KB each
 - CSS: < 50KB (gzipped)
@@ -64,6 +69,7 @@ ls -lh apps/frontend/dist/assets/
 ### Image Optimization
 
 **Best Practices:**
+
 1. Use modern formats (WebP, AVIF)
 2. Implement lazy loading for images
 3. Serve responsive images
@@ -71,14 +77,14 @@ ls -lh apps/frontend/dist/assets/
 
 ```typescript
 // Lazy load images
-<img 
-  src={imageSrc} 
-  loading="lazy" 
+<img
+  src={imageSrc}
+  loading="lazy"
   alt="Description"
 />
 
 // Responsive images
-<img 
+<img
   srcSet="image-320w.jpg 320w, image-640w.jpg 640w"
   sizes="(max-width: 320px) 280px, 640px"
   src="image-640w.jpg"
@@ -89,6 +95,7 @@ ls -lh apps/frontend/dist/assets/
 ### React Performance
 
 **Memoization:**
+
 ```typescript
 // Memoize expensive calculations
 const expensiveValue = useMemo(() => {
@@ -108,6 +115,7 @@ const handleClick = useCallback(() => {
 
 **Virtual Scrolling:**
 For long lists, use virtualization:
+
 ```typescript
 import { FixedSizeList } from 'react-window';
 
@@ -123,6 +131,7 @@ import { FixedSizeList } from 'react-window';
 ### State Management Optimization
 
 **Zustand Best Practices:**
+
 ```typescript
 // Split stores by concern
 const useAuthStore = create((set) => ({
@@ -142,6 +151,7 @@ const user = useAuthStore((state) => state.user);
 ### Network Optimization
 
 **Request Optimization:**
+
 1. Use HTTP/2 multiplexing
 2. Implement request caching
 3. Batch multiple requests
@@ -155,7 +165,7 @@ async function fetchWithCache(url: string) {
   if (cache.has(url)) {
     return cache.get(url);
   }
-  
+
   const response = await fetch(url);
   const data = await response.json();
   cache.set(url, data);
@@ -164,6 +174,7 @@ async function fetchWithCache(url: string) {
 ```
 
 **Firebase Optimization:**
+
 ```typescript
 // Use onSnapshot for real-time updates efficiently
 const unsubscribe = onSnapshot(
@@ -185,6 +196,7 @@ return () => unsubscribe();
 ### CSS Optimization
 
 **Tailwind CSS:**
+
 - Production builds automatically purge unused CSS
 - Use JIT mode for optimal performance
 - Minimize custom CSS
@@ -201,10 +213,13 @@ module.exports = {
 
 **Critical CSS:**
 Inline critical CSS for faster FCP:
+
 ```html
 <style>
   /* Critical above-the-fold styles */
-  .hero { display: flex; }
+  .hero {
+    display: flex;
+  }
 </style>
 ```
 
@@ -213,6 +228,7 @@ Inline critical CSS for faster FCP:
 ### Database Optimization
 
 **Query Optimization:**
+
 ```typescript
 // ✅ GOOD - Specific fields, indexed columns
 const result = await pool.query(
@@ -221,13 +237,13 @@ const result = await pool.query(
 );
 
 // ❌ BAD - SELECT *, unindexed columns
-const result = await pool.query(
-  'SELECT * FROM users WHERE random_field = $1',
-  [value]
-);
+const result = await pool.query('SELECT * FROM users WHERE random_field = $1', [
+  value,
+]);
 ```
 
 **Indexing:**
+
 ```sql
 -- Add indexes for frequently queried columns
 CREATE INDEX idx_users_email ON users(email);
@@ -235,16 +251,17 @@ CREATE INDEX idx_users_status ON users(status);
 CREATE INDEX idx_accruals_employee_id ON accruals(employee_id);
 
 -- Composite indexes for complex queries
-CREATE INDEX idx_accruals_employee_date 
+CREATE INDEX idx_accruals_employee_date
   ON accruals(employee_id, accrual_date);
 ```
 
 **Connection Pooling:**
+
 ```typescript
 import { Pool } from 'pg';
 
 const pool = new Pool({
-  max: 20,              // Maximum pool size
+  max: 20, // Maximum pool size
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 2000,
 });
@@ -253,19 +270,20 @@ const pool = new Pool({
 ### Caching Strategies
 
 **In-Memory Caching:**
+
 ```typescript
 import NodeCache from 'node-cache';
 
-const cache = new NodeCache({ 
-  stdTTL: 600,  // 10 minutes
-  checkperiod: 120 
+const cache = new NodeCache({
+  stdTTL: 600, // 10 minutes
+  checkperiod: 120,
 });
 
 // Cache expensive calculations
 function getEmployerData(employerId: string) {
   const cached = cache.get(employerId);
   if (cached) return cached;
-  
+
   const data = fetchFromDatabase(employerId);
   cache.set(employerId, data);
   return data;
@@ -273,6 +291,7 @@ function getEmployerData(employerId: string) {
 ```
 
 **Redis Caching (Optional):**
+
 ```typescript
 import Redis from 'ioredis';
 
@@ -289,34 +308,39 @@ const cached = await redis.get('key');
 ### API Response Optimization
 
 **Compression:**
+
 ```typescript
 import compression from 'compression';
 
-app.use(compression({
-  threshold: 1024,  // Only compress responses > 1KB
-  level: 6,         // Compression level (0-9)
-}));
+app.use(
+  compression({
+    threshold: 1024, // Only compress responses > 1KB
+    level: 6, // Compression level (0-9)
+  })
+);
 ```
 
 **Response Streaming:**
+
 ```typescript
 // Stream large responses
 app.get('/export', (req, res) => {
   res.setHeader('Content-Type', 'text/csv');
-  
+
   const stream = createDataStream();
   stream.pipe(res);
 });
 ```
 
 **Pagination:**
+
 ```typescript
 // Always paginate large datasets
 app.get('/api/v1/employees', (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = Math.min(parseInt(req.query.limit) || 20, 100);
   const offset = (page - 1) * limit;
-  
+
   const employees = await getEmployees({ limit, offset });
   res.json({
     data: employees,
@@ -332,6 +356,7 @@ app.get('/api/v1/employees', (req, res) => {
 ### Background Processing
 
 **For CPU-intensive tasks:**
+
 ```typescript
 import { Worker } from 'worker_threads';
 
@@ -340,7 +365,7 @@ function runWorker(data: any) {
     const worker = new Worker('./worker.js', {
       workerData: data,
     });
-    
+
     worker.on('message', resolve);
     worker.on('error', reject);
   });
@@ -376,12 +401,14 @@ Nx caching is configured for optimal performance:
 ```
 
 **Cache Benefits:**
+
 - Builds are cached based on input files
 - Unchanged projects aren't rebuilt
 - Tests skip if code hasn't changed
 - CI/CD runs faster
 
 **Cache Management:**
+
 ```bash
 # Clear cache
 npx nx reset
@@ -399,6 +426,7 @@ npx nx build frontend --skip-nx-cache
 ### Vite Build Optimization
 
 **Configuration:**
+
 ```typescript
 // vite.config.ts
 export default defineConfig({
@@ -408,7 +436,11 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'firebase-vendor': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+          'firebase-vendor': [
+            'firebase/app',
+            'firebase/auth',
+            'firebase/firestore',
+          ],
         },
       },
     },
@@ -416,7 +448,7 @@ export default defineConfig({
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: true,  // Remove console.logs in production
+        drop_console: true, // Remove console.logs in production
       },
     },
     // Source maps for debugging
@@ -430,6 +462,7 @@ export default defineConfig({
 ### TypeScript Performance
 
 **Incremental Builds:**
+
 ```json
 {
   "compilerOptions": {
@@ -467,6 +500,7 @@ onTTFB(sendToAnalytics);
 ```
 
 **Target Metrics:**
+
 - LCP (Largest Contentful Paint): < 2.5s
 - FID (First Input Delay): < 100ms
 - CLS (Cumulative Layout Shift): < 0.1
@@ -476,6 +510,7 @@ onTTFB(sendToAnalytics);
 ### Performance Monitoring
 
 **Lighthouse CI:**
+
 ```bash
 # Run Lighthouse
 npm install -g lighthouse
@@ -486,6 +521,7 @@ lighthouse https://estatracker.com --output=json --output-path=./report.json
 ```
 
 **Bundle Analysis:**
+
 ```bash
 # Analyze Vite build
 npx vite-bundle-visualizer
@@ -498,24 +534,26 @@ du -sh apps/frontend/dist/*
 ### Backend Monitoring
 
 **Response Time Tracking:**
+
 ```typescript
 app.use((req, res, next) => {
   const start = Date.now();
-  
+
   res.on('finish', () => {
     const duration = Date.now() - start;
     console.log(`${req.method} ${req.path} - ${duration}ms`);
-    
+
     if (duration > 1000) {
       console.warn(`Slow request: ${req.method} ${req.path}`);
     }
   });
-  
+
   next();
 });
 ```
 
 **Memory Monitoring:**
+
 ```typescript
 setInterval(() => {
   const usage = process.memoryUsage();
@@ -524,7 +562,7 @@ setInterval(() => {
     heapTotal: `${Math.round(usage.heapTotal / 1024 / 1024)}MB`,
     heapUsed: `${Math.round(usage.heapUsed / 1024 / 1024)}MB`,
   });
-}, 60000);  // Log every minute
+}, 60000); // Log every minute
 ```
 
 ## Best Practices
@@ -532,17 +570,20 @@ setInterval(() => {
 ### Development Workflow
 
 1. **Use Nx affected commands:**
+
 ```bash
 npx nx affected --target=build
 npx nx affected --target=test
 ```
 
 2. **Enable hot module replacement (HMR):**
+
 ```bash
 npx nx dev frontend  # Vite HMR enabled by default
 ```
 
 3. **Profile performance regularly:**
+
 ```bash
 # React DevTools Profiler
 # Chrome DevTools Performance tab
@@ -552,6 +593,7 @@ npx nx dev frontend  # Vite HMR enabled by default
 ### Production Deployment
 
 **Pre-deployment Checklist:**
+
 - [ ] Run production build locally
 - [ ] Analyze bundle sizes
 - [ ] Run Lighthouse audit
@@ -580,6 +622,7 @@ Set and enforce performance budgets:
 ```
 
 **Fail builds that exceed budget:**
+
 ```yaml
 # In CI
 - name: Check bundle size

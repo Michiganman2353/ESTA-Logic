@@ -5,6 +5,7 @@ Use this checklist before deploying to production or creating a preview deployme
 ## 🔐 Secrets & Configuration
 
 ### GitHub Secrets (Required for CI/CD)
+
 - [ ] `VERCEL_TOKEN` is configured in GitHub repository secrets
 - [ ] `VERCEL_ORG_ID` is configured in GitHub repository secrets
 - [ ] `VERCEL_PROJECT_ID` is configured in GitHub repository secrets
@@ -12,11 +13,13 @@ Use this checklist before deploying to production or creating a preview deployme
 - [ ] No secrets are committed to source control
 
 ### Vercel Environment Variables
+
 - [ ] All required Firebase environment variables are set in Vercel
 - [ ] Environment variables are scoped correctly (Production/Preview/Development)
 - [ ] Sensitive variables are marked as "Sensitive" in Vercel dashboard
 
 ### Firebase Configuration
+
 - [ ] Firebase project is properly configured
 - [ ] Firestore security rules are deployed
 - [ ] Storage security rules are deployed
@@ -25,6 +28,7 @@ Use this checklist before deploying to production or creating a preview deployme
 ## 🏗️ Build Validation
 
 ### Local Build
+
 ```bash
 # Run these commands and verify they complete successfully:
 npm ci                          # ✓ Clean install
@@ -42,6 +46,7 @@ npm run validate:deployment     # ✓ Deployment validation passes
 - [ ] Asset files are generated in `dist/assets/`
 
 ### Build Output Verification
+
 ```bash
 # Check build output:
 ls -lh packages/frontend/dist/
@@ -55,17 +60,20 @@ ls -lh packages/frontend/dist/assets/
 ## 🧪 Testing
 
 ### Unit Tests
+
 - [ ] All unit tests pass (`npm run test`)
 - [ ] No skipped tests without justification
 - [ ] Test coverage meets project standards
 - [ ] No flaky tests
 
 ### E2E Tests (if applicable)
+
 - [ ] E2E tests pass (`npm run test:e2e`)
 - [ ] Critical user flows are covered
 - [ ] No flaky E2E tests
 
 ### Manual Testing
+
 - [ ] Registration flow works
 - [ ] Login flow works
 - [ ] Main features tested manually
@@ -75,6 +83,7 @@ ls -lh packages/frontend/dist/assets/
 ## 📦 Dependencies
 
 ### Security
+
 ```bash
 npm audit
 ```
@@ -84,6 +93,7 @@ npm audit
 - [ ] All dependencies are from trusted sources
 
 ### Updates
+
 - [ ] No breaking changes in dependencies
 - [ ] Lock file (`package-lock.json`) is committed
 - [ ] No unnecessary dependencies added
@@ -91,6 +101,7 @@ npm audit
 ## 🚀 Deployment Configuration
 
 ### vercel.json
+
 - [ ] `outputDirectory` is correct (`packages/frontend/dist`)
 - [ ] `buildCommand` is correct (`npm run build:frontend`)
 - [ ] API functions are properly configured
@@ -98,6 +109,7 @@ npm audit
 - [ ] Rewrites are configured correctly
 
 ### GitHub Actions
+
 - [ ] Workflow file is valid YAML
 - [ ] All required steps are present
 - [ ] Node.js version matches project requirements (20.x)
@@ -106,6 +118,7 @@ npm audit
 ## 🔍 Code Quality
 
 ### Linting
+
 ```bash
 npm run lint
 ```
@@ -115,6 +128,7 @@ npm run lint
 - [ ] Code follows project style guidelines
 
 ### Type Safety
+
 ```bash
 npm run typecheck
 ```
@@ -124,6 +138,7 @@ npm run typecheck
 - [ ] All imports are properly typed
 
 ### Code Review
+
 - [ ] Code has been reviewed by at least one other developer (if team project)
 - [ ] All review comments have been addressed
 - [ ] No TODO comments left unresolved
@@ -132,12 +147,14 @@ npm run typecheck
 ## 📝 Documentation
 
 ### Code Documentation
+
 - [ ] New features are documented
 - [ ] Complex logic has comments
 - [ ] API endpoints are documented
 - [ ] README is up to date
 
 ### Deployment Documentation
+
 - [ ] Changes are noted in CHANGELOG (if applicable)
 - [ ] Breaking changes are clearly documented
 - [ ] Migration steps are provided (if needed)
@@ -145,6 +162,7 @@ npm run typecheck
 ## 🔄 Version Control
 
 ### Git
+
 ```bash
 git status
 git log --oneline -5
@@ -156,6 +174,7 @@ git log --oneline -5
 - [ ] Branch is up to date with main/master
 
 ### Pull Request (if applicable)
+
 - [ ] PR title is descriptive
 - [ ] PR description explains the changes
 - [ ] All CI checks pass
@@ -165,11 +184,13 @@ git log --oneline -5
 ## 🌐 Vercel Deployment
 
 ### Before Deployment
+
 - [ ] Vercel project is linked (`vercel link` has been run)
 - [ ] `.vercel/project.json` exists locally (but not committed)
 - [ ] Project is configured in Vercel dashboard
 
 ### Preview Deployment (PR)
+
 ```bash
 # This should happen automatically via GitHub Actions, but you can test locally:
 vercel deploy
@@ -181,7 +202,9 @@ vercel deploy
 - [ ] No console errors in browser
 
 ### Production Deployment (Master)
+
 Only proceed if:
+
 - [ ] Preview deployment is successful
 - [ ] All tests pass
 - [ ] Code has been reviewed
@@ -190,6 +213,7 @@ Only proceed if:
 ## 🛡️ Security
 
 ### Security Review
+
 - [ ] No API keys or secrets in code
 - [ ] Environment variables are used for sensitive data
 - [ ] CORS is properly configured
@@ -200,6 +224,7 @@ Only proceed if:
 - [ ] XSS prevention measures in place
 
 ### Security Headers (vercel.json)
+
 - [ ] `X-Content-Type-Options: nosniff`
 - [ ] `X-Frame-Options: DENY`
 - [ ] `Referrer-Policy` is set
@@ -209,12 +234,14 @@ Only proceed if:
 ## 📊 Performance
 
 ### Build Performance
+
 - [ ] Build time is acceptable (< 2 minutes)
 - [ ] Bundle size is optimized
 - [ ] Code splitting is working
 - [ ] Tree shaking is enabled
 
 ### Runtime Performance
+
 - [ ] Initial page load is fast (< 3 seconds)
 - [ ] No memory leaks detected
 - [ ] API endpoints respond quickly
@@ -223,11 +250,13 @@ Only proceed if:
 ## 🔧 Monitoring & Rollback
 
 ### Monitoring Setup
+
 - [ ] Error tracking is configured (if applicable)
 - [ ] Analytics are working (if applicable)
 - [ ] Logging is in place for debugging
 
 ### Rollback Plan
+
 - [ ] Know how to rollback in Vercel dashboard
 - [ ] Have backup of working version
 - [ ] Team is aware of deployment
@@ -235,6 +264,7 @@ Only proceed if:
 ## ✅ Final Verification
 
 ### Pre-Deployment Command
+
 ```bash
 # Run this comprehensive check:
 npm run ci:validate
@@ -244,12 +274,15 @@ npm run ci:validate
 - [ ] Ready to deploy
 
 ### Deployment Trigger
+
 For Preview (Pull Request):
+
 - [ ] Push to feature branch
 - [ ] Create PR to main/master
 - [ ] GitHub Actions will deploy automatically
 
 For Production (Master):
+
 - [ ] Merge PR to master
 - [ ] GitHub Actions will deploy automatically
 - [ ] Monitor deployment in Vercel dashboard
@@ -257,6 +290,7 @@ For Production (Master):
 ## 🚨 Emergency Contacts
 
 If deployment fails:
+
 1. Check GitHub Actions logs
 2. Check Vercel deployment logs
 3. Consult `docs/CI-CD-TROUBLESHOOTING.md`

@@ -1,9 +1,9 @@
 /**
  * PricingCard Component
- * 
+ *
  * Displays a pricing tier card with features, price, and call-to-action.
  * Used on the pricing page to showcase different subscription plans.
- * 
+ *
  * Features:
  * - Highlighted/featured tier option
  * - Monthly and annual pricing display
@@ -11,7 +11,7 @@
  * - Custom CTA button text and action
  * - Responsive design
  * - Dark mode support
- * 
+ *
  * Uses:
  * - Design system Button component
  * - Tailwind CSS for styling
@@ -55,20 +55,20 @@ export function PricingCard({
   return (
     <div
       className={clsx(
-        'relative bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 flex flex-col',
-        highlighted && 'ring-2 ring-primary-500 shadow-xl scale-105'
+        'relative flex flex-col rounded-lg bg-white p-8 shadow-lg dark:bg-gray-800',
+        highlighted && 'ring-primary-500 scale-105 shadow-xl ring-2'
       )}
     >
       {badge && (
-        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-          <span className="bg-primary-600 text-white px-4 py-1 rounded-full text-sm font-semibold">
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 transform">
+          <span className="bg-primary-600 rounded-full px-4 py-1 text-sm font-semibold text-white">
             {badge}
           </span>
         </div>
       )}
 
       <div className="mb-6">
-        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+        <h3 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
           {title}
         </h3>
         <p className="text-gray-600 dark:text-gray-400">{description}</p>
@@ -93,12 +93,12 @@ export function PricingCard({
         )}
       </div>
 
-      <ul className="mb-8 space-y-3 flex-grow">
+      <ul className="mb-8 flex-grow space-y-3">
         {features.map((feature, index) => (
           <li key={index} className="flex items-start">
             {feature.included ? (
               <svg
-                className="flex-shrink-0 w-5 h-5 text-green-500 mr-3 mt-0.5"
+                className="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-green-500"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -110,7 +110,7 @@ export function PricingCard({
               </svg>
             ) : (
               <svg
-                className="flex-shrink-0 w-5 h-5 text-gray-300 dark:text-gray-600 mr-3 mt-0.5"
+                className="mr-3 mt-0.5 h-5 w-5 flex-shrink-0 text-gray-300 dark:text-gray-600"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -126,7 +126,7 @@ export function PricingCard({
                 'text-sm',
                 feature.included
                   ? 'text-gray-700 dark:text-gray-300'
-                  : 'text-gray-400 dark:text-gray-600 line-through'
+                  : 'text-gray-400 line-through dark:text-gray-600'
               )}
             >
               {feature.text}

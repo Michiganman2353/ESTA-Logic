@@ -43,10 +43,7 @@ export const employeeProfileCreateSchema = z
     hireDate: z
       .string()
       .trim()
-      .regex(
-        /^\d{4}-\d{2}-\d{2}$/,
-        'Hire date must be in YYYY-MM-DD format'
-      )
+      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Hire date must be in YYYY-MM-DD format')
       .refine((val) => !Number.isNaN(Date.parse(val)), {
         message: 'Invalid hire date',
       }),
@@ -69,13 +66,18 @@ export const employeeProfileCreateSchema = z
     phone: z
       .string()
       .trim()
-      .regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/, 'Invalid phone number format')
+      .regex(
+        /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/,
+        'Invalid phone number format'
+      )
       .max(20, 'Phone number must be 20 characters or less')
       .optional(),
   })
   .strict();
 
-export type EmployeeProfileCreateInput = z.infer<typeof employeeProfileCreateSchema>;
+export type EmployeeProfileCreateInput = z.infer<
+  typeof employeeProfileCreateSchema
+>;
 
 /**
  * Schema for updating an employee profile.
@@ -112,7 +114,9 @@ export const employeeProfileUpdateSchema = z
   })
   .strict();
 
-export type EmployeeProfileUpdateInput = z.infer<typeof employeeProfileUpdateSchema>;
+export type EmployeeProfileUpdateInput = z.infer<
+  typeof employeeProfileUpdateSchema
+>;
 
 /**
  * Schema for bulk employee import from CSV.
@@ -127,10 +131,7 @@ export const employeeImportRowSchema = z
       .email()
       .max(255)
       .transform((val) => val.toLowerCase()),
-    hireDate: z
-      .string()
-      .trim()
-      .optional(),
+    hireDate: z.string().trim().optional(),
     department: z.string().trim().max(100).optional(),
     employmentStatus: z
       .string()
@@ -139,7 +140,12 @@ export const employeeImportRowSchema = z
       .pipe(employmentStatusSchema)
       .optional()
       .default('active'),
-    hoursPerWeek: z.number({ coerce: true }).min(0).max(168).optional().default(40),
+    hoursPerWeek: z
+      .number({ coerce: true })
+      .min(0)
+      .max(168)
+      .optional()
+      .default(40),
   })
   .strict();
 

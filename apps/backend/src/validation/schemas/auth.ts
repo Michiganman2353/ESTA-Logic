@@ -43,7 +43,9 @@ export const employeeRegistrationSchema = z
   })
   .strict();
 
-export type EmployeeRegistrationInput = z.infer<typeof employeeRegistrationSchema>;
+export type EmployeeRegistrationInput = z.infer<
+  typeof employeeRegistrationSchema
+>;
 
 /**
  * Schema for manager/employer registration.
@@ -66,7 +68,9 @@ export const managerRegistrationSchema = z
   })
   .strict();
 
-export type ManagerRegistrationInput = z.infer<typeof managerRegistrationSchema>;
+export type ManagerRegistrationInput = z.infer<
+  typeof managerRegistrationSchema
+>;
 
 /**
  * Schema for user login.
@@ -89,7 +93,10 @@ export const userProfileUpdateSchema = z
     phone: z
       .string()
       .trim()
-      .regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/, 'Invalid phone number format')
+      .regex(
+        /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/,
+        'Invalid phone number format'
+      )
       .max(20, 'Phone number must be 20 characters or less')
       .optional(),
     department: z

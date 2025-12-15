@@ -1,6 +1,6 @@
 /**
  * Document Capture Feature
- * 
+ *
  * Production-grade document capture with:
  * - Unified camera abstraction (desktop/mobile)
  * - Image quality processing (OpenCV.js)
@@ -9,7 +9,11 @@
  */
 
 export { CameraController } from './camera.controller';
-export type { CameraDevice, CameraConstraints, CameraControllerOptions } from './camera.controller';
+export type {
+  CameraDevice,
+  CameraConstraints,
+  CameraControllerOptions,
+} from './camera.controller';
 
 export { CameraView } from './camera.view';
 export type { CameraViewProps } from './camera.view';
@@ -19,7 +23,10 @@ export {
   loadOpenCV,
   isOpenCVReady,
 } from './document-processor';
-export type { ProcessingOptions, ProcessedDocument } from './document-processor';
+export type {
+  ProcessingOptions,
+  ProcessedDocument,
+} from './document-processor';
 
 export {
   validateFile,

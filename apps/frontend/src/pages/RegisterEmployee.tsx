@@ -10,7 +10,9 @@ interface RegisterEmployeeProps {
   onRegister: (user: User) => void;
 }
 
-export default function RegisterEmployee({ onRegister }: RegisterEmployeeProps) {
+export default function RegisterEmployee({
+  onRegister,
+}: RegisterEmployeeProps) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,7 +21,11 @@ export default function RegisterEmployee({ onRegister }: RegisterEmployeeProps) 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { isOpen: registrationOpen, message: closedMessage, loading: checkingStatus } = useRegistrationStatus('employee');
+  const {
+    isOpen: registrationOpen,
+    message: closedMessage,
+    loading: checkingStatus,
+  } = useRegistrationStatus('employee');
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -45,7 +51,7 @@ export default function RegisterEmployee({ onRegister }: RegisterEmployeeProps) 
         hasTenantCode: !!tenantCode.trim(),
         // Don't log password for security
       });
-      
+
       // Use Firebase authentication
       const { user } = await registerEmployee({
         name,
@@ -53,15 +59,17 @@ export default function RegisterEmployee({ onRegister }: RegisterEmployeeProps) 
         password,
         tenantCode: tenantCode.trim() || undefined,
       });
-      
+
       console.log('[DEBUG] Employee registration successful:', {
         userId: user.id,
         email: user.email,
         role: user.role,
       });
-      
+
       // Email verification is disabled for development - auto-login immediately
-      console.log('[DEBUG] Auto-login after registration, skipping email verification');
+      console.log(
+        '[DEBUG] Auto-login after registration, skipping email verification'
+      );
       console.log('[DEBUG] Calling onRegister callback');
       onRegister(user);
     } catch (err) {
@@ -71,25 +79,36 @@ export default function RegisterEmployee({ onRegister }: RegisterEmployeeProps) 
         message: err instanceof Error ? err.message : String(err),
         stack: err instanceof Error ? err.stack : undefined,
       });
-      
+
       if (err instanceof Error) {
         setError(err.message);
       } else {
         // Type guard for ApiError
-        const error = err as { status?: number; message?: string; isNetworkError?: boolean };
-        
+        const error = err as {
+          status?: number;
+          message?: string;
+          isNetworkError?: boolean;
+        };
+
         console.error('[DEBUG] API error details:', {
           status: error.status,
           message: error.message,
           isNetworkError: error.isNetworkError,
         });
-        
+
         if (error.isNetworkError) {
-          setError('Unable to connect to server. Please check your internet connection and try again.');
+          setError(
+            'Unable to connect to server. Please check your internet connection and try again.'
+          );
         } else if (error.status === 409) {
-          setError('This email is already registered. Please use a different email or try logging in.');
+          setError(
+            'This email is already registered. Please use a different email or try logging in.'
+          );
         } else if (error.status && error.status >= 400 && error.status < 500) {
-          setError(error.message || 'Registration failed. Please check your information and try again.');
+          setError(
+            error.message ||
+              'Registration failed. Please check your information and try again.'
+          );
         } else {
           setError('Registration failed. Please try again later.');
         }
@@ -101,21 +120,22 @@ export default function RegisterEmployee({ onRegister }: RegisterEmployeeProps) 
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8 dark:bg-gray-900">
       {checkingStatus ? (
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+          <div className="border-primary-600 mx-auto h-12 w-12 animate-spin rounded-full border-b-2"></div>
           <p className="mt-4 text-gray-600 dark:text-gray-400">Loading...</p>
         </div>
       ) : !registrationOpen ? (
-        <div className="max-w-md w-full space-y-8">
+        <div className="w-full max-w-md space-y-8">
           <div className="text-center">
             <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
               Registration Closed
             </h2>
-            <div className="mt-6 rounded-md bg-yellow-50 dark:bg-yellow-900/20 p-6">
+            <div className="mt-6 rounded-md bg-yellow-50 p-6 dark:bg-yellow-900/20">
               <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                {closedMessage || 'Employee registration is currently closed. Please check back later or contact your employer for more information.'}
+                {closedMessage ||
+                  'Employee registration is currently closed. Please check back later or contact your employer for more information.'}
               </p>
             </div>
             <div className="mt-6">
@@ -130,123 +150,134 @@ export default function RegisterEmployee({ onRegister }: RegisterEmployeeProps) 
         </div>
       ) : (
         // Email verification bypassed - users auto-login after registration
-        <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
-            Employee Registration
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
-            Create your ESTA Tracker employee account
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && (
-            <div className="rounded-md bg-red-50 dark:bg-red-900/20 p-4">
-              <p className="text-sm text-red-800 dark:text-red-200">{error}</p>
-            </div>
-          )}
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Full Name
-              </label>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                required
-                className="input mt-1 block w-full"
-                placeholder="John Doe"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Email Address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="input mt-1 block w-full"
-                placeholder="john@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="tenantCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Company Code (Optional)
-              </label>
-              <input
-                id="tenantCode"
-                name="tenantCode"
-                type="text"
-                className="input mt-1 block w-full"
-                placeholder="Enter your company code"
-                value={tenantCode}
-                onChange={(e) => setTenantCode(e.target.value.toUpperCase())}
-              />
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Ask your employer for the company code to link your account
-              </p>
-            </div>
-            <PasswordField
-              id="password"
-              label="Password"
-              value={password}
-              onChange={setPassword}
-              placeholder="Minimum 8 characters"
-              required
-              autoComplete="new-password"
-              className="mb-4"
-            />
-            <PasswordField
-              id="confirmPassword"
-              label="Confirm Password"
-              value={confirmPassword}
-              onChange={setConfirmPassword}
-              placeholder="Re-enter password"
-              required
-              autoComplete="new-password"
-              showIcon={false}
-            />
-          </div>
-
+        <div className="w-full max-w-md space-y-8">
           <div>
-            <LoadingButton
-              type="submit"
-              loading={loading}
-              loadingText="Creating account..."
-              variant="primary"
-              className="w-full flex justify-center py-2"
-              data-testid="register-employee-submit"
-            >
-              Register as Employee
-            </LoadingButton>
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+              Employee Registration
+            </h2>
+            <p className="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
+              Create your ESTA Tracker employee account
+            </p>
           </div>
-
-          <div className="text-center space-y-2">
-            <button
-              type="button"
-              onClick={() => navigate('/register/manager')}
-              className="font-medium text-primary-600 hover:text-primary-500 dark:text-primary-400"
-            >
-              Register as Manager instead?
-            </button>
-            <div>
-              <a
-                href="/login"
-                className="font-medium text-gray-600 hover:text-gray-500 dark:text-gray-400"
-              >
-                Already have an account? Sign in
-              </a>
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+            {error && (
+              <div className="rounded-md bg-red-50 p-4 dark:bg-red-900/20">
+                <p className="text-sm text-red-800 dark:text-red-200">
+                  {error}
+                </p>
+              </div>
+            )}
+            <div className="space-y-4">
+              <div>
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Full Name
+                </label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  required
+                  className="input mt-1 block w-full"
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Email Address
+                </label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  required
+                  className="input mt-1 block w-full"
+                  placeholder="john@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="tenantCode"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Company Code (Optional)
+                </label>
+                <input
+                  id="tenantCode"
+                  name="tenantCode"
+                  type="text"
+                  className="input mt-1 block w-full"
+                  placeholder="Enter your company code"
+                  value={tenantCode}
+                  onChange={(e) => setTenantCode(e.target.value.toUpperCase())}
+                />
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Ask your employer for the company code to link your account
+                </p>
+              </div>
+              <PasswordField
+                id="password"
+                label="Password"
+                value={password}
+                onChange={setPassword}
+                placeholder="Minimum 8 characters"
+                required
+                autoComplete="new-password"
+                className="mb-4"
+              />
+              <PasswordField
+                id="confirmPassword"
+                label="Confirm Password"
+                value={confirmPassword}
+                onChange={setConfirmPassword}
+                placeholder="Re-enter password"
+                required
+                autoComplete="new-password"
+                showIcon={false}
+              />
             </div>
-          </div>
-        </form>
+
+            <div>
+              <LoadingButton
+                type="submit"
+                loading={loading}
+                loadingText="Creating account..."
+                variant="primary"
+                className="flex w-full justify-center py-2"
+                data-testid="register-employee-submit"
+              >
+                Register as Employee
+              </LoadingButton>
+            </div>
+
+            <div className="space-y-2 text-center">
+              <button
+                type="button"
+                onClick={() => navigate('/register/manager')}
+                className="text-primary-600 hover:text-primary-500 dark:text-primary-400 font-medium"
+              >
+                Register as Manager instead?
+              </button>
+              <div>
+                <a
+                  href="/login"
+                  className="font-medium text-gray-600 hover:text-gray-500 dark:text-gray-400"
+                >
+                  Already have an account? Sign in
+                </a>
+              </div>
+            </div>
+          </form>
         </div>
       )}
     </div>

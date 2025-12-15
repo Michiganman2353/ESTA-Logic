@@ -24,19 +24,19 @@ Before you begin, ensure you have:
 
 ### Required Software
 
-| Tool       | Version  | Installation                              |
-| ---------- | -------- | ----------------------------------------- |
-| Node.js    | 22.11+   | [nodejs.org](https://nodejs.org/) or `nvm use` |
-| npm        | 10.0+    | Comes with Node.js                        |
-| Git        | 2.40+    | [git-scm.com](https://git-scm.com/)       |
+| Tool    | Version | Installation                                   |
+| ------- | ------- | ---------------------------------------------- |
+| Node.js | 22.11+  | [nodejs.org](https://nodejs.org/) or `nvm use` |
+| npm     | 10.0+   | Comes with Node.js                             |
+| Git     | 2.40+   | [git-scm.com](https://git-scm.com/)            |
 
 ### Optional Tools
 
-| Tool       | Purpose                    | Installation                       |
-| ---------- | -------------------------- | ---------------------------------- |
-| Gleam      | View kernel specs          | `brew install gleam`               |
-| Firebase CLI | Local emulator          | `npm install -g firebase-tools`    |
-| VS Code    | Recommended IDE            | [code.visualstudio.com](https://code.visualstudio.com/) |
+| Tool         | Purpose           | Installation                                            |
+| ------------ | ----------------- | ------------------------------------------------------- |
+| Gleam        | View kernel specs | `brew install gleam`                                    |
+| Firebase CLI | Local emulator    | `npm install -g firebase-tools`                         |
+| VS Code      | Recommended IDE   | [code.visualstudio.com](https://code.visualstudio.com/) |
 
 ### VS Code Extensions (Recommended)
 
@@ -144,16 +144,16 @@ ESTA-Logic/
 
 ### Key Technologies
 
-| Layer      | Technology                    | Purpose                    |
-| ---------- | ----------------------------- | -------------------------- |
-| Frontend   | React + Vite + TypeScript     | Web application            |
-| Backend    | Express + TypeScript          | API server                 |
-| Database   | Firebase Firestore            | Document database          |
-| Auth       | Firebase Auth                 | Authentication             |
-| Functions  | Firebase Cloud Functions      | Serverless operations      |
-| Build      | Nx + npm Workspaces           | Monorepo management        |
-| Testing    | Vitest + Playwright           | Unit + E2E tests           |
-| Specs      | Gleam                         | Type-safe kernel specs     |
+| Layer     | Technology                | Purpose                |
+| --------- | ------------------------- | ---------------------- |
+| Frontend  | React + Vite + TypeScript | Web application        |
+| Backend   | Express + TypeScript      | API server             |
+| Database  | Firebase Firestore        | Document database      |
+| Auth      | Firebase Auth             | Authentication         |
+| Functions | Firebase Cloud Functions  | Serverless operations  |
+| Build     | Nx + npm Workspaces       | Monorepo management    |
+| Testing   | Vitest + Playwright       | Unit + E2E tests       |
+| Specs     | Gleam                     | Type-safe kernel specs |
 
 ---
 
@@ -266,7 +266,7 @@ Enforced by Nx tags:
 import { Employee } from '@esta/shared-types';
 
 // ❌ Frontend cannot import backend code
-import { router } from '@esta/backend';  // Lint error!
+import { router } from '@esta/backend'; // Lint error!
 ```
 
 ### 4. Kernel Boundary Pattern
@@ -280,7 +280,7 @@ async function getEmployee(repo: EmployeeRepository, id: string) {
 }
 
 // ❌ Don't import Firebase directly in business logic
-import { db } from '@esta/firebase';  // Bad!
+import { db } from '@esta/firebase'; // Bad!
 ```
 
 ---
@@ -290,17 +290,20 @@ import { db } from '@esta/firebase';  // Bad!
 ### Creating a New Feature
 
 1. Create feature branch:
+
    ```bash
    git checkout main && git pull
    git checkout -b feature/my-feature
    ```
 
 2. Make changes, commit regularly:
+
    ```bash
    git commit -m "feat(scope): description"
    ```
 
 3. Run checks before pushing:
+
    ```bash
    npm run lint && npm run typecheck && npm test
    ```
@@ -363,13 +366,13 @@ vercel logs
 
 ### Documentation
 
-| Topic            | Location                                    |
-| ---------------- | ------------------------------------------- |
-| Architecture     | `docs/architecture/architecture.md`         |
-| ADRs             | `docs/architecture/adr/`                    |
-| API Reference    | `docs/api/` (coming soon)                   |
-| Setup Guides     | `docs/setup/`                               |
-| Security         | `docs/security/` and `SECURITY.md`          |
+| Topic         | Location                            |
+| ------------- | ----------------------------------- |
+| Architecture  | `docs/architecture/architecture.md` |
+| ADRs          | `docs/architecture/adr/`            |
+| API Reference | `docs/api/` (coming soon)           |
+| Setup Guides  | `docs/setup/`                       |
+| Security      | `docs/security/` and `SECURITY.md`  |
 
 ### Ask for Help
 

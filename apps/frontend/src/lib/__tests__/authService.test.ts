@@ -85,7 +85,9 @@ describe('authService', () => {
         employeeCount: 10,
       };
 
-      await expect(registerManager(invalidData)).rejects.toThrow('Invalid email address');
+      await expect(registerManager(invalidData)).rejects.toThrow(
+        'Invalid email address'
+      );
     });
 
     it('should validate password length', async () => {
@@ -97,7 +99,9 @@ describe('authService', () => {
         employeeCount: 10,
       };
 
-      await expect(registerManager(invalidData)).rejects.toThrow('Password must be at least 8 characters');
+      await expect(registerManager(invalidData)).rejects.toThrow(
+        'Password must be at least 8 characters'
+      );
     });
 
     it('should validate name length', async () => {
@@ -121,7 +125,9 @@ describe('authService', () => {
         employeeCount: 10,
       };
 
-      await expect(registerManager(invalidData)).rejects.toThrow('company name');
+      await expect(registerManager(invalidData)).rejects.toThrow(
+        'company name'
+      );
     });
 
     it('should validate employee count', async () => {
@@ -133,14 +139,16 @@ describe('authService', () => {
         employeeCount: 0,
       };
 
-      await expect(registerManager(invalidData)).rejects.toThrow('employee count');
+      await expect(registerManager(invalidData)).rejects.toThrow(
+        'employee count'
+      );
     });
 
     it('should determine employer size correctly', async () => {
       // This test verifies the logic for determining employer size
       // Small employer: < 10 employees
       // Large employer: >= 10 employees
-      
+
       const smallEmployerData = {
         name: 'Test User',
         email: 'test@example.com',
@@ -170,7 +178,9 @@ describe('authService', () => {
         tenantCode: 'ABC12345',
       };
 
-      await expect(registerEmployee(invalidData)).rejects.toThrow('Invalid email address');
+      await expect(registerEmployee(invalidData)).rejects.toThrow(
+        'Invalid email address'
+      );
     });
 
     it('should validate password length', async () => {
@@ -181,7 +191,9 @@ describe('authService', () => {
         tenantCode: 'ABC12345',
       };
 
-      await expect(registerEmployee(invalidData)).rejects.toThrow('Password must be at least 8 characters');
+      await expect(registerEmployee(invalidData)).rejects.toThrow(
+        'Password must be at least 8 characters'
+      );
     });
 
     it('should require tenant code or employer email', async () => {
@@ -191,7 +203,9 @@ describe('authService', () => {
         password: 'password123',
       };
 
-      await expect(registerEmployee(invalidData)).rejects.toThrow('Please provide an employer code');
+      await expect(registerEmployee(invalidData)).rejects.toThrow(
+        'Please provide an employer code'
+      );
     });
   });
 
@@ -214,13 +228,22 @@ describe('authService', () => {
     it('should provide user-friendly error messages', () => {
       // Verify error messages are user-friendly
       const errorScenarios = [
-        { code: 'auth/email-already-in-use', expectedMessage: 'email is already registered' },
-        { code: 'auth/invalid-email', expectedMessage: 'Invalid email address' },
+        {
+          code: 'auth/email-already-in-use',
+          expectedMessage: 'email is already registered',
+        },
+        {
+          code: 'auth/invalid-email',
+          expectedMessage: 'Invalid email address',
+        },
         { code: 'auth/weak-password', expectedMessage: 'Password is too weak' },
-        { code: 'auth/network-request-failed', expectedMessage: 'Network error' },
+        {
+          code: 'auth/network-request-failed',
+          expectedMessage: 'Network error',
+        },
       ];
 
-      errorScenarios.forEach(scenario => {
+      errorScenarios.forEach((scenario) => {
         expect(scenario.expectedMessage).toBeDefined();
       });
     });
@@ -230,7 +253,7 @@ describe('authService', () => {
     it('should not fail registration if email verification fails', () => {
       // This test verifies that email verification failure is non-fatal
       // The registration should still succeed and user can resend verification
-      
+
       // This is a behavioral test - the actual implementation wraps
       // sendEmailVerification in try-catch to make it non-blocking
       expect(true).toBe(true);

@@ -52,7 +52,7 @@ export async function authenticate(
     // Get user data from Firestore for up-to-date role information
     const db = getFirestore();
     const userDoc = await db.collection('users').doc(decodedToken.uid).get();
-    
+
     if (!userDoc.exists) {
       res.status(401).json({
         success: false,
@@ -78,7 +78,8 @@ export async function authenticate(
       uid: decodedToken.uid,
       email: decodedToken.email || userData?.email,
       role: userData?.role || decodedToken.role,
-      tenantId: userData?.tenantId || userData?.employerId || decodedToken.tenantId,
+      tenantId:
+        userData?.tenantId || userData?.employerId || decodedToken.tenantId,
       status: userData?.status,
     };
 
@@ -86,7 +87,7 @@ export async function authenticate(
   } catch (error) {
     console.error('Authentication error:', error);
     const err = error as { code?: string };
-    
+
     if (err.code === 'auth/id-token-expired') {
       res.status(401).json({
         success: false,
@@ -120,22 +121,26 @@ export async function optionalAuthenticate(
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const idToken = authHeader.split('Bearer ')[1];
-      
+
       if (idToken) {
         const auth = getAuth();
         const decodedToken = await auth.verifyIdToken(idToken);
-        
+
         // Get user data from Firestore
         const db = getFirestore();
-        const userDoc = await db.collection('users').doc(decodedToken.uid).get();
+        const userDoc = await db
+          .collection('users')
+          .doc(decodedToken.uid)
+          .get();
         const userData = userDoc.exists ? userDoc.data() : undefined;
-        
+
         req.user = {
           ...decodedToken,
           uid: decodedToken.uid,
           email: decodedToken.email || userData?.email,
           role: userData?.role || decodedToken.role,
-          tenantId: userData?.tenantId || userData?.employerId || decodedToken.tenantId,
+          tenantId:
+            userData?.tenantId || userData?.employerId || decodedToken.tenantId,
         };
       }
     }
@@ -153,7 +158,11 @@ export async function optionalAuthenticate(
  * Must be used after authenticate middleware
  */
 export function requireRole(...allowedRoles: string[]) {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
+  return (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): void => {
     if (!req.user) {
       res.status(401).json({
         success: false,
@@ -191,7 +200,11 @@ export function requireEmployer(
  * Ensures user can only access data from their own tenant
  */
 export function validateTenantAccess(tenantIdParam: string = 'tenantId') {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
+  return (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): void => {
     if (!req.user) {
       res.status(401).json({
         success: false,
@@ -200,7 +213,8 @@ export function validateTenantAccess(tenantIdParam: string = 'tenantId') {
       return;
     }
 
-    const requestedTenantId = req.params[tenantIdParam] || req.body[tenantIdParam];
+    const requestedTenantId =
+      req.params[tenantIdParam] || req.body[tenantIdParam];
     const userTenantId = req.user.tenantId;
 
     if (!requestedTenantId) {
@@ -237,19 +251,23 @@ export function validateTenantAccess(tenantIdParam: string = 'tenantId') {
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
 
 export function rateLimit(maxRequests: number = 100, windowMs: number = 60000) {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
+  return (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): void => {
     const key = req.user?.uid || req.ip || 'anonymous';
     const now = Date.now();
-    
+
     const record = rateLimitStore.get(key);
-    
+
     if (!record || now > record.resetTime) {
       // Reset or initialize
       rateLimitStore.set(key, { count: 1, resetTime: now + windowMs });
       next();
       return;
     }
-    
+
     if (record.count >= maxRequests) {
       res.status(429).json({
         success: false,
@@ -258,7 +276,7 @@ export function rateLimit(maxRequests: number = 100, windowMs: number = 60000) {
       });
       return;
     }
-    
+
     record.count++;
     next();
   };
@@ -267,19 +285,25 @@ export function rateLimit(maxRequests: number = 100, windowMs: number = 60000) {
 /**
  * Input validation middleware
  */
-export function validateInput(schema: Record<string, (value: unknown) => boolean | string>) {
-  return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
+export function validateInput(
+  schema: Record<string, (value: unknown) => boolean | string>
+) {
+  return (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): void => {
     const errors: string[] = [];
-    
+
     for (const [field, validator] of Object.entries(schema)) {
       const value = req.body[field];
       const result = validator(value);
-      
+
       if (result !== true) {
         errors.push(typeof result === 'string' ? result : `Invalid ${field}`);
       }
     }
-    
+
     if (errors.length > 0) {
       res.status(400).json({
         success: false,
@@ -288,7 +312,7 @@ export function validateInput(schema: Record<string, (value: unknown) => boolean
       });
       return;
     }
-    
+
     next();
   };
 }

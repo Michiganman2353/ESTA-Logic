@@ -16,14 +16,14 @@ ESTA-Logic needs to execute deterministic, isolated business logic in multiple e
 
 ### Requirements
 
-| Requirement          | Priority | WASM Support |
-| -------------------- | -------- | ------------ |
-| Determinism          | Critical | ✅ Native    |
-| Memory Isolation     | Critical | ✅ Native    |
-| Cross-Platform       | High     | ✅ Native    |
-| Performance          | High     | ✅ Native    |
-| Source Language      | Medium   | Gleam/Rust   |
-| Bundle Size          | Medium   | Varies       |
+| Requirement      | Priority | WASM Support |
+| ---------------- | -------- | ------------ |
+| Determinism      | Critical | ✅ Native    |
+| Memory Isolation | Critical | ✅ Native    |
+| Cross-Platform   | High     | ✅ Native    |
+| Performance      | High     | ✅ Native    |
+| Source Language  | Medium   | Gleam/Rust   |
+| Bundle Size      | Medium   | Varies       |
 
 ## Decision
 
@@ -62,13 +62,13 @@ We adopt a **multi-source WASM strategy** with Gleam as the primary source for b
 
 ### Module Catalog
 
-| Module              | Source   | Size   | Purpose                    |
-| ------------------- | -------- | ------ | -------------------------- |
-| `esta_accrual`      | Gleam    | ~50 KB | Sick time calculations     |
-| `esta_carryover`    | Gleam    | ~30 KB | Year-end carryover logic   |
-| `esta_compliance`   | Gleam    | ~80 KB | ESTA law validation        |
-| `esta_crypto`       | Rust     | ~200 KB| Argon2id, constant-time ops|
-| `esta_capabilities` | Rust     | ~100 KB| Capability token validation|
+| Module              | Source | Size    | Purpose                     |
+| ------------------- | ------ | ------- | --------------------------- |
+| `esta_accrual`      | Gleam  | ~50 KB  | Sick time calculations      |
+| `esta_carryover`    | Gleam  | ~30 KB  | Year-end carryover logic    |
+| `esta_compliance`   | Gleam  | ~80 KB  | ESTA law validation         |
+| `esta_crypto`       | Rust   | ~200 KB | Argon2id, constant-time ops |
+| `esta_capabilities` | Rust   | ~100 KB | Capability token validation |
 
 ## WASM Host Interface
 

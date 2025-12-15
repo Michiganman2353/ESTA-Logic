@@ -30,13 +30,19 @@ ESTA-Logic/
 **Purpose**: Type safety and data validation across the entire stack
 
 **Contents**:
+
 - TypeScript interfaces for all domain models
 - Zod schemas for runtime validation
 - Centralized type definitions
 
 **Example Usage**:
+
 ```typescript
-import { Employee, EmployeeSchema, AccrualBalance } from '@esta-tracker/shared-types';
+import {
+  Employee,
+  EmployeeSchema,
+  AccrualBalance,
+} from '@esta-tracker/shared-types';
 
 // Type-safe employee object
 const employee: Employee = {
@@ -56,12 +62,14 @@ const validatedEmployee = EmployeeSchema.parse(inputData);
 **Purpose**: Common utility functions used across frontend and backend
 
 **Contents**:
+
 - **Date utilities**: Date calculations, formatting, fiscal year logic
 - **Validation utilities**: Email, phone, hours validation
 - **Formatting utilities**: Display formatting for hours, currency, names
 - **Constants**: Michigan ESTA rules, file size limits, error codes
 
 **Example Usage**:
+
 ```typescript
 import {
   formatDateISO,
@@ -80,12 +88,14 @@ const formattedHours = formatHours(8.5); // "8.5 hours"
 **Purpose**: Michigan ESTA accrual calculation business logic
 
 **Contents**:
+
 - **Calculator**: Core accrual calculations
 - **Rules**: Employer size rules and caps
 - **Carryover**: Year-end carryover logic
 - **Validator**: Accrual validation functions
 
 **Example Usage**:
+
 ```typescript
 import {
   calculateAccrual,
@@ -102,10 +112,12 @@ const accrual = calculateAccrual(hoursWorked, 'large', yearlyAccrued);
 **Purpose**: CSV parsing and validation for bulk imports
 
 **Contents**:
+
 - **Parser**: Parse CSV text into structured data
 - **Validator**: Validate CSV data against schemas
 
 **Example Usage**:
+
 ```typescript
 import { parseCSV, validateCSVData } from '@esta-tracker/csv-processor';
 
@@ -232,11 +244,13 @@ Time: 0.8s  🚀
 ## Creating a New Shared Package
 
 1. **Create directory structure**:
+
 ```bash
 mkdir -p packages/my-package/src
 ```
 
 2. **Create `package.json`**:
+
 ```json
 {
   "name": "@esta-tracker/my-package",
@@ -260,6 +274,7 @@ mkdir -p packages/my-package/src
 ```
 
 3. **Create `tsconfig.json`**:
+
 ```json
 {
   "compilerOptions": {
@@ -278,11 +293,13 @@ mkdir -p packages/my-package/src
 ```
 
 4. **Install dependencies**:
+
 ```bash
 npm install
 ```
 
 5. **Add to frontend/backend**:
+
 ```json
 {
   "dependencies": {
@@ -360,7 +377,7 @@ Add JSDoc comments to all exported functions:
 ```typescript
 /**
  * Calculate accrual for hours worked
- * 
+ *
  * @param hoursWorked - Hours worked in the period
  * @param employerSize - Size of employer ('small' or 'large')
  * @returns Accrual calculation with capping information
@@ -392,6 +409,7 @@ Keep all shared packages at the same version:
 **Problem**: TypeScript can't find types from shared package
 
 **Solution**: Ensure the package is built first:
+
 ```bash
 npm run build --filter=@esta-tracker/shared-types
 ```
@@ -399,6 +417,7 @@ npm run build --filter=@esta-tracker/shared-types
 **Problem**: "Cannot find module" error
 
 **Solution**: Install dependencies:
+
 ```bash
 npm install
 ```
@@ -408,6 +427,7 @@ npm install
 **Problem**: Stale cache causing incorrect builds
 
 **Solution**: Clear Turborepo cache:
+
 ```bash
 rm -rf .turbo
 npm run clean
@@ -419,6 +439,7 @@ npm run build
 **Problem**: Import not resolving
 
 **Solution**: Use `.js` extensions in TypeScript imports:
+
 ```typescript
 // ✅ Correct
 import { Employee } from './employee.js';
@@ -440,6 +461,7 @@ Turborepo is integrated into GitHub Actions for fast CI/CD:
 ```
 
 Benefits:
+
 - Remote caching speeds up CI builds by 70%+
 - Only affected packages are rebuilt
 - Parallel execution across multiple runners
@@ -449,12 +471,14 @@ Benefits:
 We've successfully migrated from basic npm workspaces to Turborepo:
 
 **Before**:
+
 - Manual build ordering
 - No caching
 - Slow CI/CD builds
 - Duplicate code across packages
 
 **After**:
+
 - Automatic dependency ordering
 - Local and remote caching
 - 50%+ faster CI/CD

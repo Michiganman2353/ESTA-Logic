@@ -13,15 +13,28 @@
 /**
  * Required environment variables for client-side Firebase (frontend)
  */
-export declare const REQUIRED_CLIENT_VARS: readonly ["VITE_FIREBASE_API_KEY", "VITE_FIREBASE_AUTH_DOMAIN", "VITE_FIREBASE_PROJECT_ID", "VITE_FIREBASE_STORAGE_BUCKET", "VITE_FIREBASE_MESSAGING_SENDER_ID", "VITE_FIREBASE_APP_ID"];
+export declare const REQUIRED_CLIENT_VARS: readonly [
+  'VITE_FIREBASE_API_KEY',
+  'VITE_FIREBASE_AUTH_DOMAIN',
+  'VITE_FIREBASE_PROJECT_ID',
+  'VITE_FIREBASE_STORAGE_BUCKET',
+  'VITE_FIREBASE_MESSAGING_SENDER_ID',
+  'VITE_FIREBASE_APP_ID',
+];
 /**
  * Required environment variables for server-side Firebase (backend)
  */
-export declare const REQUIRED_SERVER_VARS: readonly ["FIREBASE_PROJECT_ID", "FIREBASE_STORAGE_BUCKET"];
+export declare const REQUIRED_SERVER_VARS: readonly [
+  'FIREBASE_PROJECT_ID',
+  'FIREBASE_STORAGE_BUCKET',
+];
 /**
  * Optional environment variables for server-side Firebase
  */
-export declare const OPTIONAL_SERVER_VARS: readonly ["FIREBASE_SERVICE_ACCOUNT", "GOOGLE_APPLICATION_CREDENTIALS"];
+export declare const OPTIONAL_SERVER_VARS: readonly [
+  'FIREBASE_SERVICE_ACCOUNT',
+  'GOOGLE_APPLICATION_CREDENTIALS',
+];
 /**
  * Check if running in test environment
  */

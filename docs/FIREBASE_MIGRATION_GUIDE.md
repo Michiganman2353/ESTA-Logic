@@ -3,6 +3,7 @@
 ## Overview
 
 The ESTA Tracker monorepo now uses a centralized Firebase package (`@esta/firebase`) that provides:
+
 - Single source of truth for Firebase initialization
 - Support for both client-side (Web SDK) and server-side (Admin SDK)
 - Comprehensive testing mocks
@@ -14,18 +15,22 @@ The ESTA Tracker monorepo now uses a centralized Firebase package (`@esta/fireba
 ### For Frontend Developers
 
 **Old Way:**
+
 ```typescript
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-const firebaseConfig = { /* ... */ };
+const firebaseConfig = {
+  /* ... */
+};
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 ```
 
 **New Way:**
+
 ```typescript
 import { app, auth, db, storage } from '@esta/firebase';
 // That's it! Everything is pre-initialized and ready to use
@@ -34,6 +39,7 @@ import { app, auth, db, storage } from '@esta/firebase';
 ### For Backend/API Developers
 
 **Old Way:**
+
 ```typescript
 import admin from 'firebase-admin';
 admin.initializeApp();
@@ -42,8 +48,13 @@ const auth = admin.auth();
 ```
 
 **New Way:**
+
 ```typescript
-import { initializeFirebaseAdmin, getFirestore, getAuth } from '@esta/firebase/admin';
+import {
+  initializeFirebaseAdmin,
+  getFirestore,
+  getAuth,
+} from '@esta/firebase/admin';
 
 // Initialize once at app startup
 initializeFirebaseAdmin();
@@ -59,6 +70,7 @@ const auth = getAuth();
 Tests would fail with missing environment variables or would hit real Firebase.
 
 **New Way:**
+
 ```typescript
 import { vi } from 'vitest';
 import { mockApp, mockAuth, mockDb, mockStorage } from '@esta/firebase/testing';
@@ -73,7 +85,10 @@ vi.mock('@esta/firebase', () => ({
 
 // Now your tests never hit real Firebase
 test('user login', async () => {
-  const result = await mockAuth.signInWithEmailAndPassword('test@test.com', 'pass');
+  const result = await mockAuth.signInWithEmailAndPassword(
+    'test@test.com',
+    'pass'
+  );
   expect(result.user.uid).toBe('test-uid');
 });
 ```
@@ -153,6 +168,7 @@ GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json
 **Solution:** Ensure all `VITE_FIREBASE_*` variables (frontend) or `FIREBASE_*` variables (backend) are set in your environment.
 
 For local development:
+
 ```bash
 cp .env.example .env
 # Then fill in your Firebase credentials
@@ -190,12 +206,14 @@ import type { Firestore, DocumentReference } from '@esta/firebase';
 ### 1. Never Initialize Firebase Manually
 
 ❌ **Don't do this:**
+
 ```typescript
 import { initializeApp } from 'firebase/app';
 const app = initializeApp(config);
 ```
 
 ✅ **Do this:**
+
 ```typescript
 import { app } from '@esta/firebase';
 ```
@@ -203,12 +221,14 @@ import { app } from '@esta/firebase';
 ### 2. Use the Pre-Configured Instances
 
 ❌ **Don't do this:**
+
 ```typescript
 import { getAuth } from 'firebase/auth';
 const auth = getAuth();
 ```
 
 ✅ **Do this:**
+
 ```typescript
 import { auth } from '@esta/firebase';
 ```
@@ -216,6 +236,7 @@ import { auth } from '@esta/firebase';
 ### 3. Use Mocks in Tests
 
 ❌ **Don't do this:**
+
 ```typescript
 // Tests hitting real Firebase
 test('create user', async () => {
@@ -224,6 +245,7 @@ test('create user', async () => {
 ```
 
 ✅ **Do this:**
+
 ```typescript
 import { mockAuth } from '@esta/firebase/testing';
 test('create user', async () => {
@@ -234,11 +256,13 @@ test('create user', async () => {
 ### 4. Keep Environment Variables Secure
 
 ❌ **Never:**
+
 - Commit `.env` files to git
 - Share service account JSON publicly
 - Include credentials in code
 
 ✅ **Always:**
+
 - Use `.env.example` as a template
 - Store production credentials in Vercel/Netlify/etc.
 - Use environment variables
@@ -248,28 +272,31 @@ test('create user', async () => {
 The `@esta/firebase` package provides three export paths:
 
 ### 1. Main Export (Client-Side)
+
 ```typescript
 import { app, auth, db, storage } from '@esta/firebase';
 ```
 
 ### 2. Admin Export (Server-Side)
+
 ```typescript
-import { 
+import {
   initializeFirebaseAdmin,
   getFirestore,
   getAuth,
-  getStorage 
+  getStorage,
 } from '@esta/firebase/admin';
 ```
 
 ### 3. Testing Export
+
 ```typescript
-import { 
+import {
   mockApp,
   mockAuth,
   mockDb,
   mockStorage,
-  resetMocks 
+  resetMocks,
 } from '@esta/firebase/testing';
 ```
 

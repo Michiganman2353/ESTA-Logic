@@ -38,7 +38,7 @@ authRouter.post(
   validateBody(loginSchema),
   (req: ValidatedRequest<LoginInput>, res: Response) => {
     const { email } = req.validated!.body;
-  
+
     // Find user by email
     let user: StoredUser | undefined;
     for (const [, u] of users) {
@@ -47,15 +47,15 @@ authRouter.post(
         break;
       }
     }
-  
+
     if (user) {
       // Generate token and store mapping
       const token = `mock-token-${user.role}-${user.id}`;
       tokenToUserId.set(token, user.id);
-    
-      res.json({ 
-        token, 
-        user
+
+      res.json({
+        token,
+        user,
       });
     } else {
       // For testing, create a default employee user
@@ -67,16 +67,16 @@ authRouter.post(
         status: 'approved',
         employerSize: 'small',
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
-    
+
       const token = 'mock-token-employee-1';
       users.set('1', defaultUser);
       tokenToUserId.set(token, '1');
-    
-      res.json({ 
-        token, 
-        user: defaultUser 
+
+      res.json({
+        token,
+        user: defaultUser,
       });
     }
   }
@@ -89,7 +89,7 @@ authRouter.post(
     const { email, name } = req.validated!.body;
     const userId = 'user-' + randomUUID();
     const token = `mock-token-employee-${userId}`;
-  
+
     const user: StoredUser = {
       id: userId,
       email,
@@ -98,12 +98,12 @@ authRouter.post(
       status: 'approved',
       employerSize: 'small',
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
-  
+
     users.set(userId, user);
     tokenToUserId.set(token, userId);
-  
+
     res.json({ token, user });
   }
 );
@@ -127,10 +127,10 @@ authRouter.post(
     // 1. Hash the password
     // 2. Save to database
     // 3. Generate real JWT token
-  
+
     const userId = 'emp-' + randomUUID();
     const token = `mock-token-employee-${userId}`;
-  
+
     const user: StoredUser = {
       id: userId,
       email,
@@ -139,15 +139,15 @@ authRouter.post(
       employerSize: 'small',
       status: 'approved', // Employees are auto-approved
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
-  
+
     users.set(userId, user);
     tokenToUserId.set(token, userId);
-  
-    res.json({ 
-      token, 
-      user
+
+    res.json({
+      token,
+      user,
     });
   }
 );
@@ -177,15 +177,15 @@ authRouter.post(
     // 2. Save user and company info to database
     // 3. Send notification to admin for approval
     // 4. Create employer settings record after approval
-  
+
     // Manager registration requires approval before access is granted
     // Return token so user can be logged in immediately after registration
     // NOTE: In production, use cryptographically secure JWT tokens instead of mock tokens
-  
+
     const userId = 'mgr-' + randomUUID();
     const employerId = 'company-' + randomUUID();
     const token = `mock-token-manager-${userId}`;
-  
+
     const user: StoredUser = {
       id: userId,
       email,
@@ -197,17 +197,17 @@ authRouter.post(
       employeeCount,
       status: 'approved', // Changed to 'approved' for immediate access during development
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
-  
+
     users.set(userId, user);
     tokenToUserId.set(token, userId);
-  
-    res.json({ 
+
+    res.json({
       success: true,
       message: 'Registration completed successfully.',
       token,
-      user
+      user,
     });
   }
 );
@@ -219,34 +219,34 @@ authRouter.post('/logout', (_req, res) => {
 authRouter.get('/me', (req, res): void => {
   // Check for Authorization header
   const authHeader = req.headers.authorization;
-  
+
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     res.status(401).json({ message: 'Unauthorized' });
     return;
   }
-  
+
   const token = authHeader.split(' ')[1];
-  
+
   if (!token || token === 'null') {
     res.status(401).json({ message: 'Unauthorized' });
     return;
   }
-  
+
   // Get user ID from token
   const userId = tokenToUserId.get(token);
-  
+
   if (!userId) {
     res.status(401).json({ message: 'Invalid or expired token' });
     return;
   }
-  
+
   // Get user data
   const user = users.get(userId);
-  
+
   if (!user) {
     res.status(401).json({ message: 'User not found' });
     return;
   }
-  
+
   res.json({ user });
 });

@@ -36,10 +36,10 @@ Each employee linked to an employer has a record:
 
 ```typescript
 {
-  uid: string;             // Employee user ID
-  email: string;           // Employee email
-  displayName: string;     // Employee name
-  joinDate: Date;          // Date employee linked to employer
+  uid: string; // Employee user ID
+  email: string; // Employee email
+  displayName: string; // Employee name
+  joinDate: Date; // Date employee linked to employer
   role: 'employee' | 'manager'; // Employee role
   status: 'active' | 'inactive'; // Employment status
 }
@@ -80,22 +80,26 @@ if (existing) {
 Employers can regenerate their code through a protected action:
 
 **Requirements:**
+
 - Must be authenticated as the employer
 - Must explicitly request regeneration
 - Old code becomes immediately invalid
 
 **Process:**
+
 1. Generate new unique 4-digit code
 2. Update employer profile with new code
 3. Notify all linked employees (recommended)
 4. Update any printed materials referencing old code
 
 **API Endpoint:**
+
 ```typescript
 regenerateEmployerCode(db, employerId);
 ```
 
 **Impact:**
+
 - Employees using old code will fail to register
 - Existing employees remain linked (no change to their records)
 - Employer should communicate new code to future employees
@@ -129,11 +133,12 @@ regenerateEmployerCode(db, employerId);
 await linkEmployeeToEmployer(db, employeeUid, employerId, {
   email: 'employee@example.com',
   displayName: 'John Doe',
-  role: 'employee'
+  role: 'employee',
 });
 ```
 
 This function:
+
 - Updates `users/{employeeUid}.employerId`
 - Creates `employerProfiles/{employerId}/employees/{employeeUid}`
 - Uses transaction to ensure atomicity
@@ -151,10 +156,12 @@ Employers can customize their profile with:
 ### Setting Branding
 
 **During Registration:**
+
 - Display name set from company name input
 - Logo and color optional
 
 **After Registration:**
+
 - Employer settings page allows updates
 - Changes immediately reflected for all employees
 
@@ -196,16 +203,19 @@ match /employerProfiles/{employerId}/employees/{employeeUid} {
 ### Access Patterns
 
 **Employers can:**
+
 - Read/write their own profile
 - Read/write all employee records under their profile
 - Regenerate their employer code
 
 **Employees can:**
+
 - Read their employer's profile (for branding)
 - Read their own employee record
 - Cannot modify employer profile or other employees
 
 **No one can:**
+
 - Delete employer profiles
 - Delete employee records
 - Access other employers' data
@@ -229,6 +239,7 @@ The implementation maintains compatibility with the legacy `tenants` collection:
 ### Migration Path
 
 No immediate migration required. System supports:
+
 - New employers → use 4-digit codes
 - Legacy employers → continue using 8-character codes
 - Gradual migration as employers re-register or request new codes
@@ -247,7 +258,7 @@ for (const tenant of legacyTenants) {
       employeeCount: tenant.employeeCount,
       contactEmail: tenant.ownerEmail,
     });
-    
+
     // Link tenant to profile
     await updateTenant(tenant.id, {
       employerProfileId: profile.id,
@@ -262,53 +273,60 @@ for (const tenant of legacyTenants) {
 ### Core Functions
 
 **Generate Employer Code:**
+
 ```typescript
 const code = await generateEmployerCode(db);
 // Returns: "1234" (unique 4-digit code)
 ```
 
 **Get Profile by Code:**
+
 ```typescript
-const profile = await getEmployerProfileByCode(db, "1234");
+const profile = await getEmployerProfileByCode(db, '1234');
 // Returns: EmployerProfile | null
 ```
 
 **Get Profile by ID:**
+
 ```typescript
 const profile = await getEmployerProfileById(db, employerId);
 // Returns: EmployerProfile | null
 ```
 
 **Create Employer Profile:**
+
 ```typescript
 const profile = await createEmployerProfile(db, uid, {
-  displayName: "Acme Corp",
+  displayName: 'Acme Corp',
   employeeCount: 25,
-  contactEmail: "owner@acme.com",
-  logoUrl: "https://...",
-  brandColor: "#FF5733",
+  contactEmail: 'owner@acme.com',
+  logoUrl: 'https://...',
+  brandColor: '#FF5733',
 });
 ```
 
 **Update Branding:**
+
 ```typescript
 await updateEmployerBranding(db, employerId, {
-  displayName: "New Company Name",
-  logoUrl: "https://new-logo.png",
-  brandColor: "#0066CC",
+  displayName: 'New Company Name',
+  logoUrl: 'https://new-logo.png',
+  brandColor: '#0066CC',
 });
 ```
 
 **Link Employee:**
+
 ```typescript
 await linkEmployeeToEmployer(db, employeeUid, employerId, {
-  email: "employee@example.com",
-  displayName: "Jane Smith",
-  role: "employee",
+  email: 'employee@example.com',
+  displayName: 'Jane Smith',
+  role: 'employee',
 });
 ```
 
 **Regenerate Code:**
+
 ```typescript
 const newCode = await regenerateEmployerCode(db, employerId);
 // Returns: "5678" (new unique code)
@@ -321,6 +339,7 @@ const newCode = await regenerateEmployerCode(db, employerId);
 Located in: `packages/esta-firebase/src/__tests__/employer-profile.test.ts`
 
 Tests cover:
+
 - Code generation and validation
 - Uniqueness guarantees
 - Profile CRUD operations
@@ -328,6 +347,7 @@ Tests cover:
 - Error handling
 
 Run tests:
+
 ```bash
 npm run test -- employer-profile
 ```
@@ -335,6 +355,7 @@ npm run test -- employer-profile
 ### Integration Tests
 
 End-to-end scenarios:
+
 1. Employer registers → receives code
 2. Employee registers with code → successfully linked
 3. Employee can view employer branding
@@ -358,21 +379,25 @@ End-to-end scenarios:
 ### Common Issues
 
 **"Invalid employer code" error:**
+
 - Verify code is exactly 4 digits
 - Check code hasn't been regenerated
 - Confirm employer has completed registration
 
 **Employee not appearing in employer list:**
+
 - Check `employerProfiles/{employerId}/employees/{employeeUid}` exists
 - Verify `users/{employeeUid}.employerId` is set correctly
 - Check Firestore rules allow employer to read employee collection
 
 **Branding not appearing:**
+
 - Verify employer profile has `displayName`, `logoUrl`, `brandColor` set
 - Check employee's `employerId` matches employer's UID
 - Ensure frontend is fetching employer profile
 
 **Code collision (rare):**
+
 - System automatically retries up to 10 times
 - If persistent, check if nearing 9,000 code capacity
 - Consider expanding code range or archiving inactive employers
@@ -389,6 +414,7 @@ End-to-end scenarios:
 ### Alerts
 
 Set up alerts for:
+
 - Code utilization > 80%
 - Employee registration failure rate > 5%
 - Code collision rate > 1%
@@ -408,6 +434,7 @@ Set up alerts for:
 **Current Capacity:** 9,000 employers
 
 **When approaching capacity:**
+
 - Expand to 5-digit codes (90,000 capacity)
 - Implement code archival for inactive employers
 - Add region-specific code ranges
@@ -415,6 +442,7 @@ Set up alerts for:
 ## Support & Contact
 
 For issues with employer profiles or employee linking:
+
 - Technical: dev@estatracker.com
 - Support: support@estatracker.com
 - Documentation: https://docs.estatracker.com/employer-profiles

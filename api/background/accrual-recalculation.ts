@@ -38,12 +38,15 @@ interface AccrualRecalculationRequest {
  * Calculate accrual based on hours worked
  * Michigan ESTA: 1 hour per 30 hours worked
  */
-function calculateAccrual(hoursWorked: number, employerSize: 'small' | 'large'): number {
+function calculateAccrual(
+  hoursWorked: number,
+  employerSize: 'small' | 'large'
+): number {
   // Small employers (<50) grant annually, large employers accrue
   if (employerSize === 'small') {
     return 0; // Annual grant, not accrual-based
   }
-  
+
   return Math.floor(hoursWorked / 30);
 }
 
@@ -52,19 +55,23 @@ function calculateAccrual(hoursWorked: number, employerSize: 'small' | 'large'):
  */
 async function getEmployerSize(tenantId: string): Promise<'small' | 'large'> {
   const tenantDoc = await db.collection('tenants').doc(tenantId).get();
-  
+
   // Safe snapshot check
   if (!tenantDoc.exists) {
-    console.warn(`Tenant ${tenantId} does not exist, defaulting to small employer`);
+    console.warn(
+      `Tenant ${tenantId} does not exist, defaulting to small employer`
+    );
     return 'small';
   }
-  
+
   const tenantData = tenantDoc.data();
   if (!tenantData) {
-    console.warn(`Tenant ${tenantId} has no data, defaulting to small employer`);
+    console.warn(
+      `Tenant ${tenantId} has no data, defaulting to small employer`
+    );
     return 'small';
   }
-  
+
   // Assuming size is stored in tenant document
   const employeeCount = tenantData.employeeCount ?? 0;
   return employeeCount >= 50 ? 'large' : 'small';
@@ -82,31 +89,63 @@ async function processAccrualRecalculation(
   employeeIds?: string[]
 ): Promise<void> {
   try {
-    await updateJobProgress(jobId, 5, 'processing', 'Starting accrual recalculation');
+    await updateJobProgress(
+      jobId,
+      5,
+      'processing',
+      'Starting accrual recalculation'
+    );
     await writeJobLog(jobId, 'info', 'Fetching tenant and employee data');
 
     // Get employer size for calculation rules
     const employerSize = await getEmployerSize(tenantId);
-    await writeJobLog(jobId, 'info', `Employer size: ${employerSize} (${employerSize === 'large' ? '>=50' : '<50'} employees)`);
+    await writeJobLog(
+      jobId,
+      'info',
+      `Employer size: ${employerSize} (${employerSize === 'large' ? '>=50' : '<50'} employees)`
+    );
 
     // Get employees to recalculate
-    let employeesQuery = db.collection('users').where('tenantId', '==', tenantId);
-    
+    let employeesQuery = db
+      .collection('users')
+      .where('tenantId', '==', tenantId);
+
     if (employeeIds && employeeIds.length > 0) {
       // Firestore 'in' operator supports up to 10 values
       if (employeeIds.length <= 10) {
-        employeesQuery = employeesQuery.where(admin.firestore.FieldPath.documentId(), 'in', employeeIds);
+        employeesQuery = employeesQuery.where(
+          admin.firestore.FieldPath.documentId(),
+          'in',
+          employeeIds
+        );
       } else {
-        await writeJobLog(jobId, 'warn', `Employee ID list truncated to first 10 for query optimization`);
-        employeesQuery = employeesQuery.where(admin.firestore.FieldPath.documentId(), 'in', employeeIds.slice(0, 10));
+        await writeJobLog(
+          jobId,
+          'warn',
+          `Employee ID list truncated to first 10 for query optimization`
+        );
+        employeesQuery = employeesQuery.where(
+          admin.firestore.FieldPath.documentId(),
+          'in',
+          employeeIds.slice(0, 10)
+        );
       }
     }
 
     const employeesSnapshot = await employeesQuery.get();
     const employees = employeesSnapshot.docs;
 
-    await updateJobProgress(jobId, 15, undefined, `Found ${employees.length} employees to recalculate`);
-    await writeJobLog(jobId, 'info', `Processing ${employees.length} employees`);
+    await updateJobProgress(
+      jobId,
+      15,
+      undefined,
+      `Found ${employees.length} employees to recalculate`
+    );
+    await writeJobLog(
+      jobId,
+      'info',
+      `Processing ${employees.length} employees`
+    );
 
     if (employees.length === 0) {
       throw new Error('No employees found for recalculation');
@@ -125,22 +164,32 @@ async function processAccrualRecalculation(
         errors.push(`Employee at index ${i}: Document not found`);
         continue;
       }
-      
+
       const employeeData = employeeDoc.data();
-      
+
       // Safe data check - skip employees with no data (may be soft-deleted)
       if (!employeeData) {
         errorCount++;
-        errors.push(`Employee ${employeeDoc.id}: No data found (possibly soft-deleted)`);
-        await writeJobLog(jobId, 'warn', `Skipping employee ${employeeDoc.id}: No data found (possibly soft-deleted)`);
+        errors.push(
+          `Employee ${employeeDoc.id}: No data found (possibly soft-deleted)`
+        );
+        await writeJobLog(
+          jobId,
+          'warn',
+          `Skipping employee ${employeeDoc.id}: No data found (possibly soft-deleted)`
+        );
         continue;
       }
-      
+
       const employeeId = employeeDoc.id;
       const progress = 15 + Math.floor((i / totalEmployees) * 70);
 
       try {
-        await writeJobLog(jobId, 'info', `Recalculating for employee ${i + 1}/${totalEmployees}: ${employeeData.email}`);
+        await writeJobLog(
+          jobId,
+          'info',
+          `Recalculating for employee ${i + 1}/${totalEmployees}: ${employeeData.email}`
+        );
 
         // Get work logs for date range
         let workLogsQuery = db
@@ -149,17 +198,25 @@ async function processAccrualRecalculation(
           .where('tenantId', '==', tenantId);
 
         if (startDate) {
-          workLogsQuery = workLogsQuery.where('date', '>=', admin.firestore.Timestamp.fromDate(new Date(startDate)));
+          workLogsQuery = workLogsQuery.where(
+            'date',
+            '>=',
+            admin.firestore.Timestamp.fromDate(new Date(startDate))
+          );
         }
         if (endDate) {
-          workLogsQuery = workLogsQuery.where('date', '<=', admin.firestore.Timestamp.fromDate(new Date(endDate)));
+          workLogsQuery = workLogsQuery.where(
+            'date',
+            '<=',
+            admin.firestore.Timestamp.fromDate(new Date(endDate))
+          );
         }
 
         const workLogsSnapshot = await workLogsQuery.get();
-        
+
         // Calculate total hours worked
         let totalHoursWorked = 0;
-        workLogsSnapshot.forEach(doc => {
+        workLogsSnapshot.forEach((doc) => {
           const logData = doc.data();
           totalHoursWorked += logData.hoursWorked || 0;
         });
@@ -167,7 +224,11 @@ async function processAccrualRecalculation(
         // Calculate accrued hours
         const accruedHours = calculateAccrual(totalHoursWorked, employerSize);
 
-        await writeJobLog(jobId, 'info', `Employee ${employeeData.email}: ${totalHoursWorked} hours worked, ${accruedHours} hours accrued`);
+        await writeJobLog(
+          jobId,
+          'info',
+          `Employee ${employeeData.email}: ${totalHoursWorked} hours worked, ${accruedHours} hours accrued`
+        );
 
         // Get existing balance
         const balanceQuery = await db
@@ -198,15 +259,19 @@ async function processAccrualRecalculation(
           }
           balanceDoc = firstDoc.ref;
           const currentBalance = firstDoc.data();
-          
+
           // Safe data extraction with fallback defaults
           const yearlyUsed = currentBalance?.yearlyUsed ?? 0;
-          
+
           if (!currentBalance) {
             const employeeEmail = employeeData.email ?? employeeId;
-            await writeJobLog(jobId, 'warn', `Employee ${employeeEmail}: Balance document exists but has no data, creating fresh record`);
+            await writeJobLog(
+              jobId,
+              'warn',
+              `Employee ${employeeEmail}: Balance document exists but has no data, creating fresh record`
+            );
           }
-          
+
           // Common update fields
           await balanceDoc.update({
             yearlyAccrued: accruedHours,
@@ -218,13 +283,23 @@ async function processAccrualRecalculation(
         }
 
         recalculatedCount++;
-        await updateJobProgress(jobId, progress, undefined, `Recalculated ${recalculatedCount}/${totalEmployees} employees`);
+        await updateJobProgress(
+          jobId,
+          progress,
+          undefined,
+          `Recalculated ${recalculatedCount}/${totalEmployees} employees`
+        );
       } catch (error) {
         errorCount++;
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+        const errorMsg =
+          error instanceof Error ? error.message : 'Unknown error';
         const employeeEmail = employeeData?.email ?? employeeId;
         errors.push(`${employeeEmail}: ${errorMsg}`);
-        await writeJobLog(jobId, 'error', `Failed to recalculate for ${employeeEmail}: ${errorMsg}`);
+        await writeJobLog(
+          jobId,
+          'error',
+          `Failed to recalculate for ${employeeEmail}: ${errorMsg}`
+        );
       }
     }
 
@@ -241,14 +316,26 @@ async function processAccrualRecalculation(
     };
 
     await markJobCompleted(jobId, result);
-    await writeJobLog(jobId, 'info', `Accrual recalculation completed: ${recalculatedCount} successful, ${errorCount} failed`);
+    await writeJobLog(
+      jobId,
+      'info',
+      `Accrual recalculation completed: ${recalculatedCount} successful, ${errorCount} failed`
+    );
 
     // Send notification
-    const message = errorCount > 0
-      ? `Accrual recalculation completed with ${recalculatedCount} successful and ${errorCount} failed`
-      : `Accrual recalculation completed successfully for ${recalculatedCount} employees`;
-    
-    await sendJobNotification(userId, tenantId, jobId, 'Accrual Recalculation', 'completed', message);
+    const message =
+      errorCount > 0
+        ? `Accrual recalculation completed with ${recalculatedCount} successful and ${errorCount} failed`
+        : `Accrual recalculation completed successfully for ${recalculatedCount} employees`;
+
+    await sendJobNotification(
+      userId,
+      tenantId,
+      jobId,
+      'Accrual Recalculation',
+      'completed',
+      message
+    );
 
     // Create audit log
     await db.collection('auditLogs').add({
@@ -261,8 +348,19 @@ async function processAccrualRecalculation(
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : 'Unknown error';
     await markJobFailed(jobId, errorMsg);
-    await writeJobLog(jobId, 'error', `Accrual recalculation failed: ${errorMsg}`);
-    await sendJobNotification(userId, tenantId, jobId, 'Accrual Recalculation', 'failed', `Recalculation failed: ${errorMsg}`);
+    await writeJobLog(
+      jobId,
+      'error',
+      `Accrual recalculation failed: ${errorMsg}`
+    );
+    await sendJobNotification(
+      userId,
+      tenantId,
+      jobId,
+      'Accrual Recalculation',
+      'failed',
+      `Recalculation failed: ${errorMsg}`
+    );
   }
 }
 
@@ -272,14 +370,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { action, tenantId, userId, jobId, startDate, endDate, employeeIds } = req.body as AccrualRecalculationRequest;
+    const { action, tenantId, userId, jobId, startDate, endDate, employeeIds } =
+      req.body as AccrualRecalculationRequest;
 
     if (!tenantId || !userId) {
       return res.status(400).json({ error: 'Missing tenantId or userId' });
     }
 
     // Verify user permission
-    const hasPermission = await verifyUserPermission(userId, tenantId, 'employer');
+    const hasPermission = await verifyUserPermission(
+      userId,
+      tenantId,
+      'employer'
+    );
     if (!hasPermission) {
       return res.status(403).json({ error: 'Insufficient permissions' });
     }
@@ -287,7 +390,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Handle status check
     if (action === 'status') {
       if (!jobId) {
-        return res.status(400).json({ error: 'Missing jobId for status check' });
+        return res
+          .status(400)
+          .json({ error: 'Missing jobId for status check' });
       }
 
       const status = await getJobStatus(jobId);
@@ -301,14 +406,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Handle job initiation
     if (action === 'initiate') {
       // Create job
-      const newJobId = await createJob('accrual_recalculation', tenantId, userId, {
-        startDate: startDate || null,
-        endDate: endDate || null,
-        employeeCount: employeeIds?.length || 'all',
-      });
+      const newJobId = await createJob(
+        'accrual_recalculation',
+        tenantId,
+        userId,
+        {
+          startDate: startDate || null,
+          endDate: endDate || null,
+          employeeCount: employeeIds?.length || 'all',
+        }
+      );
 
       // Start processing in the background (don't await)
-      processAccrualRecalculation(newJobId, tenantId, userId, startDate, endDate, employeeIds).catch(err => {
+      processAccrualRecalculation(
+        newJobId,
+        tenantId,
+        userId,
+        startDate,
+        endDate,
+        employeeIds
+      ).catch((err) => {
         console.error('Background job error:', err);
       });
 

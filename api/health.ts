@@ -4,16 +4,14 @@ import { VercelRequest, VercelResponse } from '@vercel/node';
  * Health check endpoint for registration system
  * Tests all critical dependencies and returns detailed status
  */
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Only allow GET requests
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const checks: Record<string, { status: 'ok' | 'error'; message?: string }> = {};
+  const checks: Record<string, { status: 'ok' | 'error'; message?: string }> =
+    {};
   let allHealthy = true;
 
   // Check 1: Environment Variables
@@ -25,9 +23,7 @@ export default async function handler(
       'FIREBASE_PROJECT_ID', // Backend/API server-side use only
     ];
 
-    const missing = requiredEnvVars.filter(
-      (varName) => !process.env[varName]
-    );
+    const missing = requiredEnvVars.filter((varName) => !process.env[varName]);
 
     if (missing.length > 0) {
       checks.environment = {
@@ -110,7 +106,7 @@ export default async function handler(
 
   // Return health status
   const status = allHealthy ? 200 : 503;
-  
+
   return res.status(status).json({
     healthy: allHealthy,
     timestamp: new Date().toISOString(),

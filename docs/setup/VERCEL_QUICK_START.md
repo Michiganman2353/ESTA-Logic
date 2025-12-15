@@ -11,16 +11,19 @@
 ## Quick Setup Steps
 
 ### 1. Install Vercel CLI
+
 ```bash
 npm install -g vercel
 ```
 
 ### 2. Login to Vercel
+
 ```bash
 vercel login
 ```
 
 ### 3. Link Your Project
+
 ```bash
 cd /path/to/ESTA-Logic
 vercel link
@@ -31,11 +34,13 @@ Follow the prompts to connect to your Vercel project.
 ### 4. Configure GitHub Secrets
 
 Get your organization and project IDs:
+
 ```bash
 cat .vercel/project.json
 ```
 
 Add these three secrets to your GitHub repository:
+
 1. `VERCEL_TOKEN` - Your Vercel authentication token from [Account Tokens](https://vercel.com/account/tokens)
 2. `VERCEL_ORG_ID` - The `orgId` from `.vercel/project.json`
 3. `VERCEL_PROJECT_ID` - The `projectId` from `.vercel/project.json`
@@ -61,5 +66,6 @@ vercel --prod
 ## Need Help?
 
 For troubleshooting common issues, see:
+
 - [Deployment Guide - Common Issues](../deployment/deployment.md#common-issues)
 - [CI/CD Troubleshooting](../CI-CD-TROUBLESHOOTING.md)

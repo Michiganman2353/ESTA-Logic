@@ -9,7 +9,7 @@ import { getFirebaseApp } from './admin-app.js';
 /**
  * Get Firestore instance
  * Automatically initializes Firebase Admin if needed
- * 
+ *
  * @returns Firestore instance
  */
 export function getFirestore(): admin.firestore.Firestore {
@@ -19,7 +19,7 @@ export function getFirestore(): admin.firestore.Firestore {
 
 /**
  * Get a Firestore document reference
- * 
+ *
  * @param path - Document path (e.g., 'users/userId')
  * @returns Document reference
  */
@@ -30,11 +30,13 @@ export function getDocRef(path: string): admin.firestore.DocumentReference {
 
 /**
  * Get a Firestore collection reference
- * 
+ *
  * @param path - Collection path (e.g., 'users')
  * @returns Collection reference
  */
-export function getCollectionRef(path: string): admin.firestore.CollectionReference {
+export function getCollectionRef(
+  path: string
+): admin.firestore.CollectionReference {
   const db = getFirestore();
   return db.collection(path);
 }
@@ -42,7 +44,7 @@ export function getCollectionRef(path: string): admin.firestore.CollectionRefere
 /**
  * Create a server timestamp
  * Used for createdAt, updatedAt fields
- * 
+ *
  * @returns Server timestamp
  */
 export function serverTimestamp(): admin.firestore.FieldValue {
@@ -51,7 +53,7 @@ export function serverTimestamp(): admin.firestore.FieldValue {
 
 /**
  * Array union operation for Firestore
- * 
+ *
  * @param elements - Elements to add to array
  * @returns FieldValue for array union
  */
@@ -61,17 +63,19 @@ export function arrayUnion(...elements: unknown[]): admin.firestore.FieldValue {
 
 /**
  * Array remove operation for Firestore
- * 
+ *
  * @param elements - Elements to remove from array
  * @returns FieldValue for array remove
  */
-export function arrayRemove(...elements: unknown[]): admin.firestore.FieldValue {
+export function arrayRemove(
+  ...elements: unknown[]
+): admin.firestore.FieldValue {
   return admin.firestore.FieldValue.arrayRemove(...elements);
 }
 
 /**
  * Increment operation for Firestore
- * 
+ *
  * @param n - Number to increment by (default: 1)
  * @returns FieldValue for increment
  */

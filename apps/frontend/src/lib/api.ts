@@ -126,28 +126,39 @@ class ApiClient {
           name: error.name,
           message: error.message,
         });
-        
+
         if (error.name === 'AbortError') {
           console.error('[DEBUG] API Client: Request timed out');
           const timeoutError: ApiError = {
-            message: 'Request timed out. Please check your connection and try again.',
+            message:
+              'Request timed out. Please check your connection and try again.',
             status: 0,
             isNetworkError: true,
           };
           throw timeoutError;
         }
 
-        if (error.message.includes('fetch') || error.message.includes('NetworkError')) {
+        if (
+          error.message.includes('fetch') ||
+          error.message.includes('NetworkError')
+        ) {
           // Retry logic for network errors
           if (retryCount < this.maxRetries) {
-            console.warn(`[DEBUG] API Client: Network error, retrying... (${retryCount + 1}/${this.maxRetries})`);
-            await new Promise(resolve => setTimeout(resolve, 1000 * (retryCount + 1)));
+            console.warn(
+              `[DEBUG] API Client: Network error, retrying... (${retryCount + 1}/${this.maxRetries})`
+            );
+            await new Promise((resolve) =>
+              setTimeout(resolve, 1000 * (retryCount + 1))
+            );
             return this.request<T>(endpoint, options, retryCount + 1);
           }
 
-          console.error('[DEBUG] API Client: Network error, max retries exceeded');
+          console.error(
+            '[DEBUG] API Client: Network error, max retries exceeded'
+          );
           const networkError: ApiError = {
-            message: 'Unable to connect to the server. Please check your internet connection and try again.',
+            message:
+              'Unable to connect to the server. Please check your internet connection and try again.',
             status: 0,
             isNetworkError: true,
           };
@@ -163,43 +174,56 @@ class ApiClient {
 
   // Auth
   async login(email: string, password: string) {
-    return this.request<{ token: string; user: unknown }>('/api/v1/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    });
+    return this.request<{ token: string; user: unknown }>(
+      '/api/v1/auth/login',
+      {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      }
+    );
   }
 
   async register(data: { email: string; password: string; name: string }) {
-    return this.request<{ token: string; user: unknown }>('/api/v1/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+    return this.request<{ token: string; user: unknown }>(
+      '/api/v1/auth/register',
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }
+    );
   }
 
-  async registerEmployee(data: { email: string; password: string; name: string }) {
+  async registerEmployee(data: {
+    email: string;
+    password: string;
+    name: string;
+  }) {
     console.log('[DEBUG] API Client: Calling registerEmployee endpoint');
     console.log('[DEBUG] API Client: Request data (sanitized):', {
       email: data.email,
       name: data.name,
       hasPassword: !!data.password,
     });
-    
-    const response = await this.request<{ token: string; user: unknown }>('/api/v1/auth/register/employee', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-    
+
+    const response = await this.request<{ token: string; user: unknown }>(
+      '/api/v1/auth/register/employee',
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }
+    );
+
     console.log('[DEBUG] API Client: registerEmployee response received:', {
       hasToken: !!response.token,
       hasUser: !!response.user,
     });
-    
+
     return response;
   }
 
-  async registerManager(data: { 
-    email: string; 
-    password: string; 
+  async registerManager(data: {
+    email: string;
+    password: string;
     name: string;
     companyName: string;
     employeeCount: number;
@@ -212,17 +236,20 @@ class ApiClient {
       employeeCount: data.employeeCount,
       hasPassword: !!data.password,
     });
-    
-    const response = await this.request<{ token: string; user: unknown }>('/api/v1/auth/register/manager', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-    
+
+    const response = await this.request<{ token: string; user: unknown }>(
+      '/api/v1/auth/register/manager',
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }
+    );
+
     console.log('[DEBUG] API Client: registerManager response received:', {
       hasToken: !!response.token,
       hasUser: !!response.user,
     });
-    
+
     return response;
   }
 
@@ -271,7 +298,11 @@ class ApiClient {
     return this.request(`/api/v1/requests?${params}`);
   }
 
-  async updateRequest(requestId: string, status: 'approved' | 'denied', denialReason?: string) {
+  async updateRequest(
+    requestId: string,
+    status: 'approved' | 'denied',
+    denialReason?: string
+  ) {
     return this.request(`/api/v1/requests/${requestId}`, {
       method: 'PATCH',
       body: JSON.stringify({ status, denialReason }),
@@ -290,11 +321,14 @@ class ApiClient {
     return this.request(`/api/v1/audit/logs?${params}`);
   }
 
-  async exportAudit(format: 'pdf' | 'csv', filters?: {
-    employerId?: string;
-    startDate?: string;
-    endDate?: string;
-  }) {
+  async exportAudit(
+    format: 'pdf' | 'csv',
+    filters?: {
+      employerId?: string;
+      startDate?: string;
+      endDate?: string;
+    }
+  ) {
     const params = new URLSearchParams({
       format,
       ...(filters as Record<string, string>),
@@ -335,7 +369,7 @@ class ApiClient {
   /**
    * Decrypt encrypted data using the secure decrypt endpoint
    * Requires authentication and authorization
-   * 
+   *
    * @param payload - Encrypted payload (encryptedData, encryptedAESKey, iv, authTag)
    * @param privateKey - RSA private key in PEM format
    * @param resourceOwnerId - Optional: User ID that owns the encrypted data
@@ -353,15 +387,18 @@ class ApiClient {
     resourceOwnerId?: string,
     tenantId?: string
   ) {
-    return this.request<{ success: boolean; decrypted: string }>('/api/secure/decrypt', {
-      method: 'POST',
-      body: JSON.stringify({
-        payload,
-        privateKey,
-        resourceOwnerId,
-        tenantId
-      }),
-    });
+    return this.request<{ success: boolean; decrypted: string }>(
+      '/api/secure/decrypt',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          payload,
+          privateKey,
+          resourceOwnerId,
+          tenantId,
+        }),
+      }
+    );
   }
 }
 

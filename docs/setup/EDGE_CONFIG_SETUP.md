@@ -5,6 +5,7 @@ This guide explains how to set up and use Vercel Edge Config for global applicat
 ## Overview
 
 Edge Config is Vercel's ultra-low-latency data store at the edge. It's perfect for storing global settings that need to be:
+
 - Available globally with minimal latency
 - Updated infrequently
 - Read frequently
@@ -100,6 +101,7 @@ In the Edge Config dashboard, add the following initial configuration:
 ### 4. Redeploy Your Application
 
 After adding the Edge Config environment variable:
+
 1. Trigger a new deployment (or wait for next push)
 2. Verify the deployment completes successfully
 
@@ -115,13 +117,13 @@ import { useFeatureFlag, useMaintenanceMode, useRegistrationStatus } from '../ho
 function MyComponent() {
   // Check a feature flag
   const doctorNotesEnabled = useFeatureFlag('doctorNotesEnabled');
-  
+
   // Check maintenance mode
   const { maintenanceMode, message } = useMaintenanceMode();
-  
+
   // Check registration status
   const { isOpen, message } = useRegistrationStatus('employer');
-  
+
   // Use the flags
   return (
     <div>
@@ -158,20 +160,20 @@ import { createClient } from '@vercel/edge-config';
 
 export default async function handler(req, res) {
   const edgeConfig = createClient(process.env.EDGE_CONFIG);
-  
+
   // Check maintenance mode before processing
   const maintenanceMode = await edgeConfig.get('maintenanceMode');
   if (maintenanceMode) {
-    return res.status(503).json({ 
+    return res.status(503).json({
       error: 'Service under maintenance',
-      message: await edgeConfig.get('maintenanceMessage')
+      message: await edgeConfig.get('maintenanceMessage'),
     });
   }
-  
+
   // Get rate limits
   const rateLimits = await edgeConfig.get('rateLimits');
   const maxAttempts = rateLimits.loginAttemptsPerHour;
-  
+
   // Continue with function logic...
 }
 ```
@@ -313,6 +315,7 @@ curl -X PATCH https://api.vercel.com/v1/edge-config/<ID>/items \
 ### Application Falls Back to Defaults
 
 This is expected behavior when:
+
 - Edge Config is not configured
 - Network request fails
 - Edge Config item doesn't exist

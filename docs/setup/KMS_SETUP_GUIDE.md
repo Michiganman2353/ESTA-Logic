@@ -7,11 +7,13 @@ ESTA Tracker uses Google Cloud Key Management Service (KMS) for production-grade
 ## Why KMS?
 
 Traditional encryption approaches store private keys in:
+
 - Environment variables (risky)
 - Files on disk (vulnerable)
 - Application code (extremely dangerous)
 
 **KMS provides:**
+
 - ✅ Hardware-backed key storage
 - ✅ Automatic key rotation
 - ✅ Audit logging
@@ -145,6 +147,7 @@ npm run setup:kms
 ```
 
 This script will:
+
 - Create a key ring (if it doesn't exist)
 - Create an asymmetric encryption key (RSA-OAEP 4096-bit)
 - Verify public key access
@@ -212,18 +215,21 @@ import { encryptWithKMS, decryptWithKMS } from './services/kmsHybridEncryption';
 const encrypted = await encryptWithKMS('SSN: 123-45-6789');
 
 // Store in database
-await firestore.collection('employees').doc(employeeId).update({
-  encrypted: {
-    ssn: {
-      encryptedData: encrypted.encryptedData,
-      encryptedAESKey: encrypted.encryptedAESKey,
-      iv: encrypted.iv,
-      authTag: encrypted.authTag,
-      keyPath: encrypted.keyPath,
-      keyVersion: encrypted.keyVersion
-    }
-  }
-});
+await firestore
+  .collection('employees')
+  .doc(employeeId)
+  .update({
+    encrypted: {
+      ssn: {
+        encryptedData: encrypted.encryptedData,
+        encryptedAESKey: encrypted.encryptedAESKey,
+        iv: encrypted.iv,
+        authTag: encrypted.authTag,
+        keyPath: encrypted.keyPath,
+        keyVersion: encrypted.keyVersion,
+      },
+    },
+  });
 
 // Later, decrypt
 const decrypted = await decryptWithKMS({
@@ -231,7 +237,7 @@ const decrypted = await decryptWithKMS({
   encryptedAESKey: doc.encrypted.ssn.encryptedAESKey,
   iv: doc.encrypted.ssn.iv,
   authTag: doc.encrypted.ssn.authTag,
-  keyVersion: doc.encrypted.ssn.keyVersion
+  keyVersion: doc.encrypted.ssn.keyVersion,
 });
 
 console.log(decrypted); // "SSN: 123-45-6789"
@@ -333,19 +339,19 @@ const docs = await firestore
 
 for (const doc of docs.docs) {
   const encrypted = doc.data().encrypted.ssn;
-  
+
   // Decrypt with old key
   const decrypted = await decryptWithKMS({
     ...encrypted,
-    keyVersion: '1'
+    keyVersion: '1',
   });
-  
+
   // Re-encrypt with new key (version 2)
   const reencrypted = await encryptWithKMS(decrypted, '2');
-  
+
   // Update document
   await doc.ref.update({
-    'encrypted.ssn': reencrypted
+    'encrypted.ssn': reencrypted,
   });
 }
 ```
@@ -379,6 +385,7 @@ for (const doc of docs.docs) {
 ### 4. Data Classification
 
 **Always Encrypt:**
+
 - Social Security Numbers (SSN)
 - Tax IDs (EIN)
 - Bank account numbers
@@ -387,6 +394,7 @@ for (const doc of docs.docs) {
 - Salary information
 
 **Never Encrypt:**
+
 - Employee names (needed for search)
 - Email addresses (used for auth)
 - Company names (needed for display)
@@ -429,6 +437,7 @@ gcloud alpha monitoring policies create \
 **Cause:** Service account doesn't have KMS permissions
 
 **Solution:**
+
 ```bash
 gcloud kms keys add-iam-policy-binding esta-encryption-key \
   --location=us-central1 \
@@ -442,6 +451,7 @@ gcloud kms keys add-iam-policy-binding esta-encryption-key \
 **Cause:** Key ring or key doesn't exist
 
 **Solution:**
+
 ```bash
 npm run setup:kms
 ```
@@ -451,6 +461,7 @@ npm run setup:kms
 **Cause:** Trying to decrypt with wrong key version
 
 **Solution:**
+
 ```typescript
 // Always store keyVersion with encrypted data
 const encrypted = await encryptWithKMS(data);
@@ -458,7 +469,7 @@ const encrypted = await encryptWithKMS(data);
 // Use the same version for decryption
 const decrypted = await decryptWithKMS({
   ...payload,
-  keyVersion: encrypted.keyVersion
+  keyVersion: encrypted.keyVersion,
 });
 ```
 
@@ -467,6 +478,7 @@ const decrypted = await decryptWithKMS({
 **Cause:** Service account credentials not configured
 
 **Solution:**
+
 ```bash
 # Set environment variable
 export GOOGLE_APPLICATION_CREDENTIALS="/path/to/serviceAccountKey.json"
@@ -504,6 +516,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="/path/to/serviceAccountKey.json"
 ### Audit Requirements
 
 For Michigan ESTA compliance:
+
 - ✅ 3-year retention of encrypted employee data
 - ✅ Access logging for all decrypt operations
 - ✅ Immutable audit trail
@@ -523,24 +536,24 @@ async function migrateLegacyEncryption() {
 
   for (const doc of docs.docs) {
     const data = doc.data();
-    
+
     // Decrypt with legacy system
     const decrypted = decryptHybrid(
       data.encrypted.ssn,
       process.env.LEGACY_PRIVATE_KEY
     );
-    
+
     // Re-encrypt with KMS
     const encrypted = await encryptWithKMS(decrypted);
-    
+
     // Update document
     await doc.ref.update({
       encrypted: {
         ssn: encrypted,
-        legacy: false
-      }
+        legacy: false,
+      },
     });
-    
+
     console.log(`Migrated ${doc.id}`);
   }
 }
@@ -558,6 +571,7 @@ async function migrateLegacyEncryption() {
 ## Support
 
 For issues with KMS integration:
+
 1. Check this documentation
 2. Review troubleshooting section
 3. Check GCP audit logs

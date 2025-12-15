@@ -246,7 +246,10 @@ function validateCSVData(
 
       // Run field-specific validators
       if (value) {
-        const validators = schema.validators as Record<string, (value: string) => string | null>;
+        const validators = schema.validators as Record<
+          string,
+          (value: string) => string | null
+        >;
         const validator = validators[header];
         if (validator && typeof validator === 'function') {
           const validationError = validator(value);
@@ -269,7 +272,8 @@ function validateCSVData(
   return {
     valid: errors.length === 0,
     totalRows: rows.length,
-    validRows: rows.length - errors.filter((e) => e.severity === 'error').length,
+    validRows:
+      rows.length - errors.filter((e) => e.severity === 'error').length,
     errors,
     warnings,
     data,
@@ -403,7 +407,9 @@ export function validateEmployeeBusinessRules(
 
     // Check for duplicate emails in CSV
     if (emailSet.has(employee.email)) {
-      errors.push(`Row ${rowNumber}: Duplicate email ${employee.email} found in CSV`);
+      errors.push(
+        `Row ${rowNumber}: Duplicate email ${employee.email} found in CSV`
+      );
     }
     emailSet.add(employee.email);
 
@@ -510,8 +516,20 @@ export function generateEmployeeCSVTemplate(): string {
  * Generate CSV template for hours
  */
 export function generateHoursCSVTemplate(): string {
-  const headers = ['employeeEmail', 'date', 'hoursWorked', 'overtimeHours', 'notes'];
-  const example = ['john.doe@company.com', '2024-11-01', '8', '0', 'Regular shift'];
+  const headers = [
+    'employeeEmail',
+    'date',
+    'hoursWorked',
+    'overtimeHours',
+    'notes',
+  ];
+  const example = [
+    'john.doe@company.com',
+    '2024-11-01',
+    '8',
+    '0',
+    'Regular shift',
+  ];
 
   return [headers.join(','), example.join(',')].join('\n');
 }

@@ -1,10 +1,10 @@
 /**
  * RxJS Reactive Data Service
- * 
+ *
  * Manages complex async operations and real-time data streams using RxJS.
  * Provides reactive flows for Firebase real-time updates, batch operations,
  * and coordinated async tasks.
- * 
+ *
  * Features:
  * - Real-time Firebase data streams
  * - Batch operation coordination
@@ -12,15 +12,15 @@
  * - Error handling and retry logic
  */
 
-import { 
-  Observable, 
-  Subject, 
-  BehaviorSubject, 
-  fromEvent, 
+import {
+  Observable,
+  Subject,
+  BehaviorSubject,
+  fromEvent,
   merge,
   combineLatest,
   of,
-  throwError
+  throwError,
 } from 'rxjs';
 import {
   debounceTime,
@@ -53,10 +53,12 @@ export interface BatchOperation {
 export class ReactiveDataService {
   // Search query stream
   private searchQuery$ = new Subject<string>();
-  
+
   // Batch operation status stream
-  private batchOperations$ = new BehaviorSubject<Map<string, BatchOperation>>(new Map());
-  
+  private batchOperations$ = new BehaviorSubject<Map<string, BatchOperation>>(
+    new Map()
+  );
+
   // Real-time updates stream
   private realtimeUpdates$ = new Subject<RealtimeUpdate<unknown>>();
 
@@ -71,11 +73,11 @@ export class ReactiveDataService {
     return this.searchQuery$.pipe(
       debounceTime(debounceMs),
       distinctUntilChanged(),
-      filter(query => query.length >= 2), // Minimum 2 characters
-      switchMap(query =>
+      filter((query) => query.length >= 2), // Minimum 2 characters
+      switchMap((query) =>
         of(query).pipe(
-          switchMap(q => searchFn(q)),
-          catchError(error => {
+          switchMap((q) => searchFn(q)),
+          catchError((error) => {
             console.error('Search error:', error);
             return of([]);
           })
@@ -99,7 +101,7 @@ export class ReactiveDataService {
   createRealtimeObservable<T>(
     subscribe: (callback: (data: T) => void) => () => void
   ): Observable<T> {
-    return new Observable<T>(subscriber => {
+    return new Observable<T>((subscriber) => {
       const unsubscribe = subscribe((data: T) => {
         subscriber.next(data);
       });
@@ -112,7 +114,7 @@ export class ReactiveDataService {
         count: 3,
         delay: 1000,
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('Real-time stream error:', error);
         return throwError(() => error);
       }),
@@ -129,7 +131,7 @@ export class ReactiveDataService {
     batchId: string
   ): Observable<BatchOperation> {
     const totalOps = operations.length;
-    
+
     // Initialize batch operation
     this.updateBatchOperation(batchId, {
       id: batchId,
@@ -137,27 +139,30 @@ export class ReactiveDataService {
       progress: 0,
     });
 
-    return new Observable<BatchOperation>(subscriber => {
+    return new Observable<BatchOperation>((subscriber) => {
       let completed = 0;
 
-      const processOperation = async (op: () => Promise<unknown>, _index: number) => {
+      const processOperation = async (
+        op: () => Promise<unknown>,
+        _index: number
+      ) => {
         try {
           await op();
           completed++;
-          
+
           const progress = (completed / totalOps) * 100;
           const status = completed === totalOps ? 'complete' : 'processing';
-          
+
           const operation = {
             id: batchId,
             status,
             progress,
           } as BatchOperation;
-          
+
           this.updateBatchOperation(batchId, operation);
 
           subscriber.next(operation);
-          
+
           if (completed === totalOps) {
             subscriber.complete();
           }
@@ -174,16 +179,21 @@ export class ReactiveDataService {
       };
 
       // Process operations sequentially in chunks to avoid race conditions
-      const processChunk = async (startIndex: number, chunkSize: number = 5) => {
+      const processChunk = async (
+        startIndex: number,
+        chunkSize: number = 5
+      ) => {
         const chunk = operations.slice(startIndex, startIndex + chunkSize);
-        await Promise.all(chunk.map((op, idx) => processOperation(op, startIndex + idx)));
-        
+        await Promise.all(
+          chunk.map((op, idx) => processOperation(op, startIndex + idx))
+        );
+
         if (startIndex + chunkSize < operations.length) {
           await processChunk(startIndex + chunkSize, chunkSize);
         }
       };
 
-      processChunk(0).catch(error => subscriber.error(error));
+      processChunk(0).catch((error) => subscriber.error(error));
     });
   }
 
@@ -207,9 +217,7 @@ export class ReactiveDataService {
    * Get specific batch operation
    */
   getBatchOperation(id: string): Observable<BatchOperation | undefined> {
-    return this.batchOperations$.pipe(
-      map(operations => operations.get(id))
-    );
+    return this.batchOperations$.pipe(map((operations) => operations.get(id)));
   }
 
   /**
@@ -220,9 +228,7 @@ export class ReactiveDataService {
     stream1: Observable<T1>,
     stream2: Observable<T2>
   ): Observable<[T1, T2]> {
-    return combineLatest([stream1, stream2]).pipe(
-      shareReplay(1)
-    );
+    return combineLatest([stream1, stream2]).pipe(shareReplay(1));
   }
 
   /**
@@ -237,13 +243,13 @@ export class ReactiveDataService {
     const maxRetries = 5;
     let refreshTimer: NodeJS.Timeout | null = null;
 
-    return new Observable<T>(subscriber => {
+    return new Observable<T>((subscriber) => {
       const refresh = async () => {
         try {
           const data = await refreshFn();
           retryCount = 0; // Reset on success
           subscriber.next(data);
-          
+
           // Schedule next refresh
           refreshTimer = setTimeout(() => {
             refresh();
@@ -282,11 +288,7 @@ export class ReactiveDataService {
     const online$ = fromEvent(window, 'online').pipe(map(() => true));
     const offline$ = fromEvent(window, 'offline').pipe(map(() => false));
 
-    return merge(
-      of(navigator.onLine),
-      online$,
-      offline$
-    ).pipe(
+    return merge(of(navigator.onLine), online$, offline$).pipe(
       distinctUntilChanged(),
       shareReplay(1)
     );

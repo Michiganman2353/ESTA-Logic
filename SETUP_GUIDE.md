@@ -3,6 +3,7 @@
 ## 🎯 Quick Start (5 Minutes)
 
 ### Prerequisites
+
 - **Node.js 22.x** (required - see `.nvmrc`)
 - npm ≥10.0.0
 - Firebase account (free tier works)
@@ -43,6 +44,7 @@ nano .env  # or use your favorite editor
 ```
 
 Update these values in `.env`:
+
 ```bash
 # Required Firebase Configuration
 # NOTE: This monorepo uses VITE_ prefix exclusively for all frontend environment variables
@@ -95,11 +97,11 @@ service cloud.firestore {
       // Only system can write (via Admin SDK)
       allow write: if false;
     }
-    
+
     // Employers collection
     match /employers/{employerId} {
       // Employers can read their own data
-      allow read: if request.auth != null && 
+      allow read: if request.auth != null &&
                      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.employerId == employerId;
       // Only system can write
       allow write: if false;
@@ -177,6 +179,7 @@ curl -X POST http://localhost:3000/api/v1/auth/register/manager \
 ## 🚀 Deployment to Vercel
 
 ### Prerequisites
+
 - Vercel account (free tier works)
 - GitHub repository connected to Vercel
 
@@ -197,6 +200,7 @@ vercel link
 In Vercel Dashboard → Settings → Environment Variables, add:
 
 **Production Variables:**
+
 ```
 FIREBASE_PROJECT_ID=your-project-id
 FIREBASE_SERVICE_ACCOUNT={"type":"service_account",...}  # Entire JSON
@@ -225,6 +229,7 @@ git push origin main  # Automatic deployment via GitHub Actions
 ### Common Issues
 
 **1. "Module not found" errors**
+
 ```bash
 # Clean install
 rm -rf node_modules package-lock.json
@@ -232,16 +237,19 @@ npm install
 ```
 
 **2. "Firebase Admin SDK not initialized"**
+
 - Verify `.serviceAccountKey.json` exists in project root
 - Check that `FIREBASE_PROJECT_ID` is set correctly
 - Ensure Firebase project has Firestore enabled
 
 **3. "CORS error when calling API"**
-- Check that frontend URL is in allowed origins (api/v1/auth/*.ts)
+
+- Check that frontend URL is in allowed origins (api/v1/auth/\*.ts)
 - Verify `CORS_ORIGIN` environment variable
 - Make sure you're using http://localhost:5173 for frontend
 
 **4. "Tests failing"**
+
 ```bash
 # Reinstall dependencies
 npm install
@@ -254,11 +262,13 @@ npm run test -- --watch
 ```
 
 **5. "Build fails in CI/CD"**
+
 - Check GitHub Actions logs
 - Verify all environment variables are set in GitHub Secrets
 - Ensure `package-lock.json` is committed
 
 **6. Registration fails silently**
+
 - Open browser DevTools → Console
 - Check Network tab for API errors
 - Verify Firebase configuration in `.env.local`
@@ -292,6 +302,7 @@ ESTA-Logic/
 ```
 
 ### Key Technologies
+
 - **Frontend:** React 18, TypeScript, Vite, Tailwind CSS
 - **Backend:** Express, Firebase Admin SDK
 - **Database:** Firestore
@@ -313,6 +324,7 @@ ESTA-Logic/
    - Never disable HTTPS redirects
 
 3. **Keep dependencies updated:**
+
    ```bash
    npm audit
    npm update
@@ -331,12 +343,14 @@ ESTA-Logic/
 ## 📊 Performance Optimization
 
 ### Frontend
+
 - Code splitting with Vite
 - Lazy loading routes
 - Image optimization
 - CSS minification
 
 ### Backend/API
+
 - Firebase connection pooling
 - Caching with Vercel Edge
 - Serverless function optimization
@@ -410,6 +424,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ## 🙏 Support
 
 If this project helps you, please:
+
 - ⭐ Star the repository
 - 📢 Share with others
 - 🐛 Report bugs

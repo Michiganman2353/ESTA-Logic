@@ -2,10 +2,10 @@
 
 /**
  * Environment Variables Validation
- * 
+ *
  * This module validates that all required Firebase environment variables
  * are present before build/runtime.
- * 
+ *
  * Usage:
  * - Frontend: Validates VITE_FIREBASE_* variables
  * - Backend: Validates FIREBASE_* variables (for Admin SDK)
@@ -59,7 +59,7 @@ export function isCIEnvironment(): boolean {
 
 /**
  * Validate client-side environment variables
- * 
+ *
  * @param strict - If true, throws error on missing vars. If false, returns missing vars.
  * @returns Array of missing variable names (empty if all present)
  */
@@ -75,9 +75,9 @@ export function validateClientEnv(strict: boolean = true): string[] {
   if (strict && missing.length > 0) {
     throw new Error(
       `Missing required Firebase client environment variables:\n` +
-      `  ${missing.join(', ')}\n\n` +
-      `Set these in your .env file or environment.\n` +
-      `For local development, copy .env.example to .env and fill in the values.`
+        `  ${missing.join(', ')}\n\n` +
+        `Set these in your .env file or environment.\n` +
+        `For local development, copy .env.example to .env and fill in the values.`
     );
   }
 
@@ -86,7 +86,7 @@ export function validateClientEnv(strict: boolean = true): string[] {
 
 /**
  * Validate server-side environment variables
- * 
+ *
  * @param strict - If true, throws error on missing vars. If false, returns missing vars.
  * @returns Array of missing variable names (empty if all present)
  */
@@ -110,11 +110,11 @@ export function validateServerEnv(strict: boolean = true): string[] {
   if (strict && missing.length > 0) {
     throw new Error(
       `Missing required Firebase server environment variables:\n` +
-      `  ${missing.join(', ')}\n\n` +
-      `Set these in your .env file or environment.\n` +
-      `For server-side Firebase Admin SDK, you need either:\n` +
-      `  - FIREBASE_SERVICE_ACCOUNT (JSON string), OR\n` +
-      `  - GOOGLE_APPLICATION_CREDENTIALS (path to service account file)`
+        `  ${missing.join(', ')}\n\n` +
+        `Set these in your .env file or environment.\n` +
+        `For server-side Firebase Admin SDK, you need either:\n` +
+        `  - FIREBASE_SERVICE_ACCOUNT (JSON string), OR\n` +
+        `  - GOOGLE_APPLICATION_CREDENTIALS (path to service account file)`
     );
   }
 
@@ -149,7 +149,7 @@ export function loadTestEnv(): void {
 /**
  * Main validation function
  * Call this at the top of your application entry point
- * 
+ *
  * @param type - 'client' for frontend, 'server' for backend, 'both' for full-stack
  */
 export function validateEnv(type: 'client' | 'server' | 'both' = 'both'): void {
@@ -188,7 +188,7 @@ export function validateEnv(type: 'client' | 'server' | 'both' = 'both'): void {
 
   if (errors.length > 0) {
     console.error('\n❌ Environment validation failed:\n');
-    errors.forEach(err => console.error(err + '\n'));
+    errors.forEach((err) => console.error(err + '\n'));
     process.exit(1);
   }
 

@@ -21,14 +21,14 @@ describe('EdgeConfigService', () => {
   describe('getConfig', () => {
     it('should fetch config from API', async () => {
       const mockConfig = { ...DEFAULT_EDGE_CONFIG, maintenanceMode: true };
-      
+
       (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
 
       const config = await service.getConfig();
-      
+
       expect(config).toEqual(mockConfig);
       expect(global.fetch).toHaveBeenCalledWith('/api/edge-config');
     });
@@ -40,7 +40,7 @@ describe('EdgeConfigService', () => {
       });
 
       const config = await service.getConfig();
-      
+
       expect(config).toEqual(DEFAULT_EDGE_CONFIG);
     });
 
@@ -48,13 +48,13 @@ describe('EdgeConfigService', () => {
       (global.fetch as Mock).mockRejectedValueOnce(new Error('Network error'));
 
       const config = await service.getConfig();
-      
+
       expect(config).toEqual(DEFAULT_EDGE_CONFIG);
     });
 
     it('should cache config and reuse it', async () => {
       const mockConfig = { ...DEFAULT_EDGE_CONFIG };
-      
+
       (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
@@ -62,10 +62,10 @@ describe('EdgeConfigService', () => {
 
       // First call
       await service.getConfig();
-      
+
       // Second call (should use cache)
       await service.getConfig();
-      
+
       // Fetch should only be called once due to caching
       expect(global.fetch).toHaveBeenCalledTimes(1);
     });
@@ -80,14 +80,14 @@ describe('EdgeConfigService', () => {
           doctorNotesEnabled: false,
         },
       };
-      
+
       (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
 
       const flag = await service.getFeatureFlag('doctorNotesEnabled');
-      
+
       expect(flag).toBe(false);
     });
 
@@ -96,14 +96,14 @@ describe('EdgeConfigService', () => {
         ...DEFAULT_EDGE_CONFIG,
         featureFlags: {},
       };
-      
+
       (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
 
       const flag = await service.getFeatureFlag('doctorNotesEnabled');
-      
+
       expect(flag).toBe(DEFAULT_EDGE_CONFIG.featureFlags.doctorNotesEnabled);
     });
   });
@@ -114,14 +114,14 @@ describe('EdgeConfigService', () => {
         ...DEFAULT_EDGE_CONFIG,
         maintenanceMode: true,
       };
-      
+
       (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
 
       const isMaintenanceMode = await service.isMaintenanceMode();
-      
+
       expect(isMaintenanceMode).toBe(true);
     });
 
@@ -130,14 +130,14 @@ describe('EdgeConfigService', () => {
         ...DEFAULT_EDGE_CONFIG,
         maintenanceMode: false,
       };
-      
+
       (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
 
       const isMaintenanceMode = await service.isMaintenanceMode();
-      
+
       expect(isMaintenanceMode).toBe(false);
     });
   });
@@ -151,14 +151,14 @@ describe('EdgeConfigService', () => {
           employerRegistrationOpen: true,
         },
       };
-      
+
       (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
 
       const isOpen = await service.isEmployerRegistrationOpen();
-      
+
       expect(isOpen).toBe(true);
     });
 
@@ -170,14 +170,14 @@ describe('EdgeConfigService', () => {
           employerRegistrationOpen: false,
         },
       };
-      
+
       (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
 
       const isOpen = await service.isEmployerRegistrationOpen();
-      
+
       expect(isOpen).toBe(false);
     });
   });
@@ -193,14 +193,14 @@ describe('EdgeConfigService', () => {
           active: true,
         },
       };
-      
+
       (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
 
       const version = await service.getAccrualRulesetVersion();
-      
+
       expect(version).toBe('2.0.0');
     });
   });
@@ -214,14 +214,14 @@ describe('EdgeConfigService', () => {
           loginAttemptsPerHour: 10,
         },
       };
-      
+
       (global.fetch as Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockConfig,
       });
 
       const rateLimit = await service.getRateLimit('loginAttemptsPerHour');
-      
+
       expect(rateLimit).toBe(10);
     });
   });
@@ -229,7 +229,7 @@ describe('EdgeConfigService', () => {
   describe('invalidateCache', () => {
     it('should clear cache and force refetch', async () => {
       const mockConfig = { ...DEFAULT_EDGE_CONFIG };
-      
+
       (global.fetch as Mock).mockResolvedValue({
         ok: true,
         json: async () => mockConfig,
@@ -237,13 +237,13 @@ describe('EdgeConfigService', () => {
 
       // First call
       await service.getConfig();
-      
+
       // Invalidate cache
       service.invalidateCache();
-      
+
       // Second call (should refetch)
       await service.getConfig();
-      
+
       // Fetch should be called twice
       expect(global.fetch).toHaveBeenCalledTimes(2);
     });

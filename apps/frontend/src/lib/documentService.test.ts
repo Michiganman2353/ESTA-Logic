@@ -1,8 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  validateDocumentFile,
-  formatFileSize,
-} from './documentService';
+import { validateDocumentFile, formatFileSize } from './documentService';
 
 describe('Document Service', () => {
   describe('validateDocumentFile', () => {
@@ -29,7 +26,9 @@ describe('Document Service', () => {
 
     it('should reject file larger than 10MB', () => {
       const largeContent = new Array(11 * 1024 * 1024).fill('a').join('');
-      const file = new File([largeContent], 'large.jpg', { type: 'image/jpeg' });
+      const file = new File([largeContent], 'large.jpg', {
+        type: 'image/jpeg',
+      });
       const result = validateDocumentFile(file);
       expect(result.valid).toBe(false);
       expect(result.error).toContain('10MB');

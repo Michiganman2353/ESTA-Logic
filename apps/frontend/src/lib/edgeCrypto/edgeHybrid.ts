@@ -1,18 +1,18 @@
 /**
  * Edge-Safe Hybrid Encryption Module (Web Crypto API)
- * 
+ *
  * Implements industry-standard hybrid encryption using Web Crypto API:
  * - AES-256-GCM for symmetric data encryption (fast, efficient)
  * - RSA-OAEP with SHA-256 for asymmetric key wrapping (secure key exchange)
- * 
+ *
  * This module is Edge-compatible and works in:
  * - Modern browsers
  * - Vercel Edge Functions
  * - Cloudflare Workers
  * - Deno Deploy
- * 
+ *
  * Uses ONLY crypto.subtle (Web Crypto API), NOT node:crypto
- * 
+ *
  * @module edgeHybrid
  */
 
@@ -36,26 +36,26 @@ export interface ExportableEdgeRSAKeyPair {
  * Complete hybrid encryption result
  */
 export interface EdgeHybridEncryptionResult {
-  encryptedData: string;      // Base64 encoded encrypted data
-  encryptedAESKey: string;    // Base64 encoded RSA-encrypted AES key
-  iv: string;                 // Base64 encoded initialization vector
+  encryptedData: string; // Base64 encoded encrypted data
+  encryptedAESKey: string; // Base64 encoded RSA-encrypted AES key
+  iv: string; // Base64 encoded initialization vector
 }
 
 /**
  * Decryption payload structure
  */
 export interface EdgeHybridDecryptionPayload {
-  encryptedData: string;      // Base64 encoded encrypted data
-  encryptedAESKey: string;    // Base64 encoded RSA-encrypted AES key
-  iv: string;                 // Base64 encoded initialization vector
+  encryptedData: string; // Base64 encoded encrypted data
+  encryptedAESKey: string; // Base64 encoded RSA-encrypted AES key
+  iv: string; // Base64 encoded initialization vector
 }
 
 /**
  * Generate RSA key pair for hybrid encryption using Web Crypto API
- * 
+ *
  * @param keySize - RSA key size in bits (default: 2048, recommended: 2048-4096)
  * @returns Promise<EdgeRSAKeyPair> - RSA key pair as CryptoKey objects
- * 
+ *
  * @example
  * ```typescript
  * const keyPair = await generateEdgeRSAKeys();
@@ -63,13 +63,15 @@ export interface EdgeHybridDecryptionPayload {
  * const exported = await exportEdgeRSAKeyPair(keyPair);
  * ```
  */
-export async function generateEdgeRSAKeys(keySize: number = 2048): Promise<EdgeRSAKeyPair> {
+export async function generateEdgeRSAKeys(
+  keySize: number = 2048
+): Promise<EdgeRSAKeyPair> {
   const keyPair = await crypto.subtle.generateKey(
     {
       name: 'RSA-OAEP',
       modulusLength: keySize,
       publicExponent: new Uint8Array([1, 0, 1]), // 65537
-      hash: 'SHA-256'
+      hash: 'SHA-256',
     },
     true, // extractable
     ['encrypt', 'decrypt']
@@ -77,16 +79,16 @@ export async function generateEdgeRSAKeys(keySize: number = 2048): Promise<EdgeR
 
   return {
     publicKey: keyPair.publicKey,
-    privateKey: keyPair.privateKey
+    privateKey: keyPair.privateKey,
   };
 }
 
 /**
  * Export RSA key pair to JWK format for storage/transmission
- * 
+ *
  * @param keyPair - RSA key pair to export
  * @returns Promise<ExportableEdgeRSAKeyPair> - Exportable key pair
- * 
+ *
  * @example
  * ```typescript
  * const keyPair = await generateEdgeRSAKeys();
@@ -94,10 +96,12 @@ export async function generateEdgeRSAKeys(keySize: number = 2048): Promise<EdgeR
  * localStorage.setItem('publicKey', JSON.stringify(exported.publicKey));
  * ```
  */
-export async function exportEdgeRSAKeyPair(keyPair: EdgeRSAKeyPair): Promise<ExportableEdgeRSAKeyPair> {
+export async function exportEdgeRSAKeyPair(
+  keyPair: EdgeRSAKeyPair
+): Promise<ExportableEdgeRSAKeyPair> {
   const [publicKey, privateKey] = await Promise.all([
     crypto.subtle.exportKey('jwk', keyPair.publicKey),
-    crypto.subtle.exportKey('jwk', keyPair.privateKey)
+    crypto.subtle.exportKey('jwk', keyPair.privateKey),
   ]);
 
   return { publicKey, privateKey };
@@ -105,24 +109,26 @@ export async function exportEdgeRSAKeyPair(keyPair: EdgeRSAKeyPair): Promise<Exp
 
 /**
  * Import RSA key pair from JWK format
- * 
+ *
  * @param exportedKeyPair - Exported key pair in JWK format
  * @returns Promise<EdgeRSAKeyPair> - Imported key pair
- * 
+ *
  * @example
  * ```typescript
  * const publicKeyJWK = JSON.parse(localStorage.getItem('publicKey')!);
  * const keyPair = await importEdgeRSAKeyPair({ publicKey: publicKeyJWK, privateKey: null });
  * ```
  */
-export async function importEdgeRSAKeyPair(exportedKeyPair: ExportableEdgeRSAKeyPair): Promise<EdgeRSAKeyPair> {
+export async function importEdgeRSAKeyPair(
+  exportedKeyPair: ExportableEdgeRSAKeyPair
+): Promise<EdgeRSAKeyPair> {
   const [publicKey, privateKey] = await Promise.all([
     crypto.subtle.importKey(
       'jwk',
       exportedKeyPair.publicKey,
       {
         name: 'RSA-OAEP',
-        hash: 'SHA-256'
+        hash: 'SHA-256',
       },
       true,
       ['encrypt']
@@ -132,11 +138,11 @@ export async function importEdgeRSAKeyPair(exportedKeyPair: ExportableEdgeRSAKey
       exportedKeyPair.privateKey,
       {
         name: 'RSA-OAEP',
-        hash: 'SHA-256'
+        hash: 'SHA-256',
       },
       true,
       ['decrypt']
-    )
+    ),
   ]);
 
   return { publicKey, privateKey };
@@ -144,17 +150,19 @@ export async function importEdgeRSAKeyPair(exportedKeyPair: ExportableEdgeRSAKey
 
 /**
  * Import only public key from JWK format
- * 
+ *
  * @param publicKeyJWK - Public key in JWK format
  * @returns Promise<CryptoKey> - Imported public key
  */
-export async function importEdgePublicKey(publicKeyJWK: JsonWebKey): Promise<CryptoKey> {
+export async function importEdgePublicKey(
+  publicKeyJWK: JsonWebKey
+): Promise<CryptoKey> {
   return crypto.subtle.importKey(
     'jwk',
     publicKeyJWK,
     {
       name: 'RSA-OAEP',
-      hash: 'SHA-256'
+      hash: 'SHA-256',
     },
     true,
     ['encrypt']
@@ -163,17 +171,19 @@ export async function importEdgePublicKey(publicKeyJWK: JsonWebKey): Promise<Cry
 
 /**
  * Import only private key from JWK format
- * 
+ *
  * @param privateKeyJWK - Private key in JWK format
  * @returns Promise<CryptoKey> - Imported private key
  */
-export async function importEdgePrivateKey(privateKeyJWK: JsonWebKey): Promise<CryptoKey> {
+export async function importEdgePrivateKey(
+  privateKeyJWK: JsonWebKey
+): Promise<CryptoKey> {
   return crypto.subtle.importKey(
     'jwk',
     privateKeyJWK,
     {
       name: 'RSA-OAEP',
-      hash: 'SHA-256'
+      hash: 'SHA-256',
     },
     true,
     ['decrypt']
@@ -182,11 +192,11 @@ export async function importEdgePrivateKey(privateKeyJWK: JsonWebKey): Promise<C
 
 /**
  * Encrypt data using AES-256-GCM with Web Crypto API
- * 
+ *
  * @param data - Data to encrypt (string or ArrayBuffer)
  * @param aesKey - AES-GCM key. If not provided, generates random key
  * @returns Promise with encryption result
- * 
+ *
  * @private
  */
 async function edgeEncryptWithAES(
@@ -198,29 +208,32 @@ async function edgeEncryptWithAES(
   aesKey: CryptoKey;
 }> {
   // Generate random AES key if not provided
-  const key = aesKey || await crypto.subtle.generateKey(
-    {
-      name: 'AES-GCM',
-      length: 256
-    },
-    true,
-    ['encrypt', 'decrypt']
-  );
+  const key =
+    aesKey ||
+    (await crypto.subtle.generateKey(
+      {
+        name: 'AES-GCM',
+        length: 256,
+      },
+      true,
+      ['encrypt', 'decrypt']
+    ));
 
   // Generate random IV (12 bytes is recommended for GCM)
   const iv = crypto.getRandomValues(new Uint8Array(12));
 
   // Convert to Uint8Array for compatibility with Node.js crypto
   // This ensures the data is in the correct format for both browser and Node environments
-  const dataBuffer = typeof data === 'string'
-    ? new TextEncoder().encode(data)
-    : new Uint8Array(data);
+  const dataBuffer =
+    typeof data === 'string'
+      ? new TextEncoder().encode(data)
+      : new Uint8Array(data);
 
   // Encrypt data
   const encryptedData = await crypto.subtle.encrypt(
     {
       name: 'AES-GCM',
-      iv: iv
+      iv: iv,
     },
     key,
     dataBuffer
@@ -229,18 +242,18 @@ async function edgeEncryptWithAES(
   return {
     encryptedData,
     iv,
-    aesKey: key
+    aesKey: key,
   };
 }
 
 /**
  * Decrypt data using AES-256-GCM with Web Crypto API
- * 
+ *
  * @param encryptedData - Encrypted data buffer
  * @param aesKey - AES-GCM key
  * @param iv - Initialization vector
  * @returns Promise<ArrayBuffer> - Decrypted data
- * 
+ *
  * @throws Error if authentication fails or decryption fails
  * @private
  */
@@ -251,15 +264,15 @@ async function edgeDecryptWithAES(
 ): Promise<ArrayBuffer> {
   // Create a new Uint8Array to satisfy TypeScript's strict typing
   const ivBuffer = new Uint8Array(iv);
-  
+
   // Convert encryptedData to Uint8Array for compatibility with Node.js crypto
   // This ensures the data is in the correct format for both browser and Node environments
   const encryptedBuffer = new Uint8Array(encryptedData);
-  
+
   return crypto.subtle.decrypt(
     {
       name: 'AES-GCM',
-      iv: ivBuffer
+      iv: ivBuffer,
     },
     aesKey,
     encryptedBuffer
@@ -268,21 +281,24 @@ async function edgeDecryptWithAES(
 
 /**
  * Encrypt AES key with RSA public key using Web Crypto API
- * 
+ *
  * @param aesKey - AES key to encrypt
  * @param publicKey - RSA public key
  * @returns Promise<ArrayBuffer> - Encrypted AES key
- * 
+ *
  * @private
  */
-async function edgeEncryptAESKey(aesKey: CryptoKey, publicKey: CryptoKey): Promise<ArrayBuffer> {
+async function edgeEncryptAESKey(
+  aesKey: CryptoKey,
+  publicKey: CryptoKey
+): Promise<ArrayBuffer> {
   // Export AES key as raw bytes
   const aesKeyData = await crypto.subtle.exportKey('raw', aesKey);
 
   // Encrypt with RSA-OAEP
   return crypto.subtle.encrypt(
     {
-      name: 'RSA-OAEP'
+      name: 'RSA-OAEP',
     },
     publicKey,
     aesKeyData
@@ -291,22 +307,25 @@ async function edgeEncryptAESKey(aesKey: CryptoKey, publicKey: CryptoKey): Promi
 
 /**
  * Decrypt AES key with RSA private key using Web Crypto API
- * 
+ *
  * @param encryptedAESKey - RSA-encrypted AES key
  * @param privateKey - RSA private key
  * @returns Promise<CryptoKey> - Decrypted AES key
- * 
+ *
  * @throws Error if decryption fails
  * @private
  */
-async function edgeDecryptAESKey(encryptedAESKey: ArrayBuffer, privateKey: CryptoKey): Promise<CryptoKey> {
+async function edgeDecryptAESKey(
+  encryptedAESKey: ArrayBuffer,
+  privateKey: CryptoKey
+): Promise<CryptoKey> {
   // Convert to Uint8Array for better compatibility with Node's WebCrypto
   const keyData = new Uint8Array(encryptedAESKey);
-    
+
   // Decrypt AES key data
   const aesKeyData = await crypto.subtle.decrypt(
     {
-      name: 'RSA-OAEP'
+      name: 'RSA-OAEP',
     },
     privateKey,
     keyData
@@ -318,7 +337,7 @@ async function edgeDecryptAESKey(encryptedAESKey: ArrayBuffer, privateKey: Crypt
     aesKeyData,
     {
       name: 'AES-GCM',
-      length: 256
+      length: 256,
     },
     true,
     ['encrypt', 'decrypt']
@@ -327,10 +346,10 @@ async function edgeDecryptAESKey(encryptedAESKey: ArrayBuffer, privateKey: Crypt
 
 /**
  * Convert ArrayBuffer to Base64 string
- * 
+ *
  * @param buffer - ArrayBuffer to convert
  * @returns Base64 string
- * 
+ *
  * @private
  */
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
@@ -347,10 +366,10 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
 
 /**
  * Convert Base64 string to ArrayBuffer
- * 
+ *
  * @param base64 - Base64 string
  * @returns ArrayBuffer
- * 
+ *
  * @private
  */
 function base64ToArrayBuffer(base64: string): ArrayBuffer {
@@ -361,27 +380,30 @@ function base64ToArrayBuffer(base64: string): ArrayBuffer {
   }
   // Ensure we return a proper ArrayBuffer by slicing to create a new buffer
   // This handles both browser and Node.js environments correctly
-  return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+  return bytes.buffer.slice(
+    bytes.byteOffset,
+    bytes.byteOffset + bytes.byteLength
+  );
 }
 
 /**
  * Encrypt data using hybrid encryption (AES-GCM + RSA-OAEP) with Web Crypto API
- * 
+ *
  * Process:
  * 1. Generate random AES-256 key
  * 2. Encrypt data with AES-256-GCM (fast, efficient)
  * 3. Encrypt AES key with RSA-OAEP (secure key exchange)
  * 4. Return encrypted data + encrypted key + metadata
- * 
+ *
  * @param data - Data to encrypt (string or ArrayBuffer)
  * @param publicKey - RSA public key (CryptoKey or JWK)
  * @returns Promise<EdgeHybridEncryptionResult> - Hybrid encryption result
- * 
+ *
  * @example
  * ```typescript
  * const keyPair = await generateEdgeRSAKeys();
  * const encrypted = await edgeEncryptHybrid("sensitive data", keyPair.publicKey);
- * 
+ *
  * // Store encrypted.encryptedData and encrypted.encryptedAESKey
  * // Later decrypt with privateKey
  * ```
@@ -391,9 +413,10 @@ export async function edgeEncryptHybrid(
   publicKey: CryptoKey | JsonWebKey
 ): Promise<EdgeHybridEncryptionResult> {
   // Import public key if it's in JWK format
-  const pubKey = (publicKey as CryptoKey).type === 'public'
-    ? (publicKey as CryptoKey)
-    : await importEdgePublicKey(publicKey as JsonWebKey);
+  const pubKey =
+    (publicKey as CryptoKey).type === 'public'
+      ? (publicKey as CryptoKey)
+      : await importEdgePublicKey(publicKey as JsonWebKey);
 
   // Step 1 & 2: Encrypt data with AES-GCM
   const aesResult = await edgeEncryptWithAES(data);
@@ -405,25 +428,25 @@ export async function edgeEncryptHybrid(
   return {
     encryptedData: arrayBufferToBase64(aesResult.encryptedData),
     encryptedAESKey: arrayBufferToBase64(encryptedAESKey),
-    iv: arrayBufferToBase64(aesResult.iv.buffer as ArrayBuffer)
+    iv: arrayBufferToBase64(aesResult.iv.buffer as ArrayBuffer),
   };
 }
 
 /**
  * Decrypt data using hybrid decryption (RSA-OAEP + AES-GCM) with Web Crypto API
- * 
+ *
  * Process:
  * 1. Decrypt AES key using RSA private key
  * 2. Decrypt data using recovered AES key
  * 3. Verify authentication tag (ensures data integrity)
  * 4. Return decrypted data
- * 
+ *
  * @param payload - Hybrid encryption payload
  * @param privateKey - RSA private key (CryptoKey or JWK)
  * @returns Promise<string> - Decrypted data as string
- * 
+ *
  * @throws Error if RSA decryption fails, authentication fails, or data is corrupted
- * 
+ *
  * @example
  * ```typescript
  * const decrypted = await edgeDecryptHybrid({
@@ -439,9 +462,10 @@ export async function edgeDecryptHybrid(
   privateKey: CryptoKey | JsonWebKey
 ): Promise<string> {
   // Import private key if it's in JWK format
-  const privKey = (privateKey as CryptoKey).type === 'private'
-    ? (privateKey as CryptoKey)
-    : await importEdgePrivateKey(privateKey as JsonWebKey);
+  const privKey =
+    (privateKey as CryptoKey).type === 'private'
+      ? (privateKey as CryptoKey)
+      : await importEdgePrivateKey(privateKey as JsonWebKey);
 
   // Convert base64 strings to ArrayBuffers
   const encryptedData = base64ToArrayBuffer(payload.encryptedData);
@@ -460,11 +484,11 @@ export async function edgeDecryptHybrid(
 
 /**
  * Encrypt binary data (e.g., file) using hybrid encryption
- * 
+ *
  * @param data - Binary data to encrypt
  * @param publicKey - RSA public key (CryptoKey or JWK)
  * @returns Promise<EdgeHybridEncryptionResult> - Hybrid encryption result
- * 
+ *
  * @example
  * ```typescript
  * const fileData = await file.arrayBuffer();
@@ -480,11 +504,11 @@ export async function edgeEncryptBinaryData(
 
 /**
  * Decrypt binary data using hybrid decryption
- * 
+ *
  * @param payload - Hybrid encryption payload
  * @param privateKey - RSA private key (CryptoKey or JWK)
  * @returns Promise<ArrayBuffer> - Decrypted binary data
- * 
+ *
  * @example
  * ```typescript
  * const decrypted = await edgeDecryptBinaryData({
@@ -492,7 +516,7 @@ export async function edgeEncryptBinaryData(
  *   encryptedAESKey: "...",
  *   iv: "..."
  * }, privateKey);
- * 
+ *
  * // Create blob and download
  * const blob = new Blob([decrypted]);
  * ```
@@ -502,9 +526,10 @@ export async function edgeDecryptBinaryData(
   privateKey: CryptoKey | JsonWebKey
 ): Promise<ArrayBuffer> {
   // Import private key if it's in JWK format
-  const privKey = (privateKey as CryptoKey).type === 'private'
-    ? (privateKey as CryptoKey)
-    : await importEdgePrivateKey(privateKey as JsonWebKey);
+  const privKey =
+    (privateKey as CryptoKey).type === 'private'
+      ? (privateKey as CryptoKey)
+      : await importEdgePrivateKey(privateKey as JsonWebKey);
 
   // Convert base64 strings to ArrayBuffers
   const encryptedData = base64ToArrayBuffer(payload.encryptedData);
@@ -520,11 +545,11 @@ export async function edgeDecryptBinaryData(
 
 /**
  * Encrypt a File object using hybrid encryption
- * 
+ *
  * @param file - File to encrypt
  * @param publicKey - RSA public key (CryptoKey or JWK)
  * @returns Promise<EdgeHybridEncryptionResult> - Hybrid encryption result
- * 
+ *
  * @example
  * ```typescript
  * const encrypted = await edgeEncryptFile(file, publicKey);

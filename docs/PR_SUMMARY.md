@@ -16,12 +16,14 @@ This PR fixes two critical issues that were blocking user registrations and depl
 ## What Was Fixed
 
 ### Issue 1: Registration Flow
+
 - Made email verification non-blocking (wrapped in try-catch)
 - Added "Continue to Login" button on verification screen
 - Users now auto-activate on first login with verified email
 - Improved error messages and guidance
 
 ### Issue 2: CI/CD Pipeline
+
 - Removed token sanitization that was corrupting Vercel tokens
 - Added build steps before deployment
 - Made tests continue-on-error to prevent blocking
@@ -32,19 +34,23 @@ This PR fixes two critical issues that were blocking user registrations and depl
 ## Files Changed
 
 **Core Fixes (3 files):**
+
 - `packages/frontend/src/lib/authService.ts` - Non-blocking email verification
 - `packages/frontend/src/components/EmailVerification.tsx` - Fallback navigation
 - `.github/workflows/ci.yml` - Fixed deployment pipeline
 
 **Tests (1 file):**
+
 - `packages/frontend/src/lib/__tests__/authService.test.ts` - 13 new unit tests
 
 **Documentation (3 files):**
+
 - `docs/DEPLOYMENT_TROUBLESHOOTING.md` - Troubleshooting guide
 - `docs/POST_MORTEM_REGISTRATION_CICD.md` - Post-mortem analysis
 - `docs/DIAGNOSIS_REPORT.md` - Technical diagnosis
 
 **Tools (1 file):**
+
 - `scripts/validate-env.js` - Environment validation
 
 ---
@@ -52,6 +58,7 @@ This PR fixes two critical issues that were blocking user registrations and depl
 ## How to Test
 
 ### Local Testing
+
 ```bash
 # Install and build
 npm ci
@@ -67,6 +74,7 @@ npm run validate:env
 ```
 
 ### Manual Testing (After Deploy)
+
 1. Go to https://estatracker.com/register/manager
 2. Fill out registration form
 3. Submit and reach email verification screen
@@ -79,17 +87,20 @@ npm run validate:env
 ## Deployment
 
 ### Automatic (Recommended)
+
 1. Merge this PR
 2. GitHub Actions automatically deploys
 3. Monitor in Actions tab
 4. Verify in Vercel dashboard
 
 ### Manual (If Needed)
+
 ```bash
 vercel --prod
 ```
 
 ### Rollback (If Issues)
+
 ```bash
 # Via Vercel Dashboard
 Deployments → Previous deployment → Promote to Production
@@ -112,12 +123,12 @@ All documentation is in the `docs/` directory:
 
 ## Key Metrics
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Registration completion | Blocking | 95%+ expected |
-| Deployment success | ~40% | 95%+ expected |
-| Build time | 13s | 8.2s |
-| Test coverage | Good | Better (+13 tests) |
+| Metric                  | Before   | After              |
+| ----------------------- | -------- | ------------------ |
+| Registration completion | Blocking | 95%+ expected      |
+| Deployment success      | ~40%     | 95%+ expected      |
+| Build time              | 13s      | 8.2s               |
+| Test coverage           | Good     | Better (+13 tests) |
 
 ---
 
@@ -133,18 +144,21 @@ All documentation is in the `docs/` directory:
 ## What's Next
 
 ### Immediate (After Deploy)
+
 - Monitor registration completion rate
 - Watch deployment success rate
 - Check error logs
 - Verify user feedback
 
 ### Short-term
+
 - Add Sentry for error tracking
 - Implement feature flags
 - Create staging environment
 - Add health check endpoint
 
 ### Long-term
+
 - Comprehensive E2E tests
 - Automated rollback
 - Performance monitoring

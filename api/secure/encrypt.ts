@@ -1,31 +1,31 @@
 /**
  * Node.js Function: KMS Encrypt Data
- * 
+ *
  * This endpoint runs in Node.js runtime for server-side encryption operations.
  * Uses KMS-backed hybrid encryption for production-grade security.
- * 
+ *
  * Runtime: Node.js (serverless)
- * 
+ *
  * Security: Can be used by authenticated users to encrypt their data.
  * Rate-limited to prevent abuse.
  */
 
 import type { VercelResponse } from '@vercel/node';
 import { encryptWithKMS } from '../lib/services/kmsHybridEncryption';
-import { 
-  requireAuth, 
+import {
+  requireAuth,
   logSecurityEvent,
-  type AuthenticatedVercelRequest 
+  type AuthenticatedVercelRequest,
 } from '../lib/authMiddleware';
 
 /**
  * Encrypt data using KMS-backed hybrid encryption
- * 
+ *
  * POST /api/secure/encrypt
- * 
+ *
  * Headers:
  * Authorization: Bearer <firebase-id-token>
- * 
+ *
  * Request Body:
  * {
  *   data: string;              // Data to encrypt
@@ -36,7 +36,7 @@ import {
  *     tenantId?: string;       // Tenant identifier
  *   }
  * }
- * 
+ *
  * Response:
  * {
  *   success: boolean;
@@ -51,12 +51,15 @@ import {
  *   error?: string;
  * }
  */
-export default async function handler(req: AuthenticatedVercelRequest, res: VercelResponse) {
+export default async function handler(
+  req: AuthenticatedVercelRequest,
+  res: VercelResponse
+) {
   // Only allow POST
   if (req.method !== 'POST') {
-    return res.status(405).json({ 
+    return res.status(405).json({
       success: false,
-      error: 'Method not allowed' 
+      error: 'Method not allowed',
     });
   }
 
@@ -73,33 +76,34 @@ export default async function handler(req: AuthenticatedVercelRequest, res: Verc
     // Validate input
     if (!data || typeof data !== 'string') {
       await logSecurityEvent('encrypt_validation_error', req, {
-        error: 'invalid_data_parameter'
+        error: 'invalid_data_parameter',
       });
-      
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Invalid data parameter - must be a non-empty string' 
+
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid data parameter - must be a non-empty string',
       });
     }
 
     // Check data size (prevent abuse)
-    if (data.length > 10 * 1024 * 1024) { // 10MB limit
+    if (data.length > 10 * 1024 * 1024) {
+      // 10MB limit
       await logSecurityEvent('encrypt_validation_error', req, {
         error: 'data_too_large',
-        size: data.length
+        size: data.length,
       });
-      
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Data too large - maximum 10MB' 
+
+      return res.status(400).json({
+        success: false,
+        error: 'Data too large - maximum 10MB',
       });
     }
 
     // Validate key version if provided
     if (keyVersion && typeof keyVersion !== 'string') {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Invalid keyVersion parameter' 
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid keyVersion parameter',
       });
     }
 
@@ -113,7 +117,7 @@ export default async function handler(req: AuthenticatedVercelRequest, res: Verc
       keyVersion: encrypted.keyVersion,
       resourceType: metadata?.resourceType || 'unspecified',
       resourceId: metadata?.resourceId || 'unspecified',
-      tenantId: metadata?.tenantId || 'unspecified'
+      tenantId: metadata?.tenantId || 'unspecified',
     });
 
     // Return encrypted data
@@ -125,23 +129,22 @@ export default async function handler(req: AuthenticatedVercelRequest, res: Verc
         iv: encrypted.iv,
         authTag: encrypted.authTag,
         keyPath: encrypted.keyPath,
-        keyVersion: encrypted.keyVersion
-      }
+        keyVersion: encrypted.keyVersion,
+      },
     });
-
   } catch (error) {
     console.error('KMS encryption error:', error);
-    
+
     // Log encryption failure
     await logSecurityEvent('encrypt_error', req, {
       error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined
+      stack: error instanceof Error ? error.stack : undefined,
     });
-    
-    return res.status(500).json({ 
-      success: false, 
+
+    return res.status(500).json({
+      success: false,
       error: 'Encryption failed',
-      message: error instanceof Error ? error.message : 'Unknown error'
+      message: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }

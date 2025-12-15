@@ -1,6 +1,6 @@
 /**
  * Mobile Fallback Mechanisms
- * 
+ *
  * Provides fallback solutions for browsers that don't support getUserMedia:
  * - Safari/iOS file input with capture="environment"
  * - Android WebView fallbacks
@@ -29,8 +29,7 @@ export interface ProcessedImage {
 export function needsMobileFallback(): boolean {
   // Check for getUserMedia support
   const hasGetUserMedia = !!(
-    navigator.mediaDevices &&
-    navigator.mediaDevices.getUserMedia
+    navigator.mediaDevices && navigator.mediaDevices.getUserMedia
   );
 
   if (hasGetUserMedia) {
@@ -39,7 +38,7 @@ export function needsMobileFallback(): boolean {
 
   // Check for mobile device
   const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-  
+
   return isMobile;
 }
 
@@ -51,11 +50,13 @@ export function createMobileCaptureInput(
 ): HTMLInputElement {
   const input = document.createElement('input');
   input.type = 'file';
-  input.accept = (options.acceptedTypes || ['image/jpeg', 'image/png', 'image/webp']).join(',');
-  
+  input.accept = (
+    options.acceptedTypes || ['image/jpeg', 'image/png', 'image/webp']
+  ).join(',');
+
   // Use capture attribute for direct camera access on mobile
   input.setAttribute('capture', 'environment');
-  
+
   return input;
 }
 
@@ -65,10 +66,10 @@ export function createMobileCaptureInput(
 async function getImageOrientation(file: File): Promise<number> {
   return new Promise((resolve) => {
     const reader = new FileReader();
-    
+
     reader.onload = (e) => {
       const view = new DataView(e.target?.result as ArrayBuffer);
-      
+
       if (view.getUint16(0, false) !== 0xffd8) {
         resolve(1); // Not a JPEG, no EXIF
         return;
@@ -82,7 +83,7 @@ async function getImageOrientation(file: File): Promise<number> {
           resolve(1);
           return;
         }
-        
+
         const marker = view.getUint16(offset, false);
         offset += 2;
 
@@ -107,7 +108,7 @@ async function getImageOrientation(file: File): Promise<number> {
           offset += view.getUint16(offset, false);
         }
       }
-      
+
       resolve(1); // Default orientation
     };
 
@@ -123,11 +124,7 @@ export async function processImageFile(
   file: File,
   options: MobileFallbackOptions = {}
 ): Promise<ProcessedImage> {
-  const {
-    maxWidth = 1920,
-    maxHeight = 1080,
-    quality = 0.92,
-  } = options;
+  const { maxWidth = 1920, maxHeight = 1080, quality = 0.92 } = options;
 
   // Read orientation from EXIF
   const orientation = await getImageOrientation(file);
@@ -318,10 +315,12 @@ export function detectMobileBrowserQuirks(): {
 /**
  * Gets recommended capture strategy based on device
  */
-export function getRecommendedCaptureStrategy(): 'getUserMedia' | 'fileInput' | 'fallback' {
+export function getRecommendedCaptureStrategy():
+  | 'getUserMedia'
+  | 'fileInput'
+  | 'fallback' {
   const hasGetUserMedia = !!(
-    navigator.mediaDevices &&
-    navigator.mediaDevices.getUserMedia
+    navigator.mediaDevices && navigator.mediaDevices.getUserMedia
   );
 
   const quirks = detectMobileBrowserQuirks();

@@ -1,10 +1,10 @@
 /**
  * Onboarding Context
- * 
+ *
  * Provides global state management for the onboarding wizard process.
  * This context maintains the user's progress through the multi-step
  * onboarding flow for new employers and employees.
- * 
+ *
  * Features:
  * - Multi-step wizard state management
  * - Form data persistence across steps
@@ -12,13 +12,13 @@
  * - Validation state management
  * - Step navigation (next, previous, jump to step)
  * - Reset functionality
- * 
+ *
  * State Structure:
  * - currentStep: Current step index (0-based)
  * - completedSteps: Set of completed step indices
  * - formData: Accumulated form data from all steps
  * - isStepValid: Validation state for current step
- * 
+ *
  * Uses:
  * - React Context API for global state
  * - TypeScript for type safety
@@ -34,20 +34,20 @@ export interface OnboardingFormData {
   employerSize?: 'small' | 'large';
   industry?: string;
   contactEmail?: string;
-  
+
   // Employee information
   employeeName?: string;
   employeeEmail?: string;
   employeeRole?: string;
   startDate?: string;
-  
+
   // Additional settings
   payrollIntegration?: 'quickbooks' | 'adp' | 'paychex' | 'none';
   notificationPreferences?: {
     email: boolean;
     sms: boolean;
   };
-  
+
   // Extensible for additional fields
   [key: string]: unknown;
 }
@@ -71,10 +71,13 @@ interface OnboardingContextActions {
   canGoToStep: (step: number) => boolean;
 }
 
-export type OnboardingContextValue = OnboardingContextState & OnboardingContextActions;
+export type OnboardingContextValue = OnboardingContextState &
+  OnboardingContextActions;
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const OnboardingContext = createContext<OnboardingContextValue | undefined>(undefined);
+export const OnboardingContext = createContext<
+  OnboardingContextValue | undefined
+>(undefined);
 
 interface OnboardingProviderProps {
   children: ReactNode;
@@ -82,8 +85,8 @@ interface OnboardingProviderProps {
   initialData?: OnboardingFormData;
 }
 
-export function OnboardingProvider({ 
-  children, 
+export function OnboardingProvider({
+  children,
   totalSteps = 5,
   initialData = {},
 }: OnboardingProviderProps) {
@@ -94,24 +97,24 @@ export function OnboardingProvider({
 
   const nextStep = useCallback(() => {
     if (currentStep < totalSteps - 1) {
-      setCompletedSteps(prev => new Set(prev).add(currentStep));
-      setCurrentStep(prev => prev + 1);
+      setCompletedSteps((prev) => new Set(prev).add(currentStep));
+      setCurrentStep((prev) => prev + 1);
       setIsStepValid(false); // Reset validation for next step
     }
   }, [currentStep, totalSteps]);
 
   const previousStep = useCallback(() => {
     if (currentStep > 0) {
-      setCurrentStep(prev => prev - 1);
+      setCurrentStep((prev) => prev - 1);
     }
   }, [currentStep]);
 
   const updateFormData = useCallback((data: Partial<OnboardingFormData>) => {
-    setFormData(prev => ({ ...prev, ...data }));
+    setFormData((prev) => ({ ...prev, ...data }));
   }, []);
 
   const markStepComplete = useCallback((step: number) => {
-    setCompletedSteps(prev => new Set(prev).add(step));
+    setCompletedSteps((prev) => new Set(prev).add(step));
   }, []);
 
   const resetOnboarding = useCallback(() => {
@@ -121,13 +124,16 @@ export function OnboardingProvider({
     setIsStepValid(false);
   }, []);
 
-  const canGoToStep = useCallback((step: number) => {
-    // Can go to current step or any completed step
-    if (step === currentStep) return true;
-    if (step < currentStep) return true;
-    if (completedSteps.has(step - 1)) return true;
-    return false;
-  }, [currentStep, completedSteps]);
+  const canGoToStep = useCallback(
+    (step: number) => {
+      // Can go to current step or any completed step
+      if (step === currentStep) return true;
+      if (step < currentStep) return true;
+      if (completedSteps.has(step - 1)) return true;
+      return false;
+    },
+    [currentStep, completedSteps]
+  );
 
   const value: OnboardingContextValue = {
     currentStep,

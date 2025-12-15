@@ -16,11 +16,15 @@ export default function PolicyConfiguration({
   currentPolicyId,
   onPolicyChange,
 }: PolicyConfigProps) {
-  const [availablePolicies, setAvailablePolicies] = useState<AccrualPolicy[]>([]);
+  const [availablePolicies, setAvailablePolicies] = useState<AccrualPolicy[]>(
+    []
+  );
   const [selectedPolicyId, setSelectedPolicyId] = useState<string>(
     currentPolicyId || ''
   );
-  const [selectedPolicy, setSelectedPolicy] = useState<AccrualPolicy | null>(null);
+  const [selectedPolicy, setSelectedPolicy] = useState<AccrualPolicy | null>(
+    null
+  );
   const [customizing, setCustomizing] = useState(false);
   const [customPolicy, setCustomPolicy] = useState<Partial<AccrualPolicy>>({});
   const [saving, setSaving] = useState(false);
@@ -187,7 +191,8 @@ export default function PolicyConfiguration({
                           <TooltipIcon content="How quickly employees earn sick time. Michigan ESTA requires 1 hour per 30 hours worked for large employers." />
                         </span>
                         <span className="value">
-                          1 hour per {1 / (policy.rules.accrualRate || 1)} hours worked
+                          1 hour per {1 / (policy.rules.accrualRate || 1)} hours
+                          worked
                         </span>
                       </div>
                       <div className="detail-item">
@@ -263,7 +268,7 @@ export default function PolicyConfiguration({
       ) : (
         <div className="policy-customizer">
           <h3>Customize Policy</h3>
-          <p className="text-gray-600 mb-4">
+          <p className="mb-4 text-gray-600">
             Create a custom policy based on {selectedPolicy?.name}
           </p>
 
@@ -294,7 +299,9 @@ export default function PolicyConfiguration({
                       ? 1 / customPolicy.rules.accrualRate
                       : 30
                   }
-                  onChange={(e) => handleRuleChange('accrualRate', 1 / Number(e.target.value))}
+                  onChange={(e) =>
+                    handleRuleChange('accrualRate', 1 / Number(e.target.value))
+                  }
                   className="form-input"
                   min="1"
                   max="100"
@@ -313,7 +320,10 @@ export default function PolicyConfiguration({
                   type="number"
                   value={customPolicy.rules?.maxPaidHoursPerYear || 72}
                   onChange={(e) =>
-                    handleRuleChange('maxPaidHoursPerYear', Number(e.target.value))
+                    handleRuleChange(
+                      'maxPaidHoursPerYear',
+                      Number(e.target.value)
+                    )
                   }
                   className="form-input"
                   min="1"
@@ -329,7 +339,9 @@ export default function PolicyConfiguration({
                 <input
                   type="number"
                   value={customPolicy.rules?.maxCarryover || 72}
-                  onChange={(e) => handleRuleChange('maxCarryover', Number(e.target.value))}
+                  onChange={(e) =>
+                    handleRuleChange('maxCarryover', Number(e.target.value))
+                  }
                   className="form-input"
                   min="0"
                   max="200"
@@ -366,7 +378,10 @@ export default function PolicyConfiguration({
                   type="number"
                   value={customPolicy.rules?.maxPaidHoursPerYear || 72}
                   onChange={(e) =>
-                    handleRuleChange('maxPaidHoursPerYear', Number(e.target.value))
+                    handleRuleChange(
+                      'maxPaidHoursPerYear',
+                      Number(e.target.value)
+                    )
                   }
                   className="form-input"
                   min="1"
@@ -400,21 +415,24 @@ export default function PolicyConfiguration({
       <div className="policy-info">
         <h4>Policy Information</h4>
         <p>
-          Your selected policy determines how sick time accrues for your employees.
-          You can choose from Michigan ESTA compliant policies or create a custom
-          policy that meets your specific needs while staying compliant.
+          Your selected policy determines how sick time accrues for your
+          employees. You can choose from Michigan ESTA compliant policies or
+          create a custom policy that meets your specific needs while staying
+          compliant.
         </p>
         <ul>
           <li>
-            <strong>Accrual policies</strong> gradually accumulate hours as employees
-            work
+            <strong>Accrual policies</strong> gradually accumulate hours as
+            employees work
           </li>
           <li>
-            <strong>Frontload policies</strong> grant all hours at the start of the
-            year
+            <strong>Frontload policies</strong> grant all hours at the start of
+            the year
           </li>
           <li>All policies maintain compliance with Michigan ESTA law</li>
-          <li>Policy changes take effect at the start of the next accrual period</li>
+          <li>
+            Policy changes take effect at the start of the next accrual period
+          </li>
         </ul>
       </div>
     </div>

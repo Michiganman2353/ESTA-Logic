@@ -1,11 +1,11 @@
 /**
  * Firebase initialization for API routes
- * 
+ *
  * Re-exports Firebase Admin SDK from centralized @esta/firebase package.
  * Maintains backward compatibility with existing API code.
  */
 
-import { 
+import {
   initializeFirebaseAdmin,
   getAuth,
   getFirestore,

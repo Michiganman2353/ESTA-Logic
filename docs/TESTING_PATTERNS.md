@@ -45,10 +45,10 @@ describe('Calculator', () => {
     // Arrange
     const a = 5;
     const b = 3;
-    
+
     // Act
     const result = add(a, b);
-    
+
     // Assert
     expect(result).toBe(8);
   });
@@ -65,7 +65,7 @@ describe('User Authentication', () => {
     it('should authenticate valid credentials', () => {});
     it('should reject invalid credentials', () => {});
   });
-  
+
   describe('Logout', () => {
     it('should clear session', () => {});
   });
@@ -79,6 +79,7 @@ describe('User Authentication', () => {
 ### Module Mocking
 
 **Simple mock**:
+
 ```typescript
 vi.mock('../api', () => ({
   fetchUser: vi.fn(),
@@ -86,6 +87,7 @@ vi.mock('../api', () => ({
 ```
 
 **Mock with implementation**:
+
 ```typescript
 vi.mock('../api', () => ({
   fetchUser: vi.fn().mockResolvedValue({
@@ -96,6 +98,7 @@ vi.mock('../api', () => ({
 ```
 
 **Partial mock** (keep some real implementations):
+
 ```typescript
 vi.mock('../utils', async () => {
   const actual = await vi.importActual('../utils');
@@ -166,9 +169,9 @@ import { render, screen, fireEvent } from '@testing-library/react';
 it('should call onClick when clicked', () => {
   const onClick = vi.fn();
   render(<Button onClick={onClick}>Click</Button>);
-  
+
   fireEvent.click(screen.getByText('Click'));
-  
+
   expect(onClick).toHaveBeenCalledTimes(1);
 });
 ```
@@ -178,10 +181,10 @@ it('should call onClick when clicked', () => {
 ```typescript
 it('should update input value', () => {
   render(<LoginForm />);
-  
+
   const input = screen.getByPlaceholderText('Email') as HTMLInputElement;
   fireEvent.change(input, { target: { value: 'test@example.com' } });
-  
+
   expect(input.value).toBe('test@example.com');
 });
 ```
@@ -193,7 +196,7 @@ import { waitFor } from '@testing-library/react';
 
 it('should load and display data', async () => {
   render(<UserProfile userId="1" />);
-  
+
   await waitFor(() => {
     expect(screen.getByText('John Doe')).toBeInTheDocument();
   });
@@ -223,7 +226,7 @@ const renderWithRouter = (component: React.ReactElement) => {
 ```typescript
 it('should navigate to register page', () => {
   renderWithRouter(<Login />);
-  
+
   const link = screen.getByText(/register/i);
   expect(link).toHaveAttribute('href', '/register');
 });
@@ -235,7 +238,7 @@ it('should navigate to register page', () => {
 it('should show verified message', () => {
   window.history.pushState({}, '', '/login?verified=true');
   renderWithRouter(<Login />);
-  
+
   expect(screen.getByText(/verified successfully/i)).toBeInTheDocument();
 });
 ```
@@ -250,10 +253,10 @@ it('should show verified message', () => {
 it('should display error message', async () => {
   const errorMessage = 'Invalid credentials';
   vi.mocked(signIn).mockRejectedValue(new Error(errorMessage));
-  
+
   render(<Login />);
   fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
-  
+
   await waitFor(() => {
     expect(screen.getByText(errorMessage)).toBeInTheDocument();
   });
@@ -264,15 +267,15 @@ it('should display error message', async () => {
 
 ```typescript
 it('should show loading spinner', async () => {
-  vi.mocked(fetchData).mockImplementation(() => 
+  vi.mocked(fetchData).mockImplementation(() =>
     new Promise(resolve => setTimeout(() => resolve(data), 100))
   );
-  
+
   render(<DataDisplay />);
-  
+
   // Check loading state
   expect(screen.getByText(/loading/i)).toBeInTheDocument();
-  
+
   // Wait for data to load
   await waitFor(() => {
     expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
@@ -304,13 +307,13 @@ it('should catch and display errors', () => {
   const ThrowError = () => {
     throw new Error('Test error');
   };
-  
+
   render(
     <ErrorBoundary>
       <ThrowError />
     </ErrorBoundary>
   );
-  
+
   expect(screen.getByText(/test error/i)).toBeInTheDocument();
 });
 ```
@@ -320,10 +323,10 @@ it('should catch and display errors', () => {
 ```typescript
 it('should display validation errors', async () => {
   render(<RegistrationForm />);
-  
+
   // Submit without filling fields
   fireEvent.click(screen.getByRole('button', { name: /submit/i }));
-  
+
   await waitFor(() => {
     expect(screen.getByText(/email is required/i)).toBeInTheDocument();
   });
@@ -385,12 +388,12 @@ describe('MyComponent', () => {
     // Clear mocks before each test
     vi.clearAllMocks();
   });
-  
+
   afterEach(() => {
     // Clean up after each test
     vi.restoreAllMocks();
   });
-  
+
   it('test 1', () => {});
   it('test 2', () => {});
 });
@@ -404,7 +407,7 @@ describe('Database tests', () => {
     // One-time setup (expensive operations)
     await database.connect();
   });
-  
+
   afterAll(async () => {
     // One-time cleanup
     await database.disconnect();
@@ -419,6 +422,7 @@ describe('Database tests', () => {
 ### What to Test
 
 ✅ **Do test**:
+
 - Business logic
 - User interactions
 - Error conditions
@@ -427,6 +431,7 @@ describe('Database tests', () => {
 - Critical paths
 
 ❌ **Don't test**:
+
 - Third-party libraries
 - Simple getters/setters
 - Constants
@@ -547,11 +552,11 @@ it('should have proper ARIA labels', () => {
 ```typescript
 it('should be keyboard accessible', () => {
   render(<Dialog />);
-  
+
   // Tab to element
   userEvent.tab();
   expect(screen.getByRole('button')).toHaveFocus();
-  
+
   // Press Enter
   userEvent.keyboard('{Enter}');
 });
@@ -579,7 +584,7 @@ it('should calculate accrual correctly', () => {
   // Given: Employee worked 60 hours (should accrue 2 hours at 1:30 rate)
   // When: Calculating with 70 hours already accrued (cap at 72)
   // Then: Should only accrue 1 hour (remaining capacity)
-  
+
   const result = calculateAccrual(60, 'large', 71);
   expect(result.accrued).toBe(1);
 });
@@ -632,45 +637,45 @@ npm run lint
 
 ```typescript
 // By text
-screen.getByText('Hello')
+screen.getByText('Hello');
 
 // By role
-screen.getByRole('button', { name: /submit/i })
+screen.getByRole('button', { name: /submit/i });
 
 // By label
-screen.getByLabelText('Email')
+screen.getByLabelText('Email');
 
 // By placeholder
-screen.getByPlaceholderText('Enter email')
+screen.getByPlaceholderText('Enter email');
 
 // By test ID
-screen.getByTestId('submit-button')
+screen.getByTestId('submit-button');
 
 // Query variants
-getBy    // Throws if not found
-queryBy  // Returns null if not found
-findBy   // Async, waits for element
+getBy; // Throws if not found
+queryBy; // Returns null if not found
+findBy; // Async, waits for element
 ```
 
 ### Fire Events
 
 ```typescript
-fireEvent.click(element)
-fireEvent.change(input, { target: { value: 'text' } })
-fireEvent.submit(form)
-fireEvent.keyDown(input, { key: 'Enter' })
+fireEvent.click(element);
+fireEvent.change(input, { target: { value: 'text' } });
+fireEvent.submit(form);
+fireEvent.keyDown(input, { key: 'Enter' });
 ```
 
 ### Assertions
 
 ```typescript
-expect(element).toBeInTheDocument()
-expect(element).toBeVisible()
-expect(element).toHaveTextContent('text')
-expect(element).toHaveAttribute('href', '/path')
-expect(element).toBeDisabled()
-expect(fn).toHaveBeenCalled()
-expect(fn).toHaveBeenCalledWith('arg')
+expect(element).toBeInTheDocument();
+expect(element).toBeVisible();
+expect(element).toHaveTextContent('text');
+expect(element).toHaveAttribute('href', '/path');
+expect(element).toBeDisabled();
+expect(fn).toHaveBeenCalled();
+expect(fn).toHaveBeenCalledWith('arg');
 ```
 
 ---

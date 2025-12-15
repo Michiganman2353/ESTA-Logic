@@ -49,20 +49,14 @@ export const sickTimeRequestCreateSchema = z
     startDate: z
       .string()
       .trim()
-      .regex(
-        /^\d{4}-\d{2}-\d{2}$/,
-        'Start date must be in YYYY-MM-DD format'
-      )
+      .regex(/^\d{4}-\d{2}-\d{2}$/, 'Start date must be in YYYY-MM-DD format')
       .refine((val) => !Number.isNaN(Date.parse(val)), {
         message: 'Invalid start date',
       }),
     endDate: z
       .string()
       .trim()
-      .regex(
-        /^\d{4}-\d{2}-\d{2}$/,
-        'End date must be in YYYY-MM-DD format'
-      )
+      .regex(/^\d{4}-\d{2}-\d{2}$/, 'End date must be in YYYY-MM-DD format')
       .refine((val) => !Number.isNaN(Date.parse(val)), {
         message: 'Invalid end date',
       }),
@@ -78,15 +72,14 @@ export const sickTimeRequestCreateSchema = z
       .optional(),
   })
   .strict()
-  .refine(
-    (data) => new Date(data.startDate) <= new Date(data.endDate),
-    {
-      message: 'Start date must be before or equal to end date',
-      path: ['endDate'],
-    }
-  );
+  .refine((data) => new Date(data.startDate) <= new Date(data.endDate), {
+    message: 'Start date must be before or equal to end date',
+    path: ['endDate'],
+  });
 
-export type SickTimeRequestCreateInput = z.infer<typeof sickTimeRequestCreateSchema>;
+export type SickTimeRequestCreateInput = z.infer<
+  typeof sickTimeRequestCreateSchema
+>;
 
 /**
  * Schema for updating a sick time request status.
@@ -102,7 +95,9 @@ export const sickTimeRequestStatusUpdateSchema = z
   })
   .strict();
 
-export type SickTimeRequestStatusUpdateInput = z.infer<typeof sickTimeRequestStatusUpdateSchema>;
+export type SickTimeRequestStatusUpdateInput = z.infer<
+  typeof sickTimeRequestStatusUpdateSchema
+>;
 
 /**
  * Schema for querying sick time requests.
@@ -130,4 +125,6 @@ export const sickTimeRequestQuerySchema = z
   })
   .strict();
 
-export type SickTimeRequestQueryInput = z.infer<typeof sickTimeRequestQuerySchema>;
+export type SickTimeRequestQueryInput = z.infer<
+  typeof sickTimeRequestQuerySchema
+>;

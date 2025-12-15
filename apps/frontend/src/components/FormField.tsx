@@ -12,7 +12,7 @@ interface FormFieldProps {
 
 /**
  * Reusable form field wrapper component
- * 
+ *
  * Features:
  * - Consistent label styling
  * - Error message display
@@ -33,21 +33,23 @@ export function FormField({
     <div className={className}>
       <label
         htmlFor={id}
-        className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+        className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
       >
         {label}
-        {required && <span className="text-red-500 ml-1" aria-label="required">*</span>}
+        {required && (
+          <span className="ml-1 text-red-500" aria-label="required">
+            *
+          </span>
+        )}
       </label>
       {children}
       {hint && !error && (
-        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-          {hint}
-        </p>
+        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{hint}</p>
       )}
       {error && (
         <p
           id={`${id}-error`}
-          className="mt-1 text-sm text-red-600 dark:text-red-400 animate-fade-in"
+          className="animate-fade-in mt-1 text-sm text-red-600 dark:text-red-400"
           role="alert"
         >
           {error}

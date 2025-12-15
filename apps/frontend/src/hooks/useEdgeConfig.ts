@@ -28,7 +28,9 @@ export function useEdgeConfig() {
         }
       } catch (err) {
         if (mounted) {
-          setError(err instanceof Error ? err : new Error('Failed to load config'));
+          setError(
+            err instanceof Error ? err : new Error('Failed to load config')
+          );
         }
       } finally {
         if (mounted) {
@@ -95,8 +97,9 @@ export function useMaintenanceMode() {
       try {
         setLoading(true);
         const isMaintenanceMode = await edgeConfigService.isMaintenanceMode();
-        const maintenanceMessage = await edgeConfigService.getMaintenanceMessage();
-        
+        const maintenanceMessage =
+          await edgeConfigService.getMaintenanceMessage();
+
         if (mounted) {
           setMaintenanceMode(isMaintenanceMode);
           setMessage(maintenanceMessage);
@@ -137,12 +140,14 @@ export function useRegistrationStatus(type: 'employer' | 'employee') {
     const checkRegistrationStatus = async () => {
       try {
         setLoading(true);
-        const registrationOpen = type === 'employer'
-          ? await edgeConfigService.isEmployerRegistrationOpen()
-          : await edgeConfigService.isEmployeeRegistrationOpen();
-        
-        const closedMessage = await edgeConfigService.getRegistrationClosedMessage();
-        
+        const registrationOpen =
+          type === 'employer'
+            ? await edgeConfigService.isEmployerRegistrationOpen()
+            : await edgeConfigService.isEmployeeRegistrationOpen();
+
+        const closedMessage =
+          await edgeConfigService.getRegistrationClosedMessage();
+
         if (mounted) {
           setIsOpen(registrationOpen);
           setMessage(closedMessage);
@@ -182,7 +187,8 @@ export function useAccrualRulesetVersion() {
     const fetchVersion = async () => {
       try {
         setLoading(true);
-        const rulesetVersion = await edgeConfigService.getAccrualRulesetVersion();
+        const rulesetVersion =
+          await edgeConfigService.getAccrualRulesetVersion();
         if (mounted) {
           setVersion(rulesetVersion);
         }

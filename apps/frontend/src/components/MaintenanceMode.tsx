@@ -45,7 +45,8 @@ export function MaintenanceMode() {
 
         {/* Message */}
         <p className="mb-8 text-xl text-gray-300">
-          {message || 'ESTA Tracker is currently undergoing scheduled maintenance. We\'ll be back shortly. Thank you for your patience.'}
+          {message ||
+            "ESTA Tracker is currently undergoing scheduled maintenance. We'll be back shortly. Thank you for your patience."}
         </p>
 
         {/* Additional Info */}

@@ -16,7 +16,10 @@ accrualRouter.get(
   validateParams(userIdParamSchema),
   (req: ValidatedRequest<unknown, UserIdParamInput>, res: Response) => {
     const { userId } = req.validated!.params;
-    res.json({ userId, balance: { availablePaidHours: 40, yearlyAccrued: 10 } });
+    res.json({
+      userId,
+      balance: { availablePaidHours: 40, yearlyAccrued: 10 },
+    });
   }
 );
 

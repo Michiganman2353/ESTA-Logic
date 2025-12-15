@@ -50,13 +50,17 @@ interface AuditData {
 /**
  * Fetch employee data
  */
-async function fetchEmployees(tenantId: string, _startDate: Date, _endDate: Date): Promise<any[]> {
+async function fetchEmployees(
+  tenantId: string,
+  _startDate: Date,
+  _endDate: Date
+): Promise<any[]> {
   const employeesQuery = await db
     .collection('users')
     .where('tenantId', '==', tenantId)
     .get();
 
-  return employeesQuery.docs.map(doc => ({
+  return employeesQuery.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
     createdAt: doc.data().createdAt?.toDate?.().toISOString(),
@@ -74,7 +78,7 @@ async function fetchAccrualBalances(tenantId: string): Promise<any[]> {
     .where('tenantId', '==', tenantId)
     .get();
 
-  return balancesQuery.docs.map(doc => ({
+  return balancesQuery.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
     lastCalculated: doc.data().lastCalculated?.toDate?.().toISOString(),
@@ -84,7 +88,11 @@ async function fetchAccrualBalances(tenantId: string): Promise<any[]> {
 /**
  * Fetch sick time requests
  */
-async function fetchSickTimeRequests(tenantId: string, startDate: Date, endDate: Date): Promise<any[]> {
+async function fetchSickTimeRequests(
+  tenantId: string,
+  startDate: Date,
+  endDate: Date
+): Promise<any[]> {
   const requestsQuery = await db
     .collection('sickTimeRequests')
     .where('tenantId', '==', tenantId)
@@ -92,7 +100,7 @@ async function fetchSickTimeRequests(tenantId: string, startDate: Date, endDate:
     .where('startDate', '<=', admin.firestore.Timestamp.fromDate(endDate))
     .get();
 
-  return requestsQuery.docs.map(doc => ({
+  return requestsQuery.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
     startDate: doc.data().startDate?.toDate?.().toISOString(),
@@ -105,7 +113,11 @@ async function fetchSickTimeRequests(tenantId: string, startDate: Date, endDate:
 /**
  * Fetch work logs
  */
-async function fetchWorkLogs(tenantId: string, startDate: Date, endDate: Date): Promise<any[]> {
+async function fetchWorkLogs(
+  tenantId: string,
+  startDate: Date,
+  endDate: Date
+): Promise<any[]> {
   const logsQuery = await db
     .collection('workLogs')
     .where('tenantId', '==', tenantId)
@@ -113,7 +125,7 @@ async function fetchWorkLogs(tenantId: string, startDate: Date, endDate: Date): 
     .where('date', '<=', admin.firestore.Timestamp.fromDate(endDate))
     .get();
 
-  return logsQuery.docs.map(doc => ({
+  return logsQuery.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
     date: doc.data().date?.toDate?.().toISOString(),
@@ -123,7 +135,11 @@ async function fetchWorkLogs(tenantId: string, startDate: Date, endDate: Date): 
 /**
  * Fetch audit logs
  */
-async function fetchAuditLogs(tenantId: string, startDate: Date, endDate: Date): Promise<any[]> {
+async function fetchAuditLogs(
+  tenantId: string,
+  startDate: Date,
+  endDate: Date
+): Promise<any[]> {
   const auditQuery = await db
     .collection('auditLogs')
     .where('employerId', '==', tenantId)
@@ -132,7 +148,7 @@ async function fetchAuditLogs(tenantId: string, startDate: Date, endDate: Date):
     .orderBy('timestamp', 'desc')
     .get();
 
-  return auditQuery.docs.map(doc => ({
+  return auditQuery.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
     timestamp: doc.data().timestamp?.toDate?.().toISOString(),
@@ -142,7 +158,10 @@ async function fetchAuditLogs(tenantId: string, startDate: Date, endDate: Date):
 /**
  * Fetch document metadata
  */
-async function fetchDocuments(tenantId: string, includeDocuments: boolean): Promise<any[]> {
+async function fetchDocuments(
+  tenantId: string,
+  includeDocuments: boolean
+): Promise<any[]> {
   if (!includeDocuments) {
     return [];
   }
@@ -152,7 +171,7 @@ async function fetchDocuments(tenantId: string, includeDocuments: boolean): Prom
     .where('tenantId', '==', tenantId)
     .get();
 
-  return documentsQuery.docs.map(doc => ({
+  return documentsQuery.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
     uploadedAt: doc.data().uploadedAt?.toDate?.().toISOString(),
@@ -163,13 +182,23 @@ async function fetchDocuments(tenantId: string, includeDocuments: boolean): Prom
 /**
  * Generate compliance report summary
  */
-function generateComplianceReport(data: AuditData, startDate: Date, endDate: Date): any {
-  const activeEmployees = data.employees.filter(e => e.status === 'active').length;
+function generateComplianceReport(
+  data: AuditData,
+  startDate: Date,
+  endDate: Date
+): any {
+  const activeEmployees = data.employees.filter(
+    (e) => e.status === 'active'
+  ).length;
   const totalRequests = data.sickTimeRequests.length;
-  const approvedRequests = data.sickTimeRequests.filter(r => r.status === 'approved').length;
-  const pendingRequests = data.sickTimeRequests.filter(r => r.status === 'pending').length;
+  const approvedRequests = data.sickTimeRequests.filter(
+    (r) => r.status === 'approved'
+  ).length;
+  const pendingRequests = data.sickTimeRequests.filter(
+    (r) => r.status === 'pending'
+  ).length;
   const totalHoursUsed = data.sickTimeRequests
-    .filter(r => r.status === 'approved')
+    .filter((r) => r.status === 'approved')
     .reduce((sum, r) => sum + (r.requestedHours || 0), 0);
 
   return {
@@ -183,13 +212,17 @@ function generateComplianceReport(data: AuditData, startDate: Date, endDate: Dat
       totalRequests,
       approvedRequests,
       pendingRequests,
-      deniedRequests: data.sickTimeRequests.filter(r => r.status === 'denied').length,
+      deniedRequests: data.sickTimeRequests.filter((r) => r.status === 'denied')
+        .length,
       totalHoursUsed,
-      averageHoursPerEmployee: activeEmployees > 0 ? (totalHoursUsed / activeEmployees).toFixed(2) : 0,
+      averageHoursPerEmployee:
+        activeEmployees > 0 ? (totalHoursUsed / activeEmployees).toFixed(2) : 0,
     },
     compliance: {
       employeesWithBalance: data.accrualBalances.length,
-      requestsWithDocumentation: data.sickTimeRequests.filter(r => r.hasDocuments).length,
+      requestsWithDocumentation: data.sickTimeRequests.filter(
+        (r) => r.hasDocuments
+      ).length,
       auditLogsCount: data.auditLogs.length,
     },
   };
@@ -200,9 +233,9 @@ function generateComplianceReport(data: AuditData, startDate: Date, endDate: Dat
  */
 function convertToCSV(data: any[], headers: string[]): string {
   const csvRows = [headers.join(',')];
-  
-  data.forEach(row => {
-    const values = headers.map(header => {
+
+  data.forEach((row) => {
+    const values = headers.map((header) => {
       const value = row[header];
       // Properly escape both backslashes and quotes for CSV
       const escaped = ('' + value).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
@@ -210,7 +243,7 @@ function convertToCSV(data: any[], headers: string[]): string {
     });
     csvRows.push(values.join(','));
   });
-  
+
   return csvRows.join('\n');
 }
 
@@ -242,12 +275,38 @@ async function exportAuditData(
     // Export as CSV (multiple files in JSON for simplicity in this implementation)
     // In production, you'd create a ZIP file with multiple CSVs
     const csvData = {
-      employees: convertToCSV(data.employees, ['id', 'email', 'firstName', 'lastName', 'role', 'department', 'status']),
-      requests: convertToCSV(data.sickTimeRequests, ['id', 'userId', 'startDate', 'endDate', 'status', 'requestedHours']),
-      balances: convertToCSV(data.accrualBalances, ['id', 'userId', 'availablePaidHours', 'yearlyAccrued', 'yearlyUsed']),
-      workLogs: convertToCSV(data.workLogs, ['id', 'userId', 'date', 'hoursWorked']),
+      employees: convertToCSV(data.employees, [
+        'id',
+        'email',
+        'firstName',
+        'lastName',
+        'role',
+        'department',
+        'status',
+      ]),
+      requests: convertToCSV(data.sickTimeRequests, [
+        'id',
+        'userId',
+        'startDate',
+        'endDate',
+        'status',
+        'requestedHours',
+      ]),
+      balances: convertToCSV(data.accrualBalances, [
+        'id',
+        'userId',
+        'availablePaidHours',
+        'yearlyAccrued',
+        'yearlyUsed',
+      ]),
+      workLogs: convertToCSV(data.workLogs, [
+        'id',
+        'userId',
+        'date',
+        'hoursWorked',
+      ]),
     };
-    
+
     await file.save(JSON.stringify(csvData, null, 2), {
       contentType: 'application/json',
       metadata: {
@@ -293,7 +352,11 @@ async function processAuditExport(
 ): Promise<void> {
   try {
     await updateJobProgress(jobId, 5, 'processing', 'Starting audit export');
-    await writeJobLog(jobId, 'info', `Exporting audit data from ${startDate} to ${endDate}`);
+    await writeJobLog(
+      jobId,
+      'info',
+      `Exporting audit data from ${startDate} to ${endDate}`
+    );
 
     const start = new Date(startDate);
     const end = new Date(endDate);
@@ -309,52 +372,116 @@ async function processAuditExport(
     };
 
     // Fetch data based on requested sections
-    const allSections = sections || ['employees', 'balances', 'requests', 'workLogs', 'auditLogs', 'documents'];
+    const allSections = sections || [
+      'employees',
+      'balances',
+      'requests',
+      'workLogs',
+      'auditLogs',
+      'documents',
+    ];
 
     if (allSections.includes('employees')) {
       await updateJobProgress(jobId, 15, undefined, 'Fetching employee data');
       auditData.employees = await fetchEmployees(tenantId, start, end);
-      await writeJobLog(jobId, 'info', `Fetched ${auditData.employees.length} employees`);
+      await writeJobLog(
+        jobId,
+        'info',
+        `Fetched ${auditData.employees.length} employees`
+      );
     }
 
     if (allSections.includes('balances')) {
-      await updateJobProgress(jobId, 25, undefined, 'Fetching accrual balances');
+      await updateJobProgress(
+        jobId,
+        25,
+        undefined,
+        'Fetching accrual balances'
+      );
       auditData.accrualBalances = await fetchAccrualBalances(tenantId);
-      await writeJobLog(jobId, 'info', `Fetched ${auditData.accrualBalances.length} accrual balances`);
+      await writeJobLog(
+        jobId,
+        'info',
+        `Fetched ${auditData.accrualBalances.length} accrual balances`
+      );
     }
 
     if (allSections.includes('requests')) {
-      await updateJobProgress(jobId, 35, undefined, 'Fetching sick time requests');
-      auditData.sickTimeRequests = await fetchSickTimeRequests(tenantId, start, end);
-      await writeJobLog(jobId, 'info', `Fetched ${auditData.sickTimeRequests.length} sick time requests`);
+      await updateJobProgress(
+        jobId,
+        35,
+        undefined,
+        'Fetching sick time requests'
+      );
+      auditData.sickTimeRequests = await fetchSickTimeRequests(
+        tenantId,
+        start,
+        end
+      );
+      await writeJobLog(
+        jobId,
+        'info',
+        `Fetched ${auditData.sickTimeRequests.length} sick time requests`
+      );
     }
 
     if (allSections.includes('workLogs')) {
       await updateJobProgress(jobId, 50, undefined, 'Fetching work logs');
       auditData.workLogs = await fetchWorkLogs(tenantId, start, end);
-      await writeJobLog(jobId, 'info', `Fetched ${auditData.workLogs.length} work logs`);
+      await writeJobLog(
+        jobId,
+        'info',
+        `Fetched ${auditData.workLogs.length} work logs`
+      );
     }
 
     if (allSections.includes('auditLogs')) {
       await updateJobProgress(jobId, 65, undefined, 'Fetching audit logs');
       auditData.auditLogs = await fetchAuditLogs(tenantId, start, end);
-      await writeJobLog(jobId, 'info', `Fetched ${auditData.auditLogs.length} audit logs`);
+      await writeJobLog(
+        jobId,
+        'info',
+        `Fetched ${auditData.auditLogs.length} audit logs`
+      );
     }
 
     if (allSections.includes('documents') && includeDocuments) {
-      await updateJobProgress(jobId, 75, undefined, 'Fetching document metadata');
+      await updateJobProgress(
+        jobId,
+        75,
+        undefined,
+        'Fetching document metadata'
+      );
       auditData.documents = await fetchDocuments(tenantId, includeDocuments);
-      await writeJobLog(jobId, 'info', `Fetched ${auditData.documents.length} document records`);
+      await writeJobLog(
+        jobId,
+        'info',
+        `Fetched ${auditData.documents.length} document records`
+      );
     }
 
     // Generate compliance report
-    await updateJobProgress(jobId, 85, undefined, 'Generating compliance report');
-    auditData.complianceReport = generateComplianceReport(auditData, start, end);
+    await updateJobProgress(
+      jobId,
+      85,
+      undefined,
+      'Generating compliance report'
+    );
+    auditData.complianceReport = generateComplianceReport(
+      auditData,
+      start,
+      end
+    );
     await writeJobLog(jobId, 'info', 'Generated compliance report summary');
 
     // Export data to storage
     await updateJobProgress(jobId, 90, undefined, 'Exporting data to storage');
-    const downloadUrl = await exportAuditData(jobId, tenantId, auditData, format);
+    const downloadUrl = await exportAuditData(
+      jobId,
+      tenantId,
+      auditData,
+      format
+    );
     await writeJobLog(jobId, 'info', 'Audit data exported to storage');
 
     // Complete the job
@@ -379,7 +506,14 @@ async function processAuditExport(
 
     // Send notification
     const message = `Audit export completed. Download link valid for 7 days.`;
-    await sendJobNotification(userId, tenantId, jobId, 'Audit Export', 'completed', message);
+    await sendJobNotification(
+      userId,
+      tenantId,
+      jobId,
+      'Audit Export',
+      'completed',
+      message
+    );
 
     // Create audit log
     await db.collection('auditLogs').add({
@@ -396,7 +530,14 @@ async function processAuditExport(
     const errorMsg = error instanceof Error ? error.message : 'Unknown error';
     await markJobFailed(jobId, errorMsg);
     await writeJobLog(jobId, 'error', `Audit export failed: ${errorMsg}`);
-    await sendJobNotification(userId, tenantId, jobId, 'Audit Export', 'failed', `Export failed: ${errorMsg}`);
+    await sendJobNotification(
+      userId,
+      tenantId,
+      jobId,
+      'Audit Export',
+      'failed',
+      `Export failed: ${errorMsg}`
+    );
   }
 }
 
@@ -423,7 +564,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     // Verify user permission (employer or admin only)
-    const hasPermission = await verifyUserPermission(userId, tenantId, 'employer');
+    const hasPermission = await verifyUserPermission(
+      userId,
+      tenantId,
+      'employer'
+    );
     if (!hasPermission) {
       return res.status(403).json({ error: 'Insufficient permissions' });
     }
@@ -431,7 +576,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Handle status check
     if (action === 'status') {
       if (!jobId) {
-        return res.status(400).json({ error: 'Missing jobId for status check' });
+        return res
+          .status(400)
+          .json({ error: 'Missing jobId for status check' });
       }
 
       const status = await getJobStatus(jobId);
@@ -455,12 +602,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: 'Invalid date format' });
       }
       if (start > end) {
-        return res.status(400).json({ error: 'Start date must be before end date' });
+        return res
+          .status(400)
+          .json({ error: 'Start date must be before end date' });
       }
 
       // Validate format
       if (!['json', 'csv', 'pdf'].includes(format)) {
-        return res.status(400).json({ error: 'Invalid format. Must be json, csv, or pdf' });
+        return res
+          .status(400)
+          .json({ error: 'Invalid format. Must be json, csv, or pdf' });
       }
 
       // Create job
@@ -472,7 +623,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
 
       // Start processing in the background (don't await)
-      processAuditExport(newJobId, tenantId, userId, startDate, endDate, includeDocuments, format, sections).catch(err => {
+      processAuditExport(
+        newJobId,
+        tenantId,
+        userId,
+        startDate,
+        endDate,
+        includeDocuments,
+        format,
+        sections
+      ).catch((err) => {
         console.error('Background job error:', err);
       });
 

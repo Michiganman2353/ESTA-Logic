@@ -1,6 +1,6 @@
 /**
  * Validation Utilities
- * 
+ *
  * Common validation functions for data integrity
  */
 
@@ -16,7 +16,8 @@ export function isValidEmail(email: string): boolean {
  * Validate phone number (US format)
  */
 export function isValidPhoneNumber(phone: string): boolean {
-  const phoneRegex = /^(\+1)?[\s.-]?\(?([0-9]{3})\)?[\s.-]?([0-9]{3})[\s.-]?([0-9]{4})$/;
+  const phoneRegex =
+    /^(\+1)?[\s.-]?\(?([0-9]{3})\)?[\s.-]?([0-9]{3})[\s.-]?([0-9]{4})$/;
   return phoneRegex.test(phone);
 }
 
@@ -58,18 +59,16 @@ export function isValidHoursPerWeek(hours: number): boolean {
 
 /**
  * Sanitize string input for safe display
- * 
+ *
  * NOTE: This is a basic sanitizer for display purposes only.
  * For HTML context, use a proper HTML sanitizer like DOMPurify.
  * For SQL context, use parameterized queries.
  * For shell context, use proper escaping.
- * 
+ *
  * This function only removes obviously dangerous characters.
  */
 export function sanitizeString(input: string): string {
-  return input
-    .trim()
-    .replace(/[<>]/g, ''); // Remove HTML tag markers only
+  return input.trim().replace(/[<>]/g, ''); // Remove HTML tag markers only
 }
 
 /**

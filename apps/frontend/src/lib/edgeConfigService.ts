@@ -53,9 +53,12 @@ class EdgeConfigService {
   private async fetchConfigFromAPI(): Promise<EdgeConfigSettings> {
     try {
       const response = await fetch(EDGE_CONFIG_API_ENDPOINT);
-      
+
       if (!response.ok) {
-        console.warn('Failed to fetch Edge Config, using defaults:', response.status);
+        console.warn(
+          'Failed to fetch Edge Config, using defaults:',
+          response.status
+        );
         return DEFAULT_EDGE_CONFIG;
       }
 
@@ -70,7 +73,9 @@ class EdgeConfigService {
   /**
    * Get specific feature flag value
    */
-  async getFeatureFlag(flag: keyof EdgeConfigSettings['featureFlags']): Promise<boolean> {
+  async getFeatureFlag(
+    flag: keyof EdgeConfigSettings['featureFlags']
+  ): Promise<boolean> {
     const config = await this.getConfig();
     return config.featureFlags[flag] ?? DEFAULT_EDGE_CONFIG.featureFlags[flag];
   }
@@ -126,9 +131,13 @@ class EdgeConfigService {
   /**
    * Get rate limit for a specific operation
    */
-  async getRateLimit(operation: keyof EdgeConfigSettings['rateLimits']): Promise<number> {
+  async getRateLimit(
+    operation: keyof EdgeConfigSettings['rateLimits']
+  ): Promise<number> {
     const config = await this.getConfig();
-    return config.rateLimits[operation] ?? DEFAULT_EDGE_CONFIG.rateLimits[operation];
+    return (
+      config.rateLimits[operation] ?? DEFAULT_EDGE_CONFIG.rateLimits[operation]
+    );
   }
 
   /**

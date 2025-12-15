@@ -1,12 +1,12 @@
 /**
  * CSV Parser
- * 
+ *
  * Parse CSV text into structured data
- * 
+ *
  * NOTE: This is a basic CSV parser for simple use cases.
  * It handles quoted fields and basic escaping but may not handle
  * all edge cases (e.g., quoted newlines in cells, complex escaping).
- * 
+ *
  * TODO: Migrate to Rust/WASM for 10x+ performance improvement on large files
  * TODO: Consider using a battle-tested library (papaparse) as temporary solution
  */
@@ -19,7 +19,7 @@ export interface CSVParseResult {
 
 /**
  * Parse CSV text into rows
- * 
+ *
  * @param csvText - Raw CSV text
  * @returns Parsed CSV data
  */
@@ -73,7 +73,8 @@ export function parseCSV(csvText: string): CSVParseResult {
     }
   }
 
-  const headers = rows.length > 0 && rows[0] ? rows[0].map(h => h.trim()) : [];
+  const headers =
+    rows.length > 0 && rows[0] ? rows[0].map((h) => h.trim()) : [];
   const dataRows = rows.slice(1);
 
   return {
@@ -85,14 +86,16 @@ export function parseCSV(csvText: string): CSVParseResult {
 
 /**
  * Convert CSV rows to objects using headers as keys
- * 
+ *
  * @param parseResult - Parsed CSV data
  * @returns Array of objects
  */
-export function csvToObjects(parseResult: CSVParseResult): Record<string, string>[] {
+export function csvToObjects(
+  parseResult: CSVParseResult
+): Record<string, string>[] {
   const { headers, rows } = parseResult;
-  
-  return rows.map(row => {
+
+  return rows.map((row) => {
     const obj: Record<string, string> = {};
     headers.forEach((header, index) => {
       obj[header] = row[index] || '';

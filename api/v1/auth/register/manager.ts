@@ -1,5 +1,9 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import { getFirebaseAuth, getFirebaseDb, generateId } from '../../../lib/firebase';
+import {
+  getFirebaseAuth,
+  getFirebaseDb,
+  generateId,
+} from '../../../lib/firebase';
 import { setCorsHeaders, handlePreflight } from '../../../lib/cors';
 import { validateRequiredFields } from '../../../lib/validation';
 
@@ -7,10 +11,7 @@ import { validateRequiredFields } from '../../../lib/validation';
  * Manager Registration API Endpoint
  * POST /api/v1/auth/register/manager
  */
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Set CORS headers
   const origin = req.headers.origin || '';
   setCorsHeaders(res, origin);
@@ -48,7 +49,8 @@ export default async function handler(
       );
     } catch (error) {
       return res.status(400).json({
-        message: error instanceof Error ? error.message : 'Missing required fields',
+        message:
+          error instanceof Error ? error.message : 'Missing required fields',
       });
     }
 
@@ -90,7 +92,7 @@ export default async function handler(
     const db = getFirebaseDb();
     const employerId = generateId('company');
     console.log('[DEBUG] Generated employer ID:', employerId);
-    
+
     const userData = {
       id: userRecord.uid,
       email,
@@ -106,7 +108,11 @@ export default async function handler(
     };
 
     // Defensive check: Ensure all required fields are present
-    validateRequiredFields(userData, ['id', 'email', 'name', 'role', 'employerId'], 'user data');
+    validateRequiredFields(
+      userData,
+      ['id', 'email', 'name', 'role', 'employerId'],
+      'user data'
+    );
 
     console.log('[DEBUG] Saving user data to Firestore');
     await db.collection('users').doc(userRecord.uid).set(userData);
@@ -125,7 +131,11 @@ export default async function handler(
     };
 
     // Defensive check: Ensure all required employer fields are present
-    validateRequiredFields(employerData, ['id', 'name', 'ownerId'], 'employer data');
+    validateRequiredFields(
+      employerData,
+      ['id', 'name', 'ownerId'],
+      'employer data'
+    );
 
     console.log('[DEBUG] Creating employer record');
     await db.collection('employers').doc(employerId).set(employerData);

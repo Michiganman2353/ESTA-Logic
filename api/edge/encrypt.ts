@@ -1,9 +1,9 @@
 /**
  * Edge Function: Encrypt Data
- * 
+ *
  * This endpoint runs on Vercel Edge Network for low-latency encryption operations.
  * Uses Web Crypto API for client-side encryption helpers.
- * 
+ *
  * Runtime: Edge (Vercel Edge Functions)
  */
 
@@ -16,15 +16,15 @@ export const config = {
 
 /**
  * Encrypt data using hybrid encryption (AES-GCM + RSA-OAEP)
- * 
+ *
  * POST /api/edge/encrypt
- * 
+ *
  * Request Body:
  * {
  *   data: string;          // Data to encrypt
  *   publicKey: JsonWebKey; // RSA public key in JWK format
  * }
- * 
+ *
  * Response:
  * {
  *   success: boolean;
@@ -50,18 +50,21 @@ export default async function handler(request: NextRequest) {
 
   // GET request - health check
   if (request.method === 'GET') {
-    return new Response(JSON.stringify({
-      status: 'ok',
-      runtime: 'edge',
-      service: 'encryption',
-      timestamp: new Date().toISOString()
-    }), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      },
-    });
+    return new Response(
+      JSON.stringify({
+        status: 'ok',
+        runtime: 'edge',
+        service: 'encryption',
+        timestamp: new Date().toISOString(),
+      }),
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+      }
+    );
   }
 
   // Only allow POST
@@ -74,38 +77,41 @@ export default async function handler(request: NextRequest) {
 
   try {
     // Parse request body
-    const body = await request.json() as unknown;
-    
+    const body = (await request.json()) as unknown;
+
     // Validate body is an object
     if (!body || typeof body !== 'object') {
       return new Response(
         JSON.stringify({ success: false, error: 'Invalid request body' }),
-        { 
+        {
           status: 400,
           headers: { 'Content-Type': 'application/json' },
         }
       );
     }
-    
+
     const { data, publicKey } = body as { data?: unknown; publicKey?: unknown };
 
     // Validate input
     if (!data || typeof data !== 'string') {
       return new Response(
         JSON.stringify({ success: false, error: 'Invalid data parameter' }),
-        { 
+        {
           status: 400,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
         }
       );
     }
 
     if (!publicKey || typeof publicKey !== 'object') {
       return new Response(
-        JSON.stringify({ success: false, error: 'Invalid publicKey parameter' }),
-        { 
+        JSON.stringify({
+          success: false,
+          error: 'Invalid publicKey parameter',
+        }),
+        {
           status: 400,
-          headers: { 'Content-Type': 'application/json' }
+          headers: { 'Content-Type': 'application/json' },
         }
       );
     }
@@ -116,7 +122,7 @@ export default async function handler(request: NextRequest) {
       publicKey,
       {
         name: 'RSA-OAEP',
-        hash: 'SHA-256'
+        hash: 'SHA-256',
       },
       true,
       ['encrypt']
@@ -126,7 +132,7 @@ export default async function handler(request: NextRequest) {
     const aesKey = await crypto.subtle.generateKey(
       {
         name: 'AES-GCM',
-        length: 256
+        length: 256,
       },
       true,
       ['encrypt']
@@ -142,7 +148,7 @@ export default async function handler(request: NextRequest) {
     const encryptedData = await crypto.subtle.encrypt(
       {
         name: 'AES-GCM',
-        iv: iv
+        iv: iv,
       },
       aesKey,
       dataBuffer
@@ -152,7 +158,7 @@ export default async function handler(request: NextRequest) {
     const aesKeyData = await crypto.subtle.exportKey('raw', aesKey);
     const encryptedAESKey = await crypto.subtle.encrypt(
       {
-        name: 'RSA-OAEP'
+        name: 'RSA-OAEP',
       },
       cryptoKey,
       aesKeyData
@@ -164,32 +170,37 @@ export default async function handler(request: NextRequest) {
     const ivBase64 = arrayBufferToBase64(iv.buffer);
 
     // Return encrypted data
-    return new Response(JSON.stringify({
-      success: true,
-      encrypted: {
-        encryptedData: encryptedDataBase64,
-        encryptedAESKey: encryptedAESKeyBase64,
-        iv: ivBase64
+    return new Response(
+      JSON.stringify({
+        success: true,
+        encrypted: {
+          encryptedData: encryptedDataBase64,
+          encryptedAESKey: encryptedAESKeyBase64,
+          iv: ivBase64,
+        },
+      }),
+      {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
       }
-    }), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-      },
-    });
-
+    );
   } catch (error) {
     console.error('Edge encryption error:', error);
-    
-    return new Response(JSON.stringify({ 
-      success: false, 
-      error: 'Encryption failed',
-      message: error instanceof Error ? error.message : 'Unknown error'
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: 'Encryption failed',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
   }
 }
 

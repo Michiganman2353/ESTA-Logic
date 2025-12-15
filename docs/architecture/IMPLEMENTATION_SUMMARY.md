@@ -11,6 +11,7 @@
 This refactor addresses critical architectural issues that were preventing the ESTA Tracker monorepo from being production-ready. We've successfully completed Phase 1, establishing the foundation for a scalable, maintainable monorepo structure.
 
 **Key Achievements:**
+
 - ✅ Comprehensive architectural audit (32KB report)
 - ✅ Created centralized @esta-tracker/firebase package
 - ✅ Integrated api/ and functions/ into npm workspaces
@@ -18,6 +19,7 @@ This refactor addresses critical architectural issues that were preventing the E
 - ✅ All packages now build successfully
 
 **Impact:**
+
 - **Maintainability:** +60% improvement
 - **Build Performance:** 30% faster (70-90% with remote cache)
 - **Code Duplication:** Eliminated 3 Firebase Admin initializations
@@ -32,18 +34,21 @@ This refactor addresses critical architectural issues that were preventing the E
 **Document Created:** `docs/architecture/MONOREPO_AUDIT_REPORT.md`
 
 **Findings:**
+
 - 🔴 **5 Critical Issues** identified and documented
 - ⚠️ **8 Moderate Issues** identified and documented
 - 🟡 **4 Minor Issues** identified and documented
 
 **Critical Issues Identified:**
+
 1. Vercel API functions not in workspace
 2. Multiple Firebase Admin initializations (3 locations)
-3. VITE_* environment variables misused in backend
+3. VITE\_\* environment variables misused in backend
 4. Weak dependency boundary enforcement
 5. Incomplete test coverage strategy
 
 **Key Sections:**
+
 - Current structure analysis with package dependency graph
 - Turborepo pipeline optimization recommendations
 - Environment variable security audit
@@ -59,6 +64,7 @@ This refactor addresses critical architectural issues that were preventing the E
 Centralized Firebase Admin SDK initialization and utilities for all server-side code (backend, API functions, Cloud Functions).
 
 **Package Structure:**
+
 ```
 packages/firebase/
 ├── src/
@@ -73,6 +79,7 @@ packages/firebase/
 ```
 
 **Key Features:**
+
 - **Single Initialization:** Prevents duplicate Firebase Admin app instances
 - **Automatic Credential Handling:** Supports service account JSON and ADC
 - **Modular Exports:** Import only what you need
@@ -90,7 +97,7 @@ initializeFirebaseAdmin();
 import { getFirestore, serverTimestamp } from '@esta-tracker/firebase';
 const db = getFirestore();
 await db.collection('users').doc('123').update({
-  updatedAt: serverTimestamp()
+  updatedAt: serverTimestamp(),
 });
 
 // Auth operations
@@ -104,6 +111,7 @@ const url = await getSignedDownloadUrl('path/to/file.pdf', 60);
 ```
 
 **Impact:**
+
 - Eliminates 3 duplicate initializations
 - Reduces maintenance burden by 70%
 - Provides consistent API across all server code
@@ -117,13 +125,14 @@ const url = await getSignedDownloadUrl('path/to/file.pdf', 60);
 {
   "workspaces": [
     "packages/*",
-    "api",        // ✨ Added
-    "functions"   // ✨ Added
+    "api", // ✨ Added
+    "functions" // ✨ Added
   ]
 }
 ```
 
 **Benefits:**
+
 - ✅ Unified dependency management (no version conflicts)
 - ✅ Turborepo can orchestrate all packages
 - ✅ Single `npm install` for entire monorepo
@@ -131,6 +140,7 @@ const url = await getSignedDownloadUrl('path/to/file.pdf', 60);
 - ✅ Shared packages accessible via workspace protocol
 
 **Before vs After:**
+
 ```bash
 # Before
 npm install               # Root
@@ -148,6 +158,7 @@ npm install               # Everything installed once
 **Key Improvements:**
 
 #### Build Task Optimization
+
 ```json
 {
   "build": {
@@ -158,11 +169,13 @@ npm install               # Everything installed once
   }
 }
 ```
+
 - Added `lib/**` output for Firebase Functions
 - Explicit `inputs` for smarter cache invalidation
 - All environment variable prefixes included
 
 #### Test Task Optimization
+
 ```json
 {
   "test": {
@@ -173,11 +186,13 @@ npm install               # Everything installed once
   }
 }
 ```
+
 - Unit tests no longer wait for builds (30% faster)
 - Explicit test file inputs
 - Coverage directory properly cached
 
 #### Typecheck Task Optimization
+
 ```json
 {
   "typecheck": {
@@ -188,10 +203,12 @@ npm install               # Everything installed once
   }
 }
 ```
+
 - Added `*.tsbuildinfo` output
 - Tracks all tsconfig files
 
 #### Dev Task Configuration
+
 ```json
 {
   "dev": {
@@ -201,9 +218,11 @@ npm install               # Everything installed once
   }
 }
 ```
+
 - Explicit environment variables for dev servers
 
 #### Remote Caching Enabled
+
 ```json
 {
   "remoteCache": {
@@ -211,17 +230,18 @@ npm install               # Everything installed once
   }
 }
 ```
+
 - Ready for Vercel Remote Cache or custom S3 cache
 - 70-90% faster CI/CD when configured
 
 **Performance Impact:**
 
-| Task | Before | After | Improvement |
-|------|--------|-------|-------------|
-| Build (cold) | 13.8s | 14.6s | -6% (new package) |
-| Build (cached) | 13.8s | ~7s | 50% faster |
-| Test (unit) | 3.5s | 1.2s | 66% faster |
-| CI Pipeline | ~45s | ~25s | 44% faster (with remote cache) |
+| Task           | Before | After | Improvement                    |
+| -------------- | ------ | ----- | ------------------------------ |
+| Build (cold)   | 13.8s  | 14.6s | -6% (new package)              |
+| Build (cached) | 13.8s  | ~7s   | 50% faster                     |
+| Test (unit)    | 3.5s   | 1.2s  | 66% faster                     |
+| CI Pipeline    | ~45s   | ~25s  | 44% faster (with remote cache) |
 
 ### 5. Build Verification ✅
 
@@ -243,6 +263,7 @@ Total: 14.6s (with Turbo cache: ~7s)
 ```
 
 **Workspace Status:**
+
 - 9 packages in workspace (was 6)
 - 0 build errors
 - 0 type errors
@@ -257,10 +278,12 @@ Total: 14.6s (with Turbo cache: ~7s)
 **Issue:** Backend API functions use `VITE_*` prefix (frontend-only)
 
 **Files to Update:**
+
 - `api/health.ts` (lines 24-29)
-- `api/registration-diagnostic.ts` (lines with VITE_FIREBASE_*)
+- `api/registration-diagnostic.ts` (lines with VITE*FIREBASE*\*)
 
 **Required Changes:**
+
 ```typescript
 // ❌ Wrong - Backend using frontend vars
 const envVars = [
@@ -282,10 +305,12 @@ const envVars = [
 ### Priority 2: Migrate Backend to @esta-tracker/firebase
 
 **Files to Update:**
+
 - `packages/backend/src/services/firebase.ts` (replace with import)
 - All files importing from `services/firebase`
 
 **Migration:**
+
 ```typescript
 // Before
 import { initializeFirebase, getFirestore } from '../services/firebase';
@@ -299,11 +324,13 @@ import { initializeFirebaseAdmin, getFirestore } from '@esta-tracker/firebase';
 ### Priority 3: Migrate API Functions to @esta-tracker/firebase
 
 **Files to Update:**
+
 - All `api/background/*.ts` files (5 files)
 - `api/lib/backgroundJobUtils.ts`
 - `api/lib/authMiddleware.ts`
 
 **Pattern:**
+
 ```typescript
 // Before - Inline Firebase Admin usage
 import * as admin from 'firebase-admin';
@@ -323,9 +350,11 @@ const db = getFirestore();
 ### Priority 4: Migrate Cloud Functions
 
 **Files to Update:**
+
 - `functions/src/index.ts` (single file)
 
 **Change:**
+
 ```typescript
 // Before
 import * as admin from 'firebase-admin';
@@ -345,6 +374,7 @@ const db = getFirestore();
 **Purpose:** Centralized configuration with validation
 
 **Structure:**
+
 ```
 packages/config/
 ├── src/
@@ -359,6 +389,7 @@ packages/config/
 ```
 
 **Usage:**
+
 ```typescript
 // Frontend
 import { getClientConfig } from '@esta-tracker/config';
@@ -374,10 +405,12 @@ const config = getServerConfig(); // Validated, throws if invalid
 ### Priority 6: Add TypeScript Path Aliases
 
 **Files to Update:**
+
 - `tsconfig.base.json`
 - All package `tsconfig.json` files
 
 **Configuration:**
+
 ```json
 {
   "compilerOptions": {
@@ -394,6 +427,7 @@ const config = getServerConfig(); // Validated, throws if invalid
 ```
 
 **Benefits:**
+
 - No more `../../../` imports
 - Easier refactoring
 - Clearer dependencies
@@ -407,6 +441,7 @@ const config = getServerConfig(); // Validated, throws if invalid
 ### 1. Test Coverage Strategy
 
 **Current State:**
+
 - ✅ `packages/backend` - Has tests
 - ✅ `packages/frontend` - Has tests
 - ❌ `packages/shared-utils` - No tests (vitest configured)
@@ -419,6 +454,7 @@ B. Remove test script from packages without tests
 
 **Recommended Action:**
 Add basic tests to critical business logic packages:
+
 - `packages/accrual-engine` - Test calculation logic (HIGH PRIORITY)
 - `packages/shared-utils` - Test date/validation functions
 - `packages/csv-processor` - Test CSV parsing
@@ -428,28 +464,33 @@ Add basic tests to critical business logic packages:
 ### 2. ESLint Import Boundary Restrictions
 
 **Install Plugin:**
+
 ```bash
 npm install --save-dev @typescript-eslint/eslint-plugin-tslint eslint-plugin-import
 ```
 
 **Configuration:**
+
 ```json
 {
   "rules": {
-    "import/no-restricted-paths": ["error", {
-      "zones": [
-        {
-          "target": "./packages/frontend",
-          "from": "./packages/backend",
-          "message": "Frontend cannot import from backend"
-        },
-        {
-          "target": "./packages/shared-*",
-          "from": "./packages/{frontend,backend}",
-          "message": "Shared packages cannot depend on applications"
-        }
-      ]
-    }]
+    "import/no-restricted-paths": [
+      "error",
+      {
+        "zones": [
+          {
+            "target": "./packages/frontend",
+            "from": "./packages/backend",
+            "message": "Frontend cannot import from backend"
+          },
+          {
+            "target": "./packages/shared-*",
+            "from": "./packages/{frontend,backend}",
+            "message": "Shared packages cannot depend on applications"
+          }
+        ]
+      }
+    ]
   }
 }
 ```
@@ -459,6 +500,7 @@ npm install --save-dev @typescript-eslint/eslint-plugin-tslint eslint-plugin-imp
 ### 3. Synchronize Package Versions
 
 **Current State:**
+
 - `frontend`, `backend` → 2.0.0
 - `shared-types`, `shared-utils`, etc. → 1.0.0
 
@@ -469,6 +511,7 @@ npm install --save-dev @typescript-eslint/eslint-plugin-tslint eslint-plugin-imp
 ### 4. Consolidate Duplicate Dependencies
 
 **Found:**
+
 - `firebase-admin@^12.0.0` in root, api/, functions/
 - `date-fns@^4.1.0` in multiple packages
 
@@ -486,6 +529,7 @@ Hoist to root workspace, use `workspace:*` protocol
 **Tool:** Use `nx graph` or create custom diagram
 
 **Content:**
+
 - Visual representation of package dependencies
 - Shows shared core (types, utils, firebase, config)
 - Clear layered architecture
@@ -495,6 +539,7 @@ Hoist to root workspace, use `workspace:*` protocol
 ### 2. Update Root README
 
 **Add Sections:**
+
 - Monorepo structure overview
 - How to add new packages
 - Import rules and boundaries
@@ -507,6 +552,7 @@ Hoist to root workspace, use `workspace:*` protocol
 **Audience:** Developers migrating existing code
 
 **Topics:**
+
 - How to use @esta-tracker/firebase
 - Environment variable patterns
 - TypeScript path aliases
@@ -519,6 +565,7 @@ Hoist to root workspace, use `workspace:*` protocol
 ## Implementation Timeline
 
 ### Sprint 1 (Current - Complete) ✅
+
 - [x] Comprehensive audit report
 - [x] Create @esta-tracker/firebase package
 - [x] Add api/ and functions/ to workspaces
@@ -529,7 +576,8 @@ Hoist to root workspace, use `workspace:*` protocol
 **Time Spent:** ~6 hours
 
 ### Sprint 2 (Next - Estimated 13 hours)
-- [ ] Fix VITE_* environment variable misuse (1h)
+
+- [ ] Fix VITE\_\* environment variable misuse (1h)
 - [ ] Migrate backend to @esta-tracker/firebase (2h)
 - [ ] Migrate API functions to @esta-tracker/firebase (3h)
 - [ ] Migrate Cloud Functions to @esta-tracker/firebase (1h)
@@ -540,6 +588,7 @@ Hoist to root workspace, use `workspace:*` protocol
 **Estimated Time:** 13 hours
 
 ### Sprint 3 (Future - Estimated 13 hours)
+
 - [ ] Add tests to shared packages (8h)
 - [ ] Add ESLint import boundary restrictions (2h)
 - [ ] Synchronize package versions (30m)
@@ -550,6 +599,7 @@ Hoist to root workspace, use `workspace:*` protocol
 **Estimated Time:** 13.5 hours
 
 ### Sprint 4 (Polish - Estimated 3 hours)
+
 - [ ] Update root README (1h)
 - [ ] Create migration guide (2h)
 - [ ] Final verification and testing
@@ -564,6 +614,7 @@ Hoist to root workspace, use `workspace:*` protocol
 ## Long-Term Roadmap (6-12 Months)
 
 ### Months 1-2: Foundation (Current Phase)
+
 - ✅ Fix critical architectural issues
 - ✅ Centralize Firebase Admin
 - 🔄 Create config package
@@ -571,12 +622,14 @@ Hoist to root workspace, use `workspace:*` protocol
 - 🔄 Enable Turbo remote caching
 
 ### Months 3-4: Modularization
+
 - Split frontend into feature modules
 - Create `@esta-tracker/ui` component library
 - Extract business logic to domain packages
 - Add Storybook for UI development
 
 ### Months 5-7: Multi-State Support
+
 - Create state-specific rule packages:
   - `@esta-tracker/rules-michigan`
   - `@esta-tracker/rules-california`
@@ -585,18 +638,21 @@ Hoist to root workspace, use `workspace:*` protocol
 - Add state selection to frontend
 
 ### Months 8-10: Enterprise Features
+
 - Multi-tenant architecture improvements
 - Advanced analytics package (`@esta-tracker/analytics`)
 - API rate limiting & monitoring
 - Audit trail improvements
 
 ### Months 11-12: Performance & Scale
+
 - Database migration to PostgreSQL
 - Add Redis caching layer
 - Implement queue system (Bull/BullMQ)
 - Horizontal scaling preparation
 
 ### 12+ Months: Full Platform
+
 ```
 packages/
 ├── ui/                       # Component library
@@ -615,37 +671,41 @@ packages/
 
 ## Risk Assessment
 
-| Risk | Status | Mitigation |
-|------|--------|------------|
-| Breaking changes during migration | MEDIUM | Gradual migration, comprehensive testing |
-| Developer confusion | LOW | Clear documentation, migration guide created |
-| Dependency conflicts | LOW | Workspace management, lock file |
-| Build performance regression | LOW | Turborepo caching, remote cache ready |
-| CI/CD pipeline issues | MEDIUM | Verify after each major change |
+| Risk                              | Status | Mitigation                                   |
+| --------------------------------- | ------ | -------------------------------------------- |
+| Breaking changes during migration | MEDIUM | Gradual migration, comprehensive testing     |
+| Developer confusion               | LOW    | Clear documentation, migration guide created |
+| Dependency conflicts              | LOW    | Workspace management, lock file              |
+| Build performance regression      | LOW    | Turborepo caching, remote cache ready        |
+| CI/CD pipeline issues             | MEDIUM | Verify after each major change               |
 
 ---
 
 ## Success Metrics
 
 ### Phase 1 (Current) - Achieved ✅
+
 - ✅ Build time: 14.6s (with cache: ~7s)
 - ✅ All 8 packages build successfully
 - ✅ Workspace properly configured
 - ✅ Firebase Admin centralized
 
 ### Phase 2 (Target)
+
 - Firebase Admin used consistently across all packages
-- No VITE_* variables in backend code
+- No VITE\_\* variables in backend code
 - TypeScript path aliases working
 - Config package operational
 
 ### Phase 3 (Target)
+
 - Test coverage >80% for business logic
 - ESLint enforcing boundaries
 - All packages at version 2.0.0
 - No duplicate dependencies
 
 ### Final (Target - End of Sprint 4)
+
 - Build time with remote cache: <3s
 - Test coverage: >80%
 - Package independence: 100%
@@ -659,6 +719,7 @@ packages/
 ### When migrating to @esta-tracker/firebase:
 
 1. **Update package.json**
+
    ```json
    {
      "dependencies": {
@@ -668,31 +729,37 @@ packages/
    ```
 
 2. **Replace Firebase Admin imports**
+
    ```typescript
    // Before
    import * as admin from 'firebase-admin';
-   
+
    // After
-   import { initializeFirebaseAdmin, getFirestore } from '@esta-tracker/firebase';
+   import {
+     initializeFirebaseAdmin,
+     getFirestore,
+   } from '@esta-tracker/firebase';
    ```
 
 3. **Update initialization code**
+
    ```typescript
    // Before
    if (admin.apps.length === 0) {
      admin.initializeApp();
    }
-   
+
    // After
    initializeFirebaseAdmin(); // Safe to call multiple times
    ```
 
 4. **Update service calls**
+
    ```typescript
    // Before
    const db = admin.firestore();
    const auth = admin.auth();
-   
+
    // After
    const db = getFirestore();
    const auth = getAuth();
@@ -709,6 +776,7 @@ packages/
 ## Appendix A: Files Modified
 
 ### Phase 1 (Complete)
+
 - ✅ `package.json` - Added workspaces
 - ✅ `turbo.json` - Optimized configuration
 - ✅ `packages/firebase/` - New package (11 files)
@@ -716,6 +784,7 @@ packages/
 - ✅ `package-lock.json` - Updated dependencies
 
 ### Phase 2 (Planned)
+
 - `api/health.ts` - Fix env vars
 - `api/registration-diagnostic.ts` - Fix env vars
 - `packages/backend/src/services/firebase.ts` - Use shared package
@@ -729,6 +798,7 @@ packages/
 ## Appendix B: Command Reference
 
 ### Build Commands
+
 ```bash
 # Build all packages
 npm run build
@@ -743,6 +813,7 @@ npm run build
 ```
 
 ### Development Commands
+
 ```bash
 # Start all dev servers
 npm run dev
@@ -755,6 +826,7 @@ npm run dev:backend
 ```
 
 ### Test Commands
+
 ```bash
 # Run all tests
 npm run test
@@ -767,6 +839,7 @@ npm run test:e2e
 ```
 
 ### Utility Commands
+
 ```bash
 # Install dependencies
 npm install
@@ -791,12 +864,14 @@ npm run validate:env
 Phase 1 of the monorepo refactor has successfully established a solid foundation for production-grade architecture. The creation of @esta-tracker/firebase and optimization of Turborepo configuration provides immediate value while setting the stage for future improvements.
 
 **Key Achievements:**
+
 - Eliminated architectural debt (Firebase Admin duplication)
 - Improved build performance (30% faster, 70% with remote cache)
 - Established clear package boundaries
 - Created comprehensive documentation
 
 **Next Steps:**
+
 - Complete remaining critical migrations (Firebase, config, env vars)
 - Add comprehensive test coverage
 - Finalize documentation

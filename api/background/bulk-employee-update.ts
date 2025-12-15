@@ -43,18 +43,27 @@ interface BulkEmployeeUpdateRequest {
 /**
  * Validate update fields
  */
-function validateUpdates(updates: BulkEmployeeUpdateRequest['updates']): { valid: boolean; error?: string } {
+function validateUpdates(updates: BulkEmployeeUpdateRequest['updates']): {
+  valid: boolean;
+  error?: string;
+} {
   if (!updates || Object.keys(updates).length === 0) {
     return { valid: false, error: 'No update fields provided' };
   }
 
   // Validate role
-  if (updates.role && !['employee', 'manager', 'employer', 'admin'].includes(updates.role)) {
+  if (
+    updates.role &&
+    !['employee', 'manager', 'employer', 'admin'].includes(updates.role)
+  ) {
     return { valid: false, error: 'Invalid role value' };
   }
 
   // Validate status
-  if (updates.status && !['active', 'inactive', 'terminated'].includes(updates.status)) {
+  if (
+    updates.status &&
+    !['active', 'inactive', 'terminated'].includes(updates.status)
+  ) {
     return { valid: false, error: 'Invalid status value' };
   }
 
@@ -80,8 +89,17 @@ async function processBulkEmployeeUpdate(
   updates: BulkEmployeeUpdateRequest['updates']
 ): Promise<void> {
   try {
-    await updateJobProgress(jobId, 5, 'processing', 'Starting bulk employee update');
-    await writeJobLog(jobId, 'info', `Updating ${employeeIds.length} employees`);
+    await updateJobProgress(
+      jobId,
+      5,
+      'processing',
+      'Starting bulk employee update'
+    );
+    await writeJobLog(
+      jobId,
+      'info',
+      `Updating ${employeeIds.length} employees`
+    );
 
     // Validate updates
     const validation = validateUpdates(updates);
@@ -109,11 +127,14 @@ async function processBulkEmployeeUpdate(
     if (updates.status !== undefined) {
       firestoreUpdates.status = updates.status;
       if (updates.status === 'terminated') {
-        firestoreUpdates.terminatedAt = admin.firestore.FieldValue.serverTimestamp();
+        firestoreUpdates.terminatedAt =
+          admin.firestore.FieldValue.serverTimestamp();
       }
     }
     if (updates.hireDate !== undefined) {
-      firestoreUpdates.hireDate = admin.firestore.Timestamp.fromDate(new Date(updates.hireDate));
+      firestoreUpdates.hireDate = admin.firestore.Timestamp.fromDate(
+        new Date(updates.hireDate)
+      );
     }
     if (updates.manager !== undefined) {
       firestoreUpdates.managerId = updates.manager;
@@ -124,7 +145,11 @@ async function processBulkEmployeeUpdate(
       });
     }
 
-    await writeJobLog(jobId, 'info', `Update fields: ${Object.keys(firestoreUpdates).join(', ')}`);
+    await writeJobLog(
+      jobId,
+      'info',
+      `Update fields: ${Object.keys(firestoreUpdates).join(', ')}`
+    );
 
     // Process each employee
     for (let i = 0; i < employeeIds.length; i++) {
@@ -150,14 +175,25 @@ async function processBulkEmployeeUpdate(
         const employeeData = employeeDoc.data();
 
         // Verify employee belongs to tenant
-        if (employeeData?.tenantId !== tenantId && employeeData?.employerId !== tenantId) {
+        if (
+          employeeData?.tenantId !== tenantId &&
+          employeeData?.employerId !== tenantId
+        ) {
           errorCount++;
           errors.push(`${employeeId}: Employee does not belong to this tenant`);
-          await writeJobLog(jobId, 'error', `Employee ${employeeId} does not belong to tenant ${tenantId}`);
+          await writeJobLog(
+            jobId,
+            'error',
+            `Employee ${employeeId} does not belong to tenant ${tenantId}`
+          );
           continue;
         }
 
-        await writeJobLog(jobId, 'info', `Updating employee ${i + 1}/${totalEmployees}: ${employeeData?.email}`);
+        await writeJobLog(
+          jobId,
+          'info',
+          `Updating employee ${i + 1}/${totalEmployees}: ${employeeData?.email}`
+        );
 
         // Update employee document
         await employeeDoc.ref.update(firestoreUpdates);
@@ -169,9 +205,17 @@ async function processBulkEmployeeUpdate(
               role: updates.role,
               tenantId: employeeData?.tenantId || tenantId,
             });
-            await writeJobLog(jobId, 'info', `Updated auth claims for ${employeeData?.email}`);
+            await writeJobLog(
+              jobId,
+              'info',
+              `Updated auth claims for ${employeeData?.email}`
+            );
           } catch (authError) {
-            await writeJobLog(jobId, 'warn', `Could not update auth claims for ${employeeData?.email}: ${authError}`);
+            await writeJobLog(
+              jobId,
+              'warn',
+              `Could not update auth claims for ${employeeData?.email}: ${authError}`
+            );
           }
         }
 
@@ -189,12 +233,22 @@ async function processBulkEmployeeUpdate(
         });
 
         updatedCount++;
-        await updateJobProgress(jobId, progress, undefined, `Updated ${updatedCount}/${totalEmployees} employees`);
+        await updateJobProgress(
+          jobId,
+          progress,
+          undefined,
+          `Updated ${updatedCount}/${totalEmployees} employees`
+        );
       } catch (error) {
         errorCount++;
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+        const errorMsg =
+          error instanceof Error ? error.message : 'Unknown error';
         errors.push(`${employeeId}: ${errorMsg}`);
-        await writeJobLog(jobId, 'error', `Failed to update employee ${employeeId}: ${errorMsg}`);
+        await writeJobLog(
+          jobId,
+          'error',
+          `Failed to update employee ${employeeId}: ${errorMsg}`
+        );
       }
     }
 
@@ -208,14 +262,26 @@ async function processBulkEmployeeUpdate(
     };
 
     await markJobCompleted(jobId, result);
-    await writeJobLog(jobId, 'info', `Bulk employee update completed: ${updatedCount} successful, ${errorCount} failed`);
+    await writeJobLog(
+      jobId,
+      'info',
+      `Bulk employee update completed: ${updatedCount} successful, ${errorCount} failed`
+    );
 
     // Send notification
-    const message = errorCount > 0
-      ? `Bulk update completed with ${updatedCount} successful and ${errorCount} failed updates`
-      : `Bulk update completed successfully for ${updatedCount} employees`;
-    
-    await sendJobNotification(userId, tenantId, jobId, 'Bulk Employee Update', 'completed', message);
+    const message =
+      errorCount > 0
+        ? `Bulk update completed with ${updatedCount} successful and ${errorCount} failed updates`
+        : `Bulk update completed successfully for ${updatedCount} employees`;
+
+    await sendJobNotification(
+      userId,
+      tenantId,
+      jobId,
+      'Bulk Employee Update',
+      'completed',
+      message
+    );
 
     // Create summary audit log
     await db.collection('auditLogs').add({
@@ -228,8 +294,19 @@ async function processBulkEmployeeUpdate(
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : 'Unknown error';
     await markJobFailed(jobId, errorMsg);
-    await writeJobLog(jobId, 'error', `Bulk employee update failed: ${errorMsg}`);
-    await sendJobNotification(userId, tenantId, jobId, 'Bulk Employee Update', 'failed', `Update failed: ${errorMsg}`);
+    await writeJobLog(
+      jobId,
+      'error',
+      `Bulk employee update failed: ${errorMsg}`
+    );
+    await sendJobNotification(
+      userId,
+      tenantId,
+      jobId,
+      'Bulk Employee Update',
+      'failed',
+      `Update failed: ${errorMsg}`
+    );
   }
 }
 
@@ -239,14 +316,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { action, tenantId, userId, jobId, employeeIds, updates } = req.body as BulkEmployeeUpdateRequest;
+    const { action, tenantId, userId, jobId, employeeIds, updates } =
+      req.body as BulkEmployeeUpdateRequest;
 
     if (!tenantId || !userId) {
       return res.status(400).json({ error: 'Missing tenantId or userId' });
     }
 
     // Verify user permission
-    const hasPermission = await verifyUserPermission(userId, tenantId, 'employer');
+    const hasPermission = await verifyUserPermission(
+      userId,
+      tenantId,
+      'employer'
+    );
     if (!hasPermission) {
       return res.status(403).json({ error: 'Insufficient permissions' });
     }
@@ -254,7 +336,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Handle status check
     if (action === 'status') {
       if (!jobId) {
-        return res.status(400).json({ error: 'Missing jobId for status check' });
+        return res
+          .status(400)
+          .json({ error: 'Missing jobId for status check' });
       }
 
       const status = await getJobStatus(jobId);
@@ -268,7 +352,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Handle job initiation
     if (action === 'initiate') {
       if (!employeeIds || employeeIds.length === 0) {
-        return res.status(400).json({ error: 'Missing or empty employeeIds array' });
+        return res
+          .status(400)
+          .json({ error: 'Missing or empty employeeIds array' });
       }
 
       if (!updates) {
@@ -276,13 +362,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       // Create job
-      const newJobId = await createJob('bulk_employee_update', tenantId, userId, {
-        employeeCount: employeeIds.length,
-        updateFields: Object.keys(updates),
-      });
+      const newJobId = await createJob(
+        'bulk_employee_update',
+        tenantId,
+        userId,
+        {
+          employeeCount: employeeIds.length,
+          updateFields: Object.keys(updates),
+        }
+      );
 
       // Start processing in the background (don't await)
-      processBulkEmployeeUpdate(newJobId, tenantId, userId, employeeIds, updates).catch(err => {
+      processBulkEmployeeUpdate(
+        newJobId,
+        tenantId,
+        userId,
+        employeeIds,
+        updates
+      ).catch((err) => {
         console.error('Background job error:', err);
       });
 

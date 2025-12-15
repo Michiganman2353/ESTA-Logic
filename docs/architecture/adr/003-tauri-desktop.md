@@ -16,12 +16,12 @@ ESTA Tracker requires offline-capable desktop clients for employers who:
 
 ### Alternatives Considered
 
-| Option     | Size    | Performance | Security | Rust Backend |
-| ---------- | ------- | ----------- | -------- | ------------ |
-| Electron   | ~150 MB | Moderate    | Moderate | No           |
-| Tauri      | ~10 MB  | Excellent   | Strong   | Yes          |
-| PWA        | N/A     | Good        | Good     | No           |
-| Flutter    | ~25 MB  | Excellent   | Good     | No           |
+| Option   | Size    | Performance | Security | Rust Backend |
+| -------- | ------- | ----------- | -------- | ------------ |
+| Electron | ~150 MB | Moderate    | Moderate | No           |
+| Tauri    | ~10 MB  | Excellent   | Strong   | Yes          |
+| PWA      | N/A     | Good        | Good     | No           |
+| Flutter  | ~25 MB  | Excellent   | Good     | No           |
 
 ## Decision
 

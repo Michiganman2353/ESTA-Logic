@@ -2,7 +2,7 @@ import { test, expect, Page } from '@playwright/test';
 
 /**
  * E2E tests for DocumentScanner component
- * 
+ *
  * These tests use fake media streams to simulate camera access
  * and validate the document scanning workflow.
  */
@@ -23,7 +23,7 @@ test.describe('DocumentScanner E2E', () => {
       canvas.width = 1920;
       canvas.height = 1080;
       const ctx = canvas.getContext('2d');
-      
+
       if (ctx) {
         // Draw a simple document-like rectangle
         ctx.fillStyle = '#ffffff';
@@ -51,7 +51,9 @@ test.describe('DocumentScanner E2E', () => {
   test('should render initial setup screen', async () => {
     await expect(page.getByText('Document Scanner')).toBeVisible();
     await expect(page.getByText('Start Camera')).toBeVisible();
-    await expect(page.getByText(/Position document on a flat surface/i)).toBeVisible();
+    await expect(
+      page.getByText(/Position document on a flat surface/i)
+    ).toBeVisible();
   });
 
   test('should start camera and show capture interface', async () => {
@@ -165,7 +167,9 @@ test.describe('DocumentScanner E2E', () => {
 
     // May see "Processing..." briefly
     // Then should transition to preview
-    await expect(page.getByText('Review Document')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('Review Document')).toBeVisible({
+      timeout: 5000,
+    });
   });
 
   test('should work on mobile viewport', async () => {

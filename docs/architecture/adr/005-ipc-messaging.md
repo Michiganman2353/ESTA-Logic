@@ -19,13 +19,13 @@ ESTA-Logic requires deterministic, traceable communication between components fo
 
 The `@esta/kernel-boundary` package provides TypeScript types for message-passing, but runtime implementation varies by environment:
 
-| Environment  | Transport          | Status      |
-| ------------ | ------------------ | ----------- |
-| Local (Node) | In-memory          | Implemented |
-| Web Workers  | `postMessage`      | Planned     |
-| Tauri IPC    | Tauri Commands     | Planned     |
-| Kafka        | Kafka Streams      | Specified   |
-| Redis        | Redis Pub/Sub      | Specified   |
+| Environment  | Transport      | Status      |
+| ------------ | -------------- | ----------- |
+| Local (Node) | In-memory      | Implemented |
+| Web Workers  | `postMessage`  | Planned     |
+| Tauri IPC    | Tauri Commands | Planned     |
+| Kafka        | Kafka Streams  | Specified   |
+| Redis        | Redis Pub/Sub  | Specified   |
 
 ## Decision
 
@@ -68,13 +68,13 @@ We adopt a **unified message envelope** with pluggable transports.
 
 ### Message Types
 
-| Type       | Description                              | Example                     |
-| ---------- | ---------------------------------------- | --------------------------- |
-| `command`  | Request to modify state                  | `CreateEmployee`            |
-| `query`    | Request for data (no state change)       | `GetEmployeeById`           |
-| `event`    | Notification of state change             | `EmployeeCreated`           |
-| `response` | Reply to command/query                   | `CreateEmployeeResult`      |
-| `system`   | Infrastructure messages                  | `Heartbeat`, `Shutdown`     |
+| Type       | Description                        | Example                 |
+| ---------- | ---------------------------------- | ----------------------- |
+| `command`  | Request to modify state            | `CreateEmployee`        |
+| `query`    | Request for data (no state change) | `GetEmployeeById`       |
+| `event`    | Notification of state change       | `EmployeeCreated`       |
+| `response` | Reply to command/query             | `CreateEmployeeResult`  |
+| `system`   | Infrastructure messages            | `Heartbeat`, `Shutdown` |
 
 ### Transport Abstraction
 
@@ -87,21 +87,21 @@ export interface ChannelAddress {
 }
 
 export type Transport =
-  | 'local'      // In-memory
-  | 'worker'     // Web Workers
-  | 'tauri'      // Tauri IPC
-  | 'kafka'      // Kafka Streams
-  | 'redis'      // Redis Pub/Sub
-  | 'http'       // HTTP/REST (fallback)
+  | 'local' // In-memory
+  | 'worker' // Web Workers
+  | 'tauri' // Tauri IPC
+  | 'kafka' // Kafka Streams
+  | 'redis' // Redis Pub/Sub
+  | 'http'; // HTTP/REST (fallback)
 
 export interface MessageBus {
   publish<T>(channel: ChannelAddress, message: Message<T>): Promise<void>;
-  
+
   subscribe<T>(
     channel: ChannelAddress,
     handler: MessageHandler<T>
   ): Promise<Subscription>;
-  
+
   request<Req, Res>(
     channel: ChannelAddress,
     message: Message<Req>,
@@ -138,7 +138,8 @@ export function createLocalMessageBus(): MessageBus {
       }
       handlers.get(key)!.add(handler as MessageHandler<unknown>);
       return {
-        unsubscribe: () => handlers.get(key)?.delete(handler as MessageHandler<unknown>),
+        unsubscribe: () =>
+          handlers.get(key)?.delete(handler as MessageHandler<unknown>),
       };
     },
 
@@ -154,8 +155,8 @@ export function createLocalMessageBus(): MessageBus {
 ```typescript
 // W3C Trace Context compliant
 export interface TraceContext {
-  traceId: TraceId;      // 32 hex chars
-  spanId: SpanId;        // 16 hex chars
+  traceId: TraceId; // 32 hex chars
+  spanId: SpanId; // 16 hex chars
   traceFlags: TraceFlags;
   traceState: TraceStateEntry[];
 }
@@ -167,7 +168,7 @@ export function propagateTrace(
 ): TraceContext {
   return {
     traceId: incoming.traceId,
-    spanId: generateSpanId(),  // New span for this operation
+    spanId: generateSpanId(), // New span for this operation
     traceFlags: incoming.traceFlags,
     traceState: incoming.traceState,
   };

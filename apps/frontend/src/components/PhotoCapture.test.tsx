@@ -94,7 +94,9 @@ describe('PhotoCapture Component', () => {
       fireEvent.click(startButton);
 
       await waitFor(() => {
-        expect(screen.getByText('Use file picker instead:')).toBeInTheDocument();
+        expect(
+          screen.getByText('Use file picker instead:')
+        ).toBeInTheDocument();
       });
     });
   });
@@ -104,7 +106,9 @@ describe('PhotoCapture Component', () => {
       const onPhotoConfirmed = vi.fn();
       render(<PhotoCapture onPhotoConfirmed={onPhotoConfirmed} />);
 
-      const fileInput = screen.getByLabelText('Or choose file') as HTMLInputElement;
+      const fileInput = screen.getByLabelText(
+        'Or choose file'
+      ) as HTMLInputElement;
       expect(fileInput).toBeInTheDocument();
       expect(fileInput.type).toBe('file');
     });
@@ -124,7 +128,9 @@ describe('PhotoCapture Component', () => {
         type: 'image/jpeg',
       });
 
-      const fileInput = screen.getByLabelText('Or choose file') as HTMLInputElement;
+      const fileInput = screen.getByLabelText(
+        'Or choose file'
+      ) as HTMLInputElement;
 
       // Mock window.alert
       const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
@@ -147,7 +153,9 @@ describe('PhotoCapture Component', () => {
         type: 'text/plain',
       });
 
-      const fileInput = screen.getByLabelText('Or choose file') as HTMLInputElement;
+      const fileInput = screen.getByLabelText(
+        'Or choose file'
+      ) as HTMLInputElement;
 
       // Mock window.alert
       const alertSpy = vi.spyOn(window, 'alert').mockImplementation(() => {});
@@ -170,7 +178,9 @@ describe('PhotoCapture Component', () => {
         type: 'image/jpeg',
       });
 
-      const fileInput = screen.getByLabelText('Or choose file') as HTMLInputElement;
+      const fileInput = screen.getByLabelText(
+        'Or choose file'
+      ) as HTMLInputElement;
       fireEvent.change(fileInput, { target: { files: [validFile] } });
 
       // Should show review step
@@ -184,8 +194,12 @@ describe('PhotoCapture Component', () => {
       render(<PhotoCapture onPhotoConfirmed={onPhotoConfirmed} />);
 
       // Upload a valid file to get to preview
-      const validFile = new File(['image'], 'photo.jpg', { type: 'image/jpeg' });
-      const fileInput = screen.getByLabelText('Or choose file') as HTMLInputElement;
+      const validFile = new File(['image'], 'photo.jpg', {
+        type: 'image/jpeg',
+      });
+      const fileInput = screen.getByLabelText(
+        'Or choose file'
+      ) as HTMLInputElement;
       fireEvent.change(fileInput, { target: { files: [validFile] } });
 
       expect(screen.getByText('Retake Photo')).toBeInTheDocument();
@@ -197,8 +211,12 @@ describe('PhotoCapture Component', () => {
       render(<PhotoCapture onPhotoConfirmed={onPhotoConfirmed} />);
 
       // Upload a valid file
-      const validFile = new File(['image'], 'photo.jpg', { type: 'image/jpeg' });
-      const fileInput = screen.getByLabelText('Or choose file') as HTMLInputElement;
+      const validFile = new File(['image'], 'photo.jpg', {
+        type: 'image/jpeg',
+      });
+      const fileInput = screen.getByLabelText(
+        'Or choose file'
+      ) as HTMLInputElement;
       fireEvent.change(fileInput, { target: { files: [validFile] } });
 
       // Click confirm
@@ -213,8 +231,12 @@ describe('PhotoCapture Component', () => {
       render(<PhotoCapture onPhotoConfirmed={onPhotoConfirmed} />);
 
       // Upload a valid file
-      const validFile = new File(['image'], 'photo.jpg', { type: 'image/jpeg' });
-      const fileInput = screen.getByLabelText('Or choose file') as HTMLInputElement;
+      const validFile = new File(['image'], 'photo.jpg', {
+        type: 'image/jpeg',
+      });
+      const fileInput = screen.getByLabelText(
+        'Or choose file'
+      ) as HTMLInputElement;
       fireEvent.change(fileInput, { target: { files: [validFile] } });
 
       // Click retake
@@ -243,11 +265,15 @@ describe('PhotoCapture Component', () => {
       render(<PhotoCapture onPhotoConfirmed={vi.fn()} onCancel={onCancel} />);
 
       // Upload a file to get to preview
-      const validFile = new File(['image'], 'photo.jpg', { type: 'image/jpeg' });
-      const fileInput = screen.getByLabelText('Or choose file') as HTMLInputElement;
+      const validFile = new File(['image'], 'photo.jpg', {
+        type: 'image/jpeg',
+      });
+      const fileInput = screen.getByLabelText(
+        'Or choose file'
+      ) as HTMLInputElement;
       fireEvent.change(fileInput, { target: { files: [validFile] } });
 
-      // We can't test cleanup directly in this environment, but we can verify 
+      // We can't test cleanup directly in this environment, but we can verify
       // the flow works without errors
       expect(screen.getByText('Review Photo')).toBeInTheDocument();
     });
@@ -257,7 +283,7 @@ describe('PhotoCapture Component', () => {
     it('should accept custom max file size', () => {
       const onPhotoConfirmed = vi.fn();
       const customMaxSize = 5 * 1024 * 1024; // 5MB
-      
+
       render(
         <PhotoCapture
           onPhotoConfirmed={onPhotoConfirmed}
@@ -272,7 +298,7 @@ describe('PhotoCapture Component', () => {
     it('should accept custom accepted formats', () => {
       const onPhotoConfirmed = vi.fn();
       const customFormats = ['image/png'];
-      
+
       render(
         <PhotoCapture
           onPhotoConfirmed={onPhotoConfirmed}
@@ -285,7 +311,7 @@ describe('PhotoCapture Component', () => {
 
     it('should accept requireQualityCheck prop', () => {
       const onPhotoConfirmed = vi.fn();
-      
+
       render(
         <PhotoCapture
           onPhotoConfirmed={onPhotoConfirmed}

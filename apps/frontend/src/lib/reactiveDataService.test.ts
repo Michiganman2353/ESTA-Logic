@@ -38,7 +38,7 @@ describe('ReactiveDataService', () => {
       expect(searchFn).not.toHaveBeenCalled();
 
       vi.advanceTimersByTime(200);
-      
+
       // Wait for async operations
       await vi.runAllTimersAsync();
 
@@ -72,7 +72,7 @@ describe('ReactiveDataService', () => {
       const search$ = service.createDebouncedSearch<string>(searchFn, 300);
 
       const results: string[][] = [];
-      search$.subscribe(result => results.push(result));
+      search$.subscribe((result) => results.push(result));
 
       service.search('test');
       vi.advanceTimersByTime(300);
@@ -107,11 +107,11 @@ describe('ReactiveDataService', () => {
 
       const observable$ = service.createRealtimeObservable(subscribe);
       const subscription = observable$.subscribe();
-      
+
       subscription.unsubscribe();
-      
-      await new Promise(resolve => setTimeout(resolve, 50));
-      
+
+      await new Promise((resolve) => setTimeout(resolve, 50));
+
       expect(unsubscribe).toHaveBeenCalled();
     });
   });
@@ -124,10 +124,13 @@ describe('ReactiveDataService', () => {
         vi.fn(async () => 'result3'),
       ];
 
-      const tracker$ = service.createBatchOperationTracker(operations, 'batch-1');
+      const tracker$ = service.createBatchOperationTracker(
+        operations,
+        'batch-1'
+      );
       const updates: number[] = [];
 
-      tracker$.subscribe(op => {
+      tracker$.subscribe((op) => {
         updates.push(op.progress);
       });
 
@@ -148,7 +151,10 @@ describe('ReactiveDataService', () => {
         }),
       ];
 
-      const tracker$ = service.createBatchOperationTracker(operations, 'batch-2');
+      const tracker$ = service.createBatchOperationTracker(
+        operations,
+        'batch-2'
+      );
       let errorOccurred = false;
 
       tracker$.subscribe({
@@ -187,7 +193,7 @@ describe('ReactiveDataService', () => {
       const networkStatus$ = service.createNetworkStatusObservable();
       const statuses: boolean[] = [];
 
-      networkStatus$.pipe(take(2)).subscribe(status => {
+      networkStatus$.pipe(take(2)).subscribe((status) => {
         statuses.push(status);
       });
 
@@ -229,11 +235,11 @@ describe('ReactiveDataService', () => {
       const refreshFn = vi.fn(async () => 'data');
 
       const autoRefresh$ = service.createAutoRefreshObservable(refreshFn, 1000);
-      
+
       const promise = firstValueFrom(autoRefresh$);
-      
+
       await vi.runAllTimersAsync();
-      
+
       const result = await promise;
 
       expect(refreshFn).toHaveBeenCalledTimes(1);

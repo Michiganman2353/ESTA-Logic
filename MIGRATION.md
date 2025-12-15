@@ -16,6 +16,7 @@ You are the creator of a new era in open-source compliance.
 ### Overview
 
 The DocumentScanner component provides advanced document scanning capabilities for the ESTA Tracker application, including:
+
 - Web camera access with getUserMedia
 - Auto edge detection using OpenCV.js
 - Perspective correction
@@ -26,6 +27,7 @@ The DocumentScanner component provides advanced document scanning capabilities f
 ### Prerequisites
 
 Before integrating the DocumentScanner component, ensure you have:
+
 - Node.js 22.x or higher
 - Firebase SDK configured
 - Camera permissions properly requested
@@ -70,7 +72,10 @@ function MyComponent() {
     // Handle the uploaded file
   };
 
-  const storageRef = ref(storage, `scanned-documents/${tenantId}/${userId}/${Date.now()}`);
+  const storageRef = ref(
+    storage,
+    `scanned-documents/${tenantId}/${userId}/${Date.now()}`
+  );
 
   return (
     <DocumentScanner
@@ -120,7 +125,7 @@ function MyComponent() {
       headers: { 'Content-Type': 'application/json' },
     });
     const { keyData } = await response.json();
-    
+
     // Import the key
     return await crypto.subtle.importKey(
       'raw',
@@ -158,24 +163,24 @@ firebase deploy --only storage
 // Firebase Function or API endpoint
 export const generateSignedUploadUrl = async (req, res) => {
   const { userId, tenantId } = req.body;
-  
+
   // Validate user permissions
   if (!isAuthenticated(req) || req.user.uid !== userId) {
     return res.status(403).json({ error: 'Unauthorized' });
   }
-  
+
   // Generate signed URL with expiration
   const bucket = admin.storage().bucket();
   const fileName = `scanned-documents/${tenantId}/${userId}/${Date.now()}.webp`;
   const file = bucket.file(fileName);
-  
+
   const [url] = await file.getSignedUrl({
     version: 'v4',
     action: 'write',
     expires: Date.now() + 15 * 60 * 1000, // 15 minutes
     contentType: 'image/webp',
   });
-  
+
   res.json({ url });
 };
 ```
@@ -189,16 +194,16 @@ export const generateEphemeralKey = async (req, res) => {
   if (!isAuthenticated(req)) {
     return res.status(403).json({ error: 'Unauthorized' });
   }
-  
+
   // Generate one-time encryption key
   const key = crypto.randomBytes(32); // 256-bit key
-  
+
   // Store key reference in KMS or secure storage with TTL
   const keyId = await storeEphemeralKey(key, 900); // 15 min TTL
-  
-  res.json({ 
+
+  res.json({
     keyData: Array.from(key),
-    keyId: keyId 
+    keyId: keyId,
   });
 };
 ```
@@ -242,7 +247,10 @@ npx cap sync
 Then use the `captureNative.ts` module:
 
 ```tsx
-import { isNativeCaptureAvailable, captureDocument } from './components/captureNative';
+import {
+  isNativeCaptureAvailable,
+  captureDocument,
+} from './components/captureNative';
 
 if (isNativeCaptureAvailable()) {
   const file = await captureDocument();
@@ -313,4 +321,3 @@ if (isNativeCaptureAvailable()) {
 3. Adjust compression/quality settings based on use case
 4. Implement analytics for user behavior
 5. Consider adding OCR for text extraction (future enhancement)
-

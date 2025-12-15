@@ -12,26 +12,29 @@ export const documentsRouter = Router();
  * Get documents for a specific sick time request
  * GET /api/v1/documents/request/:requestId
  */
-documentsRouter.get('/request/:requestId', async (req: Request, res: Response) => {
-  try {
-    const { requestId } = req.params;
-    
-    // TODO: Add authentication middleware to verify user access
-    // TODO: Query Firestore for documents with requestId
-    
-    res.json({
-      success: true,
-      requestId,
-      documents: [],
-      message: 'Document retrieval endpoint - requires Firebase integration',
-    });
-  } catch (_error) {
-    res.status(500).json({
-      success: false,
-      error: 'Failed to retrieve documents',
-    });
+documentsRouter.get(
+  '/request/:requestId',
+  async (req: Request, res: Response) => {
+    try {
+      const { requestId } = req.params;
+
+      // TODO: Add authentication middleware to verify user access
+      // TODO: Query Firestore for documents with requestId
+
+      res.json({
+        success: true,
+        requestId,
+        documents: [],
+        message: 'Document retrieval endpoint - requires Firebase integration',
+      });
+    } catch (_error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve documents',
+      });
+    }
   }
-});
+);
 
 /**
  * Get a specific document by ID
@@ -40,7 +43,7 @@ documentsRouter.get('/request/:requestId', async (req: Request, res: Response) =
 documentsRouter.get('/:documentId', async (req: Request, res: Response) => {
   try {
     const { documentId } = req.params;
-    
+
     if (!documentId) {
       res.status(400).json({
         success: false,
@@ -48,11 +51,11 @@ documentsRouter.get('/:documentId', async (req: Request, res: Response) => {
       });
       return;
     }
-    
+
     // TODO: Add authentication middleware
     // TODO: Query Firestore for document
     // TODO: Generate download URL via Cloud Function
-    
+
     res.json({
       success: true,
       documentId,
@@ -75,13 +78,16 @@ documentsRouter.get('/:documentId', async (req: Request, res: Response) => {
 documentsRouter.post(
   '/upload-url',
   validateBody(documentUploadUrlSchema),
-  async (req: ValidatedRequest<DocumentUploadUrlInput>, res: Response): Promise<void> => {
+  async (
+    req: ValidatedRequest<DocumentUploadUrlInput>,
+    res: Response
+  ): Promise<void> => {
     try {
       const { requestId, fileName, contentType } = req.validated!.body;
-    
+
       // TODO: Add authentication middleware
       // TODO: Call Cloud Function to generate signed URL
-    
+
       res.json({
         success: true,
         uploadUrl: null,
@@ -90,7 +96,8 @@ documentsRouter.post(
         requestId,
         fileName,
         contentType,
-        message: 'Upload URL generation endpoint - requires Firebase Cloud Function integration',
+        message:
+          'Upload URL generation endpoint - requires Firebase Cloud Function integration',
       });
     } catch (_error) {
       res.status(500).json({
@@ -105,25 +112,29 @@ documentsRouter.post(
  * Confirm a document upload
  * POST /api/v1/documents/:documentId/confirm
  */
-documentsRouter.post('/:documentId/confirm', async (req: Request, res: Response) => {
-  try {
-    const { documentId } = req.params;
-    
-    // TODO: Add authentication middleware
-    // TODO: Call Cloud Function to confirm upload
-    
-    res.json({
-      success: true,
-      documentId,
-      message: 'Document confirmation endpoint - requires Firebase Cloud Function integration',
-    });
-  } catch (_error) {
-    res.status(500).json({
-      success: false,
-      error: 'Failed to confirm document upload',
-    });
+documentsRouter.post(
+  '/:documentId/confirm',
+  async (req: Request, res: Response) => {
+    try {
+      const { documentId } = req.params;
+
+      // TODO: Add authentication middleware
+      // TODO: Call Cloud Function to confirm upload
+
+      res.json({
+        success: true,
+        documentId,
+        message:
+          'Document confirmation endpoint - requires Firebase Cloud Function integration',
+      });
+    } catch (_error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to confirm document upload',
+      });
+    }
   }
-});
+);
 
 /**
  * Delete a document (only if not immutable)
@@ -132,12 +143,12 @@ documentsRouter.post('/:documentId/confirm', async (req: Request, res: Response)
 documentsRouter.delete('/:documentId', async (req: Request, res: Response) => {
   try {
     const { documentId } = req.params;
-    
+
     // TODO: Add authentication middleware
     // TODO: Check if document is immutable
     // TODO: Delete from storage and Firestore
     // TODO: Log the deletion in audit logs
-    
+
     res.json({
       success: true,
       documentId,
@@ -155,23 +166,26 @@ documentsRouter.delete('/:documentId', async (req: Request, res: Response) => {
  * Get document access logs
  * GET /api/v1/documents/:documentId/access-logs
  */
-documentsRouter.get('/:documentId/access-logs', async (req: Request, res: Response) => {
-  try {
-    const { documentId } = req.params;
-    
-    // TODO: Add authentication middleware (employer only)
-    // TODO: Query audit logs for document access events
-    
-    res.json({
-      success: true,
-      documentId,
-      accessLogs: [],
-      message: 'Access logs endpoint - requires Firebase integration',
-    });
-  } catch (_error) {
-    res.status(500).json({
-      success: false,
-      error: 'Failed to retrieve access logs',
-    });
+documentsRouter.get(
+  '/:documentId/access-logs',
+  async (req: Request, res: Response) => {
+    try {
+      const { documentId } = req.params;
+
+      // TODO: Add authentication middleware (employer only)
+      // TODO: Query audit logs for document access events
+
+      res.json({
+        success: true,
+        documentId,
+        accessLogs: [],
+        message: 'Access logs endpoint - requires Firebase integration',
+      });
+    } catch (_error) {
+      res.status(500).json({
+        success: false,
+        error: 'Failed to retrieve access logs',
+      });
+    }
   }
-});
+);

@@ -1,9 +1,9 @@
 /**
  * Card Component
- * 
+ *
  * A reusable card component that provides consistent container styling
  * across the ESTA Tracker application.
- * 
+ *
  * Features:
  * - Optional header with title and description
  * - Optional footer section
@@ -12,7 +12,7 @@
  * - Click handling with cursor pointer
  * - Responsive design
  * - Dark mode support
- * 
+ *
  * Uses:
  * - Tailwind CSS for styling
  * - clsx for conditional class management
@@ -43,7 +43,7 @@ export function Card({
   ...props
 }: CardProps) {
   const baseClasses = 'bg-white dark:bg-gray-800 rounded-lg shadow-md';
-  
+
   const paddingClasses = {
     none: '',
     sm: 'p-3',
@@ -69,7 +69,7 @@ export function Card({
       {(title || description) && (
         <div className="mb-4">
           {title && (
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+            <h3 className="mb-1 text-lg font-semibold text-gray-900 dark:text-white">
               {title}
             </h3>
           )}
@@ -80,11 +80,11 @@ export function Card({
           )}
         </div>
       )}
-      
+
       <div>{children}</div>
-      
+
       {footer && (
-        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
           {footer}
         </div>
       )}

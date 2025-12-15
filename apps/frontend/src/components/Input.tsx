@@ -10,7 +10,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 /**
  * Enhanced input component with validation states
- * 
+ *
  * Features:
  * - Label and hint text support
  * - Error state with message
@@ -42,11 +42,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={inputId}
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
           >
             {label}
             {(required || showRequiredIndicator) && (
-              <span className="text-red-500 ml-1" aria-label="required">
+              <span className="ml-1 text-red-500" aria-label="required">
                 *
               </span>
             )}
@@ -54,7 +54,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <div className="relative">
           {hasIcon && (
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
+            <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-400">
               {icon}
             </div>
           )}
@@ -62,12 +62,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             required={required}
-            className={`
-              input block w-full
-              ${hasIcon ? 'pl-10' : ''}
-              ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
-              ${className}
-            `.trim()}
+            className={`input block w-full ${hasIcon ? 'pl-10' : ''} ${error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''} ${className} `.trim()}
             aria-invalid={error ? 'true' : 'false'}
             aria-describedby={
               error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined
@@ -86,7 +81,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {error && (
           <p
             id={`${inputId}-error`}
-            className="mt-1 text-sm text-red-600 dark:text-red-400 animate-fade-in"
+            className="animate-fade-in mt-1 text-sm text-red-600 dark:text-red-400"
             role="alert"
           >
             {error}

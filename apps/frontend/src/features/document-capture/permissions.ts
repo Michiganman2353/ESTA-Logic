@@ -1,6 +1,6 @@
 /**
  * Camera Permission Manager
- * 
+ *
  * Handles camera permission requests with platform-specific quirks:
  * - Safari/iOS permission prompts
  * - Android WebView permission handling
@@ -25,10 +25,7 @@ export interface CameraPermissionManager {
  * Checks if getUserMedia is supported in the current browser
  */
 export function hasGetUserMediaSupport(): boolean {
-  return !!(
-    navigator.mediaDevices &&
-    navigator.mediaDevices.getUserMedia
-  );
+  return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
 }
 
 /**
@@ -47,8 +44,10 @@ export async function checkCameraPermission(): Promise<PermissionStatus> {
   }
 
   try {
-    const result = await navigator.permissions.query({ name: 'camera' as PermissionName });
-    
+    const result = await navigator.permissions.query({
+      name: 'camera' as PermissionName,
+    });
+
     return {
       granted: result.state === 'granted',
       denied: result.state === 'denied',
@@ -91,7 +90,7 @@ export async function requestCameraPermission(): Promise<PermissionStatus> {
     });
 
     // Permission granted - stop the stream immediately
-    stream.getTracks().forEach(track => track.stop());
+    stream.getTracks().forEach((track) => track.stop());
 
     return {
       granted: true,
@@ -99,12 +98,14 @@ export async function requestCameraPermission(): Promise<PermissionStatus> {
       prompt: false,
     };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    
+    const errorMessage =
+      error instanceof Error ? error.message : 'Unknown error';
+
     // Check for specific denial errors
     if (
       error instanceof DOMException &&
-      (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError')
+      (error.name === 'NotAllowedError' ||
+        error.name === 'PermissionDeniedError')
     ) {
       return {
         granted: false,
@@ -131,7 +132,7 @@ export async function requestCameraPermission(): Promise<PermissionStatus> {
 export function requiresUserInteraction(): boolean {
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  
+
   return isSafari || isIOS;
 }
 

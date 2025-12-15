@@ -147,6 +147,7 @@ ESTA-Logic/
 ```
 
 ### Key:
+
 - `┌─┐` = Package
 - `│` `└` `┬` `▼` = Dependency flow (top imports from bottom)
 - `✨` = Newly created package
@@ -210,6 +211,7 @@ Turborepo automatically determines build order based on dependencies.
 ### Parallel Build Groups
 
 **Group 1 (Parallel - No Dependencies):**
+
 ```
 shared-types  ─┐
 shared-utils  ─┼─► Build in parallel (2-3 seconds)
@@ -217,6 +219,7 @@ firebase      ─┘
 ```
 
 **Group 2 (Parallel - Depends on Group 1):**
+
 ```
 accrual-engine  ─┐
 csv-processor   ─┼─► Build in parallel after Group 1 (1-2 seconds)
@@ -227,6 +230,7 @@ functions       ─┘
 ```
 
 **Total Build Time:**
+
 - **Cold build:** ~14-15 seconds
 - **With cache:** ~7 seconds (50% faster)
 - **With remote cache:** ~3 seconds (80% faster)
@@ -277,7 +281,7 @@ Security: Private - never exposed to client
 
 ### ⚠️ CRITICAL RULE
 
-**NEVER mix VITE_* and process.env in the same package!**
+**NEVER mix VITE\_\* and process.env in the same package!**
 
 - Frontend uses `VITE_*` prefix (Vite bundler convention)
 - Backend uses NO prefix (standard Node.js)
@@ -431,29 +435,34 @@ npm run test:e2e
 ## Key Architectural Decisions
 
 ### 1. ESM (ECMAScript Modules)
+
 - All packages use `"type": "module"`
 - Modern JavaScript standard
 - Better tree-shaking in bundlers
 - Future-proof
 
 ### 2. TypeScript Everywhere
+
 - Shared `tsconfig.base.json`
 - Strict mode enabled
 - Consistent configuration
 
 ### 3. Turborepo for Orchestration
+
 - Smart caching
 - Parallel execution
 - Remote cache ready
 - Clear task dependencies
 
 ### 4. Monorepo with npm Workspaces
+
 - Single `package-lock.json`
 - Hoisted dependencies
 - Fast installs
 - No lerna/yarn needed
 
 ### 5. Clear Layered Architecture
+
 - Foundation → Service → Business Logic → Application
 - Prevents circular dependencies
 - Easy to understand and maintain
@@ -463,19 +472,22 @@ npm run test:e2e
 ## Success Indicators
 
 ✅ **Current State (Phase 1 Complete):**
+
 - All 8 packages build successfully
 - Firebase Admin centralized
 - Turbo configuration optimized
 - Workspace properly configured
 
 🔄 **Target State (End of Phase 2):**
+
 - All server code uses @esta-tracker/firebase
 - Config package operational
 - No environment variable misuse
 - TypeScript path aliases working
 
 🎯 **Final Goal (End of Phase 4):**
-- >80% test coverage on business logic
+
+- > 80% test coverage on business logic
 - <3s build time with remote cache
 - Clear migration documentation
 - ESLint enforcing boundaries
@@ -486,5 +498,6 @@ npm run test:e2e
 **Last Updated:** November 21, 2025  
 **Maintained By:** Architecture Team  
 **Related Documents:**
+
 - [Monorepo Audit Report](./MONOREPO_AUDIT_REPORT.md)
 - [Implementation Summary](./IMPLEMENTATION_SUMMARY.md)

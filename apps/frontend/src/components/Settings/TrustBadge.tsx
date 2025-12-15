@@ -1,9 +1,9 @@
 /**
  * TrustBadge Component
- * 
+ *
  * Displays a trust/security badge that can be placed in header or footer.
  * Provides visual assurance of security and compliance features.
- * 
+ *
  * Features:
  * - Compact badge design
  * - Hover tooltip with details
@@ -11,7 +11,7 @@
  * - Multiple badge variants (security, compliance, verified)
  * - Responsive sizing
  * - Dark mode support
- * 
+ *
  * Uses:
  * - Tooltip component for additional information
  * - Design system Button for certificate download
@@ -43,7 +43,7 @@ export function TrustBadge({
     security: {
       icon: (
         <svg
-          className="w-full h-full"
+          className="h-full w-full"
           viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -65,7 +65,7 @@ export function TrustBadge({
     compliance: {
       icon: (
         <svg
-          className="w-full h-full"
+          className="h-full w-full"
           viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -85,7 +85,7 @@ export function TrustBadge({
     verified: {
       icon: (
         <svg
-          className="w-full h-full"
+          className="h-full w-full"
           viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -115,7 +115,7 @@ export function TrustBadge({
   };
 
   const BadgeContent = (
-    <div className="inline-flex items-center space-x-2 bg-white dark:bg-gray-800 rounded-lg px-3 py-1.5 shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className="inline-flex items-center space-x-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
       <div className={sizeClasses[size]}>{badge.icon}</div>
       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
         {badge.label}
@@ -123,11 +123,11 @@ export function TrustBadge({
       {showCertificate && (
         <button
           onClick={handleCertificateDownload}
-          className="text-xs text-primary-600 dark:text-primary-400 hover:underline ml-2"
+          className="text-primary-600 dark:text-primary-400 ml-2 text-xs hover:underline"
           aria-label="Download compliance certificate"
         >
           <svg
-            className="w-4 h-4"
+            className="h-4 w-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -153,7 +153,7 @@ export function TrustBadge({
 
 /**
  * TrustBadgeGroup Component
- * 
+ *
  * Displays multiple trust badges in a group
  */
 export function TrustBadgeGroup({

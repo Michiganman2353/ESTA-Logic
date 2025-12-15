@@ -9,7 +9,7 @@ interface LoadingButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 /**
  * Button component with loading state
- * 
+ *
  * Features:
  * - Built-in loading spinner
  * - Customizable loading text
@@ -45,7 +45,7 @@ export function LoadingButton({
       <span className="relative z-10 flex items-center justify-center">
         {loading && (
           <svg
-            className="animate-spin -ml-1 mr-3 h-5 w-5 text-current"
+            className="-ml-1 mr-3 h-5 w-5 animate-spin text-current"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -69,7 +69,7 @@ export function LoadingButton({
         {loading ? loadingText || 'Loading...' : children}
       </span>
       {!loading && (
-        <span className="absolute inset-0 shimmer-bg opacity-0 group-hover:opacity-100 transition-opacity"></span>
+        <span className="shimmer-bg absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100"></span>
       )}
     </button>
   );
