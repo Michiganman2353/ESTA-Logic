@@ -1,9 +1,11 @@
 # Node Version Migration Guide - 20.x to 22.x
 
 ## Overview
+
 This repository has been updated to use Node.js 22.x to align with Vercel deployment requirements and ensure compatibility across all environments.
 
 ## Changes Made
+
 - Updated `.nvmrc` from `20` to `22`
 - Updated `engines.node` in all `package.json` files from `20.x` to `22.x`:
   - Root `package.json`
@@ -99,6 +101,7 @@ npm run build
 ### Issue: Dependencies fail to install
 
 **Solution**: Ensure you're running Node 22.x:
+
 ```bash
 node --version
 ```
@@ -108,6 +111,7 @@ If still on Node 20.x, switch using nvm and try again.
 ### Issue: Build or test failures after migration
 
 **Solution**: Some dependencies may need updates. Check for any deprecated packages:
+
 ```bash
 npm outdated
 ```
@@ -115,6 +119,7 @@ npm outdated
 ### Issue: Vercel deployment still fails
 
 **Solution**: Ensure your Vercel project settings also specify Node 22.x:
+
 1. Go to your Vercel project settings
 2. Navigate to "General" → "Node.js Version"
 3. Select "22.x"
@@ -130,6 +135,7 @@ npm outdated
 ## Questions or Issues?
 
 If you encounter any problems during migration, please:
+
 1. Check that you're using Node 22.x (`node --version`)
 2. Ensure all dependencies are reinstalled fresh
 3. Review this guide's troubleshooting section

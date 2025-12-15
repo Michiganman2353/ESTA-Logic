@@ -87,12 +87,12 @@ jobs:
           if [ "${{ inputs.verbose }}" = "true" ]; then
             ARGS="$ARGS --verbose"
           fi
-          
+
           echo "Running build with args: $ARGS"
-          
+
           # Run build in Nix development shell
           nix develop ./nix-repro --command bash -c "./nix-repro/build.sh $ARGS" 2>&1 | tee build.log
-          
+
           # Check if WASM artifact was created
           if [ -f "dist/wasm/accrual.wasm" ]; then
             echo "wasm_built=true" >> $GITHUB_OUTPUT
@@ -112,7 +112,7 @@ jobs:
           echo ""
           echo "Artifact contents:"
           ls -la dist/wasm/
-          
+
           # Verify SHA256 hash
           if [ -f "dist/wasm/accrual.wasm.sha256" ]; then
             echo ""
@@ -144,14 +144,14 @@ jobs:
         if: always()
         run: |
           echo "Checking secret availability..."
-          
+
           if [ -z "${{ secrets.KERNEL_PRIVATE_KEY }}" ]; then
             echo "⚠️  KERNEL_PRIVATE_KEY not configured - WASM signing disabled"
             echo "   To enable signing, add KERNEL_PRIVATE_KEY secret in repository settings"
           else
             echo "✅ KERNEL_PRIVATE_KEY configured"
           fi
-          
+
           if [ -z "${{ secrets.KERNEL_PUBLIC_KEY }}" ]; then
             echo "⚠️  KERNEL_PUBLIC_KEY not configured - signature verification disabled"
           else

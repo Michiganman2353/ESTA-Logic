@@ -3,11 +3,12 @@
 **Date:** November 21, 2024  
 **Incident:** Manager Registration "Failed to Load" Error and GitHub Actions Deployment Failures  
 **Severity:** High (blocking user signups and deployments)  
-**Status:** Resolved  
+**Status:** Resolved
 
 ## Executive Summary
 
 Two critical issues were identified and resolved:
+
 1. Manager registration flow was blocking on email verification, causing users to get stuck
 2. GitHub Actions CI/CD workflow was failing to deploy due to token corruption and missing build steps
 
@@ -16,17 +17,20 @@ Both issues have been fixed with defensive error handling, improved user experie
 ## Timeline
 
 **Discovery Phase:**
+
 - Issue reported: Manager registration completing but showing "failed to load" error
 - CI/CD observed failing on multiple recent runs
 - No clear error messages in user-facing UI
 
 **Investigation Phase:**
+
 - Analyzed registration flow in `authService.ts` and `OnboardingWizard.tsx`
 - Reviewed email verification logic in `EmailVerification.tsx`
 - Examined GitHub Actions workflow configuration
 - Tested build process locally (successful)
 
 **Resolution Phase:**
+
 - Made email verification non-blocking
 - Added fallback navigation options
 - Fixed CI/CD token handling
@@ -41,12 +45,14 @@ Both issues have been fixed with defensive error handling, improved user experie
 Email verification process was treated as a blocking operation. If `sendEmailVerification()` failed or if the Firebase Cloud Function `approveUserAfterVerification` was unavailable, users would be stuck on the verification screen with no clear path forward.
 
 **Contributing Factors:**
+
 1. **Synchronous blocking:** Registration flow required email verification to complete before proceeding
 2. **Missing error handling:** Firebase function failures were caught but didn't provide user-friendly feedback
 3. **No fallback navigation:** Users had no way to proceed if verification failed
 4. **Dependency on Cloud Functions:** Assumed Firebase Functions would always be available
 
 **Code Locations:**
+
 - `packages/frontend/src/lib/authService.ts` lines 242-254 (Manager registration)
 - `packages/frontend/src/lib/authService.ts` lines 441-453 (Employee registration)
 - `packages/frontend/src/components/EmailVerification.tsx` lines 31-46 (Function call)
@@ -57,12 +63,14 @@ Email verification process was treated as a blocking operation. If `sendEmailVer
 The CI workflow included a "token sanitization" step (lines 99-104, 140-146) that removed characters including hyphens (`-`), dots (`.`), and slashes (`/`) from the Vercel token. Since Vercel tokens often contain these characters, this corrupted the token and caused authentication failures.
 
 **Contributing Factors:**
+
 1. **Overzealous sanitization:** Token cleaning removed valid characters
 2. **Missing build steps:** Deployment jobs didn't build the project first
 3. **Strict test requirements:** Test failures blocked all deployments
 4. **Redundant operations:** Duplicate test runs causing confusion
 
 **Code Locations:**
+
 - `.github/workflows/ci.yml` lines 99-104 (Preview deploy sanitization)
 - `.github/workflows/ci.yml` lines 140-146 (Production deploy sanitization)
 - `.github/workflows/ci.yml` lines 90-112 (Missing build step in preview)
@@ -71,12 +79,14 @@ The CI workflow included a "token sanitization" step (lines 99-104, 140-146) tha
 ## What Went Wrong
 
 ### Technical Issues
+
 1. **Email verification blocking:** Treated as synchronous requirement instead of asynchronous process
 2. **Token corruption:** Sanitization logic removing valid characters
 3. **Build-deploy separation:** Not building before deploying
 4. **Test gating:** Minor test failures blocking critical deployments
 
 ### Process Issues
+
 1. **Insufficient testing:** Edge cases not covered in tests
 2. **Missing documentation:** No troubleshooting guide for deployments
 3. **Inadequate monitoring:** No alerts for failed deployments
@@ -94,15 +104,20 @@ The CI workflow included a "token sanitization" step (lines 99-104, 140-146) tha
 ### Immediate Fixes
 
 #### Registration Flow (Issue 1)
+
 ```typescript
 // Before: Blocking email verification
 await sendEmailVerification(firebaseUser, actionCodeSettings);
 
 // After: Non-blocking with error handling
 try {
-  await retryWithBackoff(async () => {
-    await sendEmailVerification(firebaseUser, actionCodeSettings);
-  }, 2, 2000);
+  await retryWithBackoff(
+    async () => {
+      await sendEmailVerification(firebaseUser, actionCodeSettings);
+    },
+    2,
+    2000
+  );
   console.log('Email verification sent successfully');
 } catch (emailError) {
   console.error('Failed to send verification email (non-fatal):', emailError);
@@ -111,6 +126,7 @@ try {
 ```
 
 **Changes Made:**
+
 - Wrapped `sendEmailVerification()` in try-catch (non-fatal)
 - Made Firebase function calls non-blocking
 - Added "Continue to Login" button
@@ -118,6 +134,7 @@ try {
 - Users auto-activate on first login if email is verified
 
 #### CI/CD Workflow (Issue 2)
+
 ```yaml
 # Before: Token sanitization corrupting tokens
 - name: Sanitize Vercel Token
@@ -132,6 +149,7 @@ try {
 ```
 
 **Changes Made:**
+
 - Removed token sanitization
 - Added build steps before deployment
 - Made tests continue-on-error
@@ -147,6 +165,7 @@ try {
 ## Prevention Measures
 
 ### Immediate Actions (Completed)
+
 - [x] Make email verification non-blocking
 - [x] Add fallback navigation options
 - [x] Fix CI/CD token handling
@@ -155,6 +174,7 @@ try {
 - [x] Document deployment troubleshooting
 
 ### Short-term Actions (Recommended)
+
 - [ ] Add monitoring for registration completion rate
 - [ ] Set up Vercel deployment notifications
 - [ ] Create health check endpoint
@@ -163,6 +183,7 @@ try {
 - [ ] Add automated smoke tests post-deployment
 
 ### Long-term Actions (Recommended)
+
 - [ ] Implement comprehensive E2E tests for registration
 - [ ] Set up staging environment
 - [ ] Add deployment preview testing checklist
@@ -174,6 +195,7 @@ try {
 ## Lessons Learned
 
 ### What We Learned
+
 1. **Blocking operations should be async:** Never block user progress on non-critical operations
 2. **Token sanitization is dangerous:** Don't modify secrets unless absolutely necessary
 3. **Build before deploy:** Always ensure code is built before deploying
@@ -181,6 +203,7 @@ try {
 5. **Documentation is critical:** Troubleshooting guides save time during incidents
 
 ### Best Practices to Adopt
+
 1. **Defensive programming:** Wrap external calls in try-catch
 2. **Fail gracefully:** Provide fallback options when services fail
 3. **Test edge cases:** Consider what happens when dependencies fail
@@ -190,6 +213,7 @@ try {
 ## Testing and Validation
 
 ### Tests Added
+
 ```typescript
 // packages/frontend/src/lib/__tests__/authService.test.ts
 - Email format validation
@@ -201,6 +225,7 @@ try {
 ```
 
 ### Manual Testing Checklist
+
 - [x] Local build succeeds
 - [x] All tests pass
 - [x] Linting passes
@@ -210,6 +235,7 @@ try {
 - [ ] CI/CD deploys successfully (requires GitHub merge)
 
 ### Validation Script
+
 ```bash
 # Run environment validation
 npm run validate:env
@@ -227,11 +253,13 @@ npm run validate:env
 If these changes cause issues:
 
 ### Via Vercel Dashboard
+
 1. Go to Deployments tab
 2. Find last working deployment (before this PR)
 3. Click "..." → "Promote to Production"
 
 ### Via Git
+
 ```bash
 # Revert the changes
 git revert <commit-hash>
@@ -243,7 +271,9 @@ git push origin master --force
 ```
 
 ### Re-enable Blocking
+
 If email verification needs to be blocking again:
+
 1. Remove try-catch around `sendEmailVerification()`
 2. Remove "Continue to Login" button
 3. Make Firebase function call required
@@ -251,27 +281,32 @@ If email verification needs to be blocking again:
 ## Communication
 
 ### Internal
+
 - Engineering team notified via PR
 - Deployment guide shared with team
 - Post-mortem reviewed in team meeting
 
 ### External
+
 - No user communication required (issue resolved before widespread impact)
 - If needed: Email to affected users with apology and fix confirmation
 
 ## Metrics
 
 ### Before Fix
+
 - Registration completion rate: Unknown (users getting stuck)
 - Deployment success rate: ~40% (multiple CI failures)
 - Time to deploy: N/A (deployments failing)
 
 ### After Fix
+
 - Registration completion rate: Expected 95%+ (with fallback options)
 - Deployment success rate: Expected 95%+ (fixed token handling)
 - Time to deploy: ~10-15 minutes (typical CI/CD time)
 
 ### Success Criteria
+
 - [x] Users can complete registration even if email verification fails
 - [x] CI/CD deploys successfully on push to master
 - [x] Tests pass locally and in CI
@@ -282,7 +317,7 @@ If email verification needs to be blocking again:
 
 **Investigated by:** GitHub Copilot  
 **Reviewed by:** Repository maintainers  
-**Tested by:** Development team  
+**Tested by:** Development team
 
 ## References
 
@@ -294,6 +329,7 @@ If email verification needs to be blocking again:
 ## Appendix
 
 ### Affected Files
+
 - `packages/frontend/src/lib/authService.ts`
 - `packages/frontend/src/components/EmailVerification.tsx`
 - `.github/workflows/ci.yml`
@@ -302,11 +338,13 @@ If email verification needs to be blocking again:
 - `packages/frontend/src/lib/__tests__/authService.test.ts` (new)
 
 ### Related Issues
+
 - Registration flow improvements
 - CI/CD reliability
 - Email verification UX
 
 ### Future Work
+
 - Implement comprehensive monitoring
 - Add feature flags system
 - Create staging environment
