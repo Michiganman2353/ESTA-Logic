@@ -50,7 +50,7 @@ Module boundaries are enforced using Nx tags and ESLint rules.
 Every project is tagged with a scope:
 
 - **`scope:frontend`** - Frontend-only code
-- **`scope:backend`** - Backend-only code  
+- **`scope:backend`** - Backend-only code
 - **`scope:shared`** - Code shared between frontend and backend
 
 ### Dependency Rules
@@ -233,17 +233,19 @@ The new `ci-elite.yml` workflow includes:
 ### Key CI Improvements
 
 **Before (ci.yml):**
+
 ```yaml
-- run: npm run lint          # Lints everything
-- run: npm run test          # Tests everything
-- run: npm run build         # Builds everything
+- run: npm run lint # Lints everything
+- run: npm run test # Tests everything
+- run: npm run build # Builds everything
 ```
 
 **After (ci-elite.yml):**
+
 ```yaml
-- run: npx nx affected --target=lint    # Only affected projects
-- run: npx nx affected --target=test    # Only affected projects
-- run: npx nx affected --target=build   # Only affected projects
+- run: npx nx affected --target=lint # Only affected projects
+- run: npx nx affected --target=test # Only affected projects
+- run: npx nx affected --target=build # Only affected projects
 ```
 
 ### Nx Cache Strategy
@@ -266,6 +268,7 @@ Caching is configured for optimal performance:
 All environment variables follow strict conventions:
 
 **Frontend (Vite):**
+
 - Must use `VITE_` prefix
 - Exposed to client-side code
 - Configured in GitHub Secrets and Vercel
@@ -280,6 +283,7 @@ VITE_FIREBASE_APP_ID
 ```
 
 **Backend:**
+
 - No prefix required
 - Server-side only
 - Never exposed to client
@@ -341,11 +345,13 @@ npx nx test frontend --ui
 ### Frontend Deployment (Vercel)
 
 **Preview Deployments:**
+
 - Automatically deployed for every PR
 - Preview URL posted as PR comment
 - Uses preview environment variables
 
 **Production Deployment:**
+
 - Automatically deployed on merge to `master`
 - Uses production environment variables
 - Requires all CI checks to pass
@@ -353,6 +359,7 @@ npx nx test frontend --ui
 ### Backend Deployment
 
 Backend can be deployed to any Node.js hosting:
+
 - Built to `apps/backend/dist`
 - Requires database configuration
 - Environment variables must be configured
@@ -372,6 +379,7 @@ npm run validate:deployment
 ### Adding New Projects
 
 **Adding an Application:**
+
 ```bash
 # Create directory
 mkdir -p apps/new-app/src
@@ -382,6 +390,7 @@ mkdir -p apps/new-app/src
 ```
 
 **Adding a Library:**
+
 ```bash
 # Create directory
 mkdir -p libs/new-lib/src
@@ -407,6 +416,7 @@ npm outdated
 ### Workspace Scripts
 
 Located in `scripts/`:
+
 - `check-envs.js` - Validate environment variables
 - `smoke-test-employer-code.mjs` - Smoke test for builds
 - `validate-deployment.sh` - Validate build output
@@ -422,6 +432,7 @@ Located in `scripts/`:
 ## Questions?
 
 For questions or issues:
+
 1. Check this documentation
 2. Review project READMEs (`apps/README.md`, `libs/README.md`)
 3. Open an issue on GitHub

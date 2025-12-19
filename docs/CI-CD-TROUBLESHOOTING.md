@@ -5,6 +5,7 @@
 ### Issue 1: Invalid Vercel Token Error
 
 **Error Message:**
+
 ```
 Error! You defined "--token", but its contents are invalid. Must not contain: "\n", " ", "-", ".", "/"
 ```
@@ -15,10 +16,11 @@ The `VERCEL_TOKEN` GitHub secret contains invalid characters or formatting issue
 **Solution:**
 
 1. **Obtain a fresh Vercel token:**
+
    ```bash
    # Login to Vercel CLI
    vercel login
-   
+
    # Generate a new token in Vercel Dashboard
    # Go to: https://vercel.com/account/tokens
    # Click "Create" and copy the token
@@ -41,6 +43,7 @@ The `VERCEL_TOKEN` GitHub secret contains invalid characters or formatting issue
 ### Issue 2: Missing Vercel Organization or Project ID
 
 **Error Message:**
+
 ```
 Error: Missing required parameter VERCEL_ORG_ID
 Error: Missing required parameter VERCEL_PROJECT_ID
@@ -49,17 +52,20 @@ Error: Missing required parameter VERCEL_PROJECT_ID
 **Solution:**
 
 1. **Link your project locally:**
+
    ```bash
    cd /path/to/ESTA-Logic
    vercel link
    ```
 
 2. **Extract the IDs:**
+
    ```bash
    cat .vercel/project.json
    ```
-   
+
    You'll see something like:
+
    ```json
    {
      "orgId": "team_xxxxxxxxxxxxxxxxxxxx",
@@ -74,6 +80,7 @@ Error: Missing required parameter VERCEL_PROJECT_ID
 ### Issue 3: Build Output Directory Not Found
 
 **Error Message:**
+
 ```
 Error: Build output directory not found
 ```
@@ -84,6 +91,7 @@ The build process failed or the output directory is misconfigured.
 **Solution:**
 
 1. **Verify local build works:**
+
    ```bash
    npm ci
    npm run build
@@ -91,6 +99,7 @@ The build process failed or the output directory is misconfigured.
    ```
 
 2. **Check vercel.json configuration:**
+
    ```json
    {
      "outputDirectory": "packages/frontend/dist"
@@ -111,6 +120,7 @@ The build process failed or the output directory is misconfigured.
 ### Issue 4: Node Version Mismatch
 
 **Error Message:**
+
 ```
 Error: The engine "node" is incompatible with this module
 ```
@@ -118,6 +128,7 @@ Error: The engine "node" is incompatible with this module
 **Solution:**
 
 1. **Check required Node version in package.json:**
+
    ```json
    {
      "engines": {
@@ -127,6 +138,7 @@ Error: The engine "node" is incompatible with this module
    ```
 
 2. **Update GitHub Actions workflow:**
+
    ```yaml
    - name: Setup Node.js
      uses: actions/setup-node@v4
@@ -147,6 +159,7 @@ API routes in `/api` directory are not being recognized by Vercel.
 **Solution:**
 
 1. **Verify vercel.json functions configuration:**
+
    ```json
    {
      "functions": {
@@ -167,6 +180,7 @@ API routes in `/api` directory are not being recognized by Vercel.
    ```
 
 2. **Check API file structure:**
+
    ```
    api/
    ├── health.ts          ✅ Valid
@@ -177,10 +191,11 @@ API routes in `/api` directory are not being recognized by Vercel.
    ```
 
 3. **Ensure TypeScript exports are correct:**
+
    ```typescript
    // api/health.ts
    import type { VercelRequest, VercelResponse } from '@vercel/node';
-   
+
    export default function handler(req: VercelRequest, res: VercelResponse) {
      res.status(200).json({ status: 'ok' });
    }
@@ -195,7 +210,7 @@ Environment variables are not properly configured in Vercel or GitHub Actions.
 
 1. **For Vercel:**
    - Go to Vercel Dashboard → Project Settings → Environment Variables
-   - Add all required variables (FIREBASE_*, VITE_*, etc.)
+   - Add all required variables (FIREBASE*\*, VITE*\*, etc.)
    - Set appropriate scopes (Production, Preview, Development)
 
 2. **For GitHub Actions:**
@@ -214,6 +229,7 @@ Environment variables are not properly configured in Vercel or GitHub Actions.
 ### Issue 7: Turbo Cache Issues
 
 **Symptoms:**
+
 - Builds fail with "cache miss" repeatedly
 - Inconsistent build results
 - Missing dependencies
@@ -221,12 +237,14 @@ Environment variables are not properly configured in Vercel or GitHub Actions.
 **Solution:**
 
 1. **Clear Turbo cache:**
+
    ```bash
    rm -rf .turbo
    npm run build
    ```
 
 2. **Verify turbo.json task dependencies:**
+
    ```json
    {
      "tasks": {
@@ -245,6 +263,7 @@ Environment variables are not properly configured in Vercel or GitHub Actions.
 ### Issue 8: Deprecated Package Warnings
 
 **Warnings:**
+
 ```
 npm warn deprecated eslint@8.57.1: This version is no longer supported
 npm warn deprecated inflight@1.0.6: This module is not supported
@@ -253,12 +272,14 @@ npm warn deprecated inflight@1.0.6: This module is not supported
 **Solution:**
 
 1. **Update deprecated packages:**
+
    ```bash
    npm update eslint
    npm audit fix
    ```
 
 2. **For major version updates:**
+
    ```bash
    npm install eslint@latest --save-dev
    ```
@@ -305,13 +326,14 @@ npm run build
    - Click on failed deployment for logs
 
 3. **Test locally:**
+
    ```bash
    # Install Vercel CLI
    npm install -g vercel
-   
+
    # Login
    vercel login
-   
+
    # Test deployment locally
    vercel dev
    ```
@@ -333,6 +355,7 @@ If a deployment fails in production:
 ## Contact
 
 For persistent issues:
+
 - Create a GitHub issue with logs attached
 - Include output from `./scripts/validate-deployment.sh`
 - Include relevant sections from GitHub Actions logs

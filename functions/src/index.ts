@@ -19,19 +19,21 @@ export const onUserCreate = functions.auth.user().onCreate(async (user) => {
 
   try {
     // Wait a bit for Firestore document to be created by the client
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     // Get user document from Firestore
     const userDocRef = db.collection('users').doc(uid);
     const userDoc = await userDocRef.get();
 
     if (!userDoc.exists) {
-      console.warn(`User document not found for ${uid}. Will be set when available.`);
+      console.warn(
+        `User document not found for ${uid}. Will be set when available.`
+      );
       return null;
     }
 
     const userData = userDoc.data();
-    
+
     // Set custom claims based on role
     const claims: { [key: string]: any } = {
       role: userData?.role || 'employee',
@@ -41,7 +43,7 @@ export const onUserCreate = functions.auth.user().onCreate(async (user) => {
     await auth.setCustomUserClaims(uid, claims);
 
     console.log(`Custom claims set for user ${uid}:`, claims);
-    
+
     // Create audit log
     await db.collection('auditLogs').add({
       userId: uid,
@@ -299,7 +301,12 @@ export const generateDocumentUploadUrl = functions.https.onCall(
     }
 
     // Validate content type
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+    const allowedTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/jpg',
+      'application/pdf',
+    ];
     if (!allowedTypes.includes(contentType)) {
       throw new functions.https.HttpsError(
         'invalid-argument',
@@ -309,8 +316,11 @@ export const generateDocumentUploadUrl = functions.https.onCall(
 
     try {
       // Verify the request exists and belongs to the user
-      const requestDoc = await db.collection('sickTimeRequests').doc(requestId).get();
-      
+      const requestDoc = await db
+        .collection('sickTimeRequests')
+        .doc(requestId)
+        .get();
+
       if (!requestDoc.exists) {
         throw new functions.https.HttpsError(
           'not-found',
@@ -319,7 +329,7 @@ export const generateDocumentUploadUrl = functions.https.onCall(
       }
 
       const requestData = requestDoc.data();
-      
+
       // Verify ownership
       if (requestData?.userId !== userId) {
         throw new functions.https.HttpsError(
@@ -383,7 +393,9 @@ export const generateDocumentUploadUrl = functions.https.onCall(
         timestamp: admin.firestore.FieldValue.serverTimestamp(),
       });
 
-      console.log(`Generated upload URL for user ${userId}, request ${requestId}`);
+      console.log(
+        `Generated upload URL for user ${userId}, request ${requestId}`
+      );
 
       return {
         success: true,
@@ -457,7 +469,9 @@ export const confirmDocumentUpload = functions.https.onCall(
       });
 
       // Update the sick time request with document reference
-      const requestRef = db.collection('sickTimeRequests').doc(docData.requestId);
+      const requestRef = db
+        .collection('sickTimeRequests')
+        .doc(docData.requestId);
       await requestRef.update({
         hasDocuments: true,
         documentIds: admin.firestore.FieldValue.arrayUnion(documentId),
@@ -539,8 +553,9 @@ export const getDocumentDownloadUrl = functions.https.onCall(
 
       // Verify access permissions
       const isOwner = docData.userId === userId;
-      const isEmployer = (userRole === 'employer' || userRole === 'admin') && 
-                         docData.tenantId === tenantId;
+      const isEmployer =
+        (userRole === 'employer' || userRole === 'admin') &&
+        docData.tenantId === tenantId;
 
       if (!isOwner && !isEmployer) {
         throw new functions.https.HttpsError(
@@ -614,20 +629,22 @@ export const onPtoApproval = functions.firestore
 
     // Check if status changed to approved
     if (beforeData.status !== 'approved' && afterData.status === 'approved') {
-      console.log(`PTO request ${requestId} approved. Marking documents as immutable.`);
+      console.log(
+        `PTO request ${requestId} approved. Marking documents as immutable.`
+      );
 
       try {
         // Get all documents for this request
         const documentsQuery = db
           .collection('documents')
           .where('requestId', '==', requestId);
-        
+
         const documentsSnapshot = await documentsQuery.get();
 
         // Update each document to mark as immutable
         const updatePromises = documentsSnapshot.docs.map(async (doc) => {
           const docData = doc.data();
-          
+
           // Update Firestore metadata
           await doc.ref.update({
             immutable: true,
@@ -646,7 +663,10 @@ export const onPtoApproval = functions.firestore
               },
             });
           } catch (storageError) {
-            console.error(`Error updating storage metadata for ${doc.id}:`, storageError);
+            console.error(
+              `Error updating storage metadata for ${doc.id}:`,
+              storageError
+            );
           }
         });
 
@@ -665,7 +685,9 @@ export const onPtoApproval = functions.firestore
           timestamp: admin.firestore.FieldValue.serverTimestamp(),
         });
 
-        console.log(`Marked ${documentsSnapshot.size} documents as immutable for request ${requestId}`);
+        console.log(
+          `Marked ${documentsSnapshot.size} documents as immutable for request ${requestId}`
+        );
       } catch (error) {
         console.error('Error marking documents as immutable:', error);
       }

@@ -30,9 +30,21 @@ export const employerProfileCreateSchema = z
       .max(1000000, 'Employee count must be 1,000,000 or less'),
     address: z
       .object({
-        street: z.string().trim().max(200, 'Street address must be 200 characters or less').optional(),
-        city: z.string().trim().max(100, 'City must be 100 characters or less').optional(),
-        state: z.string().trim().length(2, 'State must be a 2-letter code').optional(),
+        street: z
+          .string()
+          .trim()
+          .max(200, 'Street address must be 200 characters or less')
+          .optional(),
+        city: z
+          .string()
+          .trim()
+          .max(100, 'City must be 100 characters or less')
+          .optional(),
+        state: z
+          .string()
+          .trim()
+          .length(2, 'State must be a 2-letter code')
+          .optional(),
         zipCode: z
           .string()
           .trim()
@@ -43,7 +55,10 @@ export const employerProfileCreateSchema = z
     phone: z
       .string()
       .trim()
-      .regex(/^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/, 'Invalid phone number format')
+      .regex(
+        /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/,
+        'Invalid phone number format'
+      )
       .max(20, 'Phone number must be 20 characters or less')
       .optional(),
     website: z
@@ -60,7 +75,9 @@ export const employerProfileCreateSchema = z
   })
   .strict();
 
-export type EmployerProfileCreateInput = z.infer<typeof employerProfileCreateSchema>;
+export type EmployerProfileCreateInput = z.infer<
+  typeof employerProfileCreateSchema
+>;
 
 /**
  * Schema for updating employer settings.
@@ -84,7 +101,11 @@ export const employerSettingsUpdateSchema = z
         street: z.string().trim().max(200).optional(),
         city: z.string().trim().max(100).optional(),
         state: z.string().trim().length(2).optional(),
-        zipCode: z.string().trim().regex(/^\d{5}(-\d{4})?$/).optional(),
+        zipCode: z
+          .string()
+          .trim()
+          .regex(/^\d{5}(-\d{4})?$/)
+          .optional(),
       })
       .optional(),
     phone: z
@@ -98,4 +119,6 @@ export const employerSettingsUpdateSchema = z
   })
   .strict();
 
-export type EmployerSettingsUpdateInput = z.infer<typeof employerSettingsUpdateSchema>;
+export type EmployerSettingsUpdateInput = z.infer<
+  typeof employerSettingsUpdateSchema
+>;

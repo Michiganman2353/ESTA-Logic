@@ -5,6 +5,7 @@ Centralized Firebase service for ESTA Tracker - the single source of truth for a
 ## 🎯 Purpose
 
 This package provides a unified, type-safe Firebase integration that:
+
 - **Prevents duplicate initialization** - Firebase is initialized exactly once
 - **Validates environment variables** - Fails fast if configuration is missing
 - **Provides testing mocks** - No more hitting real Firebase in tests
@@ -25,7 +26,11 @@ const user = auth.currentUser;
 ### Backend (Server-Side)
 
 ```typescript
-import { initializeFirebaseAdmin, getFirestore, getAuth } from '@esta/firebase/admin';
+import {
+  initializeFirebaseAdmin,
+  getFirestore,
+  getAuth,
+} from '@esta/firebase/admin';
 
 // Initialize once at app startup
 initializeFirebaseAdmin();

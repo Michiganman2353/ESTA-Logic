@@ -3,7 +3,7 @@ import admin from 'firebase-admin';
 /**
  * Firebase Admin SDK Service
  * Provides centralized Firebase Admin initialization and utilities
- * 
+ *
  * This module ensures Firebase Admin is initialized only once across
  * the entire application (backend, API functions, Cloud Functions)
  */
@@ -20,11 +20,13 @@ export interface FirebaseAdminConfig {
 /**
  * Initialize Firebase Admin SDK with optional configuration
  * Safe to call multiple times - will return existing instance
- * 
+ *
  * @param config - Optional Firebase configuration
  * @returns Firebase Admin App instance
  */
-export function initializeFirebaseAdmin(config?: FirebaseAdminConfig): admin.app.App {
+export function initializeFirebaseAdmin(
+  config?: FirebaseAdminConfig
+): admin.app.App {
   if (firebaseApp) {
     return firebaseApp;
   }
@@ -42,9 +44,10 @@ export function initializeFirebaseAdmin(config?: FirebaseAdminConfig): admin.app
 
     if (config?.serviceAccount) {
       // Use provided service account (JSON string or object)
-      credential = typeof config.serviceAccount === 'string'
-        ? admin.credential.cert(JSON.parse(config.serviceAccount))
-        : admin.credential.cert(config.serviceAccount);
+      credential =
+        typeof config.serviceAccount === 'string'
+          ? admin.credential.cert(JSON.parse(config.serviceAccount))
+          : admin.credential.cert(config.serviceAccount);
       console.log('🔑 Using provided service account credential');
     } else {
       // Use Application Default Credentials (ADC)
@@ -57,25 +60,30 @@ export function initializeFirebaseAdmin(config?: FirebaseAdminConfig): admin.app
     firebaseApp = admin.initializeApp({
       credential,
       projectId: config?.projectId || process.env.FIREBASE_PROJECT_ID,
-      storageBucket: config?.storageBucket || process.env.FIREBASE_STORAGE_BUCKET,
+      storageBucket:
+        config?.storageBucket || process.env.FIREBASE_STORAGE_BUCKET,
       databaseURL: config?.databaseURL,
     });
 
     console.log('✅ Firebase Admin SDK initialized successfully');
     console.log(`   Project ID: ${firebaseApp.options.projectId || 'default'}`);
-    console.log(`   Storage Bucket: ${firebaseApp.options.storageBucket || 'default'}`);
+    console.log(
+      `   Storage Bucket: ${firebaseApp.options.storageBucket || 'default'}`
+    );
 
     return firebaseApp;
   } catch (error) {
     console.error('❌ Failed to initialize Firebase Admin SDK:', error);
-    throw new Error(`Failed to initialize Firebase Admin SDK: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    throw new Error(
+      `Failed to initialize Firebase Admin SDK: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 }
 
 /**
  * Get the Firebase Admin app instance
  * Initializes if not already initialized
- * 
+ *
  * @returns Firebase Admin App instance
  */
 export function getFirebaseApp(): admin.app.App {

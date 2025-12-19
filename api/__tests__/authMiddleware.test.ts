@@ -4,22 +4,22 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { 
-  verifyToken, 
-  requireAuth, 
-  requireRole, 
-  isResourceOwner, 
+import {
+  verifyToken,
+  requireAuth,
+  requireRole,
+  isResourceOwner,
   hasTenantAccess,
-  type AuthenticatedVercelRequest 
+  type AuthenticatedVercelRequest,
 } from '../lib/authMiddleware';
 import * as admin from 'firebase-admin';
 
 // Mock firebase-admin
 vi.mock('firebase-admin', () => {
   const mockAuth = {
-    verifyIdToken: vi.fn()
+    verifyIdToken: vi.fn(),
   };
-  
+
   return {
     default: {
       apps: [],
@@ -27,24 +27,24 @@ vi.mock('firebase-admin', () => {
       auth: () => mockAuth,
       firestore: () => ({
         collection: vi.fn(() => ({
-          add: vi.fn()
+          add: vi.fn(),
         })),
         FieldValue: {
-          serverTimestamp: vi.fn()
-        }
-      })
+          serverTimestamp: vi.fn(),
+        },
+      }),
     },
     apps: [],
     initializeApp: vi.fn(),
     auth: () => mockAuth,
     firestore: () => ({
       collection: vi.fn(() => ({
-        add: vi.fn()
+        add: vi.fn(),
       })),
       FieldValue: {
-        serverTimestamp: vi.fn()
-      }
-    })
+        serverTimestamp: vi.fn(),
+      },
+    }),
   };
 });
 
@@ -57,12 +57,12 @@ describe('Authentication Middleware', () => {
       headers: {},
       method: 'POST',
       url: '/api/test',
-      body: {}
+      body: {},
     };
 
     mockRes = {
       status: vi.fn().mockReturnThis(),
-      json: vi.fn().mockReturnThis()
+      json: vi.fn().mockReturnThis(),
     };
 
     vi.clearAllMocks();
@@ -103,14 +103,14 @@ describe('Authentication Middleware', () => {
         email: 'test@example.com',
         role: 'employee',
         tenantId: 'tenant123',
-        employeeId: 'emp123'
+        employeeId: 'emp123',
       };
 
       mockReq.headers = { authorization: 'Bearer valid-token-123' };
-      
+
       const mockVerifyIdToken = vi.fn().mockResolvedValue(mockDecodedToken);
       vi.spyOn(admin, 'auth').mockReturnValue({
-        verifyIdToken: mockVerifyIdToken
+        verifyIdToken: mockVerifyIdToken,
       } as any);
 
       const result = await verifyToken(mockReq as VercelRequest);
@@ -122,10 +122,12 @@ describe('Authentication Middleware', () => {
 
     it('should fail when token verification throws error', async () => {
       mockReq.headers = { authorization: 'Bearer invalid-token' };
-      
-      const mockVerifyIdToken = vi.fn().mockRejectedValue(new Error('Token expired'));
+
+      const mockVerifyIdToken = vi
+        .fn()
+        .mockRejectedValue(new Error('Token expired'));
       vi.spyOn(admin, 'auth').mockReturnValue({
-        verifyIdToken: mockVerifyIdToken
+        verifyIdToken: mockVerifyIdToken,
       } as any);
 
       const result = await verifyToken(mockReq as VercelRequest);
@@ -142,18 +144,21 @@ describe('Authentication Middleware', () => {
         uid: 'user123',
         email: 'test@example.com',
         role: 'employee',
-        tenantId: 'tenant123'
+        tenantId: 'tenant123',
       };
 
       mockReq.headers = { authorization: 'Bearer valid-token' };
-      
+
       const mockVerifyIdToken = vi.fn().mockResolvedValue(mockDecodedToken);
       vi.spyOn(admin, 'auth').mockReturnValue({
-        verifyIdToken: mockVerifyIdToken
+        verifyIdToken: mockVerifyIdToken,
       } as any);
 
       const authenticatedReq = mockReq as AuthenticatedVercelRequest;
-      const result = await requireAuth(authenticatedReq, mockRes as VercelResponse);
+      const result = await requireAuth(
+        authenticatedReq,
+        mockRes as VercelResponse
+      );
 
       expect(result.success).toBe(true);
       expect(authenticatedReq.user).toEqual(mockDecodedToken);
@@ -161,21 +166,26 @@ describe('Authentication Middleware', () => {
 
     it('should send 401 response on authentication failure', async () => {
       mockReq.headers = { authorization: 'Bearer invalid-token' };
-      
-      const mockVerifyIdToken = vi.fn().mockRejectedValue(new Error('Invalid token'));
+
+      const mockVerifyIdToken = vi
+        .fn()
+        .mockRejectedValue(new Error('Invalid token'));
       vi.spyOn(admin, 'auth').mockReturnValue({
-        verifyIdToken: mockVerifyIdToken
+        verifyIdToken: mockVerifyIdToken,
       } as any);
 
       const authenticatedReq = mockReq as AuthenticatedVercelRequest;
-      const result = await requireAuth(authenticatedReq, mockRes as VercelResponse);
+      const result = await requireAuth(
+        authenticatedReq,
+        mockRes as VercelResponse
+      );
 
       expect(result.success).toBe(false);
       expect(mockRes.status).toHaveBeenCalledWith(401);
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: false,
-          error: expect.stringContaining('Invalid or expired token')
+          error: expect.stringContaining('Invalid or expired token'),
         })
       );
     });
@@ -187,11 +197,13 @@ describe('Authentication Middleware', () => {
         ...mockReq,
         user: {
           uid: 'user123',
-          role: 'employee'
-        }
+          role: 'employee',
+        },
       } as AuthenticatedVercelRequest;
 
-      const result = requireRole(authenticatedReq, mockRes as VercelResponse, ['employee']);
+      const result = requireRole(authenticatedReq, mockRes as VercelResponse, [
+        'employee',
+      ]);
 
       expect(result).toBe(true);
     });
@@ -201,26 +213,33 @@ describe('Authentication Middleware', () => {
         ...mockReq,
         user: {
           uid: 'user123',
-          role: 'employer'
-        }
+          role: 'employer',
+        },
       } as AuthenticatedVercelRequest;
 
-      const result = requireRole(authenticatedReq, mockRes as VercelResponse, ['employee', 'employer', 'admin']);
+      const result = requireRole(authenticatedReq, mockRes as VercelResponse, [
+        'employee',
+        'employer',
+        'admin',
+      ]);
 
       expect(result).toBe(true);
     });
 
     it('should send 401 when user is not authenticated', () => {
-      const authenticatedReq: AuthenticatedVercelRequest = mockReq as AuthenticatedVercelRequest;
+      const authenticatedReq: AuthenticatedVercelRequest =
+        mockReq as AuthenticatedVercelRequest;
 
-      const result = requireRole(authenticatedReq, mockRes as VercelResponse, ['employee']);
+      const result = requireRole(authenticatedReq, mockRes as VercelResponse, [
+        'employee',
+      ]);
 
       expect(result).toBe(false);
       expect(mockRes.status).toHaveBeenCalledWith(401);
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: false,
-          error: expect.stringContaining('Authentication required')
+          error: expect.stringContaining('Authentication required'),
         })
       );
     });
@@ -230,18 +249,20 @@ describe('Authentication Middleware', () => {
         ...mockReq,
         user: {
           uid: 'user123',
-          role: 'employee'
-        }
+          role: 'employee',
+        },
       } as AuthenticatedVercelRequest;
 
-      const result = requireRole(authenticatedReq, mockRes as VercelResponse, ['admin']);
+      const result = requireRole(authenticatedReq, mockRes as VercelResponse, [
+        'admin',
+      ]);
 
       expect(result).toBe(false);
       expect(mockRes.status).toHaveBeenCalledWith(403);
       expect(mockRes.json).toHaveBeenCalledWith(
         expect.objectContaining({
           success: false,
-          error: expect.stringContaining('Insufficient permissions')
+          error: expect.stringContaining('Insufficient permissions'),
         })
       );
     });
@@ -253,8 +274,8 @@ describe('Authentication Middleware', () => {
         ...mockReq,
         user: {
           uid: 'user123',
-          role: 'employee'
-        }
+          role: 'employee',
+        },
       } as AuthenticatedVercelRequest;
 
       const result = isResourceOwner(authenticatedReq, 'user123');
@@ -268,8 +289,8 @@ describe('Authentication Middleware', () => {
         user: {
           uid: 'user123',
           employeeId: 'emp456',
-          role: 'employee'
-        }
+          role: 'employee',
+        },
       } as AuthenticatedVercelRequest;
 
       const result = isResourceOwner(authenticatedReq, 'emp456');
@@ -282,8 +303,8 @@ describe('Authentication Middleware', () => {
         ...mockReq,
         user: {
           uid: 'user123',
-          role: 'employee'
-        }
+          role: 'employee',
+        },
       } as AuthenticatedVercelRequest;
 
       const result = isResourceOwner(authenticatedReq, 'user999');
@@ -292,7 +313,8 @@ describe('Authentication Middleware', () => {
     });
 
     it('should return false when user is not authenticated', () => {
-      const authenticatedReq: AuthenticatedVercelRequest = mockReq as AuthenticatedVercelRequest;
+      const authenticatedReq: AuthenticatedVercelRequest =
+        mockReq as AuthenticatedVercelRequest;
 
       const result = isResourceOwner(authenticatedReq, 'user123');
 
@@ -307,8 +329,8 @@ describe('Authentication Middleware', () => {
         user: {
           uid: 'user123',
           tenantId: 'tenant123',
-          role: 'employee'
-        }
+          role: 'employee',
+        },
       } as AuthenticatedVercelRequest;
 
       const result = hasTenantAccess(authenticatedReq, 'tenant123');
@@ -322,8 +344,8 @@ describe('Authentication Middleware', () => {
         user: {
           uid: 'admin123',
           tenantId: 'tenant123',
-          role: 'admin'
-        }
+          role: 'admin',
+        },
       } as AuthenticatedVercelRequest;
 
       const result = hasTenantAccess(authenticatedReq, 'tenant999');
@@ -337,8 +359,8 @@ describe('Authentication Middleware', () => {
         user: {
           uid: 'user123',
           tenantId: 'tenant123',
-          role: 'employee'
-        }
+          role: 'employee',
+        },
       } as AuthenticatedVercelRequest;
 
       const result = hasTenantAccess(authenticatedReq, 'tenant999');
@@ -347,7 +369,8 @@ describe('Authentication Middleware', () => {
     });
 
     it('should return false when user is not authenticated', () => {
-      const authenticatedReq: AuthenticatedVercelRequest = mockReq as AuthenticatedVercelRequest;
+      const authenticatedReq: AuthenticatedVercelRequest =
+        mockReq as AuthenticatedVercelRequest;
 
       const result = hasTenantAccess(authenticatedReq, 'tenant123');
 

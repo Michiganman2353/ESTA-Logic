@@ -192,6 +192,13 @@ lerna.json
 docs/archive/
 
 # ==================== #
+# Archive Directory (TRACKED)
+# ==================== #
+# The archive/ directory contains preserved experimental code
+# and is intentionally tracked in git for historical reference.
+# DO NOT add archive/ to .gitignore
+
+# ==================== #
 # Gleam Build Artifacts
 # ==================== #
 **/build/

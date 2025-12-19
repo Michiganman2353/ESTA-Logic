@@ -31,6 +31,7 @@ CORS_ORIGIN=https://estatracker.com
 ### 2. Configure Firebase Console (10 minutes)
 
 #### Enable Email/Password Authentication
+
 1. Go to [Firebase Console](https://console.firebase.google.com/project/esta-tracker)
 2. Click **Authentication** → **Sign-in method**
 3. Click **Email/Password**
@@ -38,6 +39,7 @@ CORS_ORIGIN=https://estatracker.com
 5. Click **Save**
 
 #### Add Authorized Domains
+
 1. In Firebase Console → **Authentication** → **Settings**
 2. Scroll to **Authorized domains**
 3. Click **Add domain** and add:
@@ -61,11 +63,13 @@ vercel --prod
 ### 4. Verify Deployment (3 minutes)
 
 **Test Health Endpoint:**
+
 ```bash
 curl https://estatracker.com/api/health
 ```
 
 Expected response:
+
 ```json
 {
   "healthy": true,
@@ -78,6 +82,7 @@ Expected response:
 ```
 
 **Test Registration Diagnostic:**
+
 ```bash
 curl https://estatracker.com/api/registration-diagnostic
 ```
@@ -111,6 +116,7 @@ firebase deploy --only functions
 ```
 
 Verify deployment:
+
 ```bash
 firebase functions:list
 ```
@@ -130,6 +136,7 @@ firebase functions:list
 ### Issue: "Firebase not configured" Error
 
 **Quick Fix:**
+
 1. Verify environment variables in Vercel Dashboard
 2. Check all `VITE_FIREBASE_*` variables are set
 3. Redeploy: `vercel --prod`
@@ -138,6 +145,7 @@ firebase functions:list
 ### Issue: No Verification Email
 
 **Quick Fix:**
+
 1. Check spam/junk folder
 2. Verify Email/Password is enabled in Firebase Console
 3. Check Firebase Console → Authentication → Users (user should exist)
@@ -146,6 +154,7 @@ firebase functions:list
 ### Issue: CORS Error in Browser Console
 
 **Quick Fix:**
+
 1. Add domain to Firebase Authorized Domains (see step 2 above)
 2. Wait 2-3 minutes for changes to propagate
 3. Clear browser cache and try again
@@ -153,6 +162,7 @@ firebase functions:list
 ### Issue: Health Check Fails
 
 **Quick Fix:**
+
 1. Check `curl https://estatracker.com/api/health`
 2. If 404: Wait for deployment to finish (check Vercel Dashboard)
 3. If 503: Check diagnostic endpoint for details
@@ -161,11 +171,13 @@ firebase functions:list
 ## 📞 Support
 
 **Immediate Help:**
+
 - Check: `REGISTRATION_DEPLOYMENT_GUIDE.md` (comprehensive troubleshooting)
 - Diagnostic: `https://estatracker.com/api/registration-diagnostic`
 - Health: `https://estatracker.com/api/health`
 
 **Technical Issues:**
+
 - Email: support@estatracker.com
 - Include: Error message, browser console logs, timestamp
 
@@ -179,6 +191,7 @@ After deployment, monitor these metrics for the first 24 hours:
 4. **Error Types** - Monitor for patterns in error logs
 
 View logs:
+
 ```bash
 # Vercel logs
 vercel logs --follow
@@ -190,6 +203,7 @@ firebase functions:log
 ## 🎉 You're Done!
 
 The registration system should now be operational. Users can:
+
 - ✅ Register as managers or employees
 - ✅ Receive verification emails
 - ✅ Verify their email
@@ -200,6 +214,7 @@ All error handling, retry logic, and diagnostics are built-in.
 ---
 
 **Next Steps:**
+
 1. Monitor registration success rate
 2. Collect user feedback
 3. Review error logs daily

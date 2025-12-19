@@ -21,10 +21,7 @@ const allowedContentTypes = [
  */
 export const documentUploadUrlSchema = z
   .object({
-    requestId: z
-      .string()
-      .trim()
-      .min(1, 'Request ID is required'),
+    requestId: z.string().trim().min(1, 'Request ID is required'),
     fileName: z
       .string()
       .trim()
@@ -36,7 +33,8 @@ export const documentUploadUrlSchema = z
       ),
     contentType: z.enum(allowedContentTypes, {
       errorMap: () => ({
-        message: 'Invalid content type. Allowed: PDF, JPEG, PNG, GIF, DOC, DOCX',
+        message:
+          'Invalid content type. Allowed: PDF, JPEG, PNG, GIF, DOC, DOCX',
       }),
     }),
   })
@@ -49,10 +47,7 @@ export type DocumentUploadUrlInput = z.infer<typeof documentUploadUrlSchema>;
  */
 export const documentConfirmSchema = z
   .object({
-    documentId: z
-      .string()
-      .trim()
-      .min(1, 'Document ID is required'),
+    documentId: z.string().trim().min(1, 'Document ID is required'),
   })
   .strict();
 
@@ -63,11 +58,7 @@ export type DocumentConfirmInput = z.infer<typeof documentConfirmSchema>;
  */
 export const documentQuerySchema = z
   .object({
-    requestId: z
-      .string()
-      .trim()
-      .min(1, 'Request ID is required')
-      .optional(),
+    requestId: z.string().trim().min(1, 'Request ID is required').optional(),
   })
   .strict();
 

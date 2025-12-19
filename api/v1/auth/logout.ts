@@ -4,14 +4,11 @@ import { setCorsHeaders, handlePreflight } from '../../lib/cors';
 /**
  * Logout API Endpoint
  * POST /api/v1/auth/logout
- * 
+ *
  * Note: Actual logout is handled on the client side by Firebase Auth SDK
  * This endpoint is mainly for consistency and future extensions
  */
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Set CORS headers
   const origin = req.headers.origin || '';
   setCorsHeaders(res, origin);

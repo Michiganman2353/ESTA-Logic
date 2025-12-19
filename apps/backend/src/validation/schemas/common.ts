@@ -29,10 +29,7 @@ export type PaginationInput = z.infer<typeof paginationSchema>;
  * Schema for ID path parameter.
  */
 export const idParamSchema = z.object({
-  id: z
-    .string()
-    .trim()
-    .min(1, 'ID is required'),
+  id: z.string().trim().min(1, 'ID is required'),
 });
 
 export type IdParamInput = z.infer<typeof idParamSchema>;
@@ -41,10 +38,7 @@ export type IdParamInput = z.infer<typeof idParamSchema>;
  * Schema for user ID path parameter.
  */
 export const userIdParamSchema = z.object({
-  userId: z
-    .string()
-    .trim()
-    .min(1, 'User ID is required'),
+  userId: z.string().trim().min(1, 'User ID is required'),
 });
 
 export type UserIdParamInput = z.infer<typeof userIdParamSchema>;

@@ -1,6 +1,7 @@
 # Hybrid Encryption Implementation
 
 ## Overview
+
 This document describes the production implementation of hybrid encryption (AES-256-GCM + RSA-OAEP) in the ESTA Tracker application for securing sensitive employee data.
 
 ## Architecture
@@ -8,10 +9,12 @@ This document describes the production implementation of hybrid encryption (AES-
 ### Hybrid Encryption System
 
 The application uses **industry-standard hybrid encryption**:
+
 - **AES-256-GCM** for data encryption (symmetric, fast, authenticated)
 - **RSA-OAEP with SHA-256** for key wrapping (asymmetric, secure key exchange)
 
 This approach combines:
+
 - The speed and efficiency of symmetric encryption (AES-GCM)
 - The security and key distribution benefits of asymmetric encryption (RSA-OAEP)
 - Built-in authentication and integrity verification (GCM mode)
@@ -29,8 +32,9 @@ Original Data → AES-256-GCM Encryption → Encrypted Data
 ```
 
 **Complete Encryption Result:**
+
 - `encryptedData`: Base64-encoded AES-GCM encrypted data
-- `encryptedAESKey`: Base64-encoded RSA-OAEP encrypted AES key  
+- `encryptedAESKey`: Base64-encoded RSA-OAEP encrypted AES key
 - `iv`: Base64-encoded initialization vector (12 bytes for GCM)
 - `authTag`: Base64-encoded authentication tag (included in GCM output)
 
@@ -53,6 +57,7 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 **Location:** `packages/backend/src/utils/encryption/hybridEncryption.ts`
 
 **Functions:**
+
 - `generateKeyPair(keySize?)` - Generate RSA key pair (2048-4096 bit)
 - `encryptHybrid(data, publicKey)` - Encrypt string or Buffer data
 - `decryptHybrid(payload, privateKey)` - Decrypt encrypted data
@@ -62,6 +67,7 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 **Technology:** Node.js `crypto` module (built-in, no dependencies)
 
 **Tests:** `packages/backend/src/utils/encryption/__tests__/hybridEncryption.test.ts`
+
 - 25 comprehensive tests
 - Covers encryption/decryption, error handling, security properties
 
@@ -70,6 +76,7 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 **Location:** `packages/frontend/src/lib/edgeCrypto/edgeHybrid.ts`
 
 **Functions:**
+
 - `generateEdgeRSAKeys(keySize?)` - Generate RSA key pair
 - `exportEdgeRSAKeyPair(keyPair)` - Export to JWK format
 - `importEdgeRSAKeyPair(exported)` - Import from JWK format
@@ -83,6 +90,7 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 **Edge Compatible:** Works in browsers, Vercel Edge Functions, Cloudflare Workers, Deno Deploy
 
 **Tests:** `packages/frontend/src/lib/edgeCrypto/edgeHybrid.test.ts`
+
 - 35 tests (21 pass in Node test environment)
 - Note: Some tests fail in Node's crypto.subtle but work in actual Edge runtime
 
@@ -98,6 +106,7 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 **Authentication:** Required (Firebase JWT)
 
 **Request:**
+
 ```json
 {
   "data": "sensitive information",
@@ -111,6 +120,7 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -126,6 +136,7 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 ```
 
 **Security:**
+
 - Rate limited to 100 requests/minute per user
 - Audit logged with metadata
 - KMS-backed key management
@@ -141,6 +152,7 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 **Authentication:** Required (Firebase JWT)
 
 **Request (KMS mode):**
+
 ```json
 {
   "payload": {
@@ -157,6 +169,7 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 ```
 
 **Request (Legacy mode - deprecated):**
+
 ```json
 {
   "payload": {
@@ -171,6 +184,7 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -179,6 +193,7 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 ```
 
 **Security:**
+
 - Rate limited to 10 requests/minute per user
 - Audit logged with access details
 - Authorization checks for resource access
@@ -194,6 +209,7 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 **Note:** For backward compatibility. Use `/api/secure/encrypt` with KMS for new implementations.
 
 **Request:**
+
 ```json
 {
   "data": "sensitive information",
@@ -202,6 +218,7 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -214,6 +231,7 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 ```
 
 **Health Check:** GET /api/edge/encrypt
+
 ```json
 {
   "status": "ok",
@@ -221,12 +239,14 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
   "service": "encryption",
   "timestamp": "2025-01-01T00:00:00.000Z"
 }
-```  
+```
+
 **File:** `api/secure/decrypt.ts`
 
 **Purpose:** Server-side decryption with private key
 
 **Request:**
+
 ```json
 {
   "payload": {
@@ -240,6 +260,7 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -252,13 +273,17 @@ Encrypted Data → AES-256-GCM Decryption ← ────┘
 ### Server-Side Encryption (Node.js)
 
 ```typescript
-import { generateKeyPair, encryptHybrid, decryptHybrid } from './hybridEncryption';
+import {
+  generateKeyPair,
+  encryptHybrid,
+  decryptHybrid,
+} from './hybridEncryption';
 
 // Generate key pair
 const { publicKey, privateKey } = generateKeyPair();
 
 // Encrypt sensitive data
-const encrypted = encryptHybrid("SSN: 123-45-6789", publicKey);
+const encrypted = encryptHybrid('SSN: 123-45-6789', publicKey);
 console.log(encrypted);
 // {
 //   encryptedData: "base64...",
@@ -278,10 +303,10 @@ console.log(decrypted); // "SSN: 123-45-6789"
 ### Client-Side Encryption (Edge/Browser)
 
 ```typescript
-import { 
-  generateEdgeRSAKeys, 
+import {
+  generateEdgeRSAKeys,
   exportEdgeRSAKeyPair,
-  edgeEncryptHybrid 
+  edgeEncryptHybrid,
 } from './edgeCrypto/edgeHybrid';
 
 // Generate key pair
@@ -293,7 +318,7 @@ localStorage.setItem('publicKey', JSON.stringify(exported.publicKey));
 
 // Encrypt data
 const encrypted = await edgeEncryptHybrid(
-  "sensitive employee data",
+  'sensitive employee data',
   keyPair.publicKey
 );
 
@@ -301,7 +326,7 @@ const encrypted = await edgeEncryptHybrid(
 await fetch('/api/save-encrypted', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ encrypted })
+  body: JSON.stringify({ encrypted }),
 });
 ```
 
@@ -316,8 +341,8 @@ const response = await fetch('/api/edge/encrypt', {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
     data: 'sensitive information',
-    publicKey: publicKeyJWK
-  })
+    publicKey: publicKeyJWK,
+  }),
 });
 
 const { encrypted } = await response.json();
@@ -329,14 +354,14 @@ console.log(encrypted);
 // Server-side: Decrypt via Node Function
 const decryptResponse = await fetch('/api/secure/decrypt', {
   method: 'POST',
-  headers: { 
+  headers: {
     'Content-Type': 'application/json',
-    'Authorization': `Bearer ${token}` // Protect this endpoint!
+    Authorization: `Bearer ${token}`, // Protect this endpoint!
   },
   body: JSON.stringify({
     payload: encrypted,
-    privateKey: process.env.RSA_PRIVATE_KEY
-  })
+    privateKey: process.env.RSA_PRIVATE_KEY,
+  }),
 });
 
 const { decrypted } = await decryptResponse.json();
@@ -361,6 +386,7 @@ const { decrypted } = await decryptResponse.json();
    - ✅ Private keys NEVER leave Google infrastructure
 
 2. **KMS Architecture**
+
    ```
    Data → AES-256-GCM → Encrypted Data
             ↓
@@ -375,6 +401,7 @@ const { decrypted } = await decryptResponse.json();
    - Use `npm run setup:kms` for automated setup
 
 4. **Environment Variables**
+
    ```bash
    GCP_PROJECT_ID=esta-tracker
    KMS_LOCATION=us-central1
@@ -384,12 +411,16 @@ const { decrypted } = await decryptResponse.json();
    ```
 
 5. **Usage**
+
    ```typescript
-   import { encryptWithKMS, decryptWithKMS } from './services/kmsHybridEncryption';
-   
+   import {
+     encryptWithKMS,
+     decryptWithKMS,
+   } from './services/kmsHybridEncryption';
+
    // Encrypt
    const encrypted = await encryptWithKMS('sensitive data');
-   
+
    // Decrypt
    const decrypted = await decryptWithKMS(encrypted);
    ```
@@ -415,10 +446,11 @@ const { decrypted } = await decryptResponse.json();
 #### What NEVER to Store in Encryption Keys
 
 ❌ **NEVER store encryption keys in:**
+
 - Browser localStorage
 - Browser sessionStorage
 - IndexedDB
-- Cookies  
+- Cookies
 - URL parameters
 - Client-side JavaScript code
 - Git repositories
@@ -426,6 +458,7 @@ const { decrypted } = await decryptResponse.json();
 - Firestore documents (unless encrypted with master key)
 
 ✅ **DO store encryption keys in:**
+
 - AWS KMS / Azure Key Vault / Google Cloud KMS
 - Encrypted database with proper access control
 - Vercel environment variables (for public keys only)
@@ -434,12 +467,14 @@ const { decrypted } = await decryptResponse.json();
 ### Encryption Strength
 
 **Algorithm Security:**
+
 - **AES-256-GCM**: Military-grade encryption, NIST approved
 - **RSA-OAEP 2048-bit**: Secure for 2030+ (NIST recommendation)
 - **RSA-OAEP 4096-bit**: Secure for long-term data (30+ years)
 - **SHA-256**: Secure cryptographic hash function
 
 **Protection Against:**
+
 - Brute force attacks (computationally infeasible)
 - Man-in-the-middle attacks (with proper TLS)
 - Data tampering (GCM provides authentication)
@@ -448,12 +483,14 @@ const { decrypted } = await decryptResponse.json();
 ### Authentication and Integrity
 
 **AES-GCM Benefits:**
+
 - **Authenticated Encryption**: Detects any tampering
 - **Authentication Tag**: 128-bit tag verifies data integrity
 - **Single-pass**: Encrypts and authenticates simultaneously
 - **Performance**: Faster than separate encrypt + MAC
 
 **Security Properties:**
+
 - If data is modified, decryption will fail
 - If wrong key is used, authentication check fails
 - No need for separate HMAC or signature
@@ -461,6 +498,7 @@ const { decrypted } = await decryptResponse.json();
 ### Data to Encrypt
 
 #### MUST Encrypt
+
 - Social Security Numbers (SSN)
 - Tax ID Numbers (EIN)
 - Bank account numbers
@@ -473,6 +511,7 @@ const { decrypted } = await decryptResponse.json();
 - Performance reviews (if containing sensitive info)
 
 #### Keep UNENCRYPTED (for functionality)
+
 - Firebase Auth email addresses (used for login)
 - Employee first/last name (used for search/display)
 - Company name (used for display)
@@ -492,7 +531,7 @@ const { decrypted } = await decryptResponse.json();
   lastName: "Doe",  // Searchable - unencrypted
   email: "john@example.com",  // Firebase Auth - unencrypted
   role: "employee",  // Access control - unencrypted
-  
+
   // ENCRYPTED FIELDS (stored as encrypted payloads)
   encrypted: {
     ssn: {
@@ -514,7 +553,7 @@ const { decrypted } = await decryptResponse.json();
       authTag: "base64..."
     }
   },
-  
+
   createdAt: "2025-01-01T00:00:00Z",  // Metadata - unencrypted
   updatedAt: "2025-01-15T10:30:00Z"   // Metadata - unencrypted
 }
@@ -523,6 +562,7 @@ const { decrypted } = await decryptResponse.json();
 ### API Security
 
 #### Edge Encrypt Endpoint (`/api/edge/encrypt`)
+
 - Public endpoint (no auth required for encryption)
 - Rate limit: 100 requests/minute per IP
 - Only accepts POST requests
@@ -530,6 +570,7 @@ const { decrypted } = await decryptResponse.json();
 - Returns structured error messages
 
 #### Node Decrypt Endpoint (`/api/secure/decrypt`)
+
 - **MUST BE PROTECTED** - Requires authentication
 - Only accessible to authenticated admin users
 - Rate limit: 10 requests/minute per user
@@ -538,6 +579,7 @@ const { decrypted } = await decryptResponse.json();
 - Returns generic errors (don't leak implementation details)
 
 **Example Protection:**
+
 ```typescript
 // Add authentication middleware
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -546,13 +588,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!token) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
-  
+
   try {
     const decoded = verifyJWT(token);
     if (!decoded.isAdmin) {
       return res.status(403).json({ error: 'Forbidden' });
     }
-    
+
     // Continue with decryption...
   } catch (error) {
     return res.status(401).json({ error: 'Invalid token' });
@@ -592,12 +634,14 @@ This implementation supports:
 ### Encryption Performance
 
 **Benchmarks (approximate):**
+
 - **Small data (<1KB)**: < 5ms encryption
 - **Medium data (1-10KB)**: 5-20ms encryption
 - **Large data (100KB)**: 50-100ms encryption
 - **Files (1MB)**: 200-500ms encryption
 
 **RSA Operations:**
+
 - Key generation (2048-bit): 100-500ms
 - Key generation (4096-bit): 1-3 seconds
 - Encryption (wrapping AES key): < 5ms
@@ -620,12 +664,14 @@ This implementation supports:
 ## Browser Compatibility
 
 ### Required Features
+
 - Web Crypto API (`crypto.subtle`)
 - TextEncoder/TextDecoder
 - Promises/async-await
 - ArrayBuffer/Uint8Array
 
 ### Supported Browsers
+
 - ✅ Chrome/Edge 60+
 - ✅ Firefox 55+
 - ✅ Safari 11+
@@ -633,6 +679,7 @@ This implementation supports:
 - ✅ Chrome Android 60+
 
 ### Edge Runtime Support
+
 - ✅ Vercel Edge Functions
 - ✅ Cloudflare Workers
 - ✅ Deno Deploy
@@ -658,6 +705,7 @@ npm test
 ### Test Coverage
 
 **Backend (25 tests):**
+
 - ✅ Key pair generation
 - ✅ String encryption/decryption
 - ✅ Binary data encryption/decryption
@@ -672,10 +720,11 @@ npm test
 - ✅ End-to-end flows
 
 **Frontend (35 tests):**
+
 - ✅ Edge key generation (21 pass)
 - ✅ JWK export/import (21 pass)
 - ✅ Encryption (21 pass)
-- ⚠️  Decryption (14 fail in Node test env, work in Edge runtime)
+- ⚠️ Decryption (14 fail in Node test env, work in Edge runtime)
 - ✅ File encryption
 - ✅ Binary data handling
 
@@ -684,20 +733,24 @@ npm test
 ### Common Issues
 
 **Issue: "RSA_PKCS1_PADDING is no longer supported"**
+
 - Solution: Use `constants.RSA_PKCS1_OAEP_PADDING` instead of numeric value
 - Fixed in: Backend hybridEncryption.ts
 
 **Issue: Decryption tests fail in Vitest**
+
 - Reason: Node's crypto.subtle implementation differences
 - Solution: Tests work in actual Edge runtime and browsers
 - Not a production issue
 
 **Issue: "Failed to execute decrypt - not instance of ArrayBuffer"**
+
 - Reason: TypeScript strict typing in test environment
 - Solution: Works correctly in production Edge runtime
 - Wrap ArrayBuffer conversions properly
 
 **Issue: Private key exposed in logs**
+
 - Solution: Never log private keys, redact in error messages
 - Use structured logging with field filtering
 
@@ -713,21 +766,22 @@ If migrating from the previous Serpent-Twofish-AES implementation:
 6. **Phase out** old system after all data migrated
 
 **Migration Script Template:**
+
 ```typescript
 async function migrateEncryptedData() {
   const documents = await getDocumentsWithOldEncryption();
-  
+
   for (const doc of documents) {
     try {
       // Decrypt with old system
       const decrypted = decryptHybridOld(doc.encrypted);
-      
+
       // Encrypt with new system
       const encrypted = encryptHybrid(decrypted, newPublicKey);
-      
+
       // Update document
       await updateDocument(doc.id, { encrypted });
-      
+
       console.log(`Migrated ${doc.id}`);
     } catch (error) {
       console.error(`Failed to migrate ${doc.id}:`, error);
@@ -768,12 +822,14 @@ async function migrateEncryptedData() {
 ## Support and Resources
 
 ### Documentation
+
 - [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API)
 - [Node.js Crypto](https://nodejs.org/api/crypto.html)
 - [NIST Cryptographic Standards](https://csrc.nist.gov/)
 - [OWASP Cryptographic Storage](https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html)
 
 ### Related Files
+
 - Backend: `packages/backend/src/utils/encryption/hybridEncryption.ts`
 - Frontend: `packages/frontend/src/lib/edgeCrypto/edgeHybrid.ts`
 - API: `api/edge/encrypt.ts`, `api/secure/decrypt.ts`

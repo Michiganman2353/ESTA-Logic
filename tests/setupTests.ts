@@ -20,7 +20,10 @@ export const TEST_JWT_SECRET = 'test-secret-for-ci';
  * @param options - JWT sign options (default: { expiresIn: '7d' })
  * @returns Signed JWT token
  */
-export function createTestToken(payload = { userId: 'test-user' }, options = {}) {
+export function createTestToken(
+  payload = { userId: 'test-user' },
+  options = {}
+) {
   return jwt.sign(payload, TEST_JWT_SECRET, { expiresIn: '7d', ...options });
 }
 
@@ -28,20 +31,28 @@ export function createTestToken(payload = { userId: 'test-user' }, options = {})
 // This ensures tokens don't expire during test runs
 // Tests can still override these mocks using vi.mocked() if needed
 vi.mock('jsonwebtoken', async () => {
-  const actual = await vi.importActual<typeof import('jsonwebtoken')>('jsonwebtoken');
+  const actual =
+    await vi.importActual<typeof import('jsonwebtoken')>('jsonwebtoken');
   return {
     ...actual,
     sign: (payload: any, secret: string, opts: any) => {
       // Use TEST_JWT_SECRET by default, but allow tests to override
       // by checking if secret is explicitly different
-      const secretToUse = secret === undefined || secret === '' ? TEST_JWT_SECRET : secret;
+      const secretToUse =
+        secret === undefined || secret === '' ? TEST_JWT_SECRET : secret;
       return actual.sign(payload, secretToUse, opts);
     },
-    verify: (token: string, secretOrPublicKey: any, optionsOrCb?: any, cb?: any) => {
+    verify: (
+      token: string,
+      secretOrPublicKey: any,
+      optionsOrCb?: any,
+      cb?: any
+    ) => {
       try {
         // Use TEST_JWT_SECRET by default for deterministic testing
         // Tests that need to verify with wrong secrets can mock this function directly
-        const secretToUse = secretOrPublicKey === undefined ? TEST_JWT_SECRET : secretOrPublicKey;
+        const secretToUse =
+          secretOrPublicKey === undefined ? TEST_JWT_SECRET : secretOrPublicKey;
         return actual.verify(token, secretToUse, optionsOrCb, cb);
       } catch (err) {
         // Preserve the original error
@@ -54,25 +65,30 @@ vi.mock('jsonwebtoken', async () => {
 // ===== Firebase Authentication Mocking =====
 // Mock Firebase auth methods used by Login tests
 vi.mock('firebase/auth', () => {
-  const signInWithEmailAndPassword = vi.fn(async (auth: any, email: string, password: string) => {
-    // Allow tests to provoke failures by using special email addresses
-    if (email === 'invalid@example.com') {
-      return Promise.reject({ code: 'auth/invalid-credentials', message: 'Invalid credentials' });
+  const signInWithEmailAndPassword = vi.fn(
+    async (auth: any, email: string, password: string) => {
+      // Allow tests to provoke failures by using special email addresses
+      if (email === 'invalid@example.com') {
+        return Promise.reject({
+          code: 'auth/invalid-credentials',
+          message: 'Invalid credentials',
+        });
+      }
+      if (email === 'network-error@example.com') {
+        return Promise.reject({ isNetworkError: true });
+      }
+      if (email === 'unauthorized@example.com') {
+        return Promise.reject({ status: 401 });
+      }
+      // Default success case
+      return Promise.resolve({ user: { uid: 'test-uid', email } });
     }
-    if (email === 'network-error@example.com') {
-      return Promise.reject({ isNetworkError: true });
-    }
-    if (email === 'unauthorized@example.com') {
-      return Promise.reject({ status: 401 });
-    }
-    // Default success case
-    return Promise.resolve({ user: { uid: 'test-uid', email } });
-  });
+  );
 
   const getAuth = vi.fn(() => ({}));
-  
-  return { 
-    getAuth, 
+
+  return {
+    getAuth,
     signInWithEmailAndPassword,
   };
 });
@@ -80,7 +96,10 @@ vi.mock('firebase/auth', () => {
 // ===== Navigator Media Devices Mocking =====
 // Mock navigator.mediaDevices.getUserMedia for camera access tests
 // Only add if not already defined (avoid overriding test-specific mocks)
-if (typeof globalThis.navigator === 'undefined' || !globalThis.navigator.mediaDevices) {
+if (
+  typeof globalThis.navigator === 'undefined' ||
+  !globalThis.navigator.mediaDevices
+) {
   Object.defineProperty(globalThis, 'navigator', {
     value: {
       ...globalThis.navigator,

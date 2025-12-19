@@ -95,10 +95,16 @@ async function validatePTORequest(
 
         // Check if employee has enough balance
         if (requestedHours > availableHours) {
-          issues.push(`Insufficient balance: requested ${requestedHours} hours, available ${availableHours} hours`);
+          issues.push(
+            `Insufficient balance: requested ${requestedHours} hours, available ${availableHours} hours`
+          );
         } else if (requestedHours > availableHours * 0.8) {
-          warnings.push(`High balance usage: ${requestedHours} hours requested out of ${availableHours} hours available`);
-          warnings.push(`Request uses ${Math.round((requestedHours / availableHours) * 100)}% of available balance`);
+          warnings.push(
+            `High balance usage: ${requestedHours} hours requested out of ${availableHours} hours available`
+          );
+          warnings.push(
+            `Request uses ${Math.round((requestedHours / availableHours) * 100)}% of available balance`
+          );
         }
       }
     }
@@ -112,7 +118,7 @@ async function validatePTORequest(
         .where('status', 'in', ['pending', 'approved'])
         .get();
 
-      overlappingQuery.forEach(doc => {
+      overlappingQuery.forEach((doc) => {
         if (doc.id === requestId) return; // Skip self
 
         const otherData = doc.data();
@@ -134,16 +140,25 @@ async function validatePTORequest(
 
     // Validate documentation requirements for multi-day requests
     if (startDate && endDate) {
-      const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-      
+      const daysDiff = Math.ceil(
+        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
       if (daysDiff >= 3) {
         // Check for required documentation
         if (!requestData.hasDocuments && !requestData.documentIds?.length) {
-          warnings.push('Multi-day request (3+ days) should have supporting documentation');
+          warnings.push(
+            'Multi-day request (3+ days) should have supporting documentation'
+          );
         }
 
         // Check reason is appropriate
-        if (requestData.reason && !['illness', 'medical', 'injury', 'emergency'].includes(requestData.reason.toLowerCase())) {
+        if (
+          requestData.reason &&
+          !['illness', 'medical', 'injury', 'emergency'].includes(
+            requestData.reason.toLowerCase()
+          )
+        ) {
           warnings.push('Multi-day request reason should be medical-related');
         }
       }
@@ -152,17 +167,26 @@ async function validatePTORequest(
     // Check advance notice compliance (Michigan ESTA requirements)
     if (startDate) {
       const now = new Date();
-      const daysBefore = Math.ceil((startDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-      
+      const daysBefore = Math.ceil(
+        (startDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
       if (daysBefore < 0) {
-        warnings.push('Request is for past date - retroactive approval required');
+        warnings.push(
+          'Request is for past date - retroactive approval required'
+        );
       } else if (daysBefore > 180) {
         warnings.push('Request is more than 6 months in advance');
       }
     }
 
     // Validate request status
-    if (!requestData.status || !['pending', 'approved', 'denied', 'cancelled'].includes(requestData.status)) {
+    if (
+      !requestData.status ||
+      !['pending', 'approved', 'denied', 'cancelled'].includes(
+        requestData.status
+      )
+    ) {
       issues.push('Invalid or missing request status');
     }
 
@@ -175,13 +199,17 @@ async function validatePTORequest(
       if (employeeData?.status !== 'active') {
         warnings.push(`Employee status is ${employeeData?.status}`);
       }
-      if (employeeData?.tenantId !== tenantId && employeeData?.employerId !== tenantId) {
+      if (
+        employeeData?.tenantId !== tenantId &&
+        employeeData?.employerId !== tenantId
+      ) {
         issues.push('Employee does not belong to this tenant');
       }
     }
-
   } catch (error) {
-    issues.push(`Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    issues.push(
+      `Validation error: ${error instanceof Error ? error.message : 'Unknown error'}`
+    );
   }
 
   return {
@@ -214,32 +242,65 @@ async function processPTOValidation(
 
     if (requestIds && requestIds.length > 0) {
       if (requestIds.length <= 10) {
-        requestsQuery = requestsQuery.where(admin.firestore.FieldPath.documentId(), 'in', requestIds);
+        requestsQuery = requestsQuery.where(
+          admin.firestore.FieldPath.documentId(),
+          'in',
+          requestIds
+        );
       } else {
-        await writeJobLog(jobId, 'warn', 'Request ID list truncated to first 10 for query optimization');
-        requestsQuery = requestsQuery.where(admin.firestore.FieldPath.documentId(), 'in', requestIds.slice(0, 10));
+        await writeJobLog(
+          jobId,
+          'warn',
+          'Request ID list truncated to first 10 for query optimization'
+        );
+        requestsQuery = requestsQuery.where(
+          admin.firestore.FieldPath.documentId(),
+          'in',
+          requestIds.slice(0, 10)
+        );
       }
     } else {
       // If no specific requests, validate pending requests in date range
       requestsQuery = requestsQuery.where('status', '==', 'pending');
-      
+
       if (startDate) {
-        requestsQuery = requestsQuery.where('startDate', '>=', admin.firestore.Timestamp.fromDate(new Date(startDate)));
+        requestsQuery = requestsQuery.where(
+          'startDate',
+          '>=',
+          admin.firestore.Timestamp.fromDate(new Date(startDate))
+        );
       }
       if (endDate) {
-        requestsQuery = requestsQuery.where('startDate', '<=', admin.firestore.Timestamp.fromDate(new Date(endDate)));
+        requestsQuery = requestsQuery.where(
+          'startDate',
+          '<=',
+          admin.firestore.Timestamp.fromDate(new Date(endDate))
+        );
       }
     }
 
     const requestsSnapshot = await requestsQuery.get();
     const requests = requestsSnapshot.docs;
 
-    await updateJobProgress(jobId, 15, undefined, `Found ${requests.length} requests to validate`);
-    await writeJobLog(jobId, 'info', `Validating ${requests.length} PTO requests`);
+    await updateJobProgress(
+      jobId,
+      15,
+      undefined,
+      `Found ${requests.length} requests to validate`
+    );
+    await writeJobLog(
+      jobId,
+      'info',
+      `Validating ${requests.length} PTO requests`
+    );
 
     if (requests.length === 0) {
       await writeJobLog(jobId, 'info', 'No requests found to validate');
-      await markJobCompleted(jobId, { totalProcessed: 0, validCount: 0, invalidCount: 0 });
+      await markJobCompleted(jobId, {
+        totalProcessed: 0,
+        validCount: 0,
+        invalidCount: 0,
+      });
       return;
     }
 
@@ -259,17 +320,29 @@ async function processPTOValidation(
       const progress = 15 + Math.floor((i / totalRequests) * 70);
 
       try {
-        await writeJobLog(jobId, 'info', `Validating request ${i + 1}/${totalRequests}: ${requestDoc.id}`);
+        await writeJobLog(
+          jobId,
+          'info',
+          `Validating request ${i + 1}/${totalRequests}: ${requestDoc.id}`
+        );
 
         const result = await validatePTORequest(requestDoc, tenantId);
         validationResults.push(result);
 
         if (result.valid) {
           validCount++;
-          await writeJobLog(jobId, 'info', `Request ${requestDoc.id}: VALID ${result.warnings.length > 0 ? `(${result.warnings.length} warnings)` : ''}`);
+          await writeJobLog(
+            jobId,
+            'info',
+            `Request ${requestDoc.id}: VALID ${result.warnings.length > 0 ? `(${result.warnings.length} warnings)` : ''}`
+          );
         } else {
           invalidCount++;
-          await writeJobLog(jobId, 'error', `Request ${requestDoc.id}: INVALID - ${result.issues.join('; ')}`);
+          await writeJobLog(
+            jobId,
+            'error',
+            `Request ${requestDoc.id}: INVALID - ${result.issues.join('; ')}`
+          );
         }
 
         // Update request with validation results
@@ -282,10 +355,20 @@ async function processPTOValidation(
         });
 
         validatedCount++;
-        await updateJobProgress(jobId, progress, undefined, `Validated ${validatedCount}/${totalRequests} requests`);
+        await updateJobProgress(
+          jobId,
+          progress,
+          undefined,
+          `Validated ${validatedCount}/${totalRequests} requests`
+        );
       } catch (error) {
-        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
-        await writeJobLog(jobId, 'error', `Failed to validate request ${requestDoc.id}: ${errorMsg}`);
+        const errorMsg =
+          error instanceof Error ? error.message : 'Unknown error';
+        await writeJobLog(
+          jobId,
+          'error',
+          `Failed to validate request ${requestDoc.id}: ${errorMsg}`
+        );
       }
     }
 
@@ -299,11 +382,22 @@ async function processPTOValidation(
     };
 
     await markJobCompleted(jobId, result);
-    await writeJobLog(jobId, 'info', `PTO validation completed: ${validCount} valid, ${invalidCount} invalid`);
+    await writeJobLog(
+      jobId,
+      'info',
+      `PTO validation completed: ${validCount} valid, ${invalidCount} invalid`
+    );
 
     // Send notification
     const message = `PTO validation completed: ${validCount} valid, ${invalidCount} invalid out of ${totalRequests} requests`;
-    await sendJobNotification(userId, tenantId, jobId, 'PTO Validation', 'completed', message);
+    await sendJobNotification(
+      userId,
+      tenantId,
+      jobId,
+      'PTO Validation',
+      'completed',
+      message
+    );
 
     // Create audit log
     await db.collection('auditLogs').add({
@@ -321,7 +415,14 @@ async function processPTOValidation(
     const errorMsg = error instanceof Error ? error.message : 'Unknown error';
     await markJobFailed(jobId, errorMsg);
     await writeJobLog(jobId, 'error', `PTO validation failed: ${errorMsg}`);
-    await sendJobNotification(userId, tenantId, jobId, 'PTO Validation', 'failed', `Validation failed: ${errorMsg}`);
+    await sendJobNotification(
+      userId,
+      tenantId,
+      jobId,
+      'PTO Validation',
+      'failed',
+      `Validation failed: ${errorMsg}`
+    );
   }
 }
 
@@ -331,14 +432,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { action, tenantId, userId, jobId, requestIds, startDate, endDate } = req.body as PTOValidationRequest;
+    const { action, tenantId, userId, jobId, requestIds, startDate, endDate } =
+      req.body as PTOValidationRequest;
 
     if (!tenantId || !userId) {
       return res.status(400).json({ error: 'Missing tenantId or userId' });
     }
 
     // Verify user permission
-    const hasPermission = await verifyUserPermission(userId, tenantId, 'manager');
+    const hasPermission = await verifyUserPermission(
+      userId,
+      tenantId,
+      'manager'
+    );
     if (!hasPermission) {
       return res.status(403).json({ error: 'Insufficient permissions' });
     }
@@ -346,7 +452,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Handle status check
     if (action === 'status') {
       if (!jobId) {
-        return res.status(400).json({ error: 'Missing jobId for status check' });
+        return res
+          .status(400)
+          .json({ error: 'Missing jobId for status check' });
       }
 
       const status = await getJobStatus(jobId);
@@ -366,7 +474,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
 
       // Start processing in the background (don't await)
-      processPTOValidation(newJobId, tenantId, userId, requestIds, startDate, endDate).catch(err => {
+      processPTOValidation(
+        newJobId,
+        tenantId,
+        userId,
+        requestIds,
+        startDate,
+        endDate
+      ).catch((err) => {
         console.error('Background job error:', err);
       });
 

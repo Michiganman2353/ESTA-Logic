@@ -1,6 +1,6 @@
 /**
  * Tests for Background Job Utilities
- * 
+ *
  * Note: These are integration-style tests that would require Firebase Admin
  * to be properly initialized with test credentials. For now, they serve as
  * documentation of expected behavior.

@@ -71,7 +71,9 @@ function generateOffboardingNotes(
   // Balance information
   notes.push(`Final Paid Sick Time Balance: ${paidHours.toFixed(2)} hours`);
   if (employerSize === 'small' && unpaidHours > 0) {
-    notes.push(`Final Unpaid Sick Time Balance: ${unpaidHours.toFixed(2)} hours`);
+    notes.push(
+      `Final Unpaid Sick Time Balance: ${unpaidHours.toFixed(2)} hours`
+    );
   }
   notes.push('');
 
@@ -84,25 +86,17 @@ function generateOffboardingNotes(
     `Payment deferral period: ${PAYMENT_DEFERRAL_DAYS} days from termination date`
   );
   notes.push(`Termination date: ${terminationDate.toLocaleDateString()}`);
-  notes.push(
-    `Final payment due by: ${finalPaymentDate.toLocaleDateString()}`
-  );
+  notes.push(`Final payment due by: ${finalPaymentDate.toLocaleDateString()}`);
   notes.push('');
 
   // Important notes
   notes.push('=== Important Notes ===');
-  notes.push(
-    '• Employer has up to 120 days to pay out accrued sick time'
-  );
-  notes.push(
-    '• Payment must be made at employee\'s final rate of pay'
-  );
+  notes.push('• Employer has up to 120 days to pay out accrued sick time');
+  notes.push("• Payment must be made at employee's final rate of pay");
   notes.push(
     '• Unpaid sick time does not need to be paid out (small employers only)'
   );
-  notes.push(
-    '• Keep this record for 3 years for audit purposes'
-  );
+  notes.push('• Keep this record for 3 years for audit purposes');
 
   return notes.join('\n');
 }
@@ -147,11 +141,11 @@ export function getDaysRemainingInDeferral(
 ): number {
   const deferralEndDate = new Date(terminationDate);
   deferralEndDate.setDate(deferralEndDate.getDate() + PAYMENT_DEFERRAL_DAYS);
-  
+
   const daysRemaining = Math.ceil(
     (deferralEndDate.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24)
   );
-  
+
   return Math.max(0, daysRemaining);
 }
 
@@ -168,19 +162,19 @@ export function generateOffboardingRecord(
   employeeId: string
 ): string {
   const record: string[] = [];
-  
+
   record.push('=== ESTA OFFBOARDING RECORD ===\n');
   record.push(`Employee: ${employeeName}`);
   record.push(`Employee ID: ${employeeId}`);
   record.push(`Generated: ${new Date().toLocaleString()}\n`);
-  
+
   record.push(offboardingBalance.notes);
-  
+
   record.push('\n=== Record Certification ===');
   record.push(
     'This record has been generated in compliance with Michigan ESTA requirements.'
   );
   record.push('Retain this record for at least 3 years.');
-  
+
   return record.join('\n');
 }

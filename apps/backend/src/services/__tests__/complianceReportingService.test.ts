@@ -19,7 +19,11 @@ import {
   performComplianceGapAnalysis,
   ESTA_CERTIFICATION_REQUIREMENTS,
 } from '../complianceReportingService.js';
-import { createRetentionMetadata, createAccessLogEntry, createImmutableAuditEntry } from '../complianceService.js';
+import {
+  createRetentionMetadata,
+  createAccessLogEntry,
+  createImmutableAuditEntry,
+} from '../complianceService.js';
 
 describe('ESTA 2025 Compliance Reporting Service', () => {
   // =========================================================================
@@ -116,21 +120,33 @@ describe('ESTA 2025 Compliance Reporting Service', () => {
           action: 'LOGIN',
           severity: 'INFO',
           actor: { userId: 'user-1', role: 'employer' },
-          resource: { type: 'employer_profile', id: 'emp-1', tenantId: 'tenant-123' },
+          resource: {
+            type: 'employer_profile',
+            id: 'emp-1',
+            tenantId: 'tenant-123',
+          },
           details: { description: 'User logged in' },
         }),
         createImmutableAuditEntry({
           action: 'LOGIN_FAILED',
           severity: 'WARNING',
           actor: { userId: 'user-2', role: 'unknown' },
-          resource: { type: 'employer_profile', id: 'emp-1', tenantId: 'tenant-123' },
+          resource: {
+            type: 'employer_profile',
+            id: 'emp-1',
+            tenantId: 'tenant-123',
+          },
           details: { description: 'Failed login attempt' },
         }),
         createImmutableAuditEntry({
           action: 'ACCESS_DENIED',
           severity: 'WARNING',
           actor: { userId: 'user-3', role: 'employee' },
-          resource: { type: 'employer_profile', id: 'emp-1', tenantId: 'tenant-123' },
+          resource: {
+            type: 'employer_profile',
+            id: 'emp-1',
+            tenantId: 'tenant-123',
+          },
           details: { description: 'Access denied' },
         }),
       ];
@@ -179,8 +195,12 @@ describe('ESTA 2025 Compliance Reporting Service', () => {
       expect(certification.id).toBeDefined();
       expect(certification.certificationYear).toBe(2025);
       expect(certification.status).toBe('PENDING');
-      expect(certification.certifications.length).toBe(ESTA_CERTIFICATION_REQUIREMENTS.length);
-      expect(certification.certifications.every(c => c.compliant === false)).toBe(true);
+      expect(certification.certifications.length).toBe(
+        ESTA_CERTIFICATION_REQUIREMENTS.length
+      );
+      expect(
+        certification.certifications.every((c) => c.compliant === false)
+      ).toBe(true);
     });
 
     it('should update certification requirement', () => {
@@ -208,7 +228,9 @@ describe('ESTA 2025 Compliance Reporting Service', () => {
         preparedBy: 'admin-123',
       });
 
-      expect(() => submitAnnualCertification(certification, 'admin-123')).toThrow();
+      expect(() =>
+        submitAnnualCertification(certification, 'admin-123')
+      ).toThrow();
     });
 
     it('should allow submission of complete certification', () => {
@@ -241,11 +263,16 @@ describe('ESTA 2025 Compliance Reporting Service', () => {
 
       // Mark all as compliant and submit
       for (let i = 0; i < certification.certifications.length; i++) {
-        certification = updateCertificationRequirement(certification, i, { compliant: true });
+        certification = updateCertificationRequirement(certification, i, {
+          compliant: true,
+        });
       }
       certification = submitAnnualCertification(certification, 'ciso-123');
 
-      const approved = approveAnnualCertification(certification, 'regulator-123');
+      const approved = approveAnnualCertification(
+        certification,
+        'regulator-123'
+      );
 
       expect(approved.status).toBe('APPROVED');
       expect(approved.approvedBy).toBe('regulator-123');
@@ -260,11 +287,16 @@ describe('ESTA 2025 Compliance Reporting Service', () => {
 
       // Mark all as compliant and submit
       for (let i = 0; i < certification.certifications.length; i++) {
-        certification = updateCertificationRequirement(certification, i, { compliant: true });
+        certification = updateCertificationRequirement(certification, i, {
+          compliant: true,
+        });
       }
       certification = submitAnnualCertification(certification, 'ciso-123');
 
-      const rejected = rejectAnnualCertification(certification, 'Insufficient evidence provided');
+      const rejected = rejectAnnualCertification(
+        certification,
+        'Insufficient evidence provided'
+      );
 
       expect(rejected.status).toBe('REJECTED');
       expect(rejected.rejectionReason).toBe('Insufficient evidence provided');
@@ -318,7 +350,10 @@ describe('ESTA 2025 Compliance Reporting Service', () => {
       });
 
       report = approveComplianceReport(report, 'manager-123');
-      const submitted = submitComplianceReport(report, 'Michigan ESTA Authority');
+      const submitted = submitComplianceReport(
+        report,
+        'Michigan ESTA Authority'
+      );
 
       expect(submitted.status).toBe('SUBMITTED');
       expect(submitted.submittedTo).toBe('Michigan ESTA Authority');
@@ -379,9 +414,11 @@ describe('ESTA 2025 Compliance Reporting Service', () => {
       expect(analysis.overallCompliance).toBe(50);
       expect(analysis.gaps.length).toBeGreaterThan(0);
       expect(analysis.strengths.length).toBe(4);
-      
+
       // Check that critical gaps are identified
-      const criticalGaps = analysis.gaps.filter(g => g.severity === 'CRITICAL');
+      const criticalGaps = analysis.gaps.filter(
+        (g) => g.severity === 'CRITICAL'
+      );
       expect(criticalGaps.length).toBeGreaterThan(0);
     });
 
@@ -398,7 +435,7 @@ describe('ESTA 2025 Compliance Reporting Service', () => {
         hasDeletionSafeguards: true,
       });
 
-      const encryptionGap = analysis.gaps.find(g => g.area === 'Encryption');
+      const encryptionGap = analysis.gaps.find((g) => g.area === 'Encryption');
       expect(encryptionGap).toBeDefined();
       expect(encryptionGap?.severity).toBe('CRITICAL');
     });
@@ -416,7 +453,9 @@ describe('ESTA 2025 Compliance Reporting Service', () => {
         hasDeletionSafeguards: true,
       });
 
-      const residencyGap = analysis.gaps.find(g => g.area === 'Data Residency');
+      const residencyGap = analysis.gaps.find(
+        (g) => g.area === 'Data Residency'
+      );
       expect(residencyGap).toBeDefined();
       expect(residencyGap?.severity).toBe('CRITICAL');
     });

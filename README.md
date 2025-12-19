@@ -25,6 +25,7 @@ See [`docs/architecture.md`](./docs/architecture/architecture.md) for a full tec
 ## Table of Contents
 
 - [Key Properties](#key-properties)
+- [Repository Structure](#repository-structure)
 - [Quick Start](#quick-start)
 - [Features](#features)
 - [Technology Stack](#technology-stack)
@@ -34,6 +35,30 @@ See [`docs/architecture.md`](./docs/architecture/architecture.md) for a full tec
 - [Enterprise Subscription System](#enterprise-subscription-system)
 - [Contributing](#contributing)
 - [License](#license)
+
+## Repository Structure
+
+This is a clean, well-organized monorepo focused on production code. For complete directory structure, see [DIRECTORY_TREE.md](./DIRECTORY_TREE.md).
+
+### Active Code
+
+- **`apps/`** - Production applications (frontend, backend, marketing)
+- **`libs/`** - Shared workspace libraries
+- **`packages/`** - Independent packages (esta-core, redis, helix, legion)
+- **`api/`** - Vercel Edge API routes
+- **`functions/`** - Firebase Cloud Functions
+- **`docs/`** - Comprehensive documentation
+
+### Archived Code
+
+Experimental and superseded code is preserved in `archive/` for reference:
+
+- **`archive/gleam-microkernel-research/`** - Gleam-based research (concepts ported to TypeScript)
+- **`archive/experimental-frameworks/`** - Exploratory prototypes (nix, oracle)
+- **`archive/superseded-configs/`** - Legacy configurations (biome, eslintrc)
+- **`archive/historical-docs/`** - Completed migrations and post-mortems
+
+See [DEPRECATIONS.md](./DEPRECATIONS.md) for archival decisions and rationale.
 
 ## Quick Start
 
@@ -302,6 +327,9 @@ For detailed information, see [Employer Profile Documentation](./docs/employer-p
 
 **Core Guides:**
 
+- **[Directory Tree](./DIRECTORY_TREE.md)** - Complete repository structure and ownership
+- **[Deprecations Log](./DEPRECATIONS.md)** - Archived code and consolidation decisions
+- **[CI Workflow Consolidation](./CI_WORKFLOW_CONSOLIDATION.md)** - Streamlined CI/CD structure
 - **[Workspace Architecture](./docs/WORKSPACE_ARCHITECTURE.md)** - Monorepo structure, Nx commands, development workflow
 - **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute to the project
 - **[Architecture Overview](./docs/architecture/architecture.md)** - System design and technical decisions

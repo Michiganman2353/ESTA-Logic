@@ -9,19 +9,21 @@ This document outlines the comprehensive optimization strategy implemented for E
 ### 1. Frontend: React Optimization
 
 #### Container Queries Support
+
 - **What**: Added `@tailwindcss/container-queries` plugin for advanced responsive design
 - **Why**: Container queries allow components to adapt based on their parent container size rather than viewport size, enabling truly modular responsive design
 - **File**: `packages/frontend/tailwind.config.js`
 - **Usage Example**:
   ```tsx
   <div className="@container">
-    <div className="p-4 @sm:p-6 @lg:p-8">
+    <div className="@sm:p-6 @lg:p-8 p-4">
       {/* Content adapts based on container size */}
     </div>
   </div>
   ```
 
 #### Zustand State Management
+
 - **What**: Implemented centralized state management using Zustand
 - **Why**: Better performance than Context API for global state, simpler API, and built-in persistence
 - **File**: `packages/frontend/src/store/appStore.ts`
@@ -31,23 +33,25 @@ This document outlines the comprehensive optimization strategy implemented for E
   - Loading states
   - Edge config caching
 - **Usage Example**:
+
   ```tsx
   import { useAppStore } from './store/appStore';
 
   function MyComponent() {
     const { addNotification } = useAppStore();
-    
+
     const handleSuccess = () => {
       addNotification({
         type: 'success',
         message: 'Operation completed!',
-        duration: 5000
+        duration: 5000,
       });
     };
   }
   ```
 
 #### RxJS Reactive Data Service
+
 - **What**: Implemented reactive data flows using RxJS for complex async operations
 - **Why**: Better handling of real-time data streams, debounced operations, and coordinated async tasks
 - **File**: `packages/frontend/src/lib/reactiveDataService.ts`
@@ -58,6 +62,7 @@ This document outlines the comprehensive optimization strategy implemented for E
   - Network status monitoring
   - Auto-refresh with exponential backoff
 - **Usage Example**:
+
   ```tsx
   import { reactiveDataService } from './lib/reactiveDataService';
 
@@ -67,7 +72,7 @@ This document outlines the comprehensive optimization strategy implemented for E
     300
   );
 
-  search$.subscribe(results => {
+  search$.subscribe((results) => {
     setSearchResults(results);
   });
 
@@ -75,6 +80,7 @@ This document outlines the comprehensive optimization strategy implemented for E
   ```
 
 #### Responsive Components
+
 - **What**: Created reusable components that leverage container queries
 - **File**: `packages/frontend/src/components/ResponsiveCard.tsx`
 - **Components**:
@@ -102,6 +108,7 @@ This document outlines the comprehensive optimization strategy implemented for E
 ### 2. Backend: Firebase and Edge Setup
 
 #### Vercel Edge Functions
+
 - **What**: Created optimized edge functions for performance-critical operations
 - **Why**: Lower latency, faster processing, better scalability
 - **Files**:
@@ -109,6 +116,7 @@ This document outlines the comprehensive optimization strategy implemented for E
   - `api/edge/audit-report.ts`: Streaming CSV generation for large datasets
 
 #### Batch Processing
+
 - **Features**:
   - Parallel processing with configurable concurrency
   - Progress tracking
@@ -130,6 +138,7 @@ This document outlines the comprehensive optimization strategy implemented for E
   ```
 
 #### Streaming Audit Reports
+
 - **Features**:
   - Memory-efficient streaming for large datasets
   - Real-time CSV generation
@@ -149,6 +158,7 @@ This document outlines the comprehensive optimization strategy implemented for E
 ### 3. Testing Strategy
 
 #### Unit Tests
+
 - **Coverage**: Added comprehensive unit tests for all new features
 - **Files**:
   - `packages/frontend/src/store/appStore.test.ts` (17 tests)
@@ -157,6 +167,7 @@ This document outlines the comprehensive optimization strategy implemented for E
 - **Total**: 50 new tests added
 
 #### E2E Tests
+
 - **File**: `e2e/pto-workflow.spec.ts`
 - **Coverage**:
   - PTO request submission
@@ -169,6 +180,7 @@ This document outlines the comprehensive optimization strategy implemented for E
 - **Total**: 9 comprehensive E2E test scenarios
 
 #### CI/CD Integration
+
 - **File**: `.github/workflows/ci.yml`
 - **Changes**:
   - Added smoke test step before build
@@ -178,12 +190,14 @@ This document outlines the comprehensive optimization strategy implemented for E
 ## Performance Improvements
 
 ### Frontend
+
 - **Reduced re-renders**: Zustand selectors prevent unnecessary component updates
 - **Optimized state updates**: Zustand is faster than Context API for frequent updates
 - **Better bundle splitting**: RxJS operators tree-shake effectively
 - **Improved responsiveness**: Container queries enable more granular responsive design
 
 ### Backend
+
 - **Lower latency**: Edge functions run closer to users
 - **Better throughput**: Parallel batch processing with controlled concurrency
 - **Memory efficiency**: Streaming responses for large datasets
@@ -192,6 +206,7 @@ This document outlines the comprehensive optimization strategy implemented for E
 ## Testing Results
 
 All tests passing:
+
 - ✅ Frontend tests: 205 passed (2 skipped)
 - ✅ Backend tests: Pass
 - ✅ Build: Success
@@ -201,6 +216,7 @@ All tests passing:
 ## Usage Guidelines
 
 ### When to Use Zustand vs Context API
+
 - **Use Zustand for**:
   - Global app state (notifications, preferences)
   - Frequently updated state
@@ -213,6 +229,7 @@ All tests passing:
   - React-specific features (Suspense, Error Boundaries)
 
 ### When to Use RxJS
+
 - Complex async coordination
 - Real-time data streams
 - Debounced user input
@@ -220,6 +237,7 @@ All tests passing:
 - Combining multiple data sources
 
 ### When to Use Edge Functions
+
 - Time-sensitive operations
 - CPU-intensive tasks
 - Operations requiring low latency
@@ -230,6 +248,7 @@ All tests passing:
 ### Phase Two: Structural Advancements (3-6 months)
 
 #### Monorepo Management
+
 - **Current State**: Already using npm workspaces
 - **Next**: Evaluate Nx or Turborepo for:
   - Better caching
@@ -238,6 +257,7 @@ All tests passing:
   - Affected testing
 
 #### WebAssembly (Wasm) Exploration
+
 - **Candidates for Wasm**:
   - PTO accrual calculations
   - Bulk CSV processing
@@ -248,6 +268,7 @@ All tests passing:
   - Load in browser or edge functions
 
 #### DevSecOps Integration
+
 - **Security Linting**: Add automated vulnerability scanning
 - **Threat Modeling**: Document and analyze security risks
 - **Extended KMS**: Encrypt job metadata and runtime configs
@@ -255,6 +276,7 @@ All tests passing:
 ## Migration Guide
 
 ### Migrating to Zustand
+
 ```tsx
 // Before (Context API)
 const { user } = useAuth();
@@ -265,6 +287,7 @@ const { addNotification } = useAppStore();
 ```
 
 ### Migrating to RxJS
+
 ```tsx
 // Before (useState + useEffect)
 const [results, setResults] = useState([]);

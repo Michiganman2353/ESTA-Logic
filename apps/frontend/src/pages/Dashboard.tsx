@@ -1,9 +1,9 @@
 /**
  * Dashboard Page
- * 
+ *
  * Main dashboard page for ESTA Tracker that provides navigation to
  * different sections based on user role.
- * 
+ *
  * Features:
  * - Role-based navigation cards
  * - Employee dashboard link (for employees and admins)
@@ -14,7 +14,7 @@
  * - Trust badge display
  * - Responsive design
  * - Dark mode support
- * 
+ *
  * Uses:
  * - React Router Link for navigation
  * - TrustBadgeGroup component for security indicators
@@ -32,18 +32,26 @@ interface DashboardProps {
 
 export default function Dashboard({ user }: DashboardProps) {
   return (
-    <div className="min-h-screen gradient-bg">
+    <div className="gradient-bg min-h-screen">
       <Navigation user={user} />
 
-      <main className="max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
         <div className="px-0 sm:px-0">
           {/* Show pending status notification for managers */}
           {user.role === 'employer' && user.status === 'pending' && (
-            <div className="mb-6 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 p-4 border-l-4 border-yellow-400 animate-fade-in-down">
+            <div className="animate-fade-in-down mb-6 rounded-lg border-l-4 border-yellow-400 bg-yellow-50 p-4 dark:bg-yellow-900/20">
               <div className="flex">
                 <div className="flex-shrink-0">
-                  <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  <svg
+                    className="h-5 w-5 text-yellow-400"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                 </div>
                 <div className="ml-3">
@@ -52,31 +60,38 @@ export default function Dashboard({ user }: DashboardProps) {
                   </h3>
                   <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
                     <p>
-                      Your manager account is currently pending approval. You can explore the dashboard, but some features may be limited until your account is approved by an administrator.
+                      Your manager account is currently pending approval. You
+                      can explore the dashboard, but some features may be
+                      limited until your account is approved by an
+                      administrator.
                     </p>
                   </div>
                 </div>
               </div>
             </div>
           )}
-          
-          <div className="text-center mb-6 sm:mb-8 animate-fade-in-up">
-            <h2 className="text-2xl sm:text-3xl font-bold gradient-header mb-2">
+
+          <div className="animate-fade-in-up mb-6 text-center sm:mb-8">
+            <h2 className="gradient-header mb-2 text-2xl font-bold sm:text-3xl">
               Welcome back, {user.name}! 👋
             </h2>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+            <p className="text-sm text-gray-600 sm:text-base dark:text-gray-400">
               Michigan Earned Sick Time Act Compliance System
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8">
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:mt-8 sm:gap-6 md:grid-cols-2">
             {(user.role === 'employee' || user.role === 'admin') && (
-              <Link to="/employee" className="glass-card-hover p-4 sm:p-6 group animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
+              <Link
+                to="/employee"
+                className="glass-card-hover animate-fade-in-up group p-4 sm:p-6"
+                style={{ animationDelay: '0.1s' }}
+              >
                 <div className="flex items-start space-x-3 sm:space-x-4">
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-lg transition-transform duration-300 group-hover:scale-110 sm:h-12 sm:w-12">
                       <svg
-                        className="w-6 h-6 sm:w-7 sm:h-7 text-royal-600 dark:text-royal-400"
+                        className="text-royal-600 dark:text-royal-400 h-6 w-6 sm:h-7 sm:w-7"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -90,12 +105,13 @@ export default function Dashboard({ user }: DashboardProps) {
                       </svg>
                     </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 group-hover:text-royal-600 dark:group-hover:text-royal-400 transition-colors">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="group-hover:text-royal-600 dark:group-hover:text-royal-400 mb-1 text-lg font-semibold text-gray-900 transition-colors sm:mb-2 sm:text-xl dark:text-white">
                       Employee Dashboard
                     </h3>
-                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-                      View your sick time balance, request time off, and track your accrual
+                    <p className="text-sm text-gray-600 sm:text-base dark:text-gray-400">
+                      View your sick time balance, request time off, and track
+                      your accrual
                     </p>
                   </div>
                 </div>
@@ -103,12 +119,16 @@ export default function Dashboard({ user }: DashboardProps) {
             )}
 
             {(user.role === 'employer' || user.role === 'admin') && (
-              <Link to="/employer" className="glass-card-hover p-4 sm:p-6 group animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+              <Link
+                to="/employer"
+                className="glass-card-hover animate-fade-in-up group p-4 sm:p-6"
+                style={{ animationDelay: '0.2s' }}
+              >
                 <div className="flex items-start space-x-3 sm:space-x-4">
                   <div className="flex-shrink-0">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                    <div className="from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-lg transition-transform duration-300 group-hover:scale-110 sm:h-12 sm:w-12">
                       <svg
-                        className="w-6 h-6 sm:w-7 sm:h-7 text-royal-600 dark:text-royal-400"
+                        className="text-royal-600 dark:text-royal-400 h-6 w-6 sm:h-7 sm:w-7"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -122,24 +142,29 @@ export default function Dashboard({ user }: DashboardProps) {
                       </svg>
                     </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 group-hover:text-royal-600 dark:group-hover:text-royal-400 transition-colors">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="group-hover:text-royal-600 dark:group-hover:text-royal-400 mb-1 text-lg font-semibold text-gray-900 transition-colors sm:mb-2 sm:text-xl dark:text-white">
                       Employer Dashboard
                     </h3>
-                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-                      Manage employees, approve requests, and maintain compliance
+                    <p className="text-sm text-gray-600 sm:text-base dark:text-gray-400">
+                      Manage employees, approve requests, and maintain
+                      compliance
                     </p>
                   </div>
                 </div>
               </Link>
             )}
 
-            <Link to="/audit" className="glass-card-hover p-4 sm:p-6 group animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+            <Link
+              to="/audit"
+              className="glass-card-hover animate-fade-in-up group p-4 sm:p-6"
+              style={{ animationDelay: '0.3s' }}
+            >
               <div className="flex items-start space-x-3 sm:space-x-4">
                 <div className="flex-shrink-0">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <div className="from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-lg transition-transform duration-300 group-hover:scale-110 sm:h-12 sm:w-12">
                     <svg
-                      className="w-6 h-6 sm:w-7 sm:h-7 text-royal-600 dark:text-royal-400"
+                      className="text-royal-600 dark:text-royal-400 h-6 w-6 sm:h-7 sm:w-7"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -153,23 +178,27 @@ export default function Dashboard({ user }: DashboardProps) {
                     </svg>
                   </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 group-hover:text-royal-600 dark:group-hover:text-royal-400 transition-colors">
+                <div className="min-w-0 flex-1">
+                  <h3 className="group-hover:text-royal-600 dark:group-hover:text-royal-400 mb-1 text-lg font-semibold text-gray-900 transition-colors sm:mb-2 sm:text-xl dark:text-white">
                     Audit Trail
                   </h3>
-                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 sm:text-base dark:text-gray-400">
                     3-year compliance audit trail and export reports
                   </p>
                 </div>
               </div>
             </Link>
 
-            <Link to="/settings" className="glass-card-hover p-4 sm:p-6 group animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+            <Link
+              to="/settings"
+              className="glass-card-hover animate-fade-in-up group p-4 sm:p-6"
+              style={{ animationDelay: '0.4s' }}
+            >
               <div className="flex items-start space-x-3 sm:space-x-4">
                 <div className="flex-shrink-0">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 rounded-lg flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300">
+                  <div className="from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-lg transition-transform duration-300 group-hover:scale-110 sm:h-12 sm:w-12">
                     <svg
-                      className="w-6 h-6 sm:w-7 sm:h-7 text-royal-600 dark:text-royal-400"
+                      className="text-royal-600 dark:text-royal-400 h-6 w-6 sm:h-7 sm:w-7"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -189,23 +218,26 @@ export default function Dashboard({ user }: DashboardProps) {
                     </svg>
                   </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-white mb-1 sm:mb-2 group-hover:text-royal-600 dark:group-hover:text-royal-400 transition-colors">
+                <div className="min-w-0 flex-1">
+                  <h3 className="group-hover:text-royal-600 dark:group-hover:text-royal-400 mb-1 text-lg font-semibold text-gray-900 transition-colors sm:mb-2 sm:text-xl dark:text-white">
                     Settings
                   </h3>
-                  <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+                  <p className="text-sm text-gray-600 sm:text-base dark:text-gray-400">
                     Account settings, security information, and integrations
                   </p>
                 </div>
               </div>
             </Link>
 
-            <div className="glass-card p-4 sm:p-6 bg-gradient-to-br from-primary-50/80 to-purple-50/80 dark:from-primary-900/30 dark:to-purple-900/30 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
+            <div
+              className="glass-card from-primary-50/80 dark:from-primary-900/30 animate-fade-in-up bg-gradient-to-br to-purple-50/80 p-4 sm:p-6 dark:to-purple-900/30"
+              style={{ animationDelay: '0.5s' }}
+            >
               <div className="flex items-start space-x-3 sm:space-x-4">
                 <div className="flex-shrink-0">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-800 rounded-lg flex items-center justify-center shadow-lg">
+                  <div className="from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-800 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-lg sm:h-12 sm:w-12">
                     <svg
-                      className="w-6 h-6 sm:w-7 sm:h-7 text-primary-600 dark:text-primary-400"
+                      className="text-primary-600 dark:text-primary-400 h-6 w-6 sm:h-7 sm:w-7"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -217,28 +249,28 @@ export default function Dashboard({ user }: DashboardProps) {
                     </svg>
                   </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-lg sm:text-xl font-semibold text-primary-900 dark:text-primary-100 mb-1 sm:mb-2">
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-primary-900 dark:text-primary-100 mb-1 text-lg font-semibold sm:mb-2 sm:text-xl">
                     Michigan ESTA Compliance
                   </h3>
-                  <ul className="text-xs sm:text-sm text-primary-800 dark:text-primary-200 space-y-1">
-                    <li className="flex items-start transform transition-transform duration-200 hover:translate-x-1">
+                  <ul className="text-primary-800 dark:text-primary-200 space-y-1 text-xs sm:text-sm">
+                    <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
                       <span className="mr-2 flex-shrink-0">✓</span>
                       <span>Small employer (&lt;10): 40 hrs/year</span>
                     </li>
-                    <li className="flex items-start transform transition-transform duration-200 hover:translate-x-1">
+                    <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
                       <span className="mr-2 flex-shrink-0">✓</span>
                       <span>Large employer (10+): 1 hr/30 worked</span>
                     </li>
-                    <li className="flex items-start transform transition-transform duration-200 hover:translate-x-1">
+                    <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
                       <span className="mr-2 flex-shrink-0">✓</span>
                       <span>Year-to-year carryover</span>
                     </li>
-                    <li className="flex items-start transform transition-transform duration-200 hover:translate-x-1">
+                    <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
                       <span className="mr-2 flex-shrink-0">✓</span>
                       <span>Anti-retaliation protections</span>
                     </li>
-                    <li className="flex items-start transform transition-transform duration-200 hover:translate-x-1">
+                    <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
                       <span className="mr-2 flex-shrink-0">✓</span>
                       <span>3-year audit trail</span>
                     </li>
@@ -249,8 +281,14 @@ export default function Dashboard({ user }: DashboardProps) {
           </div>
 
           {/* Trust Badges */}
-          <div className="mt-8 flex justify-center animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
-            <TrustBadgeGroup badges={['security', 'compliance', 'verified']} size="sm" />
+          <div
+            className="animate-fade-in-up mt-8 flex justify-center"
+            style={{ animationDelay: '0.6s' }}
+          >
+            <TrustBadgeGroup
+              badges={['security', 'compliance', 'verified']}
+              size="sm"
+            />
           </div>
         </div>
       </main>

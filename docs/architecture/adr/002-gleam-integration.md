@@ -21,13 +21,13 @@ We adopt **Gleam** as the specification language for kernel types and pure busin
 
 ### Gleam Components
 
-| Package             | Purpose                                      | Status      |
-| ------------------- | -------------------------------------------- | ----------- |
-| `estalogic_kernel`  | Core ABI types, process lifecycle, IPC specs | Implemented |
-| `estalogic_protocol`| Message schemas, reliability contracts       | Implemented |
-| `estalogic_drivers` | Adapter specifications (Kafka, Redis, PG)    | Implemented |
-| `estalogic_observe` | Observability and telemetry types            | Implemented |
-| `packages/helix`    | Pure accrual calculation logic               | Implemented |
+| Package              | Purpose                                      | Status      |
+| -------------------- | -------------------------------------------- | ----------- |
+| `estalogic_kernel`   | Core ABI types, process lifecycle, IPC specs | Implemented |
+| `estalogic_protocol` | Message schemas, reliability contracts       | Implemented |
+| `estalogic_drivers`  | Adapter specifications (Kafka, Redis, PG)    | Implemented |
+| `estalogic_observe`  | Observability and telemetry types            | Implemented |
+| `packages/helix`     | Pure accrual calculation logic               | Implemented |
 
 ### Key Design Decisions
 
@@ -110,6 +110,6 @@ export interface Capability {
 
 ## Revision History
 
-| Version | Date       | Author    | Changes            |
-| ------- | ---------- | --------- | ------------------ |
-| 1.0.0   | 2025-12-01 | ESTA Team | Initial decision   |
+| Version | Date       | Author    | Changes          |
+| ------- | ---------- | --------- | ---------------- |
+| 1.0.0   | 2025-12-01 | ESTA Team | Initial decision |

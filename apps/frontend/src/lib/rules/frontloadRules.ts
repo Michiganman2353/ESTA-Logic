@@ -4,7 +4,10 @@
  */
 
 import { EmployerSize } from './types';
-import { LARGE_EMPLOYER_RULES, SMALL_EMPLOYER_RULES } from './employerSizeRules';
+import {
+  LARGE_EMPLOYER_RULES,
+  SMALL_EMPLOYER_RULES,
+} from './employerSizeRules';
 
 /**
  * Calculate frontload amount based on employer size
@@ -12,7 +15,8 @@ import { LARGE_EMPLOYER_RULES, SMALL_EMPLOYER_RULES } from './employerSizeRules'
  * @returns Hours to frontload at start of year/employment
  */
 export function calculateFrontloadAmount(employerSize: EmployerSize): number {
-  const rules = employerSize === 'small' ? SMALL_EMPLOYER_RULES : LARGE_EMPLOYER_RULES;
+  const rules =
+    employerSize === 'small' ? SMALL_EMPLOYER_RULES : LARGE_EMPLOYER_RULES;
   return rules.maxPaidHoursPerYear;
 }
 
@@ -39,18 +43,21 @@ export function calculateProRatedFrontload(
   yearEndDate: Date
 ): number {
   const fullAmount = calculateFrontloadAmount(employerSize);
-  
+
   // Calculate days remaining in year
-  const daysRemaining = Math.max(0, 
-    Math.floor((yearEndDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
+  const daysRemaining = Math.max(
+    0,
+    Math.floor(
+      (yearEndDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+    )
   );
-  
+
   // Calculate total days in year
   const yearStartDate = new Date(yearEndDate.getFullYear(), 0, 1);
   const totalDays = Math.floor(
     (yearEndDate.getTime() - yearStartDate.getTime()) / (1000 * 60 * 60 * 24)
   );
-  
+
   // Pro-rate based on remaining days
   if (totalDays === 0) return fullAmount;
   return Math.round((daysRemaining / totalDays) * fullAmount);
@@ -70,13 +77,13 @@ export function grantFrontloadForNewEmployee(
 ): { hours: number; effectiveDate: Date; isProRated: boolean } {
   const yearEndDate = new Date(currentDate.getFullYear(), 11, 31);
   const fullAmount = calculateFrontloadAmount(employerSize);
-  
+
   // Check if hire date is at start of year (within first week)
   const yearStartDate = new Date(currentDate.getFullYear(), 0, 1);
   const daysFromYearStart = Math.floor(
     (hireDate.getTime() - yearStartDate.getTime()) / (1000 * 60 * 60 * 24)
   );
-  
+
   if (daysFromYearStart <= 7) {
     // Grant full amount if hired at start of year
     return {
@@ -85,9 +92,13 @@ export function grantFrontloadForNewEmployee(
       isProRated: false,
     };
   }
-  
+
   // Pro-rate for mid-year hires
-  const proRatedHours = calculateProRatedFrontload(employerSize, hireDate, yearEndDate);
+  const proRatedHours = calculateProRatedFrontload(
+    employerSize,
+    hireDate,
+    yearEndDate
+  );
   return {
     hours: proRatedHours,
     effectiveDate: hireDate,
@@ -120,17 +131,17 @@ export function validateFrontloadGrant(
   employerSize: EmployerSize
 ): { valid: boolean; error?: string } {
   const maxAmount = calculateFrontloadAmount(employerSize);
-  
+
   if (hours < 0) {
     return { valid: false, error: 'Frontload amount cannot be negative' };
   }
-  
+
   if (hours > maxAmount) {
     return {
       valid: false,
       error: `Frontload amount cannot exceed ${maxAmount} hours for ${employerSize} employer`,
     };
   }
-  
+
   return { valid: true };
 }

@@ -1,14 +1,14 @@
 /**
  * Pricing Components Index
- * 
+ *
  * Central export point for all pricing-related components.
  * These components are used to display subscription plans,
  * pricing information, and feature comparisons.
- * 
+ *
  * Components:
  * - PricingCard: Individual pricing tier display
  * - FeatureComparison: Detailed feature comparison table
- * 
+ *
  * Usage:
  * import { PricingCard, FeatureComparison } from '@/components/Pricing';
  */

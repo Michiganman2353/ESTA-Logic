@@ -11,6 +11,7 @@
 This document describes the true architectural state of ESTA-Logic and the roadmap towards a verified microkernel architecture. It replaces misleading documentation that described the system as a microkernel when it was actually a modular monolith.
 
 > **Related ADRs:**
+>
 > - [ADR-002: Gleam Integration](./adr/002-gleam-integration.md)
 > - [ADR-003: Tauri Desktop](./adr/003-tauri-desktop.md)
 > - [ADR-004: WASM Strategy](./adr/004-wasm-strategy.md)

@@ -455,7 +455,9 @@ describe('Import Schemas', () => {
     it('should validate import validation request', () => {
       const data = {
         type: 'employees',
-        data: [{ firstName: 'John', lastName: 'Doe', email: 'john@example.com' }],
+        data: [
+          { firstName: 'John', lastName: 'Doe', email: 'john@example.com' },
+        ],
         metadata: {
           fileName: 'employees.csv',
           totalRows: 1,

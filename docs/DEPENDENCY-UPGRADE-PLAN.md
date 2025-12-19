@@ -7,11 +7,14 @@ This document outlines the upgrade path for deprecated and outdated dependencies
 ## Current Status
 
 ### Security Vulnerabilities
+
 - **5 moderate severity vulnerabilities** detected by `npm audit`
 - Primary issues: `esbuild`, `vite`, `vitest`, and `@vitest/ui`
 
 ### Deprecated Packages
+
 The following packages are showing deprecation warnings:
+
 - `eslint@8.57.1` → Superseded by eslint@9
 - `inflight@1.0.6` → Use lru-cache instead
 - `rimraf@3.0.2` → Update to rimraf@4+
@@ -33,10 +36,12 @@ The following packages are showing deprecation warnings:
 **Solution Options:**
 
 1. **Option A: Upgrade vite (Breaking Changes)**
+
    ```bash
    # In packages/frontend/package.json
    npm install vite@7 --workspace=@esta-tracker/frontend
    ```
+
    **Risk:** Major version change may require code updates
    **Testing Required:** Extensive
 
@@ -53,6 +58,7 @@ The following packages are showing deprecation warnings:
 **Latest:** vitest@4.0.12
 
 **Solution:**
+
 ```bash
 # Update vitest in all workspaces
 npm install vitest@latest --workspaces
@@ -60,6 +66,7 @@ npm install @vitest/ui@latest --workspace=@esta-tracker/frontend
 ```
 
 **Testing Required:**
+
 - Run `npm test` in all packages
 - Verify test coverage still works
 - Check vitest UI functionality
@@ -74,11 +81,13 @@ These upgrades require careful testing and may break existing functionality.
 **Target:** eslint@9.39.1
 
 **Breaking Changes:**
+
 - New flat config format (eslint.config.js)
 - Some plugins may need updates
 - @typescript-eslint needs v8+
 
 **Migration Steps:**
+
 1. Read [ESLint v9 Migration Guide](https://eslint.org/docs/latest/use/migrate-to-9.0.0)
 2. Update eslint and related plugins:
    ```bash
@@ -97,11 +106,13 @@ These upgrades require careful testing and may break existing functionality.
 **Target:** react@19.2.0, react-dom@19.2.0
 
 **Breaking Changes:**
+
 - New JSX transform (may affect build)
 - Some deprecated APIs removed
 - Type definitions updated
 
 **Migration Steps:**
+
 1. Read [React 19 Upgrade Guide](https://react.dev/blog/2024/04/25/react-19)
 2. Update React packages:
    ```bash
@@ -119,11 +130,13 @@ These upgrades require careful testing and may break existing functionality.
 **Target:** vite@7.2.4
 
 **Breaking Changes:**
+
 - Node.js 18 minimum (already met)
 - Plugin API changes
 - Some configuration changes
 
 **Migration Steps:**
+
 1. Read [Vite 7 Migration Guide](https://vitejs.dev/guide/migration.html)
 2. Update:
    ```bash
@@ -140,11 +153,13 @@ These upgrades require careful testing and may break existing functionality.
 **Target:** express@5.1.0
 
 **Breaking Changes:**
+
 - Promise rejection handling changed
 - Some middleware APIs updated
 - Route parameter parsing changed
 
 **Migration Steps:**
+
 1. Read [Express 5 Migration Guide](https://expressjs.com/en/guide/migrating-5.html)
 2. Update:
    ```bash
@@ -183,21 +198,25 @@ These are dependencies of dependencies and will be resolved when parent packages
 ## Recommended Upgrade Schedule
 
 ### Phase 1: Immediate (This Sprint)
+
 1. ✅ Fix CI/CD deployment issues (DONE)
 2. Document upgrade plan (THIS FILE)
 3. Add `.vercelignore` (DONE)
 
 ### Phase 2: Next Sprint (1-2 weeks)
+
 1. Safe minor updates (Priority 3)
 2. vitest upgrade (Priority 1)
 3. Testing and validation
 
 ### Phase 3: Future Sprint (1 month)
+
 1. ESLint 9 migration
 2. Vite 7 upgrade
 3. React 19 upgrade (if needed)
 
 ### Phase 4: Long-term (3-6 months)
+
 1. Express 5 migration
 2. Tailwind 4 upgrade
 3. React Router 7 upgrade
@@ -207,18 +226,21 @@ These are dependencies of dependencies and will be resolved when parent packages
 For each upgrade:
 
 ### 1. Pre-upgrade Checklist
+
 - [ ] Create feature branch
 - [ ] Document current behavior
 - [ ] Run full test suite
 - [ ] Capture baseline metrics
 
 ### 2. Upgrade Process
+
 - [ ] Update package.json
 - [ ] Run `npm install`
 - [ ] Fix any immediate errors
 - [ ] Update configuration if needed
 
 ### 3. Validation
+
 - [ ] Run `npm run lint`
 - [ ] Run `npm run typecheck`
 - [ ] Run `npm run test`
@@ -227,6 +249,7 @@ For each upgrade:
 - [ ] Manual smoke testing
 
 ### 4. Rollback Plan
+
 ```bash
 # If upgrade fails:
 git checkout package.json package-lock.json
@@ -237,6 +260,7 @@ npm run build
 ## Monitoring Upgrades
 
 Track package updates:
+
 ```bash
 # Check for updates
 npm outdated
@@ -251,12 +275,14 @@ npm list --depth=0 | grep -i deprecated
 ## Decision: Current Approach
 
 **For this PR:**
+
 - ✅ Fix critical CI/CD deployment issues (DONE)
 - ✅ Document upgrade path (THIS FILE)
 - ✅ Add validation and troubleshooting tools (DONE)
 - ❌ Skip dependency upgrades (separate effort)
 
 **Rationale:**
+
 1. CI/CD fixes are critical and urgent
 2. Dependency upgrades are time-consuming
 3. Major version upgrades require extensive testing
@@ -264,6 +290,7 @@ npm list --depth=0 | grep -i deprecated
 5. Security vulnerabilities are development-only
 
 **Next Steps:**
+
 - User should test CI/CD fixes first
 - Schedule dependency upgrade sprint separately
 - Prioritize based on actual impact

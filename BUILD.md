@@ -27,35 +27,43 @@ esta-tracker-monorepo/
 Nx automatically enforces the correct build order based on dependencies:
 
 ### Phase 1: Foundation Libraries (Built First)
+
 - `shared-types` - Core TypeScript types and schemas
 - `shared-utils` - Date/time utilities
 
 ### Phase 2: Dependent Libraries
+
 - `esta-firebase` - Depends on `shared-types`
 - `accrual-engine` - Depends on `shared-types`, `shared-utils`
 - `csv-processor` - Depends on `shared-types`, `shared-utils`
 
 ### Phase 3: Applications
+
 - `backend` - Independent application
 - `frontend` - Depends on `esta-firebase` (built)
 - `api` - Vercel serverless functions
 - `functions` - Firebase Cloud Functions
 
 ### Phase 4: Testing
+
 - `e2e` - End-to-end tests
 
 ## Build Commands
 
 ### Build Everything
+
 ```bash
 npm run build
 ```
+
 Runs `nx run-many --target=build --all` which:
+
 - Builds all packages in correct dependency order
 - Uses Nx caching to skip unchanged packages
 - Runs builds in parallel where possible
 
 ### Build Specific Package
+
 ```bash
 # Build frontend only (and its dependencies)
 npm run build:frontend
@@ -68,6 +76,7 @@ npx nx build shared-types
 ```
 
 ### Build with Nx Cache Reset
+
 ```bash
 # Clear Nx cache and rebuild
 npm run clean
@@ -77,6 +86,7 @@ npm run build
 ## Environment Variables
 
 ### Frontend Build Requirements
+
 The frontend build requires 6 Firebase environment variables. Without them, the build will fail:
 
 ```bash
@@ -93,7 +103,9 @@ VITE_FIREBASE_APP_ID=
 **For Vercel:** Set in Project Settings → Environment Variables
 
 ### Validation
+
 The build includes automatic environment validation:
+
 ```bash
 # Validate manually
 node scripts/check-envs.js
@@ -102,7 +114,9 @@ node scripts/check-envs.js
 ## Module Resolution
 
 ### TypeScript Path Aliases
+
 Workspace packages use path aliases defined in `tsconfig.base.json`:
+
 ```json
 {
   "paths": {
@@ -113,12 +127,15 @@ Workspace packages use path aliases defined in `tsconfig.base.json`:
 ```
 
 **Important:** Path aliases point to the `dist` output directory, not the source. This ensures:
+
 - Clean separation between packages
 - Proper build order enforcement
 - No cross-compilation issues
 
 ### Package Dependencies
+
 Packages declare dependencies using `file:` protocol in `package.json`:
+
 ```json
 {
   "dependencies": {
@@ -131,11 +148,12 @@ Packages declare dependencies using `file:` protocol in `package.json`:
 ## Nx Configuration
 
 ### Build Targets (`nx.json`)
+
 ```json
 {
   "targetDefaults": {
     "build": {
-      "dependsOn": ["^build"],  // Build dependencies first
+      "dependsOn": ["^build"], // Build dependencies first
       "outputs": ["{projectRoot}/dist", "{projectRoot}/build"],
       "cache": true
     }
@@ -146,7 +164,9 @@ Packages declare dependencies using `file:` protocol in `package.json`:
 The `"dependsOn": ["^build"]` ensures that all dependencies are built before the current package.
 
 ### Caching
+
 Nx caches build outputs based on:
+
 - Source file changes
 - package.json changes
 - tsconfig changes
@@ -157,35 +177,44 @@ Cached builds are reused when nothing has changed, dramatically speeding up buil
 ## Common Build Issues & Solutions
 
 ### Issue: "Cannot read properties of null (reading 'package')"
+
 **Cause:** Missing or malformed `package.json` in a workspace directory
 **Solution:** Ensure all workspace directories have valid `package.json` with `name` and `version` fields
 
 ### Issue: "Cannot find module '@esta/shared-types'"
+
 **Cause:** Shared types not built before dependent package
-**Solution:** 
+**Solution:**
+
 - Run `npm run build` from root (Nx handles order automatically)
 - Or manually: `npx nx build shared-types` then build dependent package
 
 ### Issue: "Module not found" during Vite build
+
 **Cause:** Vite cannot resolve workspace packages
 **Solution:** Ensure all dependencies are built first (handled automatically by Nx)
 
 ### Issue: Frontend build fails with env var errors
+
 **Cause:** Missing required Firebase environment variables
-**Solution:** 
+**Solution:**
+
 1. Copy `.env.example` to `.env`
 2. Fill in all 6 `VITE_FIREBASE_*` variables
 3. Verify with: `node scripts/check-envs.js`
 
 ### Issue: TypeScript errors in api/ package
+
 **Cause:** Cross-package imports or strict null checks
-**Solution:** 
+**Solution:**
+
 - API package now has local copies of required utilities
 - All TypeScript strict mode errors have been addressed
 
 ## Vercel Deployment
 
 ### Build Configuration (`vercel.json`)
+
 ```json
 {
   "buildCommand": "npx nx build frontend",
@@ -195,11 +224,13 @@ Cached builds are reused when nothing has changed, dramatically speeding up buil
 ```
 
 **Key Points:**
+
 - Vercel runs `nx build frontend` which automatically builds dependencies first
 - Nx ensures shared-types, esta-firebase, etc. are built before frontend
 - The workspace installation is handled automatically by npm
 
 ### Environment Variables in Vercel
+
 All 6 Firebase variables must be set in:
 **Vercel Dashboard** → **Project Settings** → **Environment Variables**
 
@@ -208,7 +239,9 @@ Set for all environments: Production, Preview, Development
 ## CI/CD Pipeline
 
 ### GitHub Actions
+
 The CI pipeline runs:
+
 1. Install dependencies: `npm install`
 2. Lint: `npm run lint`
 3. Type check: `npm run typecheck`
@@ -221,20 +254,25 @@ Environment variables are provided via GitHub Secrets.
 ## Performance Tips
 
 ### Parallel Builds
+
 Nx runs independent builds in parallel:
+
 ```bash
 # Build all libs in parallel (since they don't depend on each other at same level)
 npx nx run-many --target=build --projects=shared-types,shared-utils --parallel=2
 ```
 
 ### Selective Builds
+
 Build only affected packages:
+
 ```bash
 # Build only packages changed since main branch
 npx nx affected --target=build --base=main
 ```
 
 ### Watch Mode for Development
+
 ```bash
 # Watch and rebuild on changes
 npm run dev
@@ -243,6 +281,7 @@ npm run dev
 ## Troubleshooting
 
 ### Reset Everything
+
 ```bash
 # Nuclear option - clean and reinstall
 npm run clean
@@ -252,12 +291,14 @@ npm run build
 ```
 
 ### Check Build Graph
+
 ```bash
 # Visualize the build dependency graph
 npx nx graph
 ```
 
 ### Check What Will Build
+
 ```bash
 # See what will be built (dry run)
 npx nx run-many --target=build --all --dry-run

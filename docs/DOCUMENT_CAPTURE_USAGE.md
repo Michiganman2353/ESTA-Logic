@@ -84,7 +84,7 @@ function CustomCamera() {
 
   const handleCapture = async () => {
     const blob = await controller.captureFrame();
-    
+
     // Process with OpenCV
     const processed = await processDocument(blob, {
       enableEdgeDetection: true,
@@ -117,7 +117,7 @@ async function selectCamera() {
   const devices = await controller.enumerateDevices();
 
   // Display device list to user
-  devices.forEach(device => {
+  devices.forEach((device) => {
     console.log(`${device.label} (${device.facingMode || 'unknown'})`);
   });
 
@@ -143,7 +143,7 @@ async function checkCameraPermission() {
 
   // Check current status
   const status = await permissions.checkPermission();
-  
+
   if (status.denied) {
     alert(getPermissionErrorMessage(status));
     return;
@@ -152,7 +152,7 @@ async function checkCameraPermission() {
   if (status.prompt) {
     // Request permission
     const newStatus = await permissions.requestPermission();
-    
+
     if (newStatus.granted) {
       console.log('Permission granted!');
     }
@@ -308,7 +308,7 @@ function DocumentForm() {
   return (
     <form onSubmit={handleSubmit}>
       <label>Upload Document</label>
-      
+
       {documentUrl ? (
         <div>
           <img src={documentUrl} alt="Captured document" />
@@ -351,12 +351,12 @@ function DocumentFormWithValidation() {
           setValue('documentUrl', result.downloadUrl);
         }}
       />
-      
+
       <input
         type="hidden"
         {...register('documentUrl', { required: true })}
       />
-      
+
       <button type="submit">Submit</button>
     </form>
   );
@@ -405,6 +405,7 @@ function DocumentFormWithValidation() {
 ### Camera not starting
 
 Check:
+
 - HTTPS enabled (required for getUserMedia)
 - User granted permission
 - Camera not in use by another app
@@ -413,6 +414,7 @@ Check:
 ### Processing too slow
 
 Try:
+
 - Reduce image resolution
 - Disable unneeded processing steps
 - Use Web Workers for heavy processing
@@ -421,6 +423,7 @@ Try:
 ### Upload fails
 
 Check:
+
 - File size within limits
 - MIME type allowed
 - Network connectivity

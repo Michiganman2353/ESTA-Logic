@@ -97,7 +97,7 @@ describe('Employer Profile Helpers', () => {
       // This test would require Firestore mocking to simulate collisions
       const code1 = generateRandomEmployerCode();
       const code2 = generateRandomEmployerCode();
-      
+
       // Verify both are valid (they might be the same, but that's OK for this test)
       expect(isValidEmployerCode(code1)).toBe(true);
       expect(isValidEmployerCode(code2)).toBe(true);
@@ -114,11 +114,11 @@ describe('Employer Profile Helpers', () => {
       const validCodes = ['1000', '5432', '9999'];
       const invalidCodes = ['123', '12345', 'abcd', ''];
 
-      validCodes.forEach(code => {
+      validCodes.forEach((code) => {
         expect(isValidEmployerCode(code)).toBe(true);
       });
 
-      invalidCodes.forEach(code => {
+      invalidCodes.forEach((code) => {
         expect(isValidEmployerCode(code)).toBe(false);
       });
     });

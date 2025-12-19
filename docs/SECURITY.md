@@ -41,17 +41,20 @@ This document outlines security measures, best practices, and guidelines for the
 ### Configuration Locations
 
 **GitHub Actions:**
+
 ```
 Repository Settings → Secrets and variables → Actions
 ```
 
 **Vercel:**
+
 ```
 Project Settings → Environment Variables
 Configure separately for: Development, Preview, Production
 ```
 
 **Local Development:**
+
 ```bash
 # Copy template and fill in values
 cp .env.example .env
@@ -71,6 +74,7 @@ app.use(helmet());
 ```
 
 **Headers Set:**
+
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: DENY`
 - `X-XSS-Protection: 1; mode=block`
@@ -83,11 +87,11 @@ CORS is strictly configured to allow only trusted origins:
 
 ```typescript
 const allowedOrigins = [
-  'http://localhost:5173',      // Local dev
-  'http://localhost:3000',      // Alternative local
-  'https://estatracker.com',    // Production
+  'http://localhost:5173', // Local dev
+  'http://localhost:3000', // Alternative local
+  'https://estatracker.com', // Production
   'https://www.estatracker.com', // Production www
-  process.env.CORS_ORIGIN,      // Custom override
+  process.env.CORS_ORIGIN, // Custom override
 ];
 
 // Also allows *.vercel.app for preview deployments
@@ -100,23 +104,28 @@ const allowedOrigins = [
 Multiple rate limiters protect against abuse:
 
 **General API Limiter:**
+
 - 100 requests per 15 minutes per IP
 - Applied to all endpoints except health checks
 
 **Authentication Limiter:**
+
 - 5 requests per 15 minutes per IP/email
 - Protects login, signup, password reset
 - Prevents brute force attacks
 
 **Sensitive Operations Limiter:**
+
 - 20 requests per 15 minutes
 - Profile updates, settings changes
 
 **Upload Limiter:**
+
 - 10 file uploads per hour
 - Prevents storage abuse
 
 **Export Limiter:**
+
 - 3 exports per hour
 - Prevents resource exhaustion
 
@@ -138,6 +147,7 @@ const validated = employerSchema.parse(req.body);
 ```
 
 **Never trust client input:**
+
 - Validate type, format, range
 - Sanitize strings
 - Check for SQL injection patterns
@@ -149,15 +159,12 @@ Use parameterized queries with PostgreSQL:
 
 ```typescript
 // ✅ SAFE - Parameterized query
-const result = await pool.query(
-  'SELECT * FROM users WHERE email = $1',
-  [email]
-);
+const result = await pool.query('SELECT * FROM users WHERE email = $1', [
+  email,
+]);
 
 // ❌ UNSAFE - String interpolation
-const result = await pool.query(
-  `SELECT * FROM users WHERE email = '${email}'`
-);
+const result = await pool.query(`SELECT * FROM users WHERE email = '${email}'`);
 ```
 
 ### XSS Prevention
@@ -172,6 +179,7 @@ const result = await pool.query(
 ### Firebase API Key
 
 The Firebase API key (`VITE_FIREBASE_API_KEY`) is **not a secret**:
+
 - It's meant to be public
 - Security is enforced by Firebase Security Rules
 - Rate limiting and quotas protect against abuse
@@ -184,10 +192,14 @@ Configure CSP headers to prevent XSS:
 helmet.contentSecurityPolicy({
   directives: {
     defaultSrc: ["'self'"],
-    scriptSrc: ["'self'", "'unsafe-inline'", "https://www.googletagmanager.com"],
+    scriptSrc: [
+      "'self'",
+      "'unsafe-inline'",
+      'https://www.googletagmanager.com',
+    ],
     styleSrc: ["'self'", "'unsafe-inline'"],
-    imgSrc: ["'self'", "data:", "https:"],
-    connectSrc: ["'self'", "https://firestore.googleapis.com"],
+    imgSrc: ["'self'", 'data:', 'https:'],
+    connectSrc: ["'self'", 'https://firestore.googleapis.com'],
   },
 });
 ```
@@ -195,11 +207,13 @@ helmet.contentSecurityPolicy({
 ### Local Storage Security
 
 **Never store sensitive data in localStorage:**
+
 - No passwords
 - No unencrypted PII
 - No JWT tokens (use httpOnly cookies)
 
 **Use sessionStorage for sensitive UI state:**
+
 ```typescript
 // Cleared when tab closes
 sessionStorage.setItem('temp-data', data);
@@ -212,10 +226,7 @@ For client-side encryption, use the crypto library:
 ```typescript
 import { encryptHybrid } from '@esta-tracker/encryption';
 
-const encrypted = await encryptHybrid(
-  sensitiveData,
-  publicKey
-);
+const encrypted = await encryptHybrid(sensitiveData, publicKey);
 ```
 
 ## Firebase Security
@@ -225,6 +236,7 @@ const encrypted = await encryptHybrid(
 Firestore and Storage rules enforce access control:
 
 **Firestore Rules:**
+
 ```javascript
 rules_version = '2';
 service cloud.firestore {
@@ -233,7 +245,7 @@ service cloud.firestore {
     match /employers/{employerId} {
       allow read, write: if request.auth.uid == employerId;
     }
-    
+
     // Employees can only read their own data
     match /employees/{employeeId} {
       allow read: if request.auth.uid == employeeId;
@@ -243,13 +255,14 @@ service cloud.firestore {
 ```
 
 **Storage Rules:**
+
 ```javascript
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     // Only authenticated users can upload
     match /documents/{userId}/{allPaths=**} {
-      allow read, write: if request.auth != null 
+      allow read, write: if request.auth != null
                          && request.auth.uid == userId;
     }
   }
@@ -266,6 +279,7 @@ Firebase App Check protects against abuse:
    - Configure reCAPTCHA v3
 
 2. **Initialize in app:**
+
 ```typescript
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
@@ -283,9 +297,7 @@ Backend uses Admin SDK with service account:
 // ✅ Secure - Service account from environment
 import { initializeApp, cert } from 'firebase-admin/app';
 
-const serviceAccount = JSON.parse(
-  process.env.FIREBASE_SERVICE_ACCOUNT!
-);
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT!);
 
 initializeApp({
   credential: cert(serviceAccount),
@@ -297,6 +309,7 @@ initializeApp({
 ### JWT Best Practices
 
 1. **Short expiration times:**
+
 ```typescript
 const token = jwt.sign(payload, secret, {
   expiresIn: '1h', // Expire after 1 hour
@@ -304,17 +317,19 @@ const token = jwt.sign(payload, secret, {
 ```
 
 2. **Secure token storage:**
+
 ```typescript
 // Use httpOnly cookies, not localStorage
 res.cookie('token', token, {
   httpOnly: true,
-  secure: true,      // HTTPS only
+  secure: true, // HTTPS only
   sameSite: 'strict',
-  maxAge: 3600000,   // 1 hour
+  maxAge: 3600000, // 1 hour
 });
 ```
 
 3. **Token verification:**
+
 ```typescript
 const decoded = jwt.verify(token, secret);
 ```
@@ -322,6 +337,7 @@ const decoded = jwt.verify(token, secret);
 ### Password Security
 
 1. **Use bcrypt for hashing:**
+
 ```typescript
 import bcrypt from 'bcrypt';
 
@@ -333,6 +349,7 @@ const isValid = await bcrypt.compare(password, hash);
 ```
 
 2. **Password requirements:**
+
 - Minimum 8 characters
 - Require uppercase, lowercase, number
 - Check against common passwords
@@ -341,11 +358,13 @@ const isValid = await bcrypt.compare(password, hash);
 ### Multi-Factor Authentication
 
 Consider implementing MFA for:
+
 - Employer accounts
 - Admin accounts
 - Sensitive operations
 
 Firebase Authentication supports:
+
 - SMS verification
 - Email verification
 - TOTP apps (Google Authenticator)
@@ -355,6 +374,7 @@ Firebase Authentication supports:
 ### PII Handling
 
 Personal Identifiable Information (PII) must be:
+
 1. **Minimized** - Only collect what's necessary
 2. **Encrypted** - At rest and in transit
 3. **Access-controlled** - Role-based access
@@ -374,6 +394,7 @@ const encrypted = await encryptWithKMS(sensitiveData);
 ### HTTPS Enforcement
 
 **All communication must use HTTPS:**
+
 - Vercel enforces HTTPS automatically
 - Firebase enforces HTTPS for all connections
 - Backend should redirect HTTP to HTTPS in production
@@ -396,12 +417,14 @@ if (process.env.NODE_ENV === 'production') {
 ### API Versioning
 
 Use versioned endpoints:
+
 ```
 /api/v1/auth/login
 /api/v2/auth/login
 ```
 
 Benefits:
+
 - Breaking changes don't affect existing clients
 - Gradual migration path
 - Better backwards compatibility
@@ -462,50 +485,55 @@ res.set({
 
 ```yaml
 permissions:
-  contents: read  # Minimal permissions
+  contents: read # Minimal permissions
 
 steps:
-  - uses: actions/checkout@v4  # Pinned version
-  
+  - uses: actions/checkout@v4 # Pinned version
+
   - name: Use secret
     env:
-      API_KEY: ${{ secrets.API_KEY }}  # From GitHub Secrets
+      API_KEY: ${{ secrets.API_KEY }} # From GitHub Secrets
 ```
 
 ### Dependency Security
 
 1. **Regular audits:**
+
 ```bash
 npm audit
 npm audit fix
 ```
 
 2. **Automated scanning in CI:**
+
 ```yaml
 - name: Security Audit
   run: npm audit --audit-level=moderate
 ```
 
 3. **Dependabot configuration:**
+
 ```yaml
 # .github/dependabot.yml
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
 ```
 
 ### Secret Scanning
 
 GitHub automatically scans for exposed secrets:
+
 - API keys
 - Private keys
 - Passwords
 - Tokens
 
 **If a secret is exposed:**
+
 1. Rotate it immediately
 2. Remove it from git history
 3. Investigate potential unauthorized access
@@ -518,9 +546,9 @@ Log security-relevant events:
 
 ```typescript
 // Authentication attempts
-console.log('Login attempt:', { 
-  userId, 
-  ip: req.ip, 
+console.log('Login attempt:', {
+  userId,
+  ip: req.ip,
   success: true,
   timestamp: new Date(),
 });
@@ -542,6 +570,7 @@ console.log('Data update:', {
 ```
 
 **Never log:**
+
 - Passwords
 - API keys
 - Session tokens
@@ -550,6 +579,7 @@ console.log('Data update:', {
 ### Monitoring
 
 Monitor for suspicious activity:
+
 - Failed login attempts
 - Rate limit violations
 - Unusual data access patterns
@@ -569,15 +599,18 @@ Monitor for suspicious activity:
 ### Regular Security Reviews
 
 **Weekly:**
+
 - Review npm audit results
 - Check for security updates
 
 **Monthly:**
+
 - Review access logs
 - Update dependencies
 - Test security controls
 
 **Quarterly:**
+
 - Full security audit
 - Penetration testing
 - Review security policies
@@ -614,6 +647,7 @@ Use this checklist for new features:
 Instead, email security concerns to: [security contact email]
 
 Include:
+
 - Description of the vulnerability
 - Steps to reproduce
 - Potential impact

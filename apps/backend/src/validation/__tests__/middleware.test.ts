@@ -51,11 +51,13 @@ function createMockResponse() {
 }
 
 describe('Validation Middleware', () => {
-  const testSchema = z.object({
-    name: z.string().min(1),
-    email: z.string().email(),
-    age: z.number().optional(),
-  }).strict();
+  const testSchema = z
+    .object({
+      name: z.string().min(1),
+      email: z.string().email(),
+      age: z.number().optional(),
+    })
+    .strict();
 
   beforeEach(() => {
     vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -73,7 +75,9 @@ describe('Validation Middleware', () => {
       await middleware(req, res, next);
 
       expect(next).toHaveBeenCalledOnce();
-      expect((req as { validated?: { body: unknown } }).validated?.body).toEqual({
+      expect(
+        (req as { validated?: { body: unknown } }).validated?.body
+      ).toEqual({
         name: 'John',
         email: 'john@example.com',
       });
@@ -92,7 +96,9 @@ describe('Validation Middleware', () => {
       expect(next).not.toHaveBeenCalled();
       expect(res.statusCode).toBe(400);
       expect((res.body as { success: boolean }).success).toBe(false);
-      expect((res.body as { errors: unknown[] }).errors.length).toBeGreaterThan(0);
+      expect((res.body as { errors: unknown[] }).errors.length).toBeGreaterThan(
+        0
+      );
     });
 
     it('should validate params when schema provided', async () => {
@@ -107,7 +113,9 @@ describe('Validation Middleware', () => {
       await middleware(req, res, next);
 
       expect(next).toHaveBeenCalledOnce();
-      expect((req as { validated?: { params: unknown } }).validated?.params).toEqual({ id: '123' });
+      expect(
+        (req as { validated?: { params: unknown } }).validated?.params
+      ).toEqual({ id: '123' });
     });
 
     it('should validate query when schema provided', async () => {
@@ -122,7 +130,9 @@ describe('Validation Middleware', () => {
       await middleware(req, res, next);
 
       expect(next).toHaveBeenCalledOnce();
-      expect((req as { validated?: { query: unknown } }).validated?.query).toEqual({ page: 5 });
+      expect(
+        (req as { validated?: { query: unknown } }).validated?.query
+      ).toEqual({ page: 5 });
     });
 
     it('should collect errors from multiple sources', async () => {
@@ -218,7 +228,10 @@ describe('Validation Middleware', () => {
       await middleware(req, res, next);
 
       expect(res.statusCode).toBe(400);
-      const body = res.body as { success: boolean; errors: Array<{ field: string; message: string }> };
+      const body = res.body as {
+        success: boolean;
+        errors: Array<{ field: string; message: string }>;
+      };
       expect(body.success).toBe(false);
       expect(Array.isArray(body.errors)).toBe(true);
       expect(body.errors[0]).toHaveProperty('field');

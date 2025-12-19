@@ -16,25 +16,29 @@ export function Tooltip({ content, children, position = 'top' }: TooltipProps) {
     if (isVisible && triggerRef.current && tooltipRef.current) {
       const triggerRect = triggerRef.current.getBoundingClientRect();
       const tooltipRect = tooltipRef.current.getBoundingClientRect();
-      
+
       let top = 0;
       let left = 0;
 
       switch (position) {
         case 'top':
           top = triggerRect.top - tooltipRect.height - 8;
-          left = triggerRect.left + triggerRect.width / 2 - tooltipRect.width / 2;
+          left =
+            triggerRect.left + triggerRect.width / 2 - tooltipRect.width / 2;
           break;
         case 'bottom':
           top = triggerRect.bottom + 8;
-          left = triggerRect.left + triggerRect.width / 2 - tooltipRect.width / 2;
+          left =
+            triggerRect.left + triggerRect.width / 2 - tooltipRect.width / 2;
           break;
         case 'left':
-          top = triggerRect.top + triggerRect.height / 2 - tooltipRect.height / 2;
+          top =
+            triggerRect.top + triggerRect.height / 2 - tooltipRect.height / 2;
           left = triggerRect.left - tooltipRect.width - 8;
           break;
         case 'right':
-          top = triggerRect.top + triggerRect.height / 2 - tooltipRect.height / 2;
+          top =
+            triggerRect.top + triggerRect.height / 2 - tooltipRect.height / 2;
           left = triggerRect.right + 8;
           break;
       }
@@ -57,7 +61,7 @@ export function Tooltip({ content, children, position = 'top' }: TooltipProps) {
       {isVisible && (
         <div
           ref={tooltipRef}
-          className="fixed z-50 px-3 py-2 text-sm text-white bg-gray-900 rounded-lg shadow-lg max-w-xs"
+          className="fixed z-50 max-w-xs rounded-lg bg-gray-900 px-3 py-2 text-sm text-white shadow-lg"
           style={{
             top: `${coords.top}px`,
             left: `${coords.left}px`,
@@ -66,14 +70,14 @@ export function Tooltip({ content, children, position = 'top' }: TooltipProps) {
         >
           {content}
           <div
-            className={`absolute w-2 h-2 bg-gray-900 transform rotate-45 ${
+            className={`absolute h-2 w-2 rotate-45 transform bg-gray-900 ${
               position === 'top'
                 ? 'bottom-[-4px] left-1/2 -translate-x-1/2'
                 : position === 'bottom'
-                ? 'top-[-4px] left-1/2 -translate-x-1/2'
-                : position === 'left'
-                ? 'right-[-4px] top-1/2 -translate-y-1/2'
-                : 'left-[-4px] top-1/2 -translate-y-1/2'
+                  ? 'left-1/2 top-[-4px] -translate-x-1/2'
+                  : position === 'left'
+                    ? 'right-[-4px] top-1/2 -translate-y-1/2'
+                    : 'left-[-4px] top-1/2 -translate-y-1/2'
             }`}
           />
         </div>
@@ -92,11 +96,11 @@ export function TooltipIcon({ content, position = 'top' }: TooltipIconProps) {
     <Tooltip content={content} position={position}>
       <button
         type="button"
-        className="inline-flex items-center justify-center w-5 h-5 ml-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500"
+        className="focus:ring-primary-500 ml-1 inline-flex h-5 w-5 items-center justify-center rounded-full text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 dark:hover:text-gray-300"
         aria-label="More information"
       >
         <svg
-          className="w-5 h-5"
+          className="h-5 w-5"
           fill="currentColor"
           viewBox="0 0 20 20"
           xmlns="http://www.w3.org/2000/svg"

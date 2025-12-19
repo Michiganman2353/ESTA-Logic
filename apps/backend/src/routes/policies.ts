@@ -49,267 +49,315 @@ interface TenantPolicyConfig {
  * GET /api/v1/policies
  * Get all available policies for tenant
  */
-router.get('/', authenticate, rateLimit(100, 60000), validateQuery(policyQuerySchema), async (req: AuthenticatedRequest & { validated?: { query: PolicyQueryInput } }, res: Response): Promise<void> => {
-  try {
-    const { tenantId } = req.user || {};
-    const employerSize = req.validated?.query?.employerSize;
+router.get(
+  '/',
+  authenticate,
+  rateLimit(100, 60000),
+  validateQuery(policyQuerySchema),
+  async (
+    req: AuthenticatedRequest & { validated?: { query: PolicyQueryInput } },
+    res: Response
+  ): Promise<void> => {
+    try {
+      const { tenantId } = req.user || {};
+      const employerSize = req.validated?.query?.employerSize;
 
-    if (!tenantId) {
-      res.status(400).json({ error: 'Tenant ID required' });
-      return;
+      if (!tenantId) {
+        res.status(400).json({ error: 'Tenant ID required' });
+        return;
+      }
+
+      // Get default policies
+      const policiesRef = db.collection('policies');
+      let query = policiesRef.where('metadata.tenantId', 'in', [
+        null,
+        tenantId,
+      ]);
+
+      if (employerSize) {
+        query = query.where('employerSize', '==', employerSize);
+      }
+
+      const snapshot = await query.get();
+      const policies = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      res.json({ policies });
+    } catch (error) {
+      console.error('Error fetching policies:', error);
+      res.status(500).json({ error: 'Failed to fetch policies' });
     }
-
-    // Get default policies
-    const policiesRef = db.collection('policies');
-    let query = policiesRef.where('metadata.tenantId', 'in', [null, tenantId]);
-
-    if (employerSize) {
-      query = query.where('employerSize', '==', employerSize);
-    }
-
-    const snapshot = await query.get();
-    const policies = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
-    res.json({ policies });
-  } catch (error) {
-    console.error('Error fetching policies:', error);
-    res.status(500).json({ error: 'Failed to fetch policies' });
   }
-});
+);
 
 /**
  * GET /api/v1/policies/:id
  * Get a specific policy by ID
  */
-router.get('/:id', authenticate, rateLimit(100, 60000), async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-  try {
-    const { id } = req.params;
-    if (!id) {
-      res.status(400).json({ error: 'Policy ID is required' });
-      return;
-    }
-    const policyDoc = await db.collection('policies').doc(id).get();
+router.get(
+  '/:id',
+  authenticate,
+  rateLimit(100, 60000),
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      if (!id) {
+        res.status(400).json({ error: 'Policy ID is required' });
+        return;
+      }
+      const policyDoc = await db.collection('policies').doc(id).get();
 
-    if (!policyDoc.exists) {
-      res.status(404).json({ error: 'Policy not found' });
-      return;
-    }
+      if (!policyDoc.exists) {
+        res.status(404).json({ error: 'Policy not found' });
+        return;
+      }
 
-    res.json({
-      policy: {
-        id: policyDoc.id,
-        ...policyDoc.data(),
-      },
-    });
-  } catch (error) {
-    console.error('Error fetching policy:', error);
-    res.status(500).json({ error: 'Failed to fetch policy' });
+      res.json({
+        policy: {
+          id: policyDoc.id,
+          ...policyDoc.data(),
+        },
+      });
+    } catch (error) {
+      console.error('Error fetching policy:', error);
+      res.status(500).json({ error: 'Failed to fetch policy' });
+    }
   }
-});
+);
 
 /**
  * POST /api/v1/policies
  * Create a new custom policy
  */
-router.post('/', authenticate, rateLimit(10, 60000), validateBody(policyCreateSchema), async (req: AuthenticatedRequest & { validated?: { body: PolicyCreateInput } }, res: Response): Promise<void> => {
-  try {
-    const { tenantId, uid: userId } = req.user || {};
-    const { basePolicyId, customizations } = req.validated?.body || {};
+router.post(
+  '/',
+  authenticate,
+  rateLimit(10, 60000),
+  validateBody(policyCreateSchema),
+  async (
+    req: AuthenticatedRequest & { validated?: { body: PolicyCreateInput } },
+    res: Response
+  ): Promise<void> => {
+    try {
+      const { tenantId, uid: userId } = req.user || {};
+      const { basePolicyId, customizations } = req.validated?.body || {};
 
-    if (!tenantId || !userId) {
-      res.status(400).json({ error: 'Authentication required' });
-      return;
+      if (!tenantId || !userId) {
+        res.status(400).json({ error: 'Authentication required' });
+        return;
+      }
+
+      if (!basePolicyId || !customizations) {
+        res
+          .status(400)
+          .json({ error: 'Base policy ID and customizations required' });
+        return;
+      }
+
+      // Get base policy
+      const basePolicyDoc = await db
+        .collection('policies')
+        .doc(basePolicyId)
+        .get();
+      if (!basePolicyDoc.exists) {
+        res.status(404).json({ error: 'Base policy not found' });
+        return;
+      }
+
+      const basePolicy = basePolicyDoc.data() as PolicyData;
+
+      // Create custom policy
+      const customPolicy: PolicyData = {
+        ...basePolicy,
+        ...customizations,
+        id: `custom-${tenantId}-${Date.now()}`,
+        metadata: {
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          createdBy: userId,
+          tenantId,
+        },
+      };
+
+      // Save to Firestore
+      await db.collection('policies').doc(customPolicy.id).set(customPolicy);
+
+      // Create audit log
+      await db.collection('auditLogs').add({
+        userId,
+        employerId: tenantId,
+        action: 'policy_created',
+        details: {
+          policyId: customPolicy.id,
+          basePolicyId,
+          policyName: customPolicy.name,
+        },
+        timestamp: new Date(),
+      });
+
+      res.status(201).json({ policy: customPolicy });
+    } catch (error) {
+      console.error('Error creating policy:', error);
+      res.status(500).json({ error: 'Failed to create policy' });
     }
-
-    if (!basePolicyId || !customizations) {
-      res.status(400).json({ error: 'Base policy ID and customizations required' });
-      return;
-    }
-
-    // Get base policy
-    const basePolicyDoc = await db.collection('policies').doc(basePolicyId).get();
-    if (!basePolicyDoc.exists) {
-      res.status(404).json({ error: 'Base policy not found' });
-      return;
-    }
-
-    const basePolicy = basePolicyDoc.data() as PolicyData;
-
-    // Create custom policy
-    const customPolicy: PolicyData = {
-      ...basePolicy,
-      ...customizations,
-      id: `custom-${tenantId}-${Date.now()}`,
-      metadata: {
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        createdBy: userId,
-        tenantId,
-      },
-    };
-
-    // Save to Firestore
-    await db.collection('policies').doc(customPolicy.id).set(customPolicy);
-
-    // Create audit log
-    await db.collection('auditLogs').add({
-      userId,
-      employerId: tenantId,
-      action: 'policy_created',
-      details: {
-        policyId: customPolicy.id,
-        basePolicyId,
-        policyName: customPolicy.name,
-      },
-      timestamp: new Date(),
-    });
-
-    res.status(201).json({ policy: customPolicy });
-  } catch (error) {
-    console.error('Error creating policy:', error);
-    res.status(500).json({ error: 'Failed to create policy' });
   }
-});
+);
 
 /**
  * PUT /api/v1/policies/active
  * Set active policy for tenant
  */
-router.put('/active', authenticate, rateLimit(20, 60000), validateBody(policyActivateSchema), async (req: AuthenticatedRequest & { validated?: { body: PolicyActivateInput } }, res: Response): Promise<void> => {
-  try {
-    const { tenantId, uid: userId } = req.user || {};
-    const { policyId, customizations } = req.validated?.body || {};
+router.put(
+  '/active',
+  authenticate,
+  rateLimit(20, 60000),
+  validateBody(policyActivateSchema),
+  async (
+    req: AuthenticatedRequest & { validated?: { body: PolicyActivateInput } },
+    res: Response
+  ): Promise<void> => {
+    try {
+      const { tenantId, uid: userId } = req.user || {};
+      const { policyId, customizations } = req.validated?.body || {};
 
-    if (!tenantId || !userId) {
-      res.status(400).json({ error: 'Authentication required' });
-      return;
-    }
-
-    if (!policyId) {
-      res.status(400).json({ error: 'Policy ID required' });
-      return;
-    }
-
-    // Verify policy exists
-    const policyDoc = await db.collection('policies').doc(policyId).get();
-    if (!policyDoc.exists) {
-      res.status(404).json({ error: 'Policy not found' });
-      return;
-    }
-
-    // Get or create tenant configuration
-    const configRef = db.collection('tenantPolicyConfigs').doc(tenantId);
-    const configDoc = await configRef.get();
-
-    const now = new Date();
-    let config: TenantPolicyConfig;
-
-    if (configDoc.exists) {
-      const existingConfig = configDoc.data() as TenantPolicyConfig;
-      // Deactivate previous policy
-      if (existingConfig?.policyHistory && existingConfig.policyHistory.length > 0) {
-        const lastIndex = existingConfig.policyHistory.length - 1;
-        const lastPolicy = existingConfig.policyHistory[lastIndex];
-        if (lastPolicy) {
-          lastPolicy.deactivatedAt = now;
-        }
+      if (!tenantId || !userId) {
+        res.status(400).json({ error: 'Authentication required' });
+        return;
       }
-      // Add new policy to history
-      existingConfig.policyHistory = existingConfig.policyHistory || [];
-      existingConfig.policyHistory.push({
-        policyId,
-        activatedAt: now,
+
+      if (!policyId) {
+        res.status(400).json({ error: 'Policy ID required' });
+        return;
+      }
+
+      // Verify policy exists
+      const policyDoc = await db.collection('policies').doc(policyId).get();
+      if (!policyDoc.exists) {
+        res.status(404).json({ error: 'Policy not found' });
+        return;
+      }
+
+      // Get or create tenant configuration
+      const configRef = db.collection('tenantPolicyConfigs').doc(tenantId);
+      const configDoc = await configRef.get();
+
+      const now = new Date();
+      let config: TenantPolicyConfig;
+
+      if (configDoc.exists) {
+        const existingConfig = configDoc.data() as TenantPolicyConfig;
+        // Deactivate previous policy
+        if (
+          existingConfig?.policyHistory &&
+          existingConfig.policyHistory.length > 0
+        ) {
+          const lastIndex = existingConfig.policyHistory.length - 1;
+          const lastPolicy = existingConfig.policyHistory[lastIndex];
+          if (lastPolicy) {
+            lastPolicy.deactivatedAt = now;
+          }
+        }
+        // Add new policy to history
+        existingConfig.policyHistory = existingConfig.policyHistory || [];
+        existingConfig.policyHistory.push({
+          policyId,
+          activatedAt: now,
+        });
+        config = {
+          ...existingConfig,
+          activePolicyId: policyId,
+          customizations: customizations || null,
+        };
+      } else {
+        config = {
+          tenantId,
+          activePolicyId: policyId,
+          policyHistory: [
+            {
+              policyId,
+              activatedAt: now,
+            },
+          ],
+          customizations: customizations || null,
+        };
+      }
+
+      // Save configuration
+      await configRef.set(config);
+
+      // Create audit log
+      await db.collection('auditLogs').add({
+        userId,
+        employerId: tenantId,
+        action: 'policy_activated',
+        details: {
+          policyId,
+          policyName: (policyDoc.data() as PolicyData).name,
+        },
+        timestamp: now,
       });
-      config = {
-        ...existingConfig,
-        activePolicyId: policyId,
-        customizations: customizations || null,
-      };
-    } else {
-      config = {
-        tenantId,
-        activePolicyId: policyId,
-        policyHistory: [
-          {
-            policyId,
-            activatedAt: now,
-          },
-        ],
-        customizations: customizations || null,
-      };
+
+      res.json({ success: true, config });
+    } catch (error) {
+      console.error('Error setting active policy:', error);
+      res.status(500).json({ error: 'Failed to set active policy' });
     }
-
-    // Save configuration
-    await configRef.set(config);
-
-    // Create audit log
-    await db.collection('auditLogs').add({
-      userId,
-      employerId: tenantId,
-      action: 'policy_activated',
-      details: {
-        policyId,
-        policyName: (policyDoc.data() as PolicyData).name,
-      },
-      timestamp: now,
-    });
-
-    res.json({ success: true, config });
-  } catch (error) {
-    console.error('Error setting active policy:', error);
-    res.status(500).json({ error: 'Failed to set active policy' });
   }
-});
+);
 
 /**
  * GET /api/v1/policies/active
  * Get active policy for tenant
  */
-router.get('/active/current', authenticate, rateLimit(100, 60000), async (req: AuthenticatedRequest, res: Response): Promise<void> => {
-  try {
-    const { tenantId } = req.user || {};
+router.get(
+  '/active/current',
+  authenticate,
+  rateLimit(100, 60000),
+  async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      const { tenantId } = req.user || {};
 
-    if (!tenantId) {
-      res.status(400).json({ error: 'Tenant ID required' });
-      return;
+      if (!tenantId) {
+        res.status(400).json({ error: 'Tenant ID required' });
+        return;
+      }
+
+      // Get tenant configuration
+      const configDoc = await db
+        .collection('tenantPolicyConfigs')
+        .doc(tenantId)
+        .get();
+
+      if (!configDoc.exists) {
+        res.status(404).json({ error: 'No active policy found' });
+        return;
+      }
+
+      const config = configDoc.data();
+      const policyDoc = await db
+        .collection('policies')
+        .doc(config?.activePolicyId)
+        .get();
+
+      if (!policyDoc.exists) {
+        res.status(404).json({ error: 'Active policy not found' });
+        return;
+      }
+
+      res.json({
+        policy: {
+          id: policyDoc.id,
+          ...policyDoc.data(),
+        },
+        config,
+      });
+    } catch (error) {
+      console.error('Error fetching active policy:', error);
+      res.status(500).json({ error: 'Failed to fetch active policy' });
     }
-
-    // Get tenant configuration
-    const configDoc = await db
-      .collection('tenantPolicyConfigs')
-      .doc(tenantId)
-      .get();
-
-    if (!configDoc.exists) {
-      res.status(404).json({ error: 'No active policy found' });
-      return;
-    }
-
-    const config = configDoc.data();
-    const policyDoc = await db
-      .collection('policies')
-      .doc(config?.activePolicyId)
-      .get();
-
-    if (!policyDoc.exists) {
-      res.status(404).json({ error: 'Active policy not found' });
-      return;
-    }
-
-    res.json({
-      policy: {
-        id: policyDoc.id,
-        ...policyDoc.data(),
-      },
-      config,
-    });
-  } catch (error) {
-    console.error('Error fetching active policy:', error);
-    res.status(500).json({ error: 'Failed to fetch active policy' });
   }
-});
+);
 
 export default router;

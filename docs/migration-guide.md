@@ -16,6 +16,7 @@ This guide outlines the migration path from the current architecture to the WASM
 ## Phase 0 (P0): Foundation Setup
 
 ### Objectives
+
 - Install required toolchains
 - Verify build environment
 
@@ -41,6 +42,7 @@ cargo tauri --version
 ```
 
 ### Acceptance Criteria
+
 - [ ] `gleam --version` returns a valid version
 - [ ] `rustup target list --installed` includes `wasm32-unknown-unknown`
 - [ ] `cargo tauri --version` returns a valid version
@@ -50,6 +52,7 @@ cargo tauri --version
 ## Phase 1 (P1): Kernel Bootstrap
 
 ### Objectives
+
 - Build the estalogic_kernel Gleam crate
 - Verify kernel initialization
 
@@ -67,6 +70,7 @@ gleam test
 ```
 
 ### Acceptance Criteria
+
 - [ ] `gleam build` completes without errors
 - [ ] `gleam test` passes all unit tests
 - [ ] JavaScript output is generated in `build/` directory
@@ -76,6 +80,7 @@ gleam test
 ## Phase 2 (P2): WASM Module Compilation
 
 ### Objectives
+
 - Compile accrual logic to WASM
 - Verify WASM module loads correctly
 
@@ -90,6 +95,7 @@ npm run wasm:test
 ```
 
 ### Acceptance Criteria
+
 - [ ] WASM build completes without errors
 - [ ] WASM tests pass with no failures
 
@@ -98,6 +104,7 @@ npm run wasm:test
 ## Phase 3 (P3): Tauri Integration
 
 ### Objectives
+
 - Configure Tauri host application
 - Integrate WASM modules with kernel
 - Verify end-to-end communication
@@ -114,6 +121,7 @@ npm run tauri:build
 ```
 
 ### Acceptance Criteria
+
 - [ ] Tauri app launches successfully
 - [ ] React WebView renders without errors
 - [ ] Kernel responds to `invokeKernel` calls from UI
@@ -179,6 +187,7 @@ flowchart LR
 ## Support
 
 For issues during migration, open a GitHub issue with:
+
 - Phase where failure occurred
 - Full command output
 - System information (`gleam --version`, `rustc --version`, `node --version`)

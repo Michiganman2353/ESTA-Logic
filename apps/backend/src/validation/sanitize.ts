@@ -8,14 +8,16 @@
  * Protects against XSS attacks.
  */
 export function sanitizeString(input: string): string {
-  return input
-    .trim()
-    // Remove HTML tags
-    .replace(/<[^>]*>/g, '')
-    // Remove null bytes
-    .replace(/\0/g, '')
-    // Normalize whitespace
-    .replace(/\s+/g, ' ');
+  return (
+    input
+      .trim()
+      // Remove HTML tags
+      .replace(/<[^>]*>/g, '')
+      // Remove null bytes
+      .replace(/\0/g, '')
+      // Normalize whitespace
+      .replace(/\s+/g, ' ')
+  );
 }
 
 /**

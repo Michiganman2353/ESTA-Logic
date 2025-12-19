@@ -1,6 +1,6 @@
 /**
  * Authentication Middleware for Vercel Serverless Functions
- * 
+ *
  * Provides Firebase authentication and role-based authorization
  * for API endpoints deployed on Vercel.
  */
@@ -44,7 +44,7 @@ interface AuthResult {
 
 /**
  * Extract and verify Firebase ID token from request
- * 
+ *
  * @param req - Vercel request object
  * @returns Authentication result
  */
@@ -57,7 +57,7 @@ export async function verifyToken(req: VercelRequest): Promise<AuthResult> {
       return {
         success: false,
         error: 'Unauthorized: No authorization header provided',
-        statusCode: 401
+        statusCode: 401,
       };
     }
 
@@ -65,7 +65,7 @@ export async function verifyToken(req: VercelRequest): Promise<AuthResult> {
       return {
         success: false,
         error: 'Unauthorized: Invalid authorization header format',
-        statusCode: 401
+        statusCode: 401,
       };
     }
 
@@ -75,7 +75,7 @@ export async function verifyToken(req: VercelRequest): Promise<AuthResult> {
       return {
         success: false,
         error: 'Unauthorized: No token provided',
-        statusCode: 401
+        statusCode: 401,
       };
     }
 
@@ -94,15 +94,15 @@ export async function verifyToken(req: VercelRequest): Promise<AuthResult> {
 
     return {
       success: true,
-      user
+      user,
     };
   } catch (error) {
     console.error('Token verification error:', error);
-    
+
     return {
       success: false,
       error: 'Unauthorized: Invalid or expired token',
-      statusCode: 401
+      statusCode: 401,
     };
   }
 }
@@ -110,7 +110,7 @@ export async function verifyToken(req: VercelRequest): Promise<AuthResult> {
 /**
  * Middleware to require authentication
  * Attaches user data to request if authentication succeeds
- * 
+ *
  * @param req - Vercel request object
  * @param res - Vercel response object
  * @returns Authentication result
@@ -124,7 +124,7 @@ export async function requireAuth(
   if (!authResult.success) {
     res.status(authResult.statusCode || 401).json({
       success: false,
-      error: authResult.error
+      error: authResult.error,
     });
     return authResult;
   }
@@ -137,7 +137,7 @@ export async function requireAuth(
 
 /**
  * Middleware to require specific role(s)
- * 
+ *
  * @param req - Authenticated Vercel request object
  * @param res - Vercel response object
  * @param allowedRoles - Array of allowed roles
@@ -151,7 +151,7 @@ export function requireRole(
   if (!req.user) {
     res.status(401).json({
       success: false,
-      error: 'Unauthorized: Authentication required'
+      error: 'Unauthorized: Authentication required',
     });
     return false;
   }
@@ -161,7 +161,7 @@ export function requireRole(
   if (!userRole || !allowedRoles.includes(userRole as UserRole)) {
     res.status(403).json({
       success: false,
-      error: 'Forbidden: Insufficient permissions'
+      error: 'Forbidden: Insufficient permissions',
     });
     return false;
   }
@@ -171,7 +171,7 @@ export function requireRole(
 
 /**
  * Check if user owns a resource
- * 
+ *
  * @param req - Authenticated Vercel request object
  * @param resourceUserId - User ID that owns the resource
  * @returns Whether user owns the resource
@@ -184,12 +184,14 @@ export function isResourceOwner(
     return false;
   }
 
-  return req.user.uid === resourceUserId || req.user.employeeId === resourceUserId;
+  return (
+    req.user.uid === resourceUserId || req.user.employeeId === resourceUserId
+  );
 }
 
 /**
  * Check if user has access to tenant data
- * 
+ *
  * @param req - Authenticated Vercel request object
  * @param tenantId - Tenant ID to check access for
  * @returns Whether user has access to tenant
@@ -213,7 +215,7 @@ export function hasTenantAccess(
 
 /**
  * Log security-relevant events
- * 
+ *
  * @param event - Event type
  * @param req - Authenticated Vercel request object
  * @param details - Additional details to log
@@ -225,7 +227,7 @@ export async function logSecurityEvent(
 ): Promise<void> {
   try {
     const db = admin.firestore();
-    
+
     await db.collection('securityLogs').add({
       event,
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
@@ -233,11 +235,12 @@ export async function logSecurityEvent(
       email: req.user?.email || 'unknown',
       role: req.user?.role || 'unknown',
       tenantId: req.user?.tenantId || null,
-      ip: req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown',
+      ip:
+        req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown',
       userAgent: req.headers['user-agent'] || 'unknown',
       path: req.url,
       method: req.method,
-      ...details
+      ...details,
     });
   } catch (error) {
     // Don't fail the request if logging fails

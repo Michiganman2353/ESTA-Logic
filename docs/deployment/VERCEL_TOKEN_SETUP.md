@@ -5,6 +5,7 @@ This guide explains how to properly configure the Vercel authentication token fo
 ## Issue Background
 
 The Vercel CLI is strict about token format and will reject tokens that contain certain characters:
+
 - Newlines (`\n`)
 - Spaces (` `)
 - Hyphens (`-`)
@@ -12,8 +13,9 @@ The Vercel CLI is strict about token format and will reject tokens that contain 
 - Forward slashes (`/`)
 
 **Error message you might see:**
+
 ```
-Error! You defined "--token", but its contents are invalid. 
+Error! You defined "--token", but its contents are invalid.
 Must not contain: "\n", " ", "-", ".", "/"
 ```
 
@@ -75,6 +77,7 @@ You'll also need to add two more secrets:
    - Add as a repository secret
 
 Example `.vercel/project.json`:
+
 ```json
 {
   "orgId": "team_xxxxxxxxxxxxxxxxxxxxx",
@@ -120,6 +123,7 @@ This means the token is valid but doesn't have the right permissions:
 ## Security Best Practices
 
 ✅ **DO**:
+
 - Store the token only in GitHub Secrets
 - Use repository secrets (not environment secrets) for better security
 - Rotate tokens periodically (every 90 days recommended)
@@ -127,6 +131,7 @@ This means the token is valid but doesn't have the right permissions:
 - Limit token scope to only the necessary organization/team
 
 ❌ **DON'T**:
+
 - Commit tokens to git (even in `.env.local` files)
 - Share tokens via email, chat, or other insecure channels
 - Use personal tokens for team projects (use team tokens)
@@ -141,12 +146,14 @@ CLEAN_TOKEN=$(echo "${{ secrets.VERCEL_TOKEN }}" | tr -d '\n\r\t -./' | xargs)
 ```
 
 This command:
+
 1. `echo "${{ secrets.VERCEL_TOKEN }}"` - Outputs the secret value
 2. `tr -d '\n\r\t -./'` - Removes newlines, carriage returns, tabs, spaces, hyphens, periods, and slashes
 3. `xargs` - Trims any remaining leading/trailing whitespace
 4. `$()` - Captures the cleaned output
 
 The cleaned token is then:
+
 1. Masked with `echo "::add-mask::$CLEAN_TOKEN"` to prevent it from appearing in logs
 2. Set as an output with `echo "token=$CLEAN_TOKEN" >> $GITHUB_OUTPUT`
 3. Used by subsequent steps via `${{ steps.sanitize-token.outputs.token }}`

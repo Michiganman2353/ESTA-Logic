@@ -20,7 +20,10 @@ interface CalendarProps {
 
 type ViewMode = 'day' | 'week' | 'month';
 
-export default function Calendar({ ptoRequests = [], onDateClick }: CalendarProps) {
+export default function Calendar({
+  ptoRequests = [],
+  onDateClick,
+}: CalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('month');
 
@@ -268,7 +271,9 @@ export default function Calendar({ ptoRequests = [], onDateClick }: CalendarProp
     return (
       <div className="day-view">
         <div className="day-view-header">
-          <h3>{currentDate.toLocaleDateString('en-US', { weekday: 'long' })}</h3>
+          <h3>
+            {currentDate.toLocaleDateString('en-US', { weekday: 'long' })}
+          </h3>
           <p className="day-view-date">
             {currentDate.toLocaleDateString('en-US', {
               month: 'long',
@@ -291,8 +296,12 @@ export default function Calendar({ ptoRequests = [], onDateClick }: CalendarProp
                   {approvedRequests.map((request) => (
                     <div key={request.id} className="request-card approved">
                       <div className="request-header">
-                        <span className="employee-name">{request.employeeName}</span>
-                        <span className="request-hours">{request.hours} hours</span>
+                        <span className="employee-name">
+                          {request.employeeName}
+                        </span>
+                        <span className="request-hours">
+                          {request.hours} hours
+                        </span>
                       </div>
                       <div className="request-details">
                         <span className="request-reason">{request.reason}</span>
@@ -312,8 +321,12 @@ export default function Calendar({ ptoRequests = [], onDateClick }: CalendarProp
                   {pendingRequests.map((request) => (
                     <div key={request.id} className="request-card pending">
                       <div className="request-header">
-                        <span className="employee-name">{request.employeeName}</span>
-                        <span className="request-hours">{request.hours} hours</span>
+                        <span className="employee-name">
+                          {request.employeeName}
+                        </span>
+                        <span className="request-hours">
+                          {request.hours} hours
+                        </span>
                       </div>
                       <div className="request-details">
                         <span className="request-reason">{request.reason}</span>

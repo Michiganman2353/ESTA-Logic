@@ -1,6 +1,6 @@
 /**
  * Formatting Utilities
- * 
+ *
  * Functions for formatting data for display
  */
 
@@ -10,8 +10,13 @@
  * @param showDecimals - Whether to show decimal places
  * @returns Formatted string (e.g., "8 hours", "8.5 hours")
  */
-export function formatHours(hours: number, showDecimals: boolean = true): string {
-  const formatted = showDecimals ? hours.toFixed(1) : Math.round(hours).toString();
+export function formatHours(
+  hours: number,
+  showDecimals: boolean = true
+): string {
+  const formatted = showDecimals
+    ? hours.toFixed(1)
+    : Math.round(hours).toString();
   return `${formatted} ${hours === 1 ? 'hour' : 'hours'}`;
 }
 
@@ -44,11 +49,11 @@ export function formatPercentage(value: number, decimals: number = 0): string {
  */
 export function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Bytes';
-  
+
   const k = 1024;
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  
+
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
 }
 
@@ -57,15 +62,15 @@ export function formatFileSize(bytes: number): string {
  */
 export function formatPhoneNumber(phone: string): string {
   const cleaned = phone.replace(/\D/g, '');
-  
+
   if (cleaned.length === 10) {
     return `(${cleaned.slice(0, 3)}) ${cleaned.slice(3, 6)}-${cleaned.slice(6)}`;
   }
-  
+
   if (cleaned.length === 11 && cleaned[0] === '1') {
     return `+1 (${cleaned.slice(1, 4)}) ${cleaned.slice(4, 7)}-${cleaned.slice(7)}`;
   }
-  
+
   return phone;
 }
 
@@ -101,6 +106,6 @@ export function formatRequestStatus(status: string): string {
     denied: '❌ Denied',
     cancelled: '⚠️ Cancelled',
   };
-  
+
   return statusMap[status] || status;
 }

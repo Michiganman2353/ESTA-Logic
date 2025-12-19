@@ -1,6 +1,6 @@
 /**
  * Audit Logging for Document Uploads
- * 
+ *
  * Tracks and logs all document upload events:
  * - Upload attempts and results
  * - Scan results
@@ -61,10 +61,7 @@ export async function logAuditEvent(
   // Log to Firestore
   if (enableFirestore) {
     try {
-      await admin
-        .firestore()
-        .collection(collection)
-        .add(logEntry);
+      await admin.firestore().collection(collection).add(logEntry);
     } catch (error) {
       console.error('Failed to write audit log to Firestore:', error);
     }
@@ -266,5 +263,5 @@ export async function queryAuditLogs(
   }
 
   const snapshot = await query.get();
-  return snapshot.docs.map(doc => doc.data() as AuditLogEntry);
+  return snapshot.docs.map((doc) => doc.data() as AuditLogEntry);
 }

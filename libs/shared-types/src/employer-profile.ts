@@ -3,7 +3,7 @@ import { EmployerSize } from './employee.js';
 
 /**
  * Employer Profile Types and Schemas
- * 
+ *
  * This represents the centralized employer profile with a unique 4-digit code
  * that employees use to link to their employer.
  */
@@ -17,34 +17,34 @@ export const EMPLOYER_CODE_MAX = 9999;
 export interface EmployerProfile {
   /** Unique employer identifier (matches Firebase Auth UID of employer user) */
   id: string;
-  
+
   /** Unique 4-digit numeric code for employee linking (1000-9999) */
   employerCode: string;
-  
+
   /** Display name for white-label branding */
   displayName: string;
-  
+
   /** Optional logo URL for white-label branding */
   logoUrl?: string;
-  
+
   /** Optional brand color for white-label branding (hex format) */
   brandColor?: string;
-  
+
   /** Employer size (small: <10 employees, large: >=10 employees) */
   size: EmployerSize;
-  
+
   /** Employee count */
   employeeCount: number;
-  
+
   /** Contact email */
   contactEmail: string;
-  
+
   /** Contact phone */
   contactPhone?: string;
-  
+
   /** Creation timestamp */
   createdAt: Date;
-  
+
   /** Last update timestamp */
   updatedAt: Date;
 }
@@ -54,10 +54,15 @@ export interface EmployerProfile {
  */
 export const EmployerProfileSchema = z.object({
   id: z.string().min(1),
-  employerCode: z.string().regex(/^\d{4}$/, 'Employer code must be exactly 4 digits'),
+  employerCode: z
+    .string()
+    .regex(/^\d{4}$/, 'Employer code must be exactly 4 digits'),
   displayName: z.string().min(2).max(200),
   logoUrl: z.string().url().optional(),
-  brandColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Brand color must be a valid hex color').optional(),
+  brandColor: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'Brand color must be a valid hex color')
+    .optional(),
   size: z.enum(['small', 'large']),
   employeeCount: z.number().min(1).max(10000),
   contactEmail: z.string().email(),
@@ -84,7 +89,10 @@ export const CreateEmployerProfileInputSchema = z.object({
   contactEmail: z.string().email(),
   contactPhone: z.string().optional(),
   logoUrl: z.string().url().optional(),
-  brandColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Brand color must be a valid hex color').optional(),
+  brandColor: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'Brand color must be a valid hex color')
+    .optional(),
 });
 
 /**
@@ -99,7 +107,10 @@ export interface UpdateEmployerBrandingInput {
 export const UpdateEmployerBrandingInputSchema = z.object({
   displayName: z.string().min(2).max(200).optional(),
   logoUrl: z.string().url().optional(),
-  brandColor: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Brand color must be a valid hex color').optional(),
+  brandColor: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, 'Brand color must be a valid hex color')
+    .optional(),
 });
 
 /**
@@ -108,19 +119,19 @@ export const UpdateEmployerBrandingInputSchema = z.object({
 export interface EmployerEmployee {
   /** Employee user ID */
   uid: string;
-  
+
   /** Employee email */
   email: string;
-  
+
   /** Employee display name */
   displayName: string;
-  
+
   /** Date employee joined this employer */
   joinDate: Date;
-  
+
   /** Employee role */
   role: 'employee' | 'manager';
-  
+
   /** Employee status */
   status: 'active' | 'inactive';
 }
@@ -139,7 +150,11 @@ export const EmployerEmployeeSchema = z.object({
  */
 export function isValidEmployerCode(code: string): boolean {
   const parsed = parseInt(code, 10);
-  return /^\d{4}$/.test(code) && parsed >= EMPLOYER_CODE_MIN && parsed <= EMPLOYER_CODE_MAX;
+  return (
+    /^\d{4}$/.test(code) &&
+    parsed >= EMPLOYER_CODE_MIN &&
+    parsed <= EMPLOYER_CODE_MAX
+  );
 }
 
 /**
@@ -147,6 +162,8 @@ export function isValidEmployerCode(code: string): boolean {
  * Note: Uniqueness must be checked separately when storing
  */
 export function generateRandomEmployerCode(): string {
-  const code = Math.floor(Math.random() * (EMPLOYER_CODE_MAX - EMPLOYER_CODE_MIN + 1)) + EMPLOYER_CODE_MIN;
+  const code =
+    Math.floor(Math.random() * (EMPLOYER_CODE_MAX - EMPLOYER_CODE_MIN + 1)) +
+    EMPLOYER_CODE_MIN;
   return code.toString();
 }

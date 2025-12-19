@@ -7,18 +7,21 @@ This document provides step-by-step instructions for setting up the required Git
 The following secrets must be configured in your GitHub repository for successful deployments:
 
 ### 1. `VERCEL_TOKEN`
+
 - **Purpose:** Authenticates with Vercel for deployments
 - **How to obtain:** Generate from Vercel Dashboard
 - **Format:** Alphanumeric string (24-32 characters)
 - **Example:** `AbCdEf123456789012345678`
 
 ### 2. `VERCEL_ORG_ID`
+
 - **Purpose:** Identifies your Vercel organization/team
 - **How to obtain:** From `.vercel/project.json` after running `vercel link`
 - **Format:** Starts with `team_` followed by alphanumeric characters
 - **Example:** `team_abcdefghijklmnop1234`
 
 ### 3. `VERCEL_PROJECT_ID`
+
 - **Purpose:** Identifies your Vercel project
 - **How to obtain:** From `.vercel/project.json` after running `vercel link`
 - **Format:** Starts with `prj_` followed by alphanumeric characters
@@ -43,6 +46,7 @@ vercel login
 ```
 
 Follow the prompts:
+
 1. Select your preferred authentication method (Email, GitHub, GitLab, or Bitbucket)
 2. Complete the authentication flow in your browser
 3. You'll see a confirmation message in your terminal
@@ -57,6 +61,7 @@ vercel link
 ```
 
 Answer the prompts:
+
 - **Set up and deploy?** → Yes
 - **Which scope?** → Select your team/account
 - **Link to existing project?** → Yes (if project exists) or No (to create new)
@@ -71,6 +76,7 @@ cat .vercel/project.json
 ```
 
 You should see output like:
+
 ```json
 {
   "orgId": "team_xxxxxxxxxxxxxxxxxxxx",
@@ -94,6 +100,7 @@ You should see output like:
 ### Step 6: Add Secrets to GitHub
 
 1. **Navigate to your repository on GitHub:**
+
    ```
    https://github.com/Michiganman2353/ESTA-Logic
    ```
@@ -155,11 +162,13 @@ vercel deploy --prod
 ### Test GitHub Actions
 
 1. **Create a test branch:**
+
    ```bash
    git checkout -b test-ci-deployment
    ```
 
 2. **Make a small change:**
+
    ```bash
    echo "# Test" >> README.md
    git add README.md
@@ -183,11 +192,13 @@ vercel deploy --prod
 ### Issue: "Invalid token" error
 
 **Error:**
+
 ```
 Error! You defined "--token", but its contents are invalid
 ```
 
 **Solutions:**
+
 1. Verify the token has no extra spaces or newlines
 2. Generate a new token and update the secret
 3. Ensure you copied the entire token
@@ -195,11 +206,13 @@ Error! You defined "--token", but its contents are invalid
 ### Issue: "Project not found"
 
 **Error:**
+
 ```
 Error: Project not found
 ```
 
 **Solutions:**
+
 1. Verify `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` are correct
 2. Run `vercel link` again to regenerate `.vercel/project.json`
 3. Ensure the project exists in Vercel Dashboard
@@ -207,11 +220,13 @@ Error: Project not found
 ### Issue: "Permission denied"
 
 **Error:**
+
 ```
 Error: You don't have permission to access this project
 ```
 
 **Solutions:**
+
 1. Verify the token has access to the specified project
 2. Check team/organization permissions in Vercel Dashboard
 3. Generate a new token with proper scope
@@ -219,6 +234,7 @@ Error: You don't have permission to access this project
 ## Security Best Practices
 
 ### ✅ DO:
+
 - Rotate tokens regularly (recommended: every 6-12 months)
 - Use tokens with minimal required permissions
 - Delete tokens that are no longer needed
@@ -226,6 +242,7 @@ Error: You don't have permission to access this project
 - Use environment-specific secrets when possible
 
 ### ❌ DON'T:
+
 - Commit tokens to source control
 - Share tokens via insecure channels (email, Slack, etc.)
 - Use the same token across multiple projects
@@ -263,6 +280,7 @@ If you lose access to secrets:
 ## Support
 
 For issues with:
+
 - **Vercel CLI:** [Vercel Documentation](https://vercel.com/docs)
 - **GitHub Actions:** [GitHub Actions Documentation](https://docs.github.com/en/actions)
 - **This Project:** Create an issue in the repository

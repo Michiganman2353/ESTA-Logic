@@ -21,17 +21,17 @@ This document provides comprehensive documentation for the ESTA 2025 Record-Keep
 
 The ESTA Tracker application implements the following compliance features:
 
-| Requirement | Status | Implementation |
-|-------------|--------|----------------|
+| Requirement           | Status         | Implementation                       |
+| --------------------- | -------------- | ------------------------------------ |
 | Data Retention Policy | ✅ Implemented | 7/5/3-year retention based on status |
-| AES-256 Encryption | ✅ Implemented | KMS-backed hybrid encryption |
-| Immutable Audit Logs | ✅ Implemented | Blockchain-style hash chain |
-| Access Logging | ✅ Implemented | Full access trail with US residency |
-| US Data Residency | ✅ Implemented | US-only GCP regions |
-| Breach Notification | ✅ Implemented | Automated workflow |
-| Deletion Safeguards | ✅ Implemented | Multi-approval workflow |
-| Legal Hold Capability | ✅ Implemented | Full hold management |
-| Annual Certification | ✅ Implemented | Complete workflow |
+| AES-256 Encryption    | ✅ Implemented | KMS-backed hybrid encryption         |
+| Immutable Audit Logs  | ✅ Implemented | Blockchain-style hash chain          |
+| Access Logging        | ✅ Implemented | Full access trail with US residency  |
+| US Data Residency     | ✅ Implemented | US-only GCP regions                  |
+| Breach Notification   | ✅ Implemented | Automated workflow                   |
+| Deletion Safeguards   | ✅ Implemented | Multi-approval workflow              |
+| Legal Hold Capability | ✅ Implemented | Full hold management                 |
+| Annual Certification  | ✅ Implemented | Complete workflow                    |
 
 ---
 
@@ -39,17 +39,17 @@ The ESTA Tracker application implements the following compliance features:
 
 ### Retention Periods (Years)
 
-| Record Type | Retention Period | Basis |
-|-------------|-----------------|-------|
-| Approved Applications | 7 years | ESTA 2025 §7(a) |
-| Denied Applications | 5 years | ESTA 2025 §7(b) |
-| Withdrawn Applications | 3 years | ESTA 2025 §7(c) |
-| Cancelled Applications | 3 years | ESTA 2025 §7(c) |
-| Payment Records | 7 years | Financial compliance |
-| Audit Logs | 7 years | Immutable |
-| Communications | 5 years | Documentation |
-| Policy Versions | 10 years | Legal preservation |
-| Government Requests | 10 years | Legal compliance |
+| Record Type            | Retention Period | Basis                |
+| ---------------------- | ---------------- | -------------------- |
+| Approved Applications  | 7 years          | ESTA 2025 §7(a)      |
+| Denied Applications    | 5 years          | ESTA 2025 §7(b)      |
+| Withdrawn Applications | 3 years          | ESTA 2025 §7(c)      |
+| Cancelled Applications | 3 years          | ESTA 2025 §7(c)      |
+| Payment Records        | 7 years          | Financial compliance |
+| Audit Logs             | 7 years          | Immutable            |
+| Communications         | 5 years          | Documentation        |
+| Policy Versions        | 10 years         | Legal preservation   |
+| Government Requests    | 10 years         | Legal compliance     |
 
 ### Retention Metadata
 
@@ -75,6 +75,7 @@ interface RetentionMetadata {
 ### Automated Retention Enforcement
 
 The system automatically:
+
 - Calculates retention end dates based on record type and status
 - Locks records during retention period
 - Prevents deletion of locked or held records
@@ -109,6 +110,7 @@ function verifyAES256Encryption(algorithm: string): boolean {
 ### Access Logging
 
 Every data access is logged with:
+
 - User identification
 - Timestamp
 - Resource accessed
@@ -174,10 +176,14 @@ All decisions require documented justification:
 
 ```typescript
 interface JustificationLog {
-  decisionType: 'REQUEST_APPROVAL' | 'REQUEST_DENIAL' | 
-                'POLICY_CHANGE' | 'EXCEPTION_GRANT' | 'DATA_DELETION';
+  decisionType:
+    | 'REQUEST_APPROVAL'
+    | 'REQUEST_DENIAL'
+    | 'POLICY_CHANGE'
+    | 'EXCEPTION_GRANT'
+    | 'DATA_DELETION';
   decision: string;
-  justification: string;  // Minimum 10 characters
+  justification: string; // Minimum 10 characters
   supportingDocuments?: string[];
   decidedBy: string;
   decidedAt: Date;
@@ -188,6 +194,7 @@ interface JustificationLog {
 ### Communications Archiving
 
 All communications are archived with:
+
 - Type (EMAIL/SMS/IN_APP/DOCUMENT/SYSTEM)
 - Direction (INBOUND/OUTBOUND/INTERNAL)
 - Encrypted content
@@ -202,14 +209,14 @@ All communications are archived with:
 
 ### Report Types
 
-| Report | Purpose | Frequency |
-|--------|---------|-----------|
-| Retention Audit | Review retention compliance | Quarterly |
-| Access Audit | Review data access patterns | Monthly |
-| Security Audit | Security event analysis | Monthly |
-| Breach Summary | Breach incident report | As needed |
-| Policy Compliance | Policy adherence review | Annually |
-| Annual Certification | ESTA compliance certification | Annually |
+| Report               | Purpose                       | Frequency |
+| -------------------- | ----------------------------- | --------- |
+| Retention Audit      | Review retention compliance   | Quarterly |
+| Access Audit         | Review data access patterns   | Monthly   |
+| Security Audit       | Security event analysis       | Monthly   |
+| Breach Summary       | Breach incident report        | As needed |
+| Policy Compliance    | Policy adherence review       | Annually  |
+| Annual Certification | ESTA compliance certification | Annually  |
 
 ### Annual Certification Requirements
 
@@ -232,8 +239,13 @@ All government requests are tracked:
 
 ```typescript
 interface GovernmentRequest {
-  requestType: 'SUBPOENA' | 'AUDIT' | 'INVESTIGATION' | 
-               'FOIA' | 'REGULATORY_INQUIRY' | 'COURT_ORDER';
+  requestType:
+    | 'SUBPOENA'
+    | 'AUDIT'
+    | 'INVESTIGATION'
+    | 'FOIA'
+    | 'REGULATORY_INQUIRY'
+    | 'COURT_ORDER';
   requestingAgency: string;
   scopeOfRequest: string;
   status: 'RECEIVED' | 'IN_PROGRESS' | 'RESPONDED' | 'CLOSED';
@@ -267,7 +279,7 @@ interface DeletionRequest {
   };
   approvalWorkflow: {
     requiredApprovers: string[];
-    approvals: { approverId: string; approved: boolean; }[];
+    approvals: { approverId: string; approved: boolean }[];
     allApproved: boolean;
   };
 }
@@ -276,6 +288,7 @@ interface DeletionRequest {
 ### Compliance Alerts
 
 The system generates alerts for:
+
 - `RETENTION_EXPIRING` - Records approaching retention end
 - `DELETION_BLOCKED` - Attempted deletion prevented
 - `LEGAL_HOLD` - Legal hold placed or released
@@ -294,9 +307,9 @@ interface ImmutableAuditEntry {
   id: string;
   timestamp: Date;
   action: AuditAction;
-  integrityHash: string;      // SHA-256 hash of entry
-  previousEntryHash?: string;  // Links to previous entry
-  sequenceNumber: number;      // Ordering
+  integrityHash: string; // SHA-256 hash of entry
+  previousEntryHash?: string; // Links to previous entry
+  sequenceNumber: number; // Ordering
   isVerified: boolean;
   dataResidency: 'US';
 }
@@ -316,50 +329,50 @@ interface ImmutableAuditEntry {
 
 #### Retention Management
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/retention/config` | Get retention period configuration |
-| POST | `/retention/metadata` | Create retention metadata |
-| POST | `/retention/check-delete` | Check deletion eligibility |
+| Method | Endpoint                  | Description                        |
+| ------ | ------------------------- | ---------------------------------- |
+| GET    | `/retention/config`       | Get retention period configuration |
+| POST   | `/retention/metadata`     | Create retention metadata          |
+| POST   | `/retention/check-delete` | Check deletion eligibility         |
 
 #### Legal Hold
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/legal-hold/place` | Place legal hold on record |
-| POST | `/legal-hold/release` | Release legal hold |
+| Method | Endpoint              | Description                |
+| ------ | --------------------- | -------------------------- |
+| POST   | `/legal-hold/place`   | Place legal hold on record |
+| POST   | `/legal-hold/release` | Release legal hold         |
 
 #### Deletion Workflow
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/deletion/request` | Create deletion request |
-| POST | `/deletion/approve` | Process approval |
+| Method | Endpoint            | Description             |
+| ------ | ------------------- | ----------------------- |
+| POST   | `/deletion/request` | Create deletion request |
+| POST   | `/deletion/approve` | Process approval        |
 
 #### Compliance Reporting
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/certification/requirements` | Get certification requirements |
-| POST | `/certification/create` | Create annual certification |
-| POST | `/reports/retention` | Generate retention audit report |
-| POST | `/gap-analysis` | Perform compliance gap analysis |
+| Method | Endpoint                      | Description                     |
+| ------ | ----------------------------- | ------------------------------- |
+| GET    | `/certification/requirements` | Get certification requirements  |
+| POST   | `/certification/create`       | Create annual certification     |
+| POST   | `/reports/retention`          | Generate retention audit report |
+| POST   | `/gap-analysis`               | Perform compliance gap analysis |
 
 #### Alerts
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/alerts/create` | Create compliance alert |
-| POST | `/alerts/acknowledge` | Acknowledge alert |
-| POST | `/alerts/resolve` | Resolve alert |
+| Method | Endpoint              | Description             |
+| ------ | --------------------- | ----------------------- |
+| POST   | `/alerts/create`      | Create compliance alert |
+| POST   | `/alerts/acknowledge` | Acknowledge alert       |
+| POST   | `/alerts/resolve`     | Resolve alert           |
 
 #### Validation
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/validate/data-residency` | Validate US residency |
-| POST | `/validate/encryption` | Verify AES-256 encryption |
-| GET | `/status` | Get compliance status summary |
+| Method | Endpoint                   | Description                   |
+| ------ | -------------------------- | ----------------------------- |
+| POST   | `/validate/data-residency` | Validate US residency         |
+| POST   | `/validate/encryption`     | Verify AES-256 encryption     |
+| GET    | `/status`                  | Get compliance status summary |
 
 ---
 
@@ -390,12 +403,12 @@ const analysis = performComplianceGapAnalysis({
 
 ### Gap Severity Levels
 
-| Severity | Description | Action Required |
-|----------|-------------|-----------------|
-| CRITICAL | Security or legal violation | Immediate remediation |
-| HIGH | Significant compliance risk | Remediation within 30 days |
-| MEDIUM | Moderate compliance concern | Remediation within 90 days |
-| LOW | Minor improvement opportunity | Address as resources allow |
+| Severity | Description                   | Action Required            |
+| -------- | ----------------------------- | -------------------------- |
+| CRITICAL | Security or legal violation   | Immediate remediation      |
+| HIGH     | Significant compliance risk   | Remediation within 30 days |
+| MEDIUM   | Moderate compliance concern   | Remediation within 90 days |
+| LOW      | Minor improvement opportunity | Address as resources allow |
 
 ---
 

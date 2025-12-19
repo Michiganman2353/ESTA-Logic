@@ -32,9 +32,18 @@ describe('File Validation', () => {
 
     it('should detect WebP from magic bytes', () => {
       const buffer = Buffer.from([
-        0x52, 0x49, 0x46, 0x46, // RIFF
-        0x00, 0x00, 0x00, 0x00, // size (wildcards)
-        0x57, 0x45, 0x42, 0x50, // WEBP
+        0x52,
+        0x49,
+        0x46,
+        0x46, // RIFF
+        0x00,
+        0x00,
+        0x00,
+        0x00, // size (wildcards)
+        0x57,
+        0x45,
+        0x42,
+        0x50, // WEBP
       ]);
       const mimeType = detectMimeTypeFromMagicBytes(buffer);
 
@@ -143,15 +152,14 @@ describe('File Validation', () => {
   describe('validateFile', () => {
     it('should accept valid JPEG file', () => {
       const buffer = Buffer.from([
-        0xff, 0xd8, 0xff, 0xe0,
+        0xff,
+        0xd8,
+        0xff,
+        0xe0,
         ...Array(1000).fill(0x00),
       ]);
-      
-      const result = validateFile(
-        'test.jpg',
-        buffer,
-        'image/jpeg'
-      );
+
+      const result = validateFile('test.jpg', buffer, 'image/jpeg');
 
       expect(result.valid).toBe(true);
     });
@@ -159,16 +167,20 @@ describe('File Validation', () => {
     it('should detect MIME type mismatch', () => {
       // PNG magic bytes but declared as JPEG
       const buffer = Buffer.from([
-        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+        0x89,
+        0x50,
+        0x4e,
+        0x47,
+        0x0d,
+        0x0a,
+        0x1a,
+        0x0a,
         ...Array(1000).fill(0x00),
       ]);
-      
-      const result = validateFile(
-        'fake.jpg',
-        buffer,
-        'image/jpeg',
-        { requireMagicByteMatch: true }
-      );
+
+      const result = validateFile('fake.jpg', buffer, 'image/jpeg', {
+        requireMagicByteMatch: true,
+      });
 
       expect(result.valid).toBe(false);
       expect(result.error).toContain('mismatch');
@@ -176,16 +188,20 @@ describe('File Validation', () => {
 
     it('should warn about MIME type mismatch when not required', () => {
       const buffer = Buffer.from([
-        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+        0x89,
+        0x50,
+        0x4e,
+        0x47,
+        0x0d,
+        0x0a,
+        0x1a,
+        0x0a,
         ...Array(1000).fill(0x00),
       ]);
-      
-      const result = validateFile(
-        'fake.jpg',
-        buffer,
-        'image/jpeg',
-        { requireMagicByteMatch: false }
-      );
+
+      const result = validateFile('fake.jpg', buffer, 'image/jpeg', {
+        requireMagicByteMatch: false,
+      });
 
       expect(result.valid).toBe(true);
       expect(result.warnings).toBeDefined();
@@ -194,20 +210,18 @@ describe('File Validation', () => {
 
     it('should validate all constraints together', () => {
       const buffer = Buffer.from([
-        0xff, 0xd8, 0xff, 0xe0,
+        0xff,
+        0xd8,
+        0xff,
+        0xe0,
         ...Array(1000).fill(0x00),
       ]);
-      
-      const result = validateFile(
-        'test.jpg',
-        buffer,
-        'image/jpeg',
-        {
-          maxFileSize: 2000,
-          allowedExtensions: ['.jpg', '.png'],
-          allowedMimeTypes: ['image/jpeg', 'image/png'],
-        }
-      );
+
+      const result = validateFile('test.jpg', buffer, 'image/jpeg', {
+        maxFileSize: 2000,
+        allowedExtensions: ['.jpg', '.png'],
+        allowedMimeTypes: ['image/jpeg', 'image/png'],
+      });
 
       expect(result.valid).toBe(true);
       expect(result.metadata?.fileSize).toBe(buffer.length);
@@ -217,12 +231,8 @@ describe('File Validation', () => {
 
     it('should reject file with invalid extension', () => {
       const buffer = Buffer.from([0xff, 0xd8, 0xff, 0xe0]);
-      
-      const result = validateFile(
-        'test.exe',
-        buffer,
-        'image/jpeg'
-      );
+
+      const result = validateFile('test.exe', buffer, 'image/jpeg');
 
       expect(result.valid).toBe(false);
       expect(result.error).toContain('extension');

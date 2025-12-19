@@ -35,12 +35,14 @@ export const EmployerSchema = z.object({
   employeeCount: z.number().min(0),
   contactEmail: z.string().email(),
   contactPhone: z.string().optional(),
-  address: z.object({
-    street: z.string(),
-    city: z.string(),
-    state: z.string().length(2),
-    zip: z.string().regex(/^\d{5}(-\d{4})?$/),
-  }).optional(),
+  address: z
+    .object({
+      street: z.string(),
+      city: z.string(),
+      state: z.string().length(2),
+      zip: z.string().regex(/^\d{5}(-\d{4})?$/),
+    })
+    .optional(),
   settings: z.object({
     accrualStartDate: z.date().optional(),
     fiscalYearStart: z.date().optional(),

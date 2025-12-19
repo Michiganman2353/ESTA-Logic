@@ -221,6 +221,7 @@ firebase deploy --only functions --project production
 ## Support
 
 For issues or questions:
+
 - Check Firebase Console → Support
 - Review error logs in Firebase Console
 - Test with Firebase Emulators for debugging

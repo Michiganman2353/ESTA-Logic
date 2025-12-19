@@ -3,11 +3,13 @@
 ## Overview
 
 ESTA Tracker uses a modern monorepo architecture powered by:
+
 - **Nx** - Build orchestration and caching
 - **Lerna** - Package management with Nx integration
 - **npm Workspaces** - Dependency management
 
 This setup provides:
+
 - ✅ Fast, incremental builds
 - ✅ Intelligent task caching
 - ✅ Dependency graph awareness
@@ -38,6 +40,7 @@ ESTA-Logic/
 ### Nx Task Runner
 
 Nx orchestrates all build tasks and provides:
+
 - **Caching**: Skips tasks that haven't changed
 - **Parallelization**: Runs independent tasks simultaneously
 - **Dependency Detection**: Builds dependencies before dependents
@@ -60,6 +63,7 @@ Each package has a `project.json` file that defines its targets:
 ### Task Dependencies
 
 Nx automatically handles build order based on package dependencies:
+
 - `shared-types` builds first (no dependencies)
 - `accrual-engine` builds after `shared-types` (depends on it)
 - `frontend` builds after all its dependencies
@@ -199,17 +203,20 @@ npx lerna changed
 **Required**: Node.js 22.x
 
 The project enforces this through:
+
 - `package.json` engines field
 - `.nvmrc` file
 - GitHub Actions configuration
 - Vercel deployment settings
 
 To check your version:
+
 ```bash
 node --version  # Should show v22.x.x
 ```
 
 To install Node 22:
+
 ```bash
 # Using nvm (recommended)
 nvm install 22
@@ -234,10 +241,10 @@ Workflows use Nx for efficient CI:
     key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json') }}
 
 - name: Build
-  run: npm run build  # Uses Nx internally
+  run: npm run build # Uses Nx internally
 
 - name: Test
-  run: npm run test  # Uses Nx internally
+  run: npm run test # Uses Nx internally
 ```
 
 ### Vercel Deployment
@@ -258,6 +265,7 @@ Vercel is configured to use Nx:
 **Problem**: "Cannot find module '@esta-tracker/shared-types'"
 
 **Solution**: Build dependency packages first:
+
 ```bash
 npx nx build shared-types
 # or build everything
@@ -269,6 +277,7 @@ npm run build
 **Problem**: Changes not reflected in build
 
 **Solution**: Clear Nx cache:
+
 ```bash
 npx nx reset
 npm run build
@@ -279,6 +288,7 @@ npm run build
 **Problem**: Builds are slow
 
 **Solutions**:
+
 1. Use affected commands for incremental builds
 2. Enable Nx Cloud for distributed caching (optional)
 3. Check that caching is enabled in `nx.json`
@@ -288,6 +298,7 @@ npm run build
 **Problem**: Build fails with engine mismatch
 
 **Solution**:
+
 ```bash
 # Check current version
 node --version
@@ -304,6 +315,7 @@ nvm install 22
 ### 1. Run Affected Tasks in CI
 
 Instead of testing everything, test only what changed:
+
 ```bash
 npx nx affected --target=test --base=origin/main
 ```
@@ -311,6 +323,7 @@ npx nx affected --target=test --base=origin/main
 ### 2. Use Nx for All Commands
 
 Prefer `npx nx` over direct package scripts for better caching:
+
 ```bash
 # Good
 npx nx build frontend
@@ -322,6 +335,7 @@ npm run build:frontend
 ### 3. Keep Dependencies Updated
 
 The monorepo benefits from consistent dependency versions:
+
 ```bash
 npm outdated
 npm update
@@ -330,6 +344,7 @@ npm update
 ### 4. Check Project Graph
 
 Before major changes, visualize dependencies:
+
 ```bash
 npx nx graph
 ```
@@ -337,6 +352,7 @@ npx nx graph
 ### 5. Clean Builds When Needed
 
 If you encounter weird issues:
+
 ```bash
 npm run clean
 npm ci
@@ -346,21 +362,25 @@ npm run build
 ## Package-Specific Notes
 
 ### Frontend (`packages/frontend`)
+
 - Uses Vite for fast dev server and builds
 - Requires Firebase environment variables
 - Build output: `packages/frontend/dist`
 
 ### Backend (`packages/backend`)
+
 - Express server with TypeScript
 - Not deployed on Vercel (uses serverless functions instead)
 - Build output: `packages/backend/dist`
 
 ### Accrual Engine (`packages/accrual-engine`)
+
 - Core ESTA calculation logic
 - Zero external dependencies (intentional)
 - Used by frontend, backend, and serverless functions
 
 ### Shared Types (`packages/shared-types`)
+
 - TypeScript type definitions
 - No runtime code
 - Dependency for most other packages
@@ -370,12 +390,14 @@ npm run build
 ### From Turborepo to Nx
 
 This project was migrated from Turborepo to Nx + Lerna for:
+
 - Better caching strategies
 - More flexible configuration
 - Stronger ecosystem and plugin support
 - Better integration with modern tools
 
 Key changes:
+
 - `turbo.json` → `nx.json` + `project.json` files
 - `turbo run build` → `nx run-many --target=build --all`
 - `.turbo/` cache → `.nx/cache/`
@@ -393,6 +415,7 @@ All existing functionality remains the same, just faster and more reliable.
 ## Need Help?
 
 If you encounter issues with the monorepo setup:
+
 1. Check this guide first
 2. Review the [Nx Documentation](https://nx.dev)
 3. Check `.github/workflows/ci.yml` for working examples

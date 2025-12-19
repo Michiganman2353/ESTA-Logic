@@ -34,7 +34,9 @@ describe('Validation Logger Utilities', () => {
       };
       const result = sanitizeForLogging(input);
       expect((result.user as Record<string, unknown>).name).toBe('John');
-      expect((result.user as Record<string, unknown>).password).toBe('[REDACTED]');
+      expect((result.user as Record<string, unknown>).password).toBe(
+        '[REDACTED]'
+      );
     });
 
     it('should not modify non-sensitive fields', () => {
@@ -133,7 +135,9 @@ describe('Validation Logger Utilities', () => {
 
   describe('logValidationFailure', () => {
     it('should log validation failure to console', () => {
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      const consoleSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {});
 
       const entry = createValidationLogEntry(
         '/api/v1/auth/register',

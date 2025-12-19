@@ -13,12 +13,14 @@ export const MICHIGAN_COVERED_USE_CATEGORIES = [
   {
     value: 'illness' as UsageCategory,
     label: 'Personal Illness or Injury',
-    description: 'Employee\'s own mental or physical illness, injury, or health condition',
+    description:
+      "Employee's own mental or physical illness, injury, or health condition",
   },
   {
     value: 'medical_appointment' as UsageCategory,
     label: 'Medical Appointment',
-    description: 'Medical diagnosis, care, or treatment of mental or physical illness, injury, or health condition',
+    description:
+      'Medical diagnosis, care, or treatment of mental or physical illness, injury, or health condition',
   },
   {
     value: 'preventive_care' as UsageCategory,
@@ -28,17 +30,20 @@ export const MICHIGAN_COVERED_USE_CATEGORIES = [
   {
     value: 'family_care' as UsageCategory,
     label: 'Care for Family Member',
-    description: 'Care for family member with mental or physical illness, injury, health condition, or need for medical care',
+    description:
+      'Care for family member with mental or physical illness, injury, health condition, or need for medical care',
   },
   {
     value: 'domestic_violence' as UsageCategory,
     label: 'Domestic Violence',
-    description: 'Domestic violence circumstances affecting employee or family member',
+    description:
+      'Domestic violence circumstances affecting employee or family member',
   },
   {
     value: 'sexual_assault' as UsageCategory,
     label: 'Sexual Assault',
-    description: 'Sexual assault circumstances affecting employee or family member',
+    description:
+      'Sexual assault circumstances affecting employee or family member',
   },
   {
     value: 'stalking' as UsageCategory,
@@ -53,7 +58,7 @@ export const MICHIGAN_COVERED_USE_CATEGORIES = [
  * @returns Category object or undefined
  */
 export function getCoveredUseCategory(value: UsageCategory) {
-  return MICHIGAN_COVERED_USE_CATEGORIES.find(cat => cat.value === value);
+  return MICHIGAN_COVERED_USE_CATEGORIES.find((cat) => cat.value === value);
 }
 
 /**
@@ -106,7 +111,8 @@ export function validateUsageRequest(
     if (employerSize === 'large') {
       return {
         valid: false,
-        error: 'Large employers (10+ employees) do not offer unpaid sick time under Michigan ESTA',
+        error:
+          'Large employers (10+ employees) do not offer unpaid sick time under Michigan ESTA',
       };
     }
 
@@ -137,7 +143,7 @@ export function validateUsageRequest(
  * @returns True if valid category
  */
 export function isValidUsageCategory(category: UsageCategory): boolean {
-  return MICHIGAN_COVERED_USE_CATEGORIES.some(cat => cat.value === category);
+  return MICHIGAN_COVERED_USE_CATEGORIES.some((cat) => cat.value === category);
 }
 
 /**

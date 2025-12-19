@@ -92,7 +92,9 @@ John,Doe,john@test.com`;
 
       const result = importEmployeeCSV(csv);
       expect(result.valid).toBe(false);
-      expect(result.errors.some((e) => e.error.includes('hireDate'))).toBe(true);
+      expect(result.errors.some((e) => e.error.includes('hireDate'))).toBe(
+        true
+      );
     });
 
     it('should validate email format', () => {
@@ -130,9 +132,9 @@ John,Doe,john@test.com,2024-01-15,someValue`;
 
       const result = importEmployeeCSV(csv);
       expect(result.valid).toBe(true);
-      expect(result.warnings.some((w) => w.error.includes('Unknown columns'))).toBe(
-        true
-      );
+      expect(
+        result.warnings.some((w) => w.error.includes('Unknown columns'))
+      ).toBe(true);
     });
 
     it('should validate hours per week', () => {
@@ -213,7 +215,9 @@ john@test.com,2024-11-01,8,2`;
 
       const result = validateEmployeeBusinessRules(employees, new Set());
       expect(result.valid).toBe(false);
-      expect(result.errors.some((e) => e.includes('Duplicate email'))).toBe(true);
+      expect(result.errors.some((e) => e.includes('Duplicate email'))).toBe(
+        true
+      );
     });
 
     it('should warn about existing employees', () => {
@@ -229,7 +233,9 @@ john@test.com,2024-11-01,8,2`;
       const existingEmails = new Set(['john@test.com']);
       const result = validateEmployeeBusinessRules(employees, existingEmails);
       expect(result.valid).toBe(true);
-      expect(result.warnings.some((w) => w.includes('already exists'))).toBe(true);
+      expect(result.warnings.some((w) => w.includes('already exists'))).toBe(
+        true
+      );
     });
 
     it('should warn about very old hire dates', () => {
@@ -246,7 +252,9 @@ john@test.com,2024-11-01,8,2`;
       ];
 
       const result = validateEmployeeBusinessRules(employees, new Set());
-      expect(result.warnings.some((w) => w.includes('10 years ago'))).toBe(true);
+      expect(result.warnings.some((w) => w.includes('10 years ago'))).toBe(
+        true
+      );
     });
   });
 
@@ -296,7 +304,9 @@ john@test.com,2024-11-01,8,2`;
 
       const validEmails = new Set(['john@test.com']);
       const result = validateHoursBusinessRules(hours, validEmails);
-      expect(result.warnings.some((w) => w.includes('exceeds 16 hours'))).toBe(true);
+      expect(result.warnings.some((w) => w.includes('exceeds 16 hours'))).toBe(
+        true
+      );
     });
 
     it('should warn about weekend work', () => {

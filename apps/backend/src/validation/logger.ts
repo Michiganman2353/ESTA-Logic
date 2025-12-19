@@ -38,17 +38,21 @@ export function sanitizeForLogging(
   input: Record<string, unknown>
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
-  
+
   for (const [key, value] of Object.entries(input)) {
     if (SENSITIVE_FIELDS.has(key.toLowerCase())) {
       result[key] = '[REDACTED]';
-    } else if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+    } else if (
+      typeof value === 'object' &&
+      value !== null &&
+      !Array.isArray(value)
+    ) {
       result[key] = sanitizeForLogging(value as Record<string, unknown>);
     } else {
       result[key] = value;
     }
   }
-  
+
   return result;
 }
 
@@ -57,14 +61,21 @@ export function sanitizeForLogging(
  * In production, this could be extended to log to external services.
  */
 export function logValidationFailure(entry: ValidationLogEntry): void {
-  console.error('[VALIDATION_FAILURE]', JSON.stringify({
-    timestamp: entry.timestamp,
-    route: entry.route,
-    method: entry.method,
-    errorCount: entry.errors.length,
-    errors: entry.errors,
-    input: entry.sanitizedInput,
-  }, null, 2));
+  console.error(
+    '[VALIDATION_FAILURE]',
+    JSON.stringify(
+      {
+        timestamp: entry.timestamp,
+        route: entry.route,
+        method: entry.method,
+        errorCount: entry.errors.length,
+        errors: entry.errors,
+        input: entry.sanitizedInput,
+      },
+      null,
+      2
+    )
+  );
 }
 
 /**

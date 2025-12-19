@@ -1,6 +1,6 @@
 /**
  * Unified Cross-Platform Camera Controller
- * 
+ *
  * Handles camera access across desktop and mobile platforms:
  * - getUserMedia with device selection
  * - Orientation normalization
@@ -52,9 +52,11 @@ export class CameraController {
   async enumerateDevices(): Promise<CameraDevice[]> {
     try {
       const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter(device => device.kind === 'videoinput');
+      const videoDevices = devices.filter(
+        (device) => device.kind === 'videoinput'
+      );
 
-      return videoDevices.map(device => ({
+      return videoDevices.map((device) => ({
         deviceId: device.deviceId,
         label: device.label || `Camera ${device.deviceId.slice(0, 8)}`,
         facingMode: this.guessFacingMode(device.label),
@@ -88,7 +90,7 @@ export class CameraController {
   ): Promise<MediaStream> {
     // Check permissions first
     const permissionStatus = await this.permissionManager.checkPermission();
-    
+
     if (permissionStatus.denied) {
       if (this.options.onPermissionDenied) {
         this.options.onPermissionDenied(permissionStatus);
@@ -118,7 +120,7 @@ export class CameraController {
     try {
       // Request camera stream
       this.stream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
-      
+
       // Attach to video element
       this.videoElement = videoElement;
       videoElement.srcObject = this.stream;
@@ -139,7 +141,8 @@ export class CameraController {
       // Handle permission denial during stream request
       if (
         error instanceof DOMException &&
-        (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError')
+        (error.name === 'NotAllowedError' ||
+          error.name === 'PermissionDeniedError')
       ) {
         const status = await this.permissionManager.requestPermission();
         if (this.options.onPermissionDenied) {
@@ -162,7 +165,7 @@ export class CameraController {
 
     const updateOrientation = () => {
       const orientation = window.screen.orientation.type;
-      
+
       // Apply CSS transform based on orientation
       if (orientation.includes('landscape')) {
         videoElement.style.transform = 'none';
@@ -240,7 +243,7 @@ export class CameraController {
    */
   stopCamera(): void {
     if (this.stream) {
-      this.stream.getTracks().forEach(track => track.stop());
+      this.stream.getTracks().forEach((track) => track.stop());
       this.stream = null;
     }
 

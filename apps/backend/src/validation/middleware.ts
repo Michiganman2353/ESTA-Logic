@@ -14,7 +14,7 @@ import { createValidationLogEntry, logValidationFailure } from './logger.js';
 export interface ValidatedRequest<
   TBody = unknown,
   TParams = unknown,
-  TQuery = unknown
+  TQuery = unknown,
 > extends Request {
   validated?: {
     body: TBody;
@@ -37,7 +37,9 @@ export interface ValidationErrorResponse {
 /**
  * Converts Zod errors to a structured error response.
  */
-function formatZodErrors(error: ZodError): Array<{ field: string; message: string }> {
+function formatZodErrors(
+  error: ZodError
+): Array<{ field: string; message: string }> {
   return error.errors.map((err) => ({
     field: err.path.join('.') || 'unknown',
     message: err.message,
@@ -55,7 +57,7 @@ interface ValidateOptions<TBody, TParams, TQuery> {
 
 /**
  * Creates a validation middleware that validates request body, params, and query.
- * 
+ *
  * @example
  * ```typescript
  * router.post('/users', validate({ body: userCreateSchema }), (req, res) => {
@@ -64,11 +66,9 @@ interface ValidateOptions<TBody, TParams, TQuery> {
  * });
  * ```
  */
-export function validate<
-  TBody = unknown,
-  TParams = unknown,
-  TQuery = unknown
->(options: ValidateOptions<TBody, TParams, TQuery>) {
+export function validate<TBody = unknown, TParams = unknown, TQuery = unknown>(
+  options: ValidateOptions<TBody, TParams, TQuery>
+) {
   return async (
     req: Request,
     res: Response,
@@ -89,10 +89,12 @@ export function validate<
           validatedReq.validated.body = options.body.parse(req.body);
         } catch (error) {
           if (error instanceof ZodError) {
-            errors.push(...formatZodErrors(error).map(e => ({
-              ...e,
-              field: `body.${e.field}`.replace('body.unknown', 'body'),
-            })));
+            errors.push(
+              ...formatZodErrors(error).map((e) => ({
+                ...e,
+                field: `body.${e.field}`.replace('body.unknown', 'body'),
+              }))
+            );
           } else {
             throw error;
           }
@@ -105,10 +107,12 @@ export function validate<
           validatedReq.validated.params = options.params.parse(req.params);
         } catch (error) {
           if (error instanceof ZodError) {
-            errors.push(...formatZodErrors(error).map(e => ({
-              ...e,
-              field: `params.${e.field}`.replace('params.unknown', 'params'),
-            })));
+            errors.push(
+              ...formatZodErrors(error).map((e) => ({
+                ...e,
+                field: `params.${e.field}`.replace('params.unknown', 'params'),
+              }))
+            );
           } else {
             throw error;
           }
@@ -121,10 +125,12 @@ export function validate<
           validatedReq.validated.query = options.query.parse(req.query);
         } catch (error) {
           if (error instanceof ZodError) {
-            errors.push(...formatZodErrors(error).map(e => ({
-              ...e,
-              field: `query.${e.field}`.replace('query.unknown', 'query'),
-            })));
+            errors.push(
+              ...formatZodErrors(error).map((e) => ({
+                ...e,
+                field: `query.${e.field}`.replace('query.unknown', 'query'),
+              }))
+            );
           } else {
             throw error;
           }

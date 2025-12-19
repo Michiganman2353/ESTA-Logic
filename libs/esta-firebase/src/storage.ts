@@ -9,7 +9,7 @@ import { getFirebaseApp } from './admin-app.js';
 /**
  * Get Firebase Storage instance
  * Automatically initializes Firebase Admin if needed
- * 
+ *
  * @returns Storage instance
  */
 export function getStorage(): admin.storage.Storage {
@@ -19,7 +19,7 @@ export function getStorage(): admin.storage.Storage {
 
 /**
  * Get the default storage bucket
- * 
+ *
  * @returns Bucket instance
  */
 export function getBucket() {
@@ -29,7 +29,7 @@ export function getBucket() {
 
 /**
  * Get a specific storage bucket by name
- * 
+ *
  * @param bucketName - Bucket name
  * @returns Bucket instance
  */
@@ -40,7 +40,7 @@ export function getNamedBucket(bucketName: string) {
 
 /**
  * Get a file reference from the default bucket
- * 
+ *
  * @param path - File path in storage
  * @returns File reference
  */
@@ -51,7 +51,7 @@ export function getFile(path: string) {
 
 /**
  * Generate a signed URL for file download
- * 
+ *
  * @param path - File path in storage
  * @param expiresInMinutes - URL expiration time in minutes (default: 60)
  * @returns Signed URL
@@ -71,7 +71,7 @@ export async function getSignedDownloadUrl(
 
 /**
  * Generate a signed URL for file upload
- * 
+ *
  * @param path - File path in storage
  * @param contentType - File content type (e.g., 'image/jpeg')
  * @param expiresInMinutes - URL expiration time in minutes (default: 15)
@@ -94,7 +94,7 @@ export async function getSignedUploadUrl(
 
 /**
  * Delete a file from storage
- * 
+ *
  * @param path - File path in storage
  */
 export async function deleteFile(path: string): Promise<void> {
@@ -104,7 +104,7 @@ export async function deleteFile(path: string): Promise<void> {
 
 /**
  * Check if a file exists
- * 
+ *
  * @param path - File path in storage
  * @returns True if file exists
  */

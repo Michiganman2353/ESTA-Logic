@@ -1,12 +1,12 @@
 /**
  * Batch Processing Edge Function
- * 
+ *
  * Optimized edge function for handling batch operations with:
  * - Parallel processing
  * - Progress streaming
  * - Error recovery
  * - Rate limiting
- * 
+ *
  * Runs on Vercel Edge Runtime for low latency
  */
 
@@ -54,17 +54,17 @@ async function processBatch(
   // Process in chunks to control concurrency
   for (let i = 0; i < operations.length; i += maxConcurrency) {
     const chunk = operations.slice(i, i + maxConcurrency);
-    
+
     const results = await Promise.allSettled(
       chunk.map(async (op) => {
         try {
           // Simulate operation (in production, this would be actual Firebase operation)
           // Use fixed delay for deterministic testing
-          await new Promise(resolve => setTimeout(resolve, 50));
-          
+          await new Promise((resolve) => setTimeout(resolve, 50));
+
           // In production, perform actual operation:
           // await performOperation(op);
-          
+
           return { success: true, operationId: op.id };
         } catch (error) {
           throw new Error(`Operation ${op.id} failed: ${error}`);
@@ -115,15 +115,15 @@ export default async function handler(request: Request): Promise<Response> {
 
   // Only accept POST
   if (request.method !== 'POST') {
-    return new Response(
-      JSON.stringify({ error: 'Method not allowed' }),
-      { status: 405, headers }
-    );
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers,
+    });
   }
 
   try {
     // Parse request body
-    const body = await request.json() as BatchRequest;
+    const body = (await request.json()) as BatchRequest;
 
     // Validate request
     if (!body.operations || !Array.isArray(body.operations)) {
@@ -134,19 +134,19 @@ export default async function handler(request: Request): Promise<Response> {
     }
 
     if (body.operations.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'No operations provided' }),
-        { status: 400, headers }
-      );
+      return new Response(JSON.stringify({ error: 'No operations provided' }), {
+        status: 400,
+        headers,
+      });
     }
 
     // Rate limiting check (simple example)
     const operationCount = body.operations.length;
     if (operationCount > 1000) {
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'Batch size exceeds limit',
-          maxBatchSize: 1000 
+          maxBatchSize: 1000,
         }),
         { status: 413, headers }
       );
@@ -159,21 +159,17 @@ export default async function handler(request: Request): Promise<Response> {
     );
 
     // Return result
-    return new Response(
-      JSON.stringify(result),
-      { 
-        status: result.success ? 200 : 207, // 207 = Multi-Status
-        headers 
-      }
-    );
-
+    return new Response(JSON.stringify(result), {
+      status: result.success ? 200 : 207, // 207 = Multi-Status
+      headers,
+    });
   } catch (error) {
     console.error('Batch processing error:', error);
-    
+
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: 'Internal server error',
-        message: error instanceof Error ? error.message : 'Unknown error'
+        message: error instanceof Error ? error.message : 'Unknown error',
       }),
       { status: 500, headers }
     );

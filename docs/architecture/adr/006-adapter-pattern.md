@@ -81,13 +81,13 @@ We adopt the **Repository Pattern** with tenant-scoped adapters.
  */
 export interface Repository<T, CreateInput, UpdateInput> {
   findById(id: string): Promise<AdapterResult<T | null>>;
-  
+
   findMany(query: QuerySpec): Promise<AdapterResult<PaginatedResult<T>>>;
-  
+
   create(input: CreateInput): Promise<AdapterResult<T>>;
-  
+
   update(id: string, input: UpdateInput): Promise<AdapterResult<T>>;
-  
+
   delete(id: string): Promise<AdapterResult<void>>;
 }
 
@@ -95,8 +95,11 @@ export interface Repository<T, CreateInput, UpdateInput> {
  * Tenant-scoped repository
  * All queries automatically scoped to tenant
  */
-export interface TenantScopedRepository<T, CreateInput, UpdateInput>
-  extends Repository<T, CreateInput, UpdateInput> {
+export interface TenantScopedRepository<
+  T,
+  CreateInput,
+  UpdateInput,
+> extends Repository<T, CreateInput, UpdateInput> {
   readonly tenantId: TenantId;
 }
 ```
@@ -112,7 +115,7 @@ export interface QuerySpec {
     offset?: number;
     cursor?: string;
   };
-  select?: string[];  // Field projection
+  select?: string[]; // Field projection
 }
 
 export interface FilterCondition {
@@ -122,14 +125,14 @@ export interface FilterCondition {
 }
 
 export type FilterOperator =
-  | 'eq'       // Equal
-  | 'neq'      // Not equal
-  | 'gt'       // Greater than
-  | 'gte'      // Greater or equal
-  | 'lt'       // Less than
-  | 'lte'      // Less or equal
-  | 'in'       // In array
-  | 'nin'      // Not in array
+  | 'eq' // Equal
+  | 'neq' // Not equal
+  | 'gt' // Greater than
+  | 'gte' // Greater or equal
+  | 'lt' // Less than
+  | 'lte' // Less or equal
+  | 'in' // In array
+  | 'nin' // Not in array
   | 'contains' // String contains
   | 'startsWith';
 ```
@@ -156,9 +159,7 @@ export interface TransactionalAdapterFactory extends AdapterFactory {
   /**
    * Begin a transaction
    */
-  beginTransaction(
-    options?: TransactionOptions
-  ): Promise<Transaction>;
+  beginTransaction(options?: TransactionOptions): Promise<Transaction>;
 }
 ```
 
@@ -166,20 +167,26 @@ export interface TransactionalAdapterFactory extends AdapterFactory {
 
 ```typescript
 // Employee Repository
-export interface EmployeeRepository
-  extends TenantScopedRepository<Employee, EmployeeCreateInput, EmployeeUpdateInput> {
-  
+export interface EmployeeRepository extends TenantScopedRepository<
+  Employee,
+  EmployeeCreateInput,
+  EmployeeUpdateInput
+> {
   findByEmail(email: string): Promise<AdapterResult<Employee | null>>;
-  
-  findActiveByDepartment(department: string): Promise<AdapterResult<Employee[]>>;
+
+  findActiveByDepartment(
+    department: string
+  ): Promise<AdapterResult<Employee[]>>;
 }
 
-// Accrual Repository  
-export interface AccrualRepository
-  extends TenantScopedRepository<AccrualRecord, AccrualRecordCreateInput, AccrualRecordUpdateInput> {
-  
+// Accrual Repository
+export interface AccrualRepository extends TenantScopedRepository<
+  AccrualRecord,
+  AccrualRecordCreateInput,
+  AccrualRecordUpdateInput
+> {
   findByEmployeeId(employeeId: string): Promise<AdapterResult<AccrualRecord[]>>;
-  
+
   findByPeriod(
     employeeId: string,
     startDate: Date,
@@ -190,11 +197,11 @@ export interface AccrualRepository
 // Audit Log Repository (Append-Only)
 export interface AuditLogRepository {
   readonly tenantId: TenantId;
-  
+
   append(entry: AuditLogCreateInput): Promise<AdapterResult<AuditLogEntry>>;
-  
+
   findByEntityId(entityId: string): Promise<AdapterResult<AuditLogEntry[]>>;
-  
+
   findByTimeRange(
     startTime: Date,
     endTime: Date

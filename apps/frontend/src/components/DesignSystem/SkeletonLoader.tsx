@@ -1,9 +1,9 @@
 /**
  * SkeletonLoader Component
- * 
+ *
  * A reusable skeleton loading component that provides visual feedback
  * during data loading states across the ESTA Tracker application.
- * 
+ *
  * Features:
  * - Multiple variants (text, circle, rectangular, card)
  * - Customizable width and height
@@ -11,11 +11,11 @@
  * - Count property for multiple skeleton items
  * - Responsive design
  * - Dark mode support
- * 
+ *
  * Uses:
  * - Tailwind CSS for styling and animations
  * - clsx for conditional class management
- * 
+ *
  * Best Practices:
  * - Use skeleton loaders to improve perceived performance
  * - Match skeleton shape to actual content
@@ -73,14 +73,20 @@ export function SkeletonLoader({
  * Pre-configured skeleton components for common use cases
  */
 
-export function SkeletonText({ lines = 3, className }: { lines?: number; className?: string }) {
+export function SkeletonText({
+  lines = 3,
+  className,
+}: {
+  lines?: number;
+  className?: string;
+}) {
   return (
     <div className={className}>
       {Array.from({ length: lines }, (_, index) => (
         <div
           key={index}
           className={clsx(
-            'animate-pulse bg-gray-200 dark:bg-gray-700 h-4 rounded mb-2',
+            'mb-2 h-4 animate-pulse rounded bg-gray-200 dark:bg-gray-700',
             index === lines - 1 ? 'w-2/3' : 'w-full'
           )}
         />
@@ -91,20 +97,31 @@ export function SkeletonText({ lines = 3, className }: { lines?: number; classNa
 
 export function SkeletonCard({ className }: { className?: string }) {
   return (
-    <div className={clsx('bg-white dark:bg-gray-800 rounded-lg shadow-md p-6', className)}>
+    <div
+      className={clsx(
+        'rounded-lg bg-white p-6 shadow-md dark:bg-gray-800',
+        className
+      )}
+    >
       <div className="animate-pulse">
-        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4" />
+        <div className="mb-4 h-6 w-1/3 rounded bg-gray-200 dark:bg-gray-700" />
         <div className="space-y-2">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded" />
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6" />
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/6" />
+          <div className="h-4 rounded bg-gray-200 dark:bg-gray-700" />
+          <div className="h-4 w-5/6 rounded bg-gray-200 dark:bg-gray-700" />
+          <div className="h-4 w-4/6 rounded bg-gray-200 dark:bg-gray-700" />
         </div>
       </div>
     </div>
   );
 }
 
-export function SkeletonTable({ rows = 5, columns = 4 }: { rows?: number; columns?: number }) {
+export function SkeletonTable({
+  rows = 5,
+  columns = 4,
+}: {
+  rows?: number;
+  columns?: number;
+}) {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -112,7 +129,7 @@ export function SkeletonTable({ rows = 5, columns = 4 }: { rows?: number; column
           <tr>
             {Array.from({ length: columns }, (_, index) => (
               <th key={index} className="px-6 py-3">
-                <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-4 rounded" />
+                <div className="h-4 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
               </th>
             ))}
           </tr>
@@ -122,7 +139,7 @@ export function SkeletonTable({ rows = 5, columns = 4 }: { rows?: number; column
             <tr key={rowIndex}>
               {Array.from({ length: columns }, (_, colIndex) => (
                 <td key={colIndex} className="px-6 py-4">
-                  <div className="animate-pulse bg-gray-200 dark:bg-gray-700 h-4 rounded" />
+                  <div className="h-4 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
                 </td>
               ))}
             </tr>

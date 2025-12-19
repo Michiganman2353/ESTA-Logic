@@ -6,10 +6,7 @@ import { setCorsHeaders, handlePreflight } from '../../lib/cors';
  * Get Current User API Endpoint
  * GET /api/v1/auth/me
  */
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Set CORS headers
   const origin = req.headers.origin || '';
   setCorsHeaders(res, origin);

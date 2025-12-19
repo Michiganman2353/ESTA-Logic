@@ -17,6 +17,7 @@ apps/
 The React-based web application providing the user interface for ESTA Tracker.
 
 **Key Features:**
+
 - React 18 with TypeScript
 - Vite for blazing-fast development and builds
 - React Router for navigation
@@ -25,6 +26,7 @@ The React-based web application providing the user interface for ESTA Tracker.
 - Firebase integration for authentication and data
 
 **Commands:**
+
 ```bash
 # Development
 npx nx dev frontend
@@ -43,6 +45,7 @@ npx nx typecheck frontend
 ```
 
 **Module Scope:** `scope:frontend`
+
 - Can only depend on libraries tagged with `scope:frontend` or `scope:shared`
 - Cannot directly depend on backend code
 
@@ -51,6 +54,7 @@ npx nx typecheck frontend
 The Express.js API server handling business logic and data operations.
 
 **Key Features:**
+
 - Express.js with TypeScript
 - Helmet for security
 - CORS configuration
@@ -60,6 +64,7 @@ The Express.js API server handling business logic and data operations.
 - Google Cloud KMS integration
 
 **Commands:**
+
 ```bash
 # Development (watch mode)
 npx nx dev backend
@@ -81,6 +86,7 @@ npx nx typecheck backend
 ```
 
 **Module Scope:** `scope:backend`
+
 - Can only depend on libraries tagged with `scope:backend` or `scope:shared`
 - Cannot directly depend on frontend code
 
@@ -109,10 +115,12 @@ Both applications must respect module boundaries enforced by Nx and ESLint:
 All environment variables must be properly configured:
 
 **Frontend:**
+
 - All Firebase config must use `VITE_` prefix
 - See `.env.example` for required variables
 
 **Backend:**
+
 - Database connection strings
 - JWT secrets
 - External API keys
@@ -121,6 +129,7 @@ All environment variables must be properly configured:
 ### Testing
 
 Both applications should maintain high test coverage:
+
 - Unit tests for business logic
 - Integration tests for critical paths
 - E2E tests for user workflows
@@ -128,6 +137,7 @@ Both applications should maintain high test coverage:
 ### Security
 
 Applications must follow security best practices:
+
 - No secrets in code
 - Input validation on all endpoints
 - Proper authentication/authorization
@@ -137,6 +147,7 @@ Applications must follow security best practices:
 ## CI/CD
 
 Applications are built and tested using Nx affected commands:
+
 ```bash
 # Build only affected apps
 npx nx affected --target=build
@@ -151,11 +162,13 @@ npx nx affected --target=lint
 ## Deployment
 
 ### Frontend
+
 - Built to `apps/frontend/dist`
 - Deployed to Vercel
 - Environment variables configured in Vercel dashboard
 
 ### Backend
+
 - Built to `apps/backend/dist`
 - Deployable to any Node.js hosting platform
 - Requires environment variable configuration

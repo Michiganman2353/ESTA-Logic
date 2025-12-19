@@ -1,9 +1,9 @@
 /**
  * Firebase Testing Mocks
- * 
+ *
  * Provides mock implementations of Firebase services for testing.
  * Use these in your tests to avoid hitting real Firebase services.
- * 
+ *
  * Usage in tests:
  * ```typescript
  * import { mockApp, mockAuth, mockDb, mockStorage } from '@esta/firebase/testing';
@@ -246,7 +246,8 @@ export function mockAdminDocRef(path: string) {
   return {
     path,
     id: path.split('/').pop(),
-    collection: (subPath: string) => mockAdminCollectionRef(`${path}/${subPath}`),
+    collection: (subPath: string) =>
+      mockAdminCollectionRef(`${path}/${subPath}`),
     get: async () => ({
       exists: false,
       data: () => undefined,
@@ -302,7 +303,9 @@ export function mockAdminFile(path: string) {
     delete: async () => {},
     exists: async () => [false],
     download: async () => [Buffer.from('test')],
-    getSignedUrl: async (_config: any) => [`https://storage.test/test-bucket/${path}`],
+    getSignedUrl: async (_config: any) => [
+      `https://storage.test/test-bucket/${path}`,
+    ],
   };
 }
 
@@ -312,7 +315,7 @@ export function mockAdminFile(path: string) {
 export function resetMocks(): void {
   // Reset client auth state
   mockAuth.currentUser = null;
-  
+
   // Note: Mock functions return fresh objects each time,
   // so no need to reset collections/docs/storage refs.
   // This is sufficient for most test isolation needs.

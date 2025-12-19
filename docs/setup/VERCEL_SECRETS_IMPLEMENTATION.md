@@ -9,16 +9,19 @@ This document provides a reference for how Vercel secrets are configured in the 
 ## Where Secrets Are Used
 
 ### 1. GitHub Repository Secrets
+
 **Location**: Repository Settings → Secrets and variables → Actions  
 **Purpose**: Used by GitHub Actions CI/CD workflow  
 **Status**: ✅ Configured by repository owner
 
 The following secrets are configured in GitHub:
+
 - `VERCEL_TOKEN` (the Vercel authentication token)
 - `VERCEL_ORG_ID`
 - `VERCEL_PROJECT_ID`
 
 These are referenced in `.github/workflows/ci.yml`:
+
 ```yaml
 vercel-token: ${{ secrets.VERCEL_TOKEN }}
 vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
@@ -26,21 +29,25 @@ vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
 ```
 
 ### 2. `.env.example` (Documentation)
+
 **Location**: `/ESTA-Logic/.env.example`  
 **Purpose**: Template for developers to know what variables are needed  
 **Git Status**: Tracked (committed, safe)
 
 Contains placeholders with detailed instructions:
+
 - `VERCEL_TOKEN=your-vercel-token-here` (for local development)
 - `VERCEL_ORG_ID=your-vercel-org-id`
 - `VERCEL_PROJECT_ID=your-vercel-project-id`
 
 ### 3. Local `.env.local` (For Development)
+
 **Location**: `/ESTA-Logic/.env.local`  
 **Purpose**: Local development and Vercel CLI deployments  
 **Git Status**: ✅ Gitignored (will never be committed)
 
 Developers should create this file locally and add:
+
 ```env
 VERCEL_TOKEN=your-actual-token-here
 VERCEL_ORG_ID=your-actual-org-id
@@ -50,16 +57,19 @@ VERCEL_PROJECT_ID=your-actual-project-id
 ## Vercel Configuration Files
 
 ### `.vercel/` Directory
+
 **Location**: `/ESTA-Logic/.vercel/`  
 **Purpose**: Contains local Vercel configuration after running `vercel link`  
 **Git Status**: ✅ Gitignored (contains sensitive data)
 
 See `.vercel/README.md` for detailed information about:
+
 - What files are created by `vercel link`
 - How to extract organization and project IDs
 - Troubleshooting common issues
 
 ### `vercel.json`
+
 **Location**: `/ESTA-Logic/vercel.json`  
 **Purpose**: Vercel deployment configuration  
 **Git Status**: Tracked (contains no secrets)
@@ -102,6 +112,7 @@ This file configures build settings, security headers, and routing.
 ## For Setup Instructions
 
 See the following guides for step-by-step instructions:
+
 - **[Vercel Deployment Guide](../deployment/deployment.md)** - Complete deployment setup
 - **[Vercel Token Setup](../deployment/VERCEL_TOKEN_SETUP.md)** - Token configuration and troubleshooting
 - **[Quick Start](VERCEL_QUICK_START.md)** - Fast setup reference

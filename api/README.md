@@ -5,6 +5,7 @@ This directory contains Vercel Background Functions for handling heavy, long-run
 ## Overview
 
 Background functions allow heavy operations to run asynchronously without blocking the main request/response cycle. Each function:
+
 - Streams progress updates to Firestore
 - Sends notifications on completion or failure
 - Writes detailed logs to Firestore for audit trail
@@ -19,6 +20,7 @@ Handles bulk employee imports from CSV files.
 **Endpoint**: `POST /api/background/csv-import`
 
 **Request Body**:
+
 ```json
 {
   "action": "initiate",
@@ -29,6 +31,7 @@ Handles bulk employee imports from CSV files.
 ```
 
 **Response**:
+
 ```json
 {
   "message": "CSV import job started",
@@ -37,6 +40,7 @@ Handles bulk employee imports from CSV files.
 ```
 
 **Features**:
+
 - Parses CSV with flexible column mapping
 - Validates employee data before import
 - Handles duplicate detection
@@ -50,6 +54,7 @@ Recalculates sick time accruals for employees based on work logs.
 **Endpoint**: `POST /api/background/accrual-recalculation`
 
 **Request Body**:
+
 ```json
 {
   "action": "initiate",
@@ -62,6 +67,7 @@ Recalculates sick time accruals for employees based on work logs.
 ```
 
 **Features**:
+
 - Calculates based on Michigan ESTA rules (1 hour per 30 worked)
 - Handles both small and large employer rules
 - Supports date range filtering
@@ -75,6 +81,7 @@ Updates multiple employee records simultaneously.
 **Endpoint**: `POST /api/background/bulk-employee-update`
 
 **Request Body**:
+
 ```json
 {
   "action": "initiate",
@@ -90,6 +97,7 @@ Updates multiple employee records simultaneously.
 ```
 
 **Features**:
+
 - Updates department, role, status, hire date, manager
 - Updates Firebase Auth custom claims for role changes
 - Validates all updates before processing
@@ -103,6 +111,7 @@ Validates PTO requests against balances and compliance rules.
 **Endpoint**: `POST /api/background/pto-validation`
 
 **Request Body**:
+
 ```json
 {
   "action": "initiate",
@@ -115,6 +124,7 @@ Validates PTO requests against balances and compliance rules.
 ```
 
 **Features**:
+
 - Validates balance sufficiency
 - Checks for overlapping requests
 - Validates documentation requirements
@@ -129,6 +139,7 @@ Generates comprehensive audit reports for compliance.
 **Endpoint**: `POST /api/background/audit-export`
 
 **Request Body**:
+
 ```json
 {
   "action": "initiate",
@@ -143,6 +154,7 @@ Generates comprehensive audit reports for compliance.
 ```
 
 **Features**:
+
 - Exports employees, balances, requests, work logs, audit logs
 - Supports JSON, CSV, and PDF formats
 - Generates compliance report summary
@@ -156,6 +168,7 @@ Check the status of any background job:
 **Endpoint**: `GET /api/job-status?jobId={jobId}&userId={userId}&tenantId={tenantId}`
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -188,7 +201,9 @@ Check the status of any background job:
 ## Firestore Collections
 
 ### `backgroundJobs`
+
 Main job tracking collection:
+
 ```typescript
 {
   id: string;
@@ -206,7 +221,9 @@ Main job tracking collection:
 ```
 
 ### `backgroundJobs/{jobId}/detailedLogs`
+
 Subcollection for detailed logs:
+
 ```typescript
 {
   level: 'info' | 'warn' | 'error';
@@ -217,7 +234,9 @@ Subcollection for detailed logs:
 ```
 
 ### `notifications`
+
 Job completion notifications:
+
 ```typescript
 {
   userId: string;
@@ -235,6 +254,7 @@ Job completion notifications:
 ## Permissions
 
 All background functions require appropriate permissions:
+
 - **CSV Import**: Employer role or higher
 - **Accrual Recalculation**: Employer role or higher
 - **Bulk Employee Update**: Employer role or higher
@@ -262,6 +282,7 @@ Background functions are configured in `vercel.json`:
 ## Error Handling
 
 All functions implement comprehensive error handling:
+
 - Try-catch blocks around all operations
 - Detailed error logging to Firestore
 - User-friendly error notifications
@@ -273,6 +294,7 @@ All functions implement comprehensive error handling:
 To test background functions locally:
 
 1. Install dependencies:
+
    ```bash
    npm install
    ```
@@ -280,6 +302,7 @@ To test background functions locally:
 2. Set up Firebase Admin credentials in environment variables
 
 3. Run Vercel dev server:
+
    ```bash
    vercel dev
    ```
@@ -302,6 +325,7 @@ vercel --prod
 ## Monitoring
 
 Monitor background jobs:
+
 1. Check Firestore `backgroundJobs` collection
 2. View detailed logs in `backgroundJobs/{jobId}/detailedLogs`
 3. Check Vercel function logs in dashboard
@@ -320,6 +344,7 @@ Monitor background jobs:
 ## Future Enhancements
 
 Planned improvements:
+
 - [ ] Add retry logic for failed operations
 - [ ] Implement job cancellation
 - [ ] Add job priority queuing

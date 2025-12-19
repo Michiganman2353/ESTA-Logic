@@ -1,10 +1,10 @@
 /**
  * Pricing Page
- * 
+ *
  * Displays subscription pricing tiers and feature comparison for ESTA Tracker.
  * This page helps employers understand the cost structure and select the
  * appropriate plan for their business needs.
- * 
+ *
  * Features:
  * - Three pricing tiers (Starter, Professional, Enterprise)
  * - Base pricing: $75/month + $8 per employee
@@ -14,19 +14,23 @@
  * - Clear call-to-action buttons
  * - Responsive design for all devices
  * - Dark mode support
- * 
+ *
  * Uses:
  * - PricingCard and FeatureComparison components
  * - Design system Button component
  * - React Router for navigation
- * 
+ *
  * Navigation:
  * - Available to both authenticated and unauthenticated users
  * - CTA buttons navigate to registration page
  */
 
 import { useNavigate } from 'react-router-dom';
-import { PricingCard, FeatureComparison, FeatureCategory } from '@/components/Pricing';
+import {
+  PricingCard,
+  FeatureComparison,
+  FeatureCategory,
+} from '@/components/Pricing';
 import { Button } from '@/components/DesignSystem/Button';
 
 export default function Pricing() {
@@ -39,7 +43,8 @@ export default function Pricing() {
   const pricingTiers = [
     {
       title: 'Starter',
-      description: 'Perfect for small businesses just getting started with ESTA compliance',
+      description:
+        'Perfect for small businesses just getting started with ESTA compliance',
       price: {
         base: 75,
         perEmployee: 8,
@@ -59,7 +64,8 @@ export default function Pricing() {
     },
     {
       title: 'Professional',
-      description: 'Most popular plan for growing businesses with comprehensive needs',
+      description:
+        'Most popular plan for growing businesses with comprehensive needs',
       price: {
         base: 75,
         perEmployee: 8,
@@ -71,7 +77,10 @@ export default function Pricing() {
         { text: 'Employee self-service portal', included: true },
         { text: 'Advanced compliance reports', included: true },
         { text: 'Priority email & phone support', included: true },
-        { text: 'Payroll integration (QuickBooks, ADP, Paychex)', included: true },
+        {
+          text: 'Payroll integration (QuickBooks, ADP, Paychex)',
+          included: true,
+        },
         { text: 'Advanced analytics & insights', included: true },
         { text: 'Dedicated account manager', included: false },
       ],
@@ -81,7 +90,8 @@ export default function Pricing() {
     },
     {
       title: 'Enterprise',
-      description: 'Custom solutions for large organizations with complex requirements',
+      description:
+        'Custom solutions for large organizations with complex requirements',
       price: {
         base: 0, // Custom pricing
         perEmployee: 0,
@@ -114,14 +124,16 @@ export default function Pricing() {
         },
         {
           name: 'Employee size detection',
-          description: 'Automatically applies correct rules based on company size',
+          description:
+            'Automatically applies correct rules based on company size',
           starter: true,
           professional: true,
           enterprise: true,
         },
         {
           name: 'Carryover management',
-          description: 'Automatically handles year-end carryover per ESTA rules',
+          description:
+            'Automatically handles year-end carryover per ESTA rules',
           starter: true,
           professional: true,
           enterprise: true,
@@ -300,9 +312,9 @@ export default function Pricing() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <nav className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
+      <nav className="bg-white shadow dark:bg-gray-800">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 justify-between">
             <div className="flex items-center">
               <h1 className="text-xl font-bold text-gray-900 dark:text-white">
                 ESTA Tracker
@@ -321,19 +333,19 @@ export default function Pricing() {
       </nav>
 
       {/* Hero Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mb-12 text-center">
+          <h2 className="mb-4 text-4xl font-bold text-gray-900 dark:text-white">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Choose the plan that fits your business. All plans include Michigan ESTA compliance,
-            automatic calculations, and secure data management.
+          <p className="mx-auto max-w-3xl text-xl text-gray-600 dark:text-gray-400">
+            Choose the plan that fits your business. All plans include Michigan
+            ESTA compliance, automatic calculations, and secure data management.
           </p>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div className="mb-16 grid grid-cols-1 gap-8 md:grid-cols-3">
           {pricingTiers.map((tier, index) => (
             <PricingCard
               key={index}
@@ -350,22 +362,23 @@ export default function Pricing() {
         </div>
 
         {/* Enterprise Note */}
-        <div className="text-center mb-16">
+        <div className="mb-16 text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            * Enterprise pricing is custom based on your organization's needs. Contact us for a quote.
+            * Enterprise pricing is custom based on your organization's needs.
+            Contact us for a quote.
           </p>
         </div>
 
         {/* Compliance Highlights */}
-        <div className="bg-primary-50 dark:bg-primary-900/20 rounded-lg p-8 mb-16">
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+        <div className="bg-primary-50 dark:bg-primary-900/20 mb-16 rounded-lg p-8">
+          <h3 className="mb-6 text-center text-2xl font-bold text-gray-900 dark:text-white">
             Michigan ESTA Compliance Guaranteed
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div className="text-center">
-              <div className="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="bg-primary-600 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
                 <svg
-                  className="w-8 h-8 text-white"
+                  className="h-8 w-8 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -378,17 +391,18 @@ export default function Pricing() {
                   />
                 </svg>
               </div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+              <h4 className="mb-2 font-semibold text-gray-900 dark:text-white">
                 100% Compliant
               </h4>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Automatically follows all Michigan ESTA requirements based on employer size
+                Automatically follows all Michigan ESTA requirements based on
+                employer size
               </p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="bg-primary-600 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
                 <svg
-                  className="w-8 h-8 text-white"
+                  className="h-8 w-8 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -401,17 +415,18 @@ export default function Pricing() {
                   />
                 </svg>
               </div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+              <h4 className="mb-2 font-semibold text-gray-900 dark:text-white">
                 Bank-Level Security
               </h4>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                AES-256 encryption and Google Cloud KMS protect your sensitive data
+                AES-256 encryption and Google Cloud KMS protect your sensitive
+                data
               </p>
             </div>
             <div className="text-center">
-              <div className="w-16 h-16 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="bg-primary-600 mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
                 <svg
-                  className="w-8 h-8 text-white"
+                  className="h-8 w-8 text-white"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -424,7 +439,7 @@ export default function Pricing() {
                   />
                 </svg>
               </div>
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+              <h4 className="mb-2 font-semibold text-gray-900 dark:text-white">
                 Audit Ready
               </h4>
               <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -436,67 +451,71 @@ export default function Pricing() {
 
         {/* Feature Comparison */}
         <div className="mb-16">
-          <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+          <h3 className="mb-8 text-center text-3xl font-bold text-gray-900 dark:text-white">
             Compare Features
           </h3>
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          <div className="rounded-lg bg-white p-6 shadow-lg dark:bg-gray-800">
             <FeatureComparison categories={featureCategories} />
           </div>
         </div>
 
         {/* FAQ Section */}
         <div className="mb-16">
-          <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
+          <h3 className="mb-8 text-center text-3xl font-bold text-gray-900 dark:text-white">
             Frequently Asked Questions
           </h3>
-          <div className="space-y-6 max-w-3xl mx-auto">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+          <div className="mx-auto max-w-3xl space-y-6">
+            <div className="rounded-lg bg-white p-6 dark:bg-gray-800">
+              <h4 className="mb-2 font-semibold text-gray-900 dark:text-white">
                 Is there a free trial?
               </h4>
               <p className="text-gray-600 dark:text-gray-400">
-                Yes! We offer a 30-day free trial with full access to all features. No credit card required.
+                Yes! We offer a 30-day free trial with full access to all
+                features. No credit card required.
               </p>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+            <div className="rounded-lg bg-white p-6 dark:bg-gray-800">
+              <h4 className="mb-2 font-semibold text-gray-900 dark:text-white">
                 What happens if my employee count changes?
               </h4>
               <p className="text-gray-600 dark:text-gray-400">
-                Your billing automatically adjusts based on your active employee count. You only pay
-                for what you use, and the system automatically updates compliance rules if you cross
-                the 10-employee threshold.
+                Your billing automatically adjusts based on your active employee
+                count. You only pay for what you use, and the system
+                automatically updates compliance rules if you cross the
+                10-employee threshold.
               </p>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+            <div className="rounded-lg bg-white p-6 dark:bg-gray-800">
+              <h4 className="mb-2 font-semibold text-gray-900 dark:text-white">
                 Can I cancel anytime?
               </h4>
               <p className="text-gray-600 dark:text-gray-400">
-                Yes, you can cancel your subscription at any time. You'll retain access until the
-                end of your current billing period, and you can export all your data.
+                Yes, you can cancel your subscription at any time. You'll retain
+                access until the end of your current billing period, and you can
+                export all your data.
               </p>
             </div>
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+            <div className="rounded-lg bg-white p-6 dark:bg-gray-800">
+              <h4 className="mb-2 font-semibold text-gray-900 dark:text-white">
                 What about the one-time onboarding fee?
               </h4>
               <p className="text-gray-600 dark:text-gray-400">
-                The $400 onboarding fee covers initial setup, data migration, and training for your
-                team. This ensures you get up and running quickly with minimal disruption.
+                The $400 onboarding fee covers initial setup, data migration,
+                and training for your team. This ensures you get up and running
+                quickly with minimal disruption.
               </p>
             </div>
           </div>
         </div>
 
         {/* CTA Section */}
-        <div className="text-center bg-gradient-to-r from-primary-600 to-primary-700 rounded-lg p-12">
-          <h3 className="text-3xl font-bold text-white mb-4">
+        <div className="from-primary-600 to-primary-700 rounded-lg bg-gradient-to-r p-12 text-center">
+          <h3 className="mb-4 text-3xl font-bold text-white">
             Ready to Get Started?
           </h3>
-          <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-            Join Michigan businesses who trust ESTA Tracker for their compliance needs.
-            Start your free 30-day trial today.
+          <p className="text-primary-100 mx-auto mb-8 max-w-2xl text-xl">
+            Join Michigan businesses who trust ESTA Tracker for their compliance
+            needs. Start your free 30-day trial today.
           </p>
           <div className="flex justify-center space-x-4">
             <Button
@@ -510,7 +529,7 @@ export default function Pricing() {
               variant="ghost"
               size="lg"
               onClick={() => navigate('/contact')}
-              className="text-white border-white hover:bg-white/10"
+              className="border-white text-white hover:bg-white/10"
             >
               Contact Sales
             </Button>
@@ -519,8 +538,8 @@ export default function Pricing() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <footer className="border-t border-gray-200 bg-white py-8 dark:border-gray-700 dark:bg-gray-800">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <p className="text-center text-gray-600 dark:text-gray-400">
             © 2025 ESTA Tracker. All rights reserved.
           </p>

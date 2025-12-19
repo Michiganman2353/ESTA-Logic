@@ -766,12 +766,12 @@ All changes to safety-critical components require:
 
 This safety case requires formal approval before the system can be deployed in a production environment. The following approvals are required:
 
-| Role             | Name                   | Signature              | Date         | Status  |
-| ---------------- | ---------------------- | ---------------------- | ------------ | ------- |
-| Safety Authority | ********\_\_\_******** | ********\_\_\_******** | ****\_\_**** | PENDING |
-| Technical Lead   | ********\_\_\_******** | ********\_\_\_******** | ****\_\_**** | PENDING |
-| QA Lead          | ********\_\_\_******** | ********\_\_\_******** | ****\_\_**** | PENDING |
-| Project Manager  | ********\_\_\_******** | ********\_\_\_******** | ****\_\_**** | PENDING |
+| Role             | Name                           | Signature                      | Date             | Status  |
+| ---------------- | ------------------------------ | ------------------------------ | ---------------- | ------- |
+| Safety Authority | **\*\*\*\***\_\_\_**\*\*\*\*** | **\*\*\*\***\_\_\_**\*\*\*\*** | \***\*\_\_\*\*** | PENDING |
+| Technical Lead   | **\*\*\*\***\_\_\_**\*\*\*\*** | **\*\*\*\***\_\_\_**\*\*\*\*** | \***\*\_\_\*\*** | PENDING |
+| QA Lead          | **\*\*\*\***\_\_\_**\*\*\*\*** | **\*\*\*\***\_\_\_**\*\*\*\*** | \***\*\_\_\*\*** | PENDING |
+| Project Manager  | **\*\*\*\***\_\_\_**\*\*\*\*** | **\*\*\*\***\_\_\_**\*\*\*\*** | \***\*\_\_\*\*** | PENDING |
 
 ### Approval Process
 

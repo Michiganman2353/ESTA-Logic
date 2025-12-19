@@ -15,7 +15,7 @@ interface PasswordFieldProps {
 
 /**
  * Reusable password field component with toggle visibility
- * 
+ *
  * Features:
  * - Toggle password visibility with eye icon
  * - Accessible (ARIA labels, keyboard navigation)
@@ -46,10 +46,10 @@ export function PasswordField({
       {label && (
         <label
           htmlFor={id}
-          className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block"
+          className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
         >
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="ml-1 text-red-500">*</span>}
         </label>
       )}
       <div className="relative">
@@ -58,8 +58,10 @@ export function PasswordField({
           type={showPassword ? 'text' : 'password'}
           required={required}
           autoComplete={autoComplete}
-          className={`input block w-full ${showIcon ? 'pl-10' : ''} pr-10 focus:ring-2 focus:ring-primary-500 ${
-            error ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+          className={`input block w-full ${showIcon ? 'pl-10' : ''} focus:ring-primary-500 pr-10 focus:ring-2 ${
+            error
+              ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+              : ''
           }`.trim()}
           placeholder={placeholder}
           value={value}
@@ -68,8 +70,13 @@ export function PasswordField({
           aria-invalid={error ? 'true' : 'false'}
         />
         {showIcon && (
-          <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-400">
+            <svg
+              className="h-5 w-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -82,14 +89,14 @@ export function PasswordField({
         <button
           type="button"
           onClick={togglePasswordVisibility}
-          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-primary-500 rounded p-1 transition-colors"
+          className="focus:ring-primary-500 absolute right-3 top-1/2 -translate-y-1/2 transform rounded p-1 text-gray-400 transition-colors hover:text-gray-600 focus:outline-none focus:ring-2 dark:hover:text-gray-300"
           aria-label={showPassword ? 'Hide password' : 'Show password'}
           tabIndex={0}
         >
           {showPassword ? (
             // Eye slash icon (hide password)
             <svg
-              className="w-5 h-5"
+              className="h-5 w-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -105,7 +112,7 @@ export function PasswordField({
           ) : (
             // Eye icon (show password)
             <svg
-              className="w-5 h-5"
+              className="h-5 w-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"

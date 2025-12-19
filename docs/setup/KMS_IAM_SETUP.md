@@ -86,6 +86,7 @@ gcloud kms keys add-iam-policy-binding esta-encryption-key-dev \
 ```
 
 **Permissions included:**
+
 - `cloudkms.cryptoKeyVersions.useToEncrypt`
 - `cloudkms.cryptoKeyVersions.useToDecrypt`
 
@@ -117,6 +118,7 @@ gcloud kms keys add-iam-policy-binding esta-encryption-key-dev \
 ```
 
 **Permissions included:**
+
 - `cloudkms.cryptoKeyVersions.viewPublicKey`
 
 #### 3. Cloud KMS Viewer (Optional - for monitoring)
@@ -132,6 +134,7 @@ gcloud kms keyrings add-iam-policy-binding esta-tracker-keyring \
 ```
 
 **Permissions included:**
+
 - `cloudkms.cryptoKeys.list`
 - `cloudkms.cryptoKeyVersions.list`
 - `cloudkms.cryptoKeyVersions.get`
@@ -279,14 +282,14 @@ gcloud projects set-iam-policy esta-tracker audit-config.yaml
 ```bash
 # View recent KMS operations
 gcloud logging read \
-  "resource.type=cloudkms_cryptokeyversion AND 
+  "resource.type=cloudkms_cryptokeyversion AND
    protoPayload.methodName=Decrypt" \
   --limit=50 \
   --format=json
 
 # View by service account
 gcloud logging read \
-  "resource.type=cloudkms_cryptokeyversion AND 
+  "resource.type=cloudkms_cryptokeyversion AND
    protoPayload.authenticationInfo.principalEmail=${PROD_SA}" \
   --limit=50
 ```
@@ -322,11 +325,13 @@ gcloud alpha monitoring policies create \
 ### 1. Environment Separation
 
 ✅ **DO:**
+
 - Use separate service accounts for prod/staging/dev
 - Use separate key rings for each environment
 - Never share keys between environments
 
 ❌ **DON'T:**
+
 - Use production keys in development
 - Share service account keys between teams
 - Commit service account keys to Git
@@ -334,12 +339,14 @@ gcloud alpha monitoring policies create \
 ### 2. Access Control
 
 ✅ **DO:**
+
 - Grant minimum necessary permissions
 - Use custom roles for fine-grained control
 - Regularly review IAM policies
 - Enable multi-factor authentication for admin accounts
 
 ❌ **DON'T:**
+
 - Grant project-wide permissions
 - Use "Owner" or "Editor" roles
 - Share service account keys via email
@@ -348,12 +355,14 @@ gcloud alpha monitoring policies create \
 ### 3. Key Management
 
 ✅ **DO:**
+
 - Rotate service account keys every 90 days
 - Enable automatic KMS key rotation
 - Use HSM protection level for sensitive data
 - Monitor key usage patterns
 
 ❌ **DON'T:**
+
 - Store keys in environment variables (use Secret Manager)
 - Hardcode keys in application code
 - Use the same key for multiple purposes
@@ -362,12 +371,14 @@ gcloud alpha monitoring policies create \
 ### 4. Network Security
 
 ✅ **DO:**
+
 - Use VPC Service Controls
 - Restrict API access by IP
 - Enable Private Google Access
 - Use Cloud Armor for DDoS protection
 
 ❌ **DON'T:**
+
 - Expose KMS operations to public internet
 - Allow unrestricted egress
 - Disable Cloud Logging

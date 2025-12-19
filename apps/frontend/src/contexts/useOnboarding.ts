@@ -1,9 +1,9 @@
 /**
  * useOnboarding Hook
- * 
+ *
  * Custom hook to access the onboarding context.
  * Must be used within an OnboardingProvider.
- * 
+ *
  * @throws Error if used outside OnboardingProvider
  * @returns OnboardingContextValue with state and actions
  */

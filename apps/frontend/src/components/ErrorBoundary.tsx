@@ -12,10 +12,10 @@ interface State {
 
 /**
  * ErrorBoundary Component
- * 
+ *
  * Catches JavaScript errors anywhere in the child component tree,
  * logs those errors, and displays a fallback UI instead of crashing.
- * 
+ *
  * This helps prevent the "Failed to Load" error by providing graceful
  * error handling and helpful error messages to users.
  */
@@ -38,7 +38,7 @@ export class ErrorBoundary extends Component<Props, State> {
     // Log the error to console for debugging
     console.error('ErrorBoundary caught an error:', error);
     console.error('Error Info:', errorInfo);
-    
+
     // Store error info in state for display
     this.setState({
       error,
@@ -56,7 +56,7 @@ export class ErrorBoundary extends Component<Props, State> {
       error: null,
       errorInfo: null,
     });
-    
+
     // Reload the page to recover
     window.location.reload();
   };
@@ -64,37 +64,37 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-          <div className="max-w-2xl w-full p-6">
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6">
+        <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+          <div className="w-full max-w-2xl p-6">
+            <div className="rounded-lg border border-red-200 bg-red-50 p-6 dark:border-red-800 dark:bg-red-900/20">
               <div className="flex items-start">
                 <div className="flex-shrink-0">
-                  <svg 
-                    className="h-6 w-6 text-red-400" 
-                    viewBox="0 0 20 20" 
+                  <svg
+                    className="h-6 w-6 text-red-400"
+                    viewBox="0 0 20 20"
                     fill="currentColor"
                   >
-                    <path 
-                      fillRule="evenodd" 
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" 
-                      clipRule="evenodd" 
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
                     />
                   </svg>
                 </div>
                 <div className="ml-4 flex-1">
-                  <h3 className="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">
+                  <h3 className="mb-2 text-lg font-semibold text-red-800 dark:text-red-200">
                     Application Error
                   </h3>
-                  <p className="text-sm text-red-700 dark:text-red-300 mb-4">
-                    We're sorry, but something went wrong while loading the application. 
-                    This is likely a temporary issue.
+                  <p className="mb-4 text-sm text-red-700 dark:text-red-300">
+                    We're sorry, but something went wrong while loading the
+                    application. This is likely a temporary issue.
                   </p>
-                  
+
                   <div className="mb-4">
-                    <h4 className="text-sm font-semibold text-red-800 dark:text-red-200 mb-2">
+                    <h4 className="mb-2 text-sm font-semibold text-red-800 dark:text-red-200">
                       What you can do:
                     </h4>
-                    <ul className="list-disc list-inside text-sm text-red-700 dark:text-red-300 space-y-1">
+                    <ul className="list-inside list-disc space-y-1 text-sm text-red-700 dark:text-red-300">
                       <li>Click the "Reload Application" button below</li>
                       <li>Clear your browser cache and cookies</li>
                       <li>Try a different browser</li>
@@ -105,21 +105,25 @@ export class ErrorBoundary extends Component<Props, State> {
 
                   {/* Show error details in development mode */}
                   {import.meta.env.DEV && this.state.error && (
-                    <details className="mt-4 p-3 bg-red-100 dark:bg-red-900/40 rounded text-xs">
-                      <summary className="cursor-pointer font-semibold text-red-900 dark:text-red-100 mb-2">
+                    <details className="mt-4 rounded bg-red-100 p-3 text-xs dark:bg-red-900/40">
+                      <summary className="mb-2 cursor-pointer font-semibold text-red-900 dark:text-red-100">
                         Technical Details (Development Mode)
                       </summary>
                       <div className="space-y-2">
                         <div>
-                          <strong className="text-red-900 dark:text-red-100">Error:</strong>
-                          <pre className="mt-1 text-red-800 dark:text-red-200 whitespace-pre-wrap break-words">
+                          <strong className="text-red-900 dark:text-red-100">
+                            Error:
+                          </strong>
+                          <pre className="mt-1 whitespace-pre-wrap break-words text-red-800 dark:text-red-200">
                             {this.state.error.toString()}
                           </pre>
                         </div>
                         {this.state.errorInfo && (
                           <div>
-                            <strong className="text-red-900 dark:text-red-100">Component Stack:</strong>
-                            <pre className="mt-1 text-red-800 dark:text-red-200 whitespace-pre-wrap break-words">
+                            <strong className="text-red-900 dark:text-red-100">
+                              Component Stack:
+                            </strong>
+                            <pre className="mt-1 whitespace-pre-wrap break-words text-red-800 dark:text-red-200">
                               {this.state.errorInfo.componentStack}
                             </pre>
                           </div>
@@ -135,10 +139,7 @@ export class ErrorBoundary extends Component<Props, State> {
                     >
                       Reload Application
                     </button>
-                    <a
-                      href="/login"
-                      className="btn btn-secondary"
-                    >
+                    <a href="/login" className="btn btn-secondary">
                       Go to Login
                     </a>
                   </div>

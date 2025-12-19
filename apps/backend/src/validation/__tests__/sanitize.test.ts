@@ -19,7 +19,9 @@ describe('Sanitization Utilities', () => {
     });
 
     it('should remove HTML tags', () => {
-      expect(sanitizeString('<script>alert("xss")</script>hello')).toBe('alert("xss")hello');
+      expect(sanitizeString('<script>alert("xss")</script>hello')).toBe(
+        'alert("xss")hello'
+      );
     });
 
     it('should remove null bytes', () => {

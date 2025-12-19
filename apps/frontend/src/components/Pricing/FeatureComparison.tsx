@@ -1,9 +1,9 @@
 /**
  * FeatureComparison Component
- * 
+ *
  * Displays a detailed feature comparison table for different pricing tiers.
  * Helps users understand what features are included in each plan.
- * 
+ *
  * Features:
  * - Responsive table layout
  * - Feature categories/sections
@@ -11,7 +11,7 @@
  * - Tooltips for feature explanations
  * - Dark mode support
  * - Mobile-friendly horizontal scroll
- * 
+ *
  * Uses:
  * - Tailwind CSS for styling
  * - Semantic HTML table structure
@@ -42,7 +42,7 @@ export function FeatureComparison({ categories }: FeatureComparisonProps) {
     if (typeof value === 'boolean') {
       return value ? (
         <svg
-          className="w-5 h-5 text-green-500 mx-auto"
+          className="mx-auto h-5 w-5 text-green-500"
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -54,7 +54,7 @@ export function FeatureComparison({ categories }: FeatureComparisonProps) {
         </svg>
       ) : (
         <svg
-          className="w-5 h-5 text-gray-300 dark:text-gray-600 mx-auto"
+          className="mx-auto h-5 w-5 text-gray-300 dark:text-gray-600"
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -66,7 +66,9 @@ export function FeatureComparison({ categories }: FeatureComparisonProps) {
         </svg>
       );
     }
-    return <span className="text-sm text-gray-700 dark:text-gray-300">{value}</span>;
+    return (
+      <span className="text-sm text-gray-700 dark:text-gray-300">{value}</span>
+    );
   };
 
   return (
@@ -74,16 +76,16 @@ export function FeatureComparison({ categories }: FeatureComparisonProps) {
       <table className="w-full border-collapse">
         <thead>
           <tr className="border-b-2 border-gray-200 dark:border-gray-700">
-            <th className="text-left py-4 px-4 font-semibold text-gray-900 dark:text-white">
+            <th className="px-4 py-4 text-left font-semibold text-gray-900 dark:text-white">
               Features
             </th>
-            <th className="text-center py-4 px-4 font-semibold text-gray-900 dark:text-white">
+            <th className="px-4 py-4 text-center font-semibold text-gray-900 dark:text-white">
               Starter
             </th>
-            <th className="text-center py-4 px-4 font-semibold text-primary-600 dark:text-primary-400">
+            <th className="text-primary-600 dark:text-primary-400 px-4 py-4 text-center font-semibold">
               Professional
             </th>
-            <th className="text-center py-4 px-4 font-semibold text-gray-900 dark:text-white">
+            <th className="px-4 py-4 text-center font-semibold text-gray-900 dark:text-white">
               Enterprise
             </th>
           </tr>
@@ -97,7 +99,7 @@ export function FeatureComparison({ categories }: FeatureComparisonProps) {
               >
                 <td
                   colSpan={4}
-                  className="py-3 px-4 font-semibold text-gray-900 dark:text-white text-sm uppercase tracking-wider"
+                  className="px-4 py-3 text-sm font-semibold uppercase tracking-wider text-gray-900 dark:text-white"
                 >
                   {category.name}
                 </td>
@@ -105,9 +107,9 @@ export function FeatureComparison({ categories }: FeatureComparisonProps) {
               {category.features.map((feature, featureIndex) => (
                 <tr
                   key={`feature-${categoryIndex}-${featureIndex}`}
-                  className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                  className="border-b border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800/50"
                 >
-                  <td className="py-3 px-4 text-gray-700 dark:text-gray-300">
+                  <td className="px-4 py-3 text-gray-700 dark:text-gray-300">
                     <div className="flex items-center">
                       {feature.name}
                       {feature.description && (
@@ -115,13 +117,13 @@ export function FeatureComparison({ categories }: FeatureComparisonProps) {
                       )}
                     </div>
                   </td>
-                  <td className="py-3 px-4 text-center">
+                  <td className="px-4 py-3 text-center">
                     {renderCell(feature.starter)}
                   </td>
-                  <td className="py-3 px-4 text-center bg-primary-50/50 dark:bg-primary-900/10">
+                  <td className="bg-primary-50/50 dark:bg-primary-900/10 px-4 py-3 text-center">
                     {renderCell(feature.professional)}
                   </td>
-                  <td className="py-3 px-4 text-center">
+                  <td className="px-4 py-3 text-center">
                     {renderCell(feature.enterprise)}
                   </td>
                 </tr>

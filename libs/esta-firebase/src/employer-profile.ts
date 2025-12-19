@@ -1,6 +1,6 @@
 /**
  * Employer Profile Management
- * 
+ *
  * This module provides functions for managing employer profiles,
  * including code generation, validation, and employee linking.
  */
@@ -30,7 +30,7 @@ import {
 
 /**
  * Generate a unique employer code with collision detection
- * 
+ *
  * @param db Firestore instance
  * @param maxAttempts Maximum number of attempts to generate a unique code
  * @returns A unique 4-digit employer code
@@ -42,23 +42,27 @@ export async function generateEmployerCode(
 ): Promise<string> {
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const code = generateRandomEmployerCode();
-    
+
     // Check if code already exists
     const existingProfile = await getEmployerProfileByCode(db, code);
-    
+
     if (!existingProfile) {
       return code;
     }
-    
-    console.log(`Employer code ${code} already exists, retrying... (attempt ${attempt + 1}/${maxAttempts})`);
+
+    console.log(
+      `Employer code ${code} already exists, retrying... (attempt ${attempt + 1}/${maxAttempts})`
+    );
   }
-  
-  throw new Error(`Failed to generate unique employer code after ${maxAttempts} attempts`);
+
+  throw new Error(
+    `Failed to generate unique employer code after ${maxAttempts} attempts`
+  );
 }
 
 /**
  * Get employer profile by 4-digit code
- * 
+ *
  * @param db Firestore instance
  * @param code 4-digit employer code
  * @returns EmployerProfile if found, null otherwise
@@ -70,22 +74,22 @@ export async function getEmployerProfileByCode(
   if (!isValidEmployerCode(code)) {
     return null;
   }
-  
+
   const profilesRef = collection(db, 'employerProfiles');
   const q = query(profilesRef, where('employerCode', '==', code));
   const querySnapshot = await getDocs(q);
-  
+
   if (querySnapshot.empty) {
     return null;
   }
-  
+
   const docSnap = querySnapshot.docs[0];
   if (!docSnap) {
     return null;
   }
-  
+
   const data = docSnap.data();
-  
+
   return {
     id: docSnap.id,
     employerCode: data.employerCode,
@@ -103,7 +107,7 @@ export async function getEmployerProfileByCode(
 
 /**
  * Get employer profile by ID
- * 
+ *
  * @param db Firestore instance
  * @param employerId Employer profile ID
  * @returns EmployerProfile if found, null otherwise
@@ -114,11 +118,11 @@ export async function getEmployerProfileById(
 ): Promise<EmployerProfile | null> {
   const docRef = doc(db, 'employerProfiles', employerId);
   const docSnap = await getDoc(docRef);
-  
+
   if (!docSnap.exists()) {
     return null;
   }
-  
+
   const data = docSnap.data();
   return {
     id: docSnap.id,
@@ -137,7 +141,7 @@ export async function getEmployerProfileById(
 
 /**
  * Create a new employer profile
- * 
+ *
  * @param db Firestore instance
  * @param uid User ID of the employer
  * @param input Employer profile creation data
@@ -150,10 +154,10 @@ export async function createEmployerProfile(
 ): Promise<EmployerProfile> {
   // Generate unique employer code
   const employerCode = await generateEmployerCode(db);
-  
+
   // Determine employer size
   const size = input.employeeCount >= 10 ? 'large' : 'small';
-  
+
   const profileData = {
     employerCode,
     displayName: input.displayName,
@@ -166,11 +170,11 @@ export async function createEmployerProfile(
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   };
-  
+
   // Create employer profile document
   const profileRef = doc(db, 'employerProfiles', uid);
   await setDoc(profileRef, profileData);
-  
+
   return {
     id: uid,
     employerCode,
@@ -188,7 +192,7 @@ export async function createEmployerProfile(
 
 /**
  * Update employer profile branding
- * 
+ *
  * @param db Firestore instance
  * @param employerId Employer profile ID
  * @param input Branding update data
@@ -202,7 +206,7 @@ export async function updateEmployerBranding(
   const updateData: Record<string, unknown> = {
     updatedAt: serverTimestamp(),
   };
-  
+
   if (input.displayName !== undefined) {
     updateData.displayName = input.displayName;
   }
@@ -212,13 +216,13 @@ export async function updateEmployerBranding(
   if (input.brandColor !== undefined) {
     updateData.brandColor = input.brandColor;
   }
-  
+
   await setDoc(profileRef, updateData, { merge: true });
 }
 
 /**
  * Link an employee to an employer
- * 
+ *
  * @param db Firestore instance
  * @param employeeUid Employee user ID
  * @param employerId Employer profile ID
@@ -242,9 +246,15 @@ export async function linkEmployeeToEmployer(
       employerId,
       updatedAt: serverTimestamp(),
     });
-    
+
     // Create employee record in employer's employees subcollection
-    const employeeRef = doc(db, 'employerProfiles', employerId, 'employees', employeeUid);
+    const employeeRef = doc(
+      db,
+      'employerProfiles',
+      employerId,
+      'employees',
+      employeeUid
+    );
     transaction.set(employeeRef, {
       uid: employeeUid,
       email: employeeData.email,
@@ -258,7 +268,7 @@ export async function linkEmployeeToEmployer(
 
 /**
  * Get employee record from employer profile
- * 
+ *
  * @param db Firestore instance
  * @param employerId Employer profile ID
  * @param employeeUid Employee user ID
@@ -269,13 +279,19 @@ export async function getEmployerEmployee(
   employerId: string,
   employeeUid: string
 ): Promise<EmployerEmployee | null> {
-  const employeeRef = doc(db, 'employerProfiles', employerId, 'employees', employeeUid);
+  const employeeRef = doc(
+    db,
+    'employerProfiles',
+    employerId,
+    'employees',
+    employeeUid
+  );
   const employeeSnap = await getDoc(employeeRef);
-  
+
   if (!employeeSnap.exists()) {
     return null;
   }
-  
+
   const data = employeeSnap.data();
   return {
     uid: data.uid,
@@ -289,7 +305,7 @@ export async function getEmployerEmployee(
 
 /**
  * Regenerate employer code
- * 
+ *
  * @param db Firestore instance
  * @param employerId Employer profile ID
  * @returns New employer code
@@ -299,12 +315,16 @@ export async function regenerateEmployerCode(
   employerId: string
 ): Promise<string> {
   const newCode = await generateEmployerCode(db);
-  
+
   const profileRef = doc(db, 'employerProfiles', employerId);
-  await setDoc(profileRef, {
-    employerCode: newCode,
-    updatedAt: serverTimestamp(),
-  }, { merge: true });
-  
+  await setDoc(
+    profileRef,
+    {
+      employerCode: newCode,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+
   return newCode;
 }

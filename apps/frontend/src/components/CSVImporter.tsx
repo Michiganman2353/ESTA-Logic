@@ -25,7 +25,9 @@ export default function CSVImporter({
   onImportComplete,
 }: CSVImporterProps) {
   const [file, setFile] = useState<File | null>(null);
-  const [importResult, setImportResult] = useState<CSVImportResult | null>(null);
+  const [importResult, setImportResult] = useState<CSVImportResult | null>(
+    null
+  );
   const [businessValidation, setBusinessValidation] = useState<{
     valid: boolean;
     errors: string[];
@@ -34,7 +36,9 @@ export default function CSVImporter({
   const [step, setStep] = useState<'upload' | 'preview' | 'confirm'>('upload');
   const [importing, setImporting] = useState(false);
 
-  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const selectedFile = event.target.files?.[0];
     if (!selectedFile) return;
 
@@ -227,18 +231,19 @@ export default function CSVImporter({
             </div>
           )}
 
-          {businessValidation?.warnings && businessValidation.warnings.length > 0 && (
-            <div className="warnings-section">
-              <h4>⚠️ Business Rules Warnings</h4>
-              <div className="warning-list">
-                {businessValidation.warnings.map((warning, index) => (
-                  <div key={index} className="warning-item">
-                    <p>{warning}</p>
-                  </div>
-                ))}
+          {businessValidation?.warnings &&
+            businessValidation.warnings.length > 0 && (
+              <div className="warnings-section">
+                <h4>⚠️ Business Rules Warnings</h4>
+                <div className="warning-list">
+                  {businessValidation.warnings.map((warning, index) => (
+                    <div key={index} className="warning-item">
+                      <p>{warning}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
           <div className="preview-data">
             <h4>Data Preview (First 10 Rows)</h4>
@@ -246,7 +251,8 @@ export default function CSVImporter({
               <table className="data-table">
                 <thead>
                   <tr>
-                    {importResult.preview.length > 0 && importResult.preview[0] &&
+                    {importResult.preview.length > 0 &&
+                      importResult.preview[0] &&
                       Object.keys(importResult.preview[0]).map((key) => (
                         <th key={key}>{key}</th>
                       ))}
@@ -269,7 +275,10 @@ export default function CSVImporter({
             <button onClick={handleReset} className="btn btn-secondary">
               Cancel
             </button>
-            <button onClick={() => setStep('confirm')} className="btn btn-primary">
+            <button
+              onClick={() => setStep('confirm')}
+              className="btn btn-primary"
+            >
               Continue to Confirm
             </button>
           </div>
@@ -285,13 +294,16 @@ export default function CSVImporter({
               You are about to import <strong>{importResult.validRows}</strong>{' '}
               {importType === 'employees' ? 'employees' : 'hours records'}.
             </p>
-            {businessValidation?.warnings && businessValidation.warnings.length > 0 && (
-              <p className="warning-text">
-                There are {businessValidation.warnings.length} warnings. Please review
-                them carefully before proceeding.
-              </p>
-            )}
-            <p>This action cannot be undone. Are you sure you want to continue?</p>
+            {businessValidation?.warnings &&
+              businessValidation.warnings.length > 0 && (
+                <p className="warning-text">
+                  There are {businessValidation.warnings.length} warnings.
+                  Please review them carefully before proceeding.
+                </p>
+              )}
+            <p>
+              This action cannot be undone. Are you sure you want to continue?
+            </p>
           </div>
 
           <div className="confirm-actions">

@@ -1,9 +1,9 @@
 /**
  * Settings Page
- * 
+ *
  * Main settings page for ESTA Tracker that allows users to configure
  * their account, view security information, and manage preferences.
- * 
+ *
  * Features:
  * - Account information display and editing
  * - Security and privacy information
@@ -13,13 +13,13 @@
  * - Trust badges display
  * - Responsive tabs navigation
  * - Dark mode support
- * 
+ *
  * Uses:
  * - SecuritySection component for security information
  * - TrustBadgeGroup for trust indicators
  * - Design system components (Button, Card)
  * - User context for current user data
- * 
+ *
  * Navigation:
  * - Protected route (requires authentication)
  * - Accessible from main dashboard
@@ -46,7 +46,7 @@ export default function Settings({ user }: SettingsProps) {
   const handleSave = async () => {
     setIsSaving(true);
     // Simulate save operation
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSaving(false);
   };
 
@@ -87,19 +87,19 @@ export default function Settings({ user }: SettingsProps) {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Header */}
-      <nav className="bg-white dark:bg-gray-800 shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
+      <nav className="bg-white shadow dark:bg-gray-800">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 justify-between">
             <div className="flex items-center">
               <button
                 onClick={() => navigate('/')}
-                className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400"
+                className="hover:text-primary-600 dark:hover:text-primary-400 text-lg font-bold text-gray-900 sm:text-xl dark:text-white"
               >
                 ← ESTA Tracker
               </button>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 truncate max-w-[150px] sm:max-w-none">
+              <span className="max-w-[150px] truncate text-xs text-gray-700 sm:max-w-none sm:text-sm dark:text-gray-300">
                 {user.name} ({user.role})
               </span>
               <Button
@@ -117,9 +117,9 @@ export default function Settings({ user }: SettingsProps) {
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">
             Settings
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
@@ -139,19 +139,19 @@ export default function Settings({ user }: SettingsProps) {
 
         {/* Tabs */}
         <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
-          <nav className="flex space-x-8 overflow-x-auto" aria-label="Settings tabs">
+          <nav
+            className="flex space-x-8 overflow-x-auto"
+            aria-label="Settings tabs"
+          >
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`
-                  whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                  ${
-                    activeTab === tab.id
-                      ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'
-                  }
-                `}
+                className={`whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium ${
+                  activeTab === tab.id
+                    ? 'border-primary-500 text-primary-600 dark:text-primary-400'
+                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                } `}
               >
                 <span className="mr-2">{tab.icon}</span>
                 {tab.label}
@@ -164,12 +164,12 @@ export default function Settings({ user }: SettingsProps) {
         <div className="space-y-6">
           {activeTab === 'account' && (
             <Card>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
                 Account Information
               </h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Full Name
                   </label>
                   <input
@@ -180,7 +180,7 @@ export default function Settings({ user }: SettingsProps) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Email Address
                   </label>
                   <input
@@ -191,7 +191,7 @@ export default function Settings({ user }: SettingsProps) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Role
                   </label>
                   <input
@@ -202,12 +202,16 @@ export default function Settings({ user }: SettingsProps) {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
                     Employer Size
                   </label>
                   <input
                     type="text"
-                    defaultValue={user.employerSize === 'large' ? 'Large (≥10 employees)' : 'Small (<10 employees)'}
+                    defaultValue={
+                      user.employerSize === 'large'
+                        ? 'Large (≥10 employees)'
+                        : 'Small (<10 employees)'
+                    }
                     className="input w-full"
                     disabled
                   />
@@ -225,7 +229,7 @@ export default function Settings({ user }: SettingsProps) {
 
           {activeTab === 'notifications' && (
             <Card>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
                 Notification Preferences
               </h2>
               <div className="space-y-4">
@@ -241,7 +245,7 @@ export default function Settings({ user }: SettingsProps) {
                   <input
                     type="checkbox"
                     defaultChecked
-                    className="w-4 h-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                    className="text-primary-600 focus:ring-primary-500 h-4 w-4 rounded border-gray-300"
                   />
                 </div>
                 <div className="flex items-center justify-between">
@@ -256,7 +260,7 @@ export default function Settings({ user }: SettingsProps) {
                   <input
                     type="checkbox"
                     defaultChecked
-                    className="w-4 h-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                    className="text-primary-600 focus:ring-primary-500 h-4 w-4 rounded border-gray-300"
                   />
                 </div>
                 <div className="flex items-center justify-between">
@@ -271,7 +275,7 @@ export default function Settings({ user }: SettingsProps) {
                   <input
                     type="checkbox"
                     defaultChecked
-                    className="w-4 h-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                    className="text-primary-600 focus:ring-primary-500 h-4 w-4 rounded border-gray-300"
                   />
                 </div>
                 <div className="flex justify-end pt-4">
@@ -285,14 +289,14 @@ export default function Settings({ user }: SettingsProps) {
 
           {activeTab === 'integrations' && (
             <Card>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
                 Payroll Integrations
               </h2>
               <div className="space-y-4">
-                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
+                <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+                  <div className="mb-2 flex items-center justify-between">
                     <div className="flex items-center">
-                      <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-4">
+                      <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
                         <span className="text-2xl">📊</span>
                       </div>
                       <div>
@@ -309,14 +313,16 @@ export default function Settings({ user }: SettingsProps) {
                     </Button>
                   </div>
                 </div>
-                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
+                <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+                  <div className="mb-2 flex items-center justify-between">
                     <div className="flex items-center">
-                      <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-4">
+                      <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
                         <span className="text-2xl">💼</span>
                       </div>
                       <div>
-                        <p className="font-medium text-gray-900 dark:text-white">ADP</p>
+                        <p className="font-medium text-gray-900 dark:text-white">
+                          ADP
+                        </p>
                         <p className="text-sm text-gray-600 dark:text-gray-400">
                           Automatically sync hours worked from ADP
                         </p>
@@ -327,10 +333,10 @@ export default function Settings({ user }: SettingsProps) {
                     </Button>
                   </div>
                 </div>
-                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
+                <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
+                  <div className="mb-2 flex items-center justify-between">
                     <div className="flex items-center">
-                      <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mr-4">
+                      <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/30">
                         <span className="text-2xl">💵</span>
                       </div>
                       <div>

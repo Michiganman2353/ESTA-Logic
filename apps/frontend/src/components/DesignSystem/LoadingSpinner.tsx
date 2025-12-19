@@ -240,36 +240,42 @@ export function PageLoader({
       className={clsx(
         'flex min-h-screen items-center justify-center',
         overlay
-          ? 'fixed inset-0 z-50 bg-gradient-to-br from-royal-50/90 via-sky-50/90 to-white/90 backdrop-blur-sm dark:from-navy-900/90 dark:via-navy-800/90 dark:to-gray-900/90'
+          ? 'from-royal-50/90 dark:from-navy-900/90 dark:via-navy-800/90 fixed inset-0 z-50 bg-gradient-to-br via-sky-50/90 to-white/90 backdrop-blur-sm dark:to-gray-900/90'
           : 'gradient-bg'
       )}
       role="status"
       aria-live="polite"
       aria-label={message}
     >
-      <div className="space-y-6 text-center animate-fade-in">
+      <div className="animate-fade-in space-y-6 text-center">
         {/* Branded Logo Loader */}
         <div className="relative inline-block">
-          <div className="absolute inset-0 blue-glow animate-glow rounded-full"></div>
-          <img 
-            src="/logo-icon.svg" 
-            alt="ESTA Tracker" 
-            className="w-24 h-24 animate-pulse relative z-10"
+          <div className="blue-glow animate-glow absolute inset-0 rounded-full"></div>
+          <img
+            src="/logo-icon.svg"
+            alt="ESTA Tracker"
+            className="relative z-10 h-24 w-24 animate-pulse"
           />
         </div>
         <div>
-          <div className="mb-2 text-2xl font-bold gradient-header animate-slide-up">
+          <div className="gradient-header animate-slide-up mb-2 text-2xl font-bold">
             {message}
           </div>
           {hint && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <p
+              className="animate-slide-up text-sm text-gray-600 dark:text-gray-400"
+              style={{ animationDelay: '0.1s' }}
+            >
               {hint}
             </p>
           )}
         </div>
         {/* Loading bar */}
-        <div className="w-64 h-1 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden mx-auto">
-          <div className="h-full bg-gradient-to-r from-royal-500 to-sky-400 animate-shimmer" style={{ width: '40%' }}></div>
+        <div className="mx-auto h-1 w-64 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+          <div
+            className="from-royal-500 animate-shimmer h-full bg-gradient-to-r to-sky-400"
+            style={{ width: '40%' }}
+          ></div>
         </div>
       </div>
     </div>

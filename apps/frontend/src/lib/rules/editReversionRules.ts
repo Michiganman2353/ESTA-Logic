@@ -104,9 +104,10 @@ export function getReversionValue(record: EditReversionRecord): number {
  * @param record Edit reversion record
  * @returns Validation result
  */
-export function validateEditForReversion(
-  record: EditReversionRecord
-): { valid: boolean; error?: string } {
+export function validateEditForReversion(record: EditReversionRecord): {
+  valid: boolean;
+  error?: string;
+} {
   if (record.approved) {
     return {
       valid: false,
@@ -132,9 +133,7 @@ export function validateEditForReversion(
 export function getPendingEdits(
   records: EditReversionRecord[]
 ): EditReversionRecord[] {
-  return records.filter(
-    record => !record.approved && !record.revertedAt
-  );
+  return records.filter((record) => !record.approved && !record.revertedAt);
 }
 
 /**
@@ -147,7 +146,7 @@ export function getEditsNeedingReversion(
   records: EditReversionRecord[],
   approvalTimeoutHours: number = 72
 ): EditReversionRecord[] {
-  return records.filter(record =>
+  return records.filter((record) =>
     shouldRevertEdit(record, approvalTimeoutHours)
   );
 }
@@ -157,9 +156,7 @@ export function getEditsNeedingReversion(
  * @param record Edit reversion record
  * @returns Difference in hours (positive if increased, negative if decreased)
  */
-export function calculateEditDifference(
-  record: EditReversionRecord
-): number {
+export function calculateEditDifference(record: EditReversionRecord): number {
   return record.editedValue - record.originalValue;
 }
 

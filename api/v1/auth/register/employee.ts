@@ -6,14 +6,11 @@ import { validateRequiredFields } from '../../../lib/validation';
 /**
  * Employee Registration API Endpoint
  * POST /api/v1/auth/register/employee
- * 
+ *
  * Note: Employee registration creates a basic account.
  * Employees must be associated with an employer through the employer's invite system.
  */
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Set CORS headers
   const origin = req.headers.origin || '';
   setCorsHeaders(res, origin);
@@ -49,7 +46,8 @@ export default async function handler(
       );
     } catch (error) {
       return res.status(400).json({
-        message: error instanceof Error ? error.message : 'Missing required fields',
+        message:
+          error instanceof Error ? error.message : 'Missing required fields',
       });
     }
 
@@ -78,7 +76,7 @@ export default async function handler(
 
     // Store user data in Firestore
     const db = getFirebaseDb();
-    
+
     // Note: employerSize will be updated when employee is associated with an employer
     const userData = {
       id: userRecord.uid,
@@ -92,7 +90,11 @@ export default async function handler(
     };
 
     // Defensive check: Ensure all required fields are present
-    validateRequiredFields(userData, ['id', 'email', 'name', 'role'], 'user data');
+    validateRequiredFields(
+      userData,
+      ['id', 'email', 'name', 'role'],
+      'user data'
+    );
 
     console.log('[DEBUG] Saving user data to Firestore');
     await db.collection('users').doc(userRecord.uid).set(userData);

@@ -74,6 +74,7 @@ npm run dev
 ```
 
 This starts:
+
 - Frontend: http://localhost:5173
 - Backend: http://localhost:3001
 
@@ -128,6 +129,7 @@ npm run test:backend
 5. Submit and check the browser console for any errors
 
 ### Expected Behavior:
+
 - ✅ User created in Firebase Authentication
 - ✅ User document created in Firestore `users` collection
 - ✅ For employers: Tenant document created in `tenants` collection
@@ -141,6 +143,7 @@ npm run test:backend
 **Cause**: Missing or incorrect Firebase environment variables
 
 **Fix**:
+
 1. Check that `.env.local` exists
 2. Verify all `VITE_FIREBASE_*` variables are set
 3. Restart the dev server after changing `.env.local`
@@ -150,6 +153,7 @@ npm run test:backend
 **Cause**: Usually cache or dependency issues
 
 **Fix**:
+
 ```bash
 # Clear all caches and reinstall
 npm run clean
@@ -162,6 +166,7 @@ npm run test
 **Cause**: TypeScript errors or missing dependencies
 
 **Fix**:
+
 ```bash
 # Check for errors
 npm run lint
@@ -177,6 +182,7 @@ npm ci
 **Cause**: Another process using port 5173 or 3001
 
 **Fix**:
+
 ```bash
 # Find and kill the process
 lsof -ti:5173 | xargs kill -9
@@ -191,6 +197,7 @@ PORT=3002 npm run dev:backend
 **Cause**: Usually Firebase configuration or rules
 
 **Fix**:
+
 1. Check Firebase Console → Authentication → Users
    - Is the user created?
 2. Check Firebase Console → Firestore → Data
@@ -263,18 +270,21 @@ ESTA-Logic/
 ## Next Steps
 
 ### For Development:
+
 1. Explore the codebase structure
 2. Read the documentation in `docs/`
 3. Check out the component library in `apps/frontend/src/components`
 4. Review the ESTA accrual logic in `packages/accrual-engine`
 
 ### For Deployment:
+
 1. Read `DEPLOYMENT_TROUBLESHOOTING.md`
 2. Set up Vercel account
 3. Configure environment variables in Vercel
 4. Deploy using GitHub integration or Vercel CLI
 
 ### For Contributing:
+
 1. Read `CONTRIBUTING.md`
 2. Create a feature branch
 3. Write tests for your changes
@@ -283,6 +293,7 @@ ESTA-Logic/
 ## Getting Help
 
 ### Documentation Files:
+
 - `README.md` - Project overview
 - `DEPLOYMENT_TROUBLESHOOTING.md` - Deployment and troubleshooting
 - `DIAGNOSTIC_SUMMARY.md` - Recent diagnostic findings
@@ -290,9 +301,11 @@ ESTA-Logic/
 - `docs/` - Additional documentation
 
 ### Common Issues:
+
 See `DEPLOYMENT_TROUBLESHOOTING.md` Section 8 for common error messages and solutions.
 
 ### Still Stuck?
+
 1. Check browser console for errors
 2. Check terminal for error messages
 3. Review Firebase Console logs
@@ -329,14 +342,14 @@ Once all items are checked, you're ready to develop!
 
 ## Quick Reference
 
-| What | Command |
-|------|---------|
-| Start development | `npm run dev` |
-| Run tests | `npm run test` |
-| Check code quality | `npm run lint && npm run typecheck` |
-| Build for production | `npm run build` |
-| Validate everything | `npm run ci:validate` |
-| Clean everything | `npm run clean` |
+| What                 | Command                             |
+| -------------------- | ----------------------------------- |
+| Start development    | `npm run dev`                       |
+| Run tests            | `npm run test`                      |
+| Check code quality   | `npm run lint && npm run typecheck` |
+| Build for production | `npm run build`                     |
+| Validate everything  | `npm run ci:validate`               |
+| Clean everything     | `npm run clean`                     |
 
 ---
 
@@ -393,6 +406,7 @@ function DocumentUploadPage() {
 ### Setup Requirements
 
 1. **Add OpenCV.js** to `apps/frontend/public/`:
+
    ```bash
    curl -L https://docs.opencv.org/4.x/opencv.js -o apps/frontend/public/opencv.js
    ```
@@ -400,6 +414,7 @@ function DocumentUploadPage() {
 2. **Enable Firebase Storage** in your Firebase project
 
 3. **Deploy Storage Rules**:
+
    ```bash
    firebase deploy --only storage
    ```
@@ -408,32 +423,35 @@ function DocumentUploadPage() {
 
 ### Props Reference
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `onDocumentScanned` | `(file: File, metadata?: DocumentMetadata) => void` | Required | Callback when document is scanned |
-| `onCancel` | `() => void` | Optional | Callback when user cancels |
-| `firebaseStorageRef` | Firebase StorageReference | Optional | Direct Firebase Storage upload |
-| `fetchSignedUploadUrl` | `() => Promise<string>` | Optional | Fetch signed URL for upload |
-| `requestEphemeralKey` | `() => Promise<CryptoKey>` | Optional | Request encryption key |
-| `enableEncryption` | `boolean` | `false` | Enable client-side AES-GCM encryption |
-| `compressionQuality` | `number` | `0.92` | WebP quality (0-1) |
-| `maxFileSize` | `number` | 10MB | Maximum file size in bytes |
-| `enableEdgeDetection` | `boolean` | `true` | Enable auto edge detection |
-| `enablePerspectiveCorrection` | `boolean` | `true` | Enable perspective correction |
+| Prop                          | Type                                                | Default  | Description                           |
+| ----------------------------- | --------------------------------------------------- | -------- | ------------------------------------- |
+| `onDocumentScanned`           | `(file: File, metadata?: DocumentMetadata) => void` | Required | Callback when document is scanned     |
+| `onCancel`                    | `() => void`                                        | Optional | Callback when user cancels            |
+| `firebaseStorageRef`          | Firebase StorageReference                           | Optional | Direct Firebase Storage upload        |
+| `fetchSignedUploadUrl`        | `() => Promise<string>`                             | Optional | Fetch signed URL for upload           |
+| `requestEphemeralKey`         | `() => Promise<CryptoKey>`                          | Optional | Request encryption key                |
+| `enableEncryption`            | `boolean`                                           | `false`  | Enable client-side AES-GCM encryption |
+| `compressionQuality`          | `number`                                            | `0.92`   | WebP quality (0-1)                    |
+| `maxFileSize`                 | `number`                                            | 10MB     | Maximum file size in bytes            |
+| `enableEdgeDetection`         | `boolean`                                           | `true`   | Enable auto edge detection            |
+| `enablePerspectiveCorrection` | `boolean`                                           | `true`   | Enable perspective correction         |
 
 ### Troubleshooting
 
 **Camera not working?**
+
 - Ensure you're using HTTPS (required for `getUserMedia`)
 - Check browser permissions
 - Try a different browser
 
 **OpenCV errors?**
+
 - Verify `opencv.js` is in the `public/` folder
 - Check browser console for loading errors
 - Try disabling edge detection temporarily
 
 **Upload failures?**
+
 - Verify Firebase Storage rules are deployed
 - Check file size limits
 - Ensure user is authenticated

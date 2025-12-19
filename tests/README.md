@@ -13,6 +13,7 @@ The `setupTests.ts` file provides global mocks that ensure tests run consistentl
 **Purpose**: Provide deterministic JWT token generation and verification for authentication tests.
 
 **Usage**:
+
 ```typescript
 import { createTestToken, TEST_JWT_SECRET } from '../../../tests/setupTests';
 
@@ -23,6 +24,7 @@ const token = createTestToken({ userId: '123', role: 'admin' });
 ```
 
 **Configuration**:
+
 - `TEST_JWT_SECRET`: `'test-secret-for-ci'`
 - Default expiry: `7 days`
 
@@ -31,12 +33,14 @@ const token = createTestToken({ userId: '123', role: 'admin' });
 **Purpose**: Mock Firebase auth methods to avoid live Firebase dependencies in tests.
 
 **Special Test Inputs**:
+
 - `invalid@example.com` → Triggers auth/invalid-credentials error
 - `network-error@example.com` → Triggers network error
 - `unauthorized@example.com` → Triggers 401 status error
 - Any other email → Returns successful authentication
 
 **Example**:
+
 ```typescript
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
@@ -52,11 +56,13 @@ await signInWithEmailAndPassword(auth, 'invalid@example.com', 'password');
 **Purpose**: Mock `navigator.mediaDevices.getUserMedia` for camera/microphone access tests.
 
 **Behavior**:
+
 - Returns a fake `MediaStream` object with minimal properties
 - Always succeeds by default
 - Tests can override this behavior using `vi.mocked(navigator.mediaDevices.getUserMedia)`
 
 **Example**:
+
 ```typescript
 // This returns a fake media stream
 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -88,11 +94,11 @@ To add new mocks:
 
 Each mock supports special inputs to trigger error conditions:
 
-| Mock | Input | Result |
-|------|-------|--------|
-| Firebase Auth | `invalid@example.com` | Invalid credentials error |
-| Firebase Auth | `network-error@example.com` | Network error |
-| Firebase Auth | `unauthorized@example.com` | 401 status error |
+| Mock          | Input                       | Result                    |
+| ------------- | --------------------------- | ------------------------- |
+| Firebase Auth | `invalid@example.com`       | Invalid credentials error |
+| Firebase Auth | `network-error@example.com` | Network error             |
+| Firebase Auth | `unauthorized@example.com`  | 401 status error          |
 
 ## Best Practices
 
@@ -104,15 +110,18 @@ Each mock supports special inputs to trigger error conditions:
 ## Troubleshooting
 
 ### Tests fail with "Cannot find module" errors
+
 - Ensure the mock path matches your actual file structure
 - Check that `setupFiles` is correctly configured in `vitest.config.ts`
 
 ### Mocks not applying
+
 - Verify `setupFiles: ['tests/setupTests.ts']` is in your vitest config
 - Ensure the mock path exactly matches your import path
 - Try using `vi.hoisted()` for mocks that need to run before imports
 
 ### Need to override a mock in a specific test
+
 ```typescript
 import { vi } from 'vitest';
 

@@ -14,7 +14,12 @@ const db = admin.firestore();
 
 export interface BackgroundJob {
   id: string;
-  type: 'csv_import' | 'accrual_recalculation' | 'bulk_employee_update' | 'pto_validation' | 'audit_export';
+  type:
+    | 'csv_import'
+    | 'accrual_recalculation'
+    | 'bulk_employee_update'
+    | 'pto_validation'
+    | 'audit_export';
   status: 'pending' | 'processing' | 'completed' | 'failed';
   progress: number; // 0-100
   startedAt: FirebaseFirestore.Timestamp;
@@ -86,14 +91,17 @@ export async function markJobFailed(
   jobId: string,
   error: string
 ): Promise<void> {
-  await db.collection('backgroundJobs').doc(jobId).update({
-    status: 'failed',
-    error,
-    completedAt: admin.firestore.FieldValue.serverTimestamp(),
-    logs: admin.firestore.FieldValue.arrayUnion(
-      `[${new Date().toISOString()}] ERROR: ${error}`
-    ),
-  });
+  await db
+    .collection('backgroundJobs')
+    .doc(jobId)
+    .update({
+      status: 'failed',
+      error,
+      completedAt: admin.firestore.FieldValue.serverTimestamp(),
+      logs: admin.firestore.FieldValue.arrayUnion(
+        `[${new Date().toISOString()}] ERROR: ${error}`
+      ),
+    });
 }
 
 /**
@@ -165,15 +173,24 @@ export async function writeJobLog(
   message: string,
   metadata?: Record<string, any>
 ): Promise<void> {
-  await db.collection('backgroundJobs').doc(jobId).collection('detailedLogs').add({
-    level,
-    message,
-    metadata: metadata || {},
-    timestamp: admin.firestore.FieldValue.serverTimestamp(),
-  });
+  await db
+    .collection('backgroundJobs')
+    .doc(jobId)
+    .collection('detailedLogs')
+    .add({
+      level,
+      message,
+      metadata: metadata || {},
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    });
 
   // Also append to main job logs array
-  await updateJobProgress(jobId, -1, undefined, `[${level.toUpperCase()}] ${message}`);
+  await updateJobProgress(
+    jobId,
+    -1,
+    undefined,
+    `[${level.toUpperCase()}] ${message}`
+  );
 }
 
 /**
@@ -186,7 +203,7 @@ export async function verifyUserPermission(
 ): Promise<boolean> {
   try {
     const userDoc = await db.collection('users').doc(userId).get();
-    
+
     if (!userDoc.exists) {
       return false;
     }
@@ -210,11 +227,11 @@ export async function verifyUserPermission(
 
     const userRoleLevel = roleHierarchy[userRole];
     const requiredRoleLevel = roleHierarchy[requiredRole];
-    
+
     if (userRoleLevel === undefined || requiredRoleLevel === undefined) {
       return false;
     }
-    
+
     return userRoleLevel >= requiredRoleLevel;
   } catch (error) {
     console.error('Error verifying user permission:', error);
@@ -225,9 +242,11 @@ export async function verifyUserPermission(
 /**
  * Get job status for client polling
  */
-export async function getJobStatus(jobId: string): Promise<BackgroundJob | null> {
+export async function getJobStatus(
+  jobId: string
+): Promise<BackgroundJob | null> {
   const jobDoc = await db.collection('backgroundJobs').doc(jobId).get();
-  
+
   if (!jobDoc.exists) {
     return null;
   }

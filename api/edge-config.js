@@ -1,7 +1,7 @@
 /**
  * Vercel Serverless Function: Edge Config API
  * Serves Edge Config settings to the frontend
- * 
+ *
  * This function retrieves settings from Vercel Edge Config and serves them
  * to the frontend application. It provides caching headers for performance
  * and fallback to default settings if Edge Config is unavailable.
@@ -54,7 +54,7 @@ export default async function handler(req, res) {
   try {
     // Check if Edge Config is configured
     const edgeConfigId = process.env.EDGE_CONFIG;
-    
+
     if (!edgeConfigId) {
       console.warn('EDGE_CONFIG not configured, using defaults');
       return res.status(200).json(DEFAULT_CONFIG);
@@ -95,7 +95,7 @@ export default async function handler(req, res) {
     return res.status(200).json(mergedConfig);
   } catch (error) {
     console.error('Error fetching Edge Config:', error);
-    
+
     // Return defaults on error
     res.setHeader('Cache-Control', 's-maxage=10');
     return res.status(200).json(DEFAULT_CONFIG);

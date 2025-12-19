@@ -1,6 +1,6 @@
 /**
  * Date and Time Utilities
- * 
+ *
  * Pure functions for date calculations and manipulation
  * All dates are treated as midnight local time unless specified
  */
@@ -49,11 +49,11 @@ export function getFiscalYearStart(
 ): Date {
   const year = date.getFullYear();
   const fiscalStart = new Date(year, fiscalYearStartMonth - 1, 1);
-  
+
   if (isBefore(date, fiscalStart)) {
     return addYears(fiscalStart, -1);
   }
-  
+
   return fiscalStart;
 }
 
@@ -71,7 +71,11 @@ export function getFiscalYearEnd(
 /**
  * Check if a date is within a range (inclusive)
  */
-export function isDateInRange(date: Date, startDate: Date, endDate: Date): boolean {
+export function isDateInRange(
+  date: Date,
+  startDate: Date,
+  endDate: Date
+): boolean {
   return !isBefore(date, startDate) && !isAfter(date, endDate);
 }
 
@@ -81,12 +85,12 @@ export function isDateInRange(date: Date, startDate: Date, endDate: Date): boole
 export function getDateRange(startDate: Date, endDate: Date): Date[] {
   const dates: Date[] = [];
   let currentDate = startDate;
-  
+
   while (!isAfter(currentDate, endDate)) {
     dates.push(currentDate);
     currentDate = addDays(currentDate, 1);
   }
-  
+
   return dates;
 }
 
@@ -95,7 +99,7 @@ export function getDateRange(startDate: Date, endDate: Date): Date[] {
  */
 export function countBusinessDays(startDate: Date, endDate: Date): number {
   const allDays = getDateRange(startDate, endDate);
-  return allDays.filter(date => !isWeekend(date)).length;
+  return allDays.filter((date) => !isWeekend(date)).length;
 }
 
 /**
@@ -136,14 +140,21 @@ export function parseDateDisplay(dateString: string): Date {
 /**
  * Calculate years of service for an employee
  */
-export function calculateYearsOfService(hireDate: Date, asOfDate: Date = new Date()): number {
+export function calculateYearsOfService(
+  hireDate: Date,
+  asOfDate: Date = new Date()
+): number {
   return differenceInCalendarYears(asOfDate, hireDate);
 }
 
 /**
  * Check if today is within N days of a date
  */
-export function isWithinDays(targetDate: Date, days: number, fromDate: Date = new Date()): boolean {
+export function isWithinDays(
+  targetDate: Date,
+  days: number,
+  fromDate: Date = new Date()
+): boolean {
   const diffDays = Math.abs(differenceInDays(targetDate, fromDate));
   return diffDays <= days;
 }
