@@ -1,13 +1,20 @@
 # ESTA-Logic Directory Structure
 
-**Generated:** 2025-12-15  
+**Generated:** 2025-12-19  
 **Purpose:** Comprehensive directory tree showing active project structure and ownership.
+
+> **🎯 Strategic Direction:** ESTA-Logic has pivoted to an experience-first, TurboTax-inspired guided compliance platform. This directory structure reflects both the new experience-first architecture (`app/`) and existing infrastructure.
 
 ## Root Structure Overview
 
 ```
 ESTA-Logic/
-├── apps/              # Application projects (Frontend, Backend, Marketing)
+├── app/               # 🆕 Experience-First Application (Guided Compliance)
+│   ├── core/          # Core business logic and orchestration
+│   ├── ui/            # User interface components
+│   ├── pages/         # Guided journey pages
+│   └── state/         # State management with auto-save
+├── apps/              # Legacy application projects (being migrated)
 ├── libs/              # Shared libraries (workspace-wide utilities)
 ├── packages/          # Independent packages (esta-core, helix, redis, legion)
 ├── api/               # Vercel Edge API routes
@@ -16,15 +23,78 @@ ESTA-Logic/
 ├── logic/             # Gleam logic modules
 ├── kernel/            # TypeScript kernel boundary modules
 ├── engine/            # WASM engine modules
-├── docs/              # Documentation
+├── docs/              # Documentation (experience-first focused)
+├── archive/           # Archived code and pre-reset documentation
 ├── .github/           # GitHub workflows and configuration
 ├── scripts/           # Build and maintenance scripts
 └── [root config files] # Package.json, nx.json, tsconfig.base.json, etc.
 ```
 
-## Active Applications (`apps/`)
+## 🆕 Experience-First Application (`app/`)
 
-**Owner:** @Michiganman2353
+**Owner:** @Michiganman2353  
+**Status:** Active Development (Phase 2 of Strategic Reset)  
+**Philosophy:** "Architecture exists to serve experience — not dominate it."
+
+This is the new TurboTax-inspired guided compliance application structure.
+
+### app/core/
+
+**Purpose:** Core business logic and orchestration
+
+- **navigation/** - `GuidedFlowEngine.ts` - Journey orchestration system
+  - Step-by-step navigation
+  - Branching logic for conditional paths
+  - Validation and guard rails
+  - Progress tracking
+
+- **compliance/** - ESTA compliance rules and calculations (to be implemented)
+
+- **security/** - `trust-layer.ts` - Visible security indicators
+  - Trust indicators (encrypted, saved, verified)
+  - Security status displays
+  - Audit trail creation
+
+### app/ui/
+
+**Purpose:** User interface components for guided experiences
+
+- **components/** - Reusable UI components (to be implemented)
+- **layout/** - Layout templates (to be implemented)
+- **steps/** - Step-specific components for guided journeys (to be implemented)
+- **reassurance/** - `confidence-messages.ts` - Confidence-building UI content
+  - Welcome, progress, success messages
+  - Validation messages that support
+  - Security reassurance
+  - Error recovery guidance
+
+### app/pages/
+
+**Purpose:** Top-level pages organized by journey
+
+- **Welcome/** - Welcome and onboarding entry (to be implemented)
+- **Guided-Setup/** - Step-by-step setup flows (to be implemented)
+- **Compliance-Status/** - Compliance dashboard (to be implemented)
+- **Actions/** - User action pages (PTO requests, etc.) (to be implemented)
+
+### app/state/
+
+**Purpose:** State management for guided journeys
+
+- `guided-session-store.ts` - Journey state management
+  - Auto-save every 2 seconds
+  - Local storage + remote persistence
+  - Session lifecycle management
+  - Progress tracking
+
+**Documentation:** See [app/README.md](./app/README.md) for detailed information.
+
+---
+
+## Active Applications (`apps/`) - Legacy (Being Migrated)
+
+**Owner:** @Michiganman2353  
+**Status:** Active but being migrated to experience-first structure
 
 ### apps/frontend/
 
@@ -32,18 +102,21 @@ ESTA-Logic/
 **Purpose:** Main web application for ESTA Tracker  
 **Entry Point:** `src/main.tsx`  
 **Build Target:** `dist/`
+**Migration Status:** Will be gradually replaced by `app/` structure
 
 ### apps/backend/
 
 **Type:** Node.js + Express + TypeScript  
 **Purpose:** Backend API server  
 **Entry Point:** `src/index.ts`
+**Migration Status:** Core logic will be integrated into `app/core/`
 
 ### apps/marketing/
 
 **Type:** Next.js + React  
 **Purpose:** Marketing website  
 **Entry Point:** `pages/index.tsx`
+**Migration Status:** Will be updated to reflect new positioning
 
 ### apps/desktop/
 
