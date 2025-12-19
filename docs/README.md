@@ -2,6 +2,22 @@
 
 Welcome to the ESTA Tracker documentation. This directory contains all technical documentation, setup guides, and architectural information for the project.
 
+## 🎯 Strategic Direction (Start Here!)
+
+**ESTA-Logic is undergoing a strategic reset to become a TurboTax-style guided compliance experience.** These documents define our new product vision and experience-first approach:
+
+| Document | Purpose |
+|----------|---------|
+| **[Experience Vision](./Experience-Vision.md)** | Public announcement of strategic direction shift |
+| **[Strategic Roadmap](./ROADMAP.md)** | Experience-first implementation phases |
+| **[UX Blueprint](./UX-Blueprint.md)** | TurboTax-inspired user experience design |
+| **[GuidedFlowEngine](./GuidedFlowEngine.md)** | Architecture concept for guided journeys |
+| **[Experience-First Architecture](./Experience-First-Architecture.md)** | Architectural principles that serve UX |
+
+**Core Philosophy:** We're building a guided compliance partner that makes users feel confident, supported, and secure — not a tool they operate.
+
+---
+
 ## 📖 Documentation Structure
 
 ```

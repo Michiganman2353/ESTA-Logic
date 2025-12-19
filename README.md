@@ -1,10 +1,23 @@
 # ESTA-Logic 🚀
 
-> **"A WASM-native microkernel compliance engine for deterministic, secure, and modular execution of employer policies and state sick-time laws."**
+> **"A guided compliance partner that walks employers and employees through sick leave compliance with clarity, simplicity, and absolute confidence — just like TurboTax guides users through taxes."**
 
-**ESTA-Logic is a WASM-native microkernel compliance engine that provides deterministic, secure, isolated execution of employer policies and state sick-time laws inside a Tauri-powered runtime.**
+## 🎯 Strategic Direction
 
-ESTA-Logic is no longer a monolithic application. It is now a WASM-powered, microkernel-orchestrated compliance engine designed for deterministic, secure, and modular execution of state-level employee sick time rules (example: Michigan ESTA 2025 / MCL 408.963).
+**ESTA-Logic is undergoing a strategic reset to become a TurboTax-style guided compliance experience.** While maintaining our technical excellence with WASM-native microkernel architecture for deterministic, secure execution, we are fundamentally shifting our design philosophy:
+
+- **From:** A technology-first platform users operate
+- **To:** An experience-first guided compliance partner that supports users
+
+**Our new mission:** Transform complex Michigan ESTA compliance into a guided journey that makes users feel confident, supported, and secure — not overwhelmed.
+
+See [**Experience Vision**](./docs/Experience-Vision.md) for the complete strategic direction and [**Strategic Roadmap**](./docs/ROADMAP.md) for implementation phases.
+
+---
+
+## Technical Foundation
+
+ESTA-Logic is built on a WASM-powered, microkernel-orchestrated compliance engine designed for deterministic, secure, and modular execution of state-level employee sick time rules (example: Michigan ESTA 2025 / MCL 408.963).
 
 ### Key Properties
 
@@ -24,6 +37,8 @@ See [`docs/architecture.md`](./docs/architecture/architecture.md) for a full tec
 
 ## Table of Contents
 
+- [Strategic Direction](#-strategic-direction)
+- [Technical Foundation](#technical-foundation)
 - [Key Properties](#key-properties)
 - [Repository Structure](#repository-structure)
 - [Quick Start](#quick-start)
@@ -389,21 +404,57 @@ console.log(await redis.get('test')); // → "hello"
 
 ## Vision & Roadmap
 
-### Current Focus: MVP 1.0
+### 🚀 Strategic Reset: Experience-First Guided Compliance
 
-- ✅ Employer onboarding and setup
-- ✅ Automated sick time accrual engine
-- ✅ PTO request and approval workflow
-- ✅ CSV hours import
-- ✅ Compliance reporting
-- 🚧 Calendar and scheduling
-- 🚧 Mobile-responsive design
+**ESTA-Logic is pivoting to become a TurboTax-style guided compliance experience.** 
 
-### Future Phases
+**Core Philosophy:**
+- **Guided, not exploratory** — Users progress through structured steps, not chaotic menus
+- **Confidence-driven, not tech-driven** — Every interaction builds trust and certainty
+- **Simple on the surface, powerful underneath** — Technical excellence remains, but hidden
+- **Emotionally calm and predictable** — Compliance should feel manageable, not overwhelming
 
-- **Phase 2**: Payroll integrations (QuickBooks Time, Homebase), Mobile app, Advanced reporting
-- **Phase 3**: Multi-state expansion, White-label offerings, Full HR suite
-- **Phase 4**: National HR compliance engine, Enterprise partnerships
+**Product Promise:**
+> "You're in the right place. We will walk you through compliance one clear step at a time."
+
+### Implementation Roadmap
+
+**Phase 1 — Experience Definition & Product Identity** (Current)
+- Define primary user persona and emotional experience
+- Establish TurboTax-style guidance framework
+- Create experience maps and guided journeys
+
+**Phase 2 — Foundational UX & System Reset** (Planned)
+- Implement guided navigation framework
+- Build psychologically reassuring UI
+- Create secure document handling with trust indicators
+
+**Phase 3 — Compliance Intelligence Engine** (Planned)
+- Transform compliance engine into guided partner
+- Add contextual explanations in plain language
+- Implement transparent compliance reasoning
+
+**Phase 4 — Secure Document & Data Confidence Layer** (Planned)
+- Rebuild document capture as trust experience
+- Add "You are safe" security indicators
+- Implement compliance confidence scoring
+
+**Phase 5 — Enterprise & Growth Capability** (Future)
+- Add proactive compliance alerts
+- Build employer intelligence dashboard
+- Prepare multi-state expansion framework
+
+**📖 Detailed Documentation:**
+- [**Strategic Roadmap**](./docs/ROADMAP.md) — Complete phase breakdown
+- [**Experience Vision**](./docs/Experience-Vision.md) — Product direction announcement
+- [**UX Blueprint**](./docs/UX-Blueprint.md) — TurboTax-inspired user experience design
+
+### Success Criteria
+
+✅ Users feel guided, not overwhelmed  
+✅ Compliance feels manageable and safe  
+✅ Experience feels like a trusted professional partner  
+✅ Architecture exists to serve experience — not dominate it
 
 ---
 
