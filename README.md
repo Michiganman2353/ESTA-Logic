@@ -251,6 +251,18 @@ packages/                # Additional packages
 
 ## Features
 
+### 🎯 Guided Compliance Experience (NEW)
+
+- ✨ **TurboTax-Style Wizard** - Step-by-step guided flow for ESTA compliance setup
+- 💾 **Auto-Save Progress** - Never lose your work with automatic localStorage persistence
+- 📋 **Policy Auto-Configuration** - Automatically determines correct policy based on business size
+- 📸 **Secure Document Capture** - Capture compliance documents with device camera (mobile & desktop)
+- 🎓 **Contextual Help** - Clear explanations and legal guidance at every step
+- 📊 **Visual Progress Tracking** - Always know where you are in the setup process
+- 📄 **Compliance Certificate** - Generate downloadable certificate upon completion
+
+See [Guided Flow Module Documentation](./apps/frontend/src/modules/guidedFlow/README.md) for details.
+
 ### Core Capabilities
 
 - ✅ **Automated Sick Time Accrual** - 1 hour per 30 hours worked, Michigan ESTA compliant
@@ -406,45 +418,53 @@ console.log(await redis.get('test')); // → "hello"
 
 ### 🚀 Strategic Reset: Experience-First Guided Compliance
 
-**ESTA-Logic is pivoting to become a TurboTax-style guided compliance experience.** 
+**ESTA-Logic is pivoting to become a TurboTax-style guided compliance experience.**
 
 **Core Philosophy:**
+
 - **Guided, not exploratory** — Users progress through structured steps, not chaotic menus
 - **Confidence-driven, not tech-driven** — Every interaction builds trust and certainty
 - **Simple on the surface, powerful underneath** — Technical excellence remains, but hidden
 - **Emotionally calm and predictable** — Compliance should feel manageable, not overwhelming
 
 **Product Promise:**
+
 > "You're in the right place. We will walk you through compliance one clear step at a time."
 
 ### Implementation Roadmap
 
 **Phase 1 — Experience Definition & Product Identity** (Current)
+
 - Define primary user persona and emotional experience
 - Establish TurboTax-style guidance framework
 - Create experience maps and guided journeys
 
 **Phase 2 — Foundational UX & System Reset** (Planned)
+
 - Implement guided navigation framework
 - Build psychologically reassuring UI
 - Create secure document handling with trust indicators
 
 **Phase 3 — Compliance Intelligence Engine** (Planned)
+
 - Transform compliance engine into guided partner
 - Add contextual explanations in plain language
 - Implement transparent compliance reasoning
 
 **Phase 4 — Secure Document & Data Confidence Layer** (Planned)
+
 - Rebuild document capture as trust experience
 - Add "You are safe" security indicators
 - Implement compliance confidence scoring
 
 **Phase 5 — Enterprise & Growth Capability** (Future)
+
 - Add proactive compliance alerts
 - Build employer intelligence dashboard
 - Prepare multi-state expansion framework
 
 **📖 Detailed Documentation:**
+
 - [**Strategic Roadmap**](./docs/ROADMAP.md) — Complete phase breakdown
 - [**Experience Vision**](./docs/Experience-Vision.md) — Product direction announcement
 - [**UX Blueprint**](./docs/UX-Blueprint.md) — TurboTax-inspired user experience design
