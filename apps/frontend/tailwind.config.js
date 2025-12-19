@@ -4,6 +4,17 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Figma-Ready Elite UX Colors
+        'trust-blue': '#1E4BD8',
+        'accent-blue': '#3B82F6',
+        'gov-trust-green': '#00B289',
+        'compliance-error': '#D32F2F',
+        background: '#F7FAFE',
+        surface: '#FFFFFF',
+        'text-primary': '#111827',
+        'text-secondary': '#4B5563',
+        border: '#E5E7EB',
+
         // Enterprise Blue Design System
         navy: {
           50: '#f0f4ff',
@@ -166,6 +177,14 @@ export default {
       },
       backdropBlur: {
         xs: '2px',
+      },
+      borderRadius: {
+        card: '18px',
+        button: '12px',
+        field: '10px',
+      },
+      boxShadow: {
+        'elevation-soft': '0 6px 18px rgba(0,0,0,0.08)',
       },
     },
   },

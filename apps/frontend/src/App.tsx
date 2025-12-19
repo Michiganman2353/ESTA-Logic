@@ -59,6 +59,7 @@ const AuditLog = lazy(() => import('@/pages/AuditLog'));
 const Settings = lazy(() => import('@/pages/Settings'));
 const Pricing = lazy(() => import('@/pages/Pricing'));
 const UIShowcase = lazy(() => import('@/pages/UIShowcase'));
+const GuidedFlow = lazy(() => import('@/pages/GuidedFlow'));
 
 /**
  * Focus management component for route changes
@@ -290,6 +291,9 @@ function App() {
             }
           />
           <Route path="/pricing" element={<Pricing />} />
+
+          {/* Guided Flow - TurboTax-Style Wizard */}
+          <Route path="/guided-flow" element={<GuidedFlow />} />
 
           {/* UI Showcase (Development/Design) */}
           <Route path="/ui-showcase" element={<UIShowcase />} />
