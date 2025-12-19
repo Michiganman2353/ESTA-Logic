@@ -1,5 +1,7 @@
 # ESTA-Logic Architecture Overview
 
+> **⚠️ Strategic Direction Update:** ESTA-Logic is undergoing a strategic reset to become a TurboTax-style guided compliance experience. This technical architecture document describes our underlying engine. For the experience-first architectural approach that guides our implementation, see [Experience-First Architecture](./Experience-First-Architecture.md) and [Strategic Roadmap](./ROADMAP.md).
+
 This document describes the WASM-native microkernel architecture, migration strategy, and components required to transform ESTA-Logic from an Nx/Firestore modular monolith to a deterministic, isolated compliance engine.
 
 ## Overview
