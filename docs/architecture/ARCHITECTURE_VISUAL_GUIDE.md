@@ -442,23 +442,23 @@ export const MyStep: React.FC<MyStepProps> = ({
         <h2>Title</h2>
         <p>Description</p>
       </div>
-      
+
       {/* Form */}
       <form onSubmit={handleSubmit}>
         {/* Fields */}
-        
+
         {/* Guidance */}
         <div className="guidance-box">
           💡 Why this matters
         </div>
-        
+
         {/* Navigation */}
         <div className="step-navigation">
           <button onClick={onBack}>← Back</button>
           <button type="submit">Continue →</button>
         </div>
       </form>
-      
+
       {/* Reassurance */}
       <div className="step-footer">
         💾 Progress automatically saved

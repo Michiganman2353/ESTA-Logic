@@ -53,7 +53,7 @@ See [`docs/architecture.md`](./docs/architecture/architecture.md) for a full tec
 
 ## Repository Structure
 
-This is a clean, well-organized monorepo focused on production code. For complete directory structure, see [DIRECTORY_TREE.md](./DIRECTORY_TREE.md).
+This is a clean, well-organized monorepo focused on production code. For complete directory structure, see [docs/DIRECTORY_TREE.md](./docs/DIRECTORY_TREE.md).
 
 ### Active Code
 
@@ -73,7 +73,7 @@ Experimental and superseded code is preserved in `archive/` for reference:
 - **`archive/superseded-configs/`** - Legacy configurations (biome, eslintrc)
 - **`archive/historical-docs/`** - Completed migrations and post-mortems
 
-See [DEPRECATIONS.md](./DEPRECATIONS.md) for archival decisions and rationale.
+See [docs/archive/DEPRECATIONS.md](./docs/archive/DEPRECATIONS.md) for archival decisions and rationale.
 
 ## Quick Start
 
