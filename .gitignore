@@ -188,14 +188,12 @@ e2e/storageState.json
 # Lerna (deprecated - Nx workspaces now orchestrate)
 lerna.json
 
-# Archived docs (superseded by architecture.md)
-docs/archive/
-
 # ==================== #
 # Archive Directory (TRACKED)
 # ==================== #
 # The archive/ directory contains preserved experimental code
 # and is intentionally tracked in git for historical reference.
+# The docs/archive/ directory contains archived documentation.
 # DO NOT add archive/ to .gitignore
 
 # ==================== #
