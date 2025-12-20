@@ -65,7 +65,7 @@ export default function ReviewStep() {
                 Policy Tier
               </div>
               <div className="text-lg text-gray-900">
-                {employeeCount < 50
+                {Number(employeeCount) < 50
                   ? 'Small Business Tier'
                   : 'Large Business Tier'}
               </div>

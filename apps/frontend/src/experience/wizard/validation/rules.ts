@@ -43,7 +43,7 @@ function validateField(data: any, rule: ValidationRule): string | null {
     }
 
     case 'number': {
-      if (isNaN(Number(value))) {
+      if (Number.isNaN(Number(value))) {
         return rule.message || 'Please enter a valid number';
       }
       break;
