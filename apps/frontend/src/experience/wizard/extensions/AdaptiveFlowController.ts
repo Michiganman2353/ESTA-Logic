@@ -3,7 +3,11 @@
  * Controls wizard flow based on user profile and decisions
  */
 
-import { PersonalizationEngine, UserProfile, FlowPath } from '../../intelligence/PersonalizationEngine';
+import {
+  PersonalizationEngine,
+  UserProfile,
+  FlowPath,
+} from '../../intelligence/PersonalizationEngine';
 
 export interface FlowDecision {
   nextStep: string;
@@ -33,7 +37,9 @@ export class AdaptiveFlowController {
     return PersonalizationEngine.deriveProfile({
       employeeCount: (userData.employeeCount as number) || 1,
       industry: userData.industry as string | undefined,
-      hasMultipleLocations: userData.hasMultipleLocations as boolean | undefined,
+      hasMultipleLocations: userData.hasMultipleLocations as
+        | boolean
+        | undefined,
       previousExperience: userData.previousExperience as boolean | undefined,
     });
   }
@@ -62,20 +68,38 @@ export class AdaptiveFlowController {
   /**
    * Get ordered steps for a flow path
    */
-  private static getFlowSteps(flowPath: FlowPath, profile: UserProfile): string[] {
+  private static getFlowSteps(
+    flowPath: FlowPath,
+    _profile: UserProfile
+  ): string[] {
     switch (flowPath) {
       case 'quickPath':
         return ['intro', 'profile', 'policy', 'completion'];
-      
+
       case 'standardPath':
         return ['intro', 'profile', 'policy', 'review', 'completion'];
-      
+
       case 'enterprisePath':
-        return ['intro', 'profile', 'locations', 'policy', 'integration', 'review', 'completion'];
-      
+        return [
+          'intro',
+          'profile',
+          'locations',
+          'policy',
+          'integration',
+          'review',
+          'completion',
+        ];
+
       case 'guidedPath':
-        return ['intro', 'tutorial', 'profile', 'policy', 'review', 'completion'];
-      
+        return [
+          'intro',
+          'tutorial',
+          'profile',
+          'policy',
+          'review',
+          'completion',
+        ];
+
       default:
         return ['intro', 'profile', 'policy', 'review', 'completion'];
     }
@@ -131,10 +155,14 @@ export class AdaptiveFlowController {
   /**
    * Estimate completion time in minutes
    */
-  private static estimateCompletionTime(stepCount: number, profile: UserProfile): number {
+  private static estimateCompletionTime(
+    stepCount: number,
+    profile: UserProfile
+  ): number {
     const baseTimePerStep = 3; // minutes
-    const experienceMultiplier = profile.experienceLevel === 'beginner' ? 1.5 : 1.0;
-    
+    const experienceMultiplier =
+      profile.experienceLevel === 'beginner' ? 1.5 : 1.0;
+
     return Math.ceil(stepCount * baseTimePerStep * experienceMultiplier);
   }
 }

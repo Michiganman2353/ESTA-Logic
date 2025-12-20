@@ -50,7 +50,7 @@ export class AuditProofCore {
     };
 
     this.events.push(event);
-    
+
     // Log to console in development
     if (process.env.NODE_ENV === 'development') {
       console.log('Audit Log:', event);
@@ -75,9 +75,7 @@ export class AuditProofCore {
     }
 
     if (startDate) {
-      filteredEvents = filteredEvents.filter(
-        (e) => e.timestamp >= startDate
-      );
+      filteredEvents = filteredEvents.filter((e) => e.timestamp >= startDate);
     }
 
     if (endDate) {
@@ -181,7 +179,7 @@ export class AuditProofCore {
   /**
    * Persist event to backend (placeholder)
    */
-  private static persistEvent(event: AuditEvent): void {
+  private static persistEvent(_event: AuditEvent): void {
     // In production, this would send to backend API
     // For now, we just store in memory
     // Example: fetch('/api/audit', { method: 'POST', body: JSON.stringify(event) })

@@ -21,7 +21,7 @@ export class TrustEngine {
   /**
    * Get trust signals for the current user context
    */
-  static getTrustSignals(user?: UserContext): TrustSignals {
+  static getTrustSignals(_user?: UserContext): TrustSignals {
     return {
       encryption: true,
       complianceBacked: true,
