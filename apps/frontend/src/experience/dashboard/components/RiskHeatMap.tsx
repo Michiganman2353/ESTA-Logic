@@ -3,7 +3,6 @@
  * Shows compliance risks across different categories
  */
 
-import React from 'react';
 import { RiskLevel } from '../../intelligence/RiskInterpreter';
 
 export interface RiskCategory {
@@ -18,10 +17,26 @@ export interface RiskHeatMapProps {
 }
 
 const defaultRisks: RiskCategory[] = [
-  { name: 'Policy Documentation', level: 'none', description: 'All policies documented' },
-  { name: 'Accrual Tracking', level: 'low', description: 'Minor tracking improvements needed' },
-  { name: 'Employee Access', level: 'none', description: 'Employees can access balances' },
-  { name: 'Record Retention', level: 'medium', description: 'Some historical gaps' },
+  {
+    name: 'Policy Documentation',
+    level: 'none',
+    description: 'All policies documented',
+  },
+  {
+    name: 'Accrual Tracking',
+    level: 'low',
+    description: 'Minor tracking improvements needed',
+  },
+  {
+    name: 'Employee Access',
+    level: 'none',
+    description: 'Employees can access balances',
+  },
+  {
+    name: 'Record Retention',
+    level: 'medium',
+    description: 'Some historical gaps',
+  },
   { name: 'Audit Readiness', level: 'low', description: 'Mostly prepared' },
 ];
 

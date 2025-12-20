@@ -3,8 +3,6 @@
  * Displays security and compliance confidence badges
  */
 
-import React from 'react';
-
 export interface SecuritySignalsProps {
   className?: string;
 }

@@ -3,8 +3,6 @@
  * Provides reassurance about legal compliance
  */
 
-import React from 'react';
-
 export interface LegalAssuranceProps {
   className?: string;
   variant?: 'banner' | 'inline' | 'minimal';
@@ -27,7 +25,9 @@ export default function LegalAssurance({
 
   if (variant === 'inline') {
     return (
-      <div className={`flex items-center gap-2 text-sm text-gray-700 ${className}`}>
+      <div
+        className={`flex items-center gap-2 text-sm text-gray-700 ${className}`}
+      >
         <span
           className="flex h-5 w-5 items-center justify-center rounded-full bg-green-100 text-green-700"
           role="img"
@@ -60,8 +60,8 @@ export default function LegalAssurance({
           </h3>
           <p className="text-sm text-green-800">
             This system is designed to meet all requirements of the Michigan
-            Employee Earned Sick Time Act (ESTA). Your records are
-            audit-ready and legally defensible.
+            Employee Earned Sick Time Act (ESTA). Your records are audit-ready
+            and legally defensible.
           </p>
         </div>
       </div>

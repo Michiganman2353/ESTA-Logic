@@ -3,8 +3,6 @@
  * Shows encryption status and provides confidence
  */
 
-import React from 'react';
-
 export interface EncryptionIndicatorProps {
   isActive?: boolean;
   className?: string;
@@ -44,9 +42,7 @@ export default function EncryptionIndicator({
           <span className="text-sm font-semibold text-gray-900">
             End-to-End Encrypted
           </span>
-          <span className="text-xs text-gray-600">
-            Your data is secure
-          </span>
+          <span className="text-xs text-gray-600">Your data is secure</span>
         </div>
       )}
     </div>

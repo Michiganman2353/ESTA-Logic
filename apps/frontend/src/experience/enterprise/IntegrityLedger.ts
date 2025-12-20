@@ -67,7 +67,7 @@ export class IntegrityLedger {
     const entryIndex = this.entries.indexOf(entry);
     if (entryIndex > 0) {
       const previousEntry = this.entries[entryIndex - 1];
-      if (entry.previousHash !== previousEntry.hash) {
+      if (previousEntry && entry.previousHash !== previousEntry.hash) {
         errors.push('Chain broken - previous hash mismatch');
       }
     }
@@ -153,7 +153,8 @@ export class IntegrityLedger {
     if (this.entries.length === 0) {
       return undefined;
     }
-    return this.entries[this.entries.length - 1].hash;
+    const lastEntry = this.entries[this.entries.length - 1];
+    return lastEntry ? lastEntry.hash : undefined;
   }
 
   /**
