@@ -27,7 +27,8 @@ To complete the removal of CodeRabbit, a repository administrator must:
 ### 1. Uninstall CodeRabbit GitHub App
 
 1. Go to your repository on GitHub
-2. Navigate to: **Settings** → **Integrations** → **GitHub Apps**
+2. Navigate to: **Settings** → **Integrations & services** → **Applications** → **Installed GitHub Apps**
+   - Or try: **Settings** → **Integrations** (if available in your GitHub interface)
 3. Find **CodeRabbit** in the list of installed apps
 4. Click **Configure** next to CodeRabbit
 5. Scroll down and click **Uninstall** or **Remove**
@@ -38,9 +39,12 @@ To complete the removal of CodeRabbit, a repository administrator must:
 If CodeRabbit was installed at the organization level:
 
 1. Go to your GitHub organization page
-2. Navigate to: **Settings** → **GitHub Apps**
-3. Find **CodeRabbit** and uninstall it
-4. Or adjust repository access to exclude this repository
+2. Navigate to: **Settings** → **Third-party Access** → **GitHub Apps**
+   - Or try: **Settings** → **Developer settings** → **GitHub Apps**
+3. Find **CodeRabbit** in the installed apps
+4. Click **Configure** and either:
+   - Uninstall it completely from the organization
+   - Or adjust repository access to exclude this specific repository
 
 ### 3. Verify Removal
 
