@@ -38,6 +38,7 @@ class WizardAnalytics {
   trackStepComplete(
     stepId: string,
     stepIndex: number,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     data?: Record<string, any>
   ) {
     this.trackEvent({
@@ -64,6 +65,7 @@ class WizardAnalytics {
   /**
    * Track wizard completion
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   trackWizardComplete(data?: Record<string, any>) {
     this.trackEvent({
       type: 'wizard_complete',

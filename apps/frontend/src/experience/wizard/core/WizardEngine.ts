@@ -97,6 +97,7 @@ export class WizardEngine {
   /**
    * Set data for a specific key
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setData(key: string, value: any) {
     this.state.setData(key, value);
     this.saveState();

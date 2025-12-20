@@ -21,7 +21,9 @@ interface WizardContextType {
   next: () => void;
   back: () => void;
   goToStep: (index: number) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setData: (key: string, value: any) => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   getData: (key?: string) => any;
   reset: () => void;
   isFirst: boolean;
@@ -65,6 +67,7 @@ export function WizardProvider({ children }: WizardProviderProps) {
     forceUpdate({});
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setData = (key: string, value: any) => {
     wizard.setData(key, value);
     forceUpdate({});

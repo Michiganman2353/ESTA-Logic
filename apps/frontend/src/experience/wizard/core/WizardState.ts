@@ -9,7 +9,9 @@ export interface StepConfig {
   id: string;
   title: string;
   description?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   component?: React.ComponentType<any>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   validation?: (data: any) => boolean;
   canSkip?: boolean;
 }
@@ -17,6 +19,7 @@ export interface StepConfig {
 export class WizardState {
   private steps: StepConfig[] = [];
   private index = 0;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private data: Record<string, any> = {};
 
   /**
@@ -82,6 +85,7 @@ export class WizardState {
   /**
    * Set wizard data
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   setData(key: string, value: any) {
     this.data[key] = value;
   }

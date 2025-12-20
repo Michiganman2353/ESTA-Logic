@@ -8,7 +8,9 @@ export interface ValidationRule {
   field: string;
   type: 'required' | 'email' | 'number' | 'min' | 'max' | 'pattern' | 'custom';
   message: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   value?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   validator?: (value: any) => boolean;
 }
 
@@ -20,52 +22,60 @@ export interface ValidationResult {
 /**
  * Validate a single field against a rule
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function validateField(data: any, rule: ValidationRule): string | null {
   const value = data[rule.field];
 
   switch (rule.type) {
-    case 'required':
+    case 'required': {
       if (value === undefined || value === null || value === '') {
         return rule.message || `${rule.field} is required`;
       }
       break;
+    }
 
-    case 'email':
+    case 'email': {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(value)) {
         return rule.message || 'Please enter a valid email address';
       }
       break;
+    }
 
-    case 'number':
+    case 'number': {
       if (isNaN(Number(value))) {
         return rule.message || 'Please enter a valid number';
       }
       break;
+    }
 
-    case 'min':
+    case 'min': {
       if (Number(value) < (rule.value || 0)) {
         return rule.message || `Value must be at least ${rule.value}`;
       }
       break;
+    }
 
-    case 'max':
+    case 'max': {
       if (Number(value) > (rule.value || Infinity)) {
         return rule.message || `Value must be at most ${rule.value}`;
       }
       break;
+    }
 
-    case 'pattern':
+    case 'pattern': {
       if (rule.value && !new RegExp(rule.value).test(value)) {
         return rule.message || 'Invalid format';
       }
       break;
+    }
 
-    case 'custom':
+    case 'custom': {
       if (rule.validator && !rule.validator(value)) {
         return rule.message || 'Validation failed';
       }
       break;
+    }
   }
 
   return null;
@@ -74,6 +84,7 @@ function validateField(data: any, rule: ValidationRule): string | null {
 /**
  * Validate data against multiple rules
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function validate(data: any, rules: ValidationRule[]): ValidationResult {
   const errors: Record<string, string> = {};
 
@@ -139,6 +150,7 @@ export const commonRules = {
 
   custom: (
     field: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     validator: (value: any) => boolean,
     message: string
   ): ValidationRule => ({
