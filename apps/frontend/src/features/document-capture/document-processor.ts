@@ -9,6 +9,26 @@
  * - Orientation normalization
  */
 
+/**
+ * Helper to create OpenCV Mat instances
+ * Required due to OpenCV's dynamic typing
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function createMat(): any {
+  if (!window.cv) throw new Error('OpenCV not loaded');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return new (window.cv.Mat as any)();
+}
+
+/**
+ * Helper to delete OpenCV objects safely
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function deleteMat(mat: any): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (mat as any).delete();
+}
+
 export interface ProcessingOptions {
   enableEdgeDetection?: boolean;
   enableAutoCrop?: boolean;
@@ -267,8 +287,7 @@ function detectDocumentEdges(src: any): { x: number; y: number }[] | null {
 
     // Get approximated polygon for the largest contour
     const contour = contours.get(maxContourIndex);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const approx = new (window.cv.Mat as any)();
+    const approx = createMat();
     const perimeter = window.cv.arcLength(contour, true);
     window.cv.approxPolyDP(contour, approx, 0.02 * perimeter, true);
 
@@ -367,8 +386,7 @@ function deskewDocument(src: any, corners: { x: number; y: number }[]): any {
     const M = window.cv.getPerspectiveTransform(srcPoints, dstPoints);
 
     // Apply transform
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const dst = new (window.cv.Mat as any)();
+    const dst = createMat();
     const dsize = new window.cv.Size(width, height);
     window.cv.warpPerspective(
       src,
@@ -381,12 +399,9 @@ function deskewDocument(src: any, corners: { x: number; y: number }[]): any {
     );
 
     // Clean up
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (srcPoints as any).delete();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (dstPoints as any).delete();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (M as any).delete();
+    deleteMat(srcPoints);
+    deleteMat(dstPoints);
+    deleteMat(M);
 
     return dst;
   } catch (error) {
@@ -416,8 +431,7 @@ function resizeDocument(src: any, maxWidth: number, maxHeight: number): any {
   const newWidth = Math.round(src.cols * ratio);
   const newHeight = Math.round(src.rows * ratio);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const dst = new (window.cv.Mat as any)();
+  const dst = createMat();
   const dsize = new window.cv.Size(newWidth, newHeight);
   window.cv.resize(src, dst, dsize, 0, 0, window.cv.INTER_LINEAR);
 

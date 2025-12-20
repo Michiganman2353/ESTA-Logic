@@ -45,6 +45,15 @@ export interface OpenCVInstance {
     borderValue: OpenCVScalar
   ) => void;
   imshow: (canvasElement: HTMLCanvasElement, mat: OpenCVMat) => void;
+  /**
+   * Resizes an image
+   * @param src - Source image matrix
+   * @param dst - Destination image matrix
+   * @param dsize - Output image size
+   * @param fx - Scale factor along horizontal axis (0 = use dsize)
+   * @param fy - Scale factor along vertical axis (0 = use dsize)
+   * @param interpolation - Interpolation method (INTER_LINEAR, INTER_NEAREST, etc.)
+   */
   resize: (
     src: OpenCVMat,
     dst: OpenCVMat,

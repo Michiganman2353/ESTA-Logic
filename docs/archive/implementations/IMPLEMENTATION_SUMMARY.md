@@ -1,5 +1,11 @@
 # ESTA-Logic Experience Reset — Implementation Summary
 
+> **📋 Note:** This is archived implementation documentation. For current project structure and documentation, see:
+>
+> - [Main README](../../../README.md) - Current project overview
+> - [Documentation Index](../../README.md) - Active documentation structure
+> - [Architecture Overview](../../architecture/architecture.md) - Current system architecture
+
 ## Overview
 
 This implementation establishes the foundational architecture for ESTA-Logic's TurboTax-inspired guided compliance experience. It provides the core infrastructure, UI components, and design guidelines needed to transform ESTA-Logic from a compliance tool into a trusted compliance partner.
