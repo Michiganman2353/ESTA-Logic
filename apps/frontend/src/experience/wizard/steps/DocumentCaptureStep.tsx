@@ -3,7 +3,7 @@
  */
 
 import PageTransition from '../../animations/PageTransition';
-import { useWizard } from '../core/WizardContext';
+import { useWizard } from '../core/useWizard';
 import { SecureCapture } from '../../capture/SecureCapture';
 
 export default function DocumentCaptureStep() {

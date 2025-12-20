@@ -5,7 +5,7 @@
  * the current wizard state.
  */
 
-import { useWizard } from '../core/WizardContext';
+import { useWizard } from '../core/useWizard';
 import { wizard } from '../core/WizardEngine';
 
 interface WizardRouterProps {
