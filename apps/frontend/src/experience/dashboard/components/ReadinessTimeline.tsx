@@ -3,8 +3,6 @@
  * Shows timeline of compliance milestones and upcoming deadlines
  */
 
-import React from 'react';
-
 export interface TimelineItem {
   title: string;
   description: string;
@@ -124,7 +122,9 @@ export default function ReadinessTimeline({
               <div className="flex-1 pb-6">
                 <div className="flex items-start justify-between">
                   <div>
-                    <h4 className="font-semibold text-gray-900">{item.title}</h4>
+                    <h4 className="font-semibold text-gray-900">
+                      {item.title}
+                    </h4>
                     <p className="mt-1 text-sm text-gray-600">
                       {item.description}
                     </p>

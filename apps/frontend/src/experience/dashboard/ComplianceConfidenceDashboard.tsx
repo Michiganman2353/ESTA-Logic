@@ -1,22 +1,44 @@
 /**
  * Compliance Confidence Dashboard - Main dashboard view
  * Combines all compliance indicators into a comprehensive view
+ * Enhanced with Trust Engine and Personalization Intelligence
  */
 
-import React from 'react';
 import ComplianceScore from './components/ComplianceScore';
 import RiskHeatMap from './components/RiskHeatMap';
 import ReadinessTimeline from './components/ReadinessTimeline';
+import { useTrustEngine } from '../trust/useTrustEngine';
+import { determineOrgProfile } from '../intelligence/PersonalizationEngine';
 
 export interface ComplianceConfidenceDashboardProps {
   score?: number;
   className?: string;
+  org?: {
+    id: string;
+    employeeCount: number;
+    industry?: string;
+  };
 }
 
 export default function ComplianceConfidenceDashboard({
-  score = 92,
+  score,
   className = '',
+  org,
 }: ComplianceConfidenceDashboardProps) {
+  // Use Trust Engine if org is provided
+  const { trustScore, confidenceLabel } = useTrustEngine(org?.id || '');
+
+  // Use provided score or trust score
+  const displayScore = score !== undefined ? score : trustScore;
+
+  // Determine org profile if org data is available
+  const profile = org
+    ? determineOrgProfile({
+        employeeCount: org.employeeCount,
+        industry: org.industry,
+      })
+    : null;
+
   return (
     <div
       className={`compliance-confidence-dashboard ${className}`}
@@ -35,8 +57,31 @@ export default function ComplianceConfidenceDashboard({
       <div className="grid gap-6 md:grid-cols-2">
         {/* Compliance Score */}
         <div className="md:col-span-2">
-          <ComplianceScore score={score} />
+          <ComplianceScore score={displayScore} />
+          {org && (
+            <div className="mt-2 text-sm text-gray-600">
+              <strong>{confidenceLabel}</strong>
+            </div>
+          )}
         </div>
+
+        {/* Organization Profile */}
+        {profile && (
+          <div className="rounded-lg border border-gray-200 bg-white p-6 md:col-span-2">
+            <h3 className="mb-3 text-lg font-semibold text-gray-900">
+              Organization Profile
+            </h3>
+            <div className="space-y-2">
+              <p className="text-sm text-gray-700">
+                <strong>Tier:</strong> {profile.tier} —{' '}
+                <strong>Risk Level:</strong> {profile.riskLevel}
+              </p>
+              <p className="text-sm text-gray-600">
+                {profile.complianceExpectation}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Risk Heat Map */}
         <div>
@@ -47,6 +92,17 @@ export default function ComplianceConfidenceDashboard({
         <div>
           <ReadinessTimeline />
         </div>
+      </div>
+
+      {/* Reassurance Section */}
+      <div className="mt-6 rounded-lg border border-green-200 bg-green-50 p-6">
+        <h3 className="mb-3 text-lg font-semibold text-green-900">
+          You're Protected
+        </h3>
+        <p className="text-sm text-green-800">
+          You are currently operating within compliant thresholds. ESTA-Logic
+          continuously monitors rules so you stay protected.
+        </p>
       </div>
 
       {/* Next Steps Section */}

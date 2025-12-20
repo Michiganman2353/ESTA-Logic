@@ -59,8 +59,9 @@ export class AdaptiveFlowController {
       return { nextStep: 'completion' };
     }
 
+    const nextStep = flowSteps[currentIndex + 1];
     return {
-      nextStep: flowSteps[currentIndex + 1],
+      nextStep: nextStep || 'completion',
       reason: `Following ${flowPath} for ${profile.complexityLevel} organization`,
     };
   }

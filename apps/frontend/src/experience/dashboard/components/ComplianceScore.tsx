@@ -3,8 +3,6 @@
  * Displays current compliance score with color-coded status
  */
 
-import React from 'react';
-
 export interface ComplianceScoreProps {
   score: number;
   className?: string;

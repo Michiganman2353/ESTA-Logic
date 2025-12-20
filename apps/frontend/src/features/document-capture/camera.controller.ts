@@ -262,6 +262,9 @@ export class CameraController {
     }
 
     const videoTrack = this.stream.getVideoTracks()[0];
+    if (!videoTrack) {
+      return null;
+    }
     const settings = videoTrack.getSettings();
 
     return {
