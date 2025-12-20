@@ -44,3 +44,67 @@ export { default as PulseSecure } from './animations/PulseSecure';
 
 // Accessibility
 export { focusManager } from './a11y/focusManager';
+
+// Trust Framework
+export { TrustEngine } from './trust/TrustEngine';
+export type { TrustSignals, UserContext } from './trust/TrustEngine';
+export { default as SecuritySignals } from './trust/SecuritySignals';
+export { default as LegalAssurance } from './trust/LegalAssurance';
+export { default as EncryptionIndicator } from './trust/EncryptionIndicator';
+
+// Tone & Narrative
+export { ToneEngine } from './tone/ToneEngine';
+export type { ToneType } from './tone/ToneEngine';
+export { NarrativeLibrary, getNarrative, getNarrativeMessage } from './tone/NarrativeLibrary';
+export type { NarrativeKey, NarrativeContent } from './tone/NarrativeLibrary';
+export {
+  comfortingCopy,
+  personalizedComfortingCopy,
+  encouragementMessage,
+} from './tone/EmotionalUXWriter';
+export type { EmotionalContext, ComfortingCopyOptions } from './tone/EmotionalUXWriter';
+
+// Intelligence & Personalization
+export { PersonalizationEngine } from './intelligence/PersonalizationEngine';
+export type {
+  BusinessData,
+  UserProfile,
+  FlowPath,
+} from './intelligence/PersonalizationEngine';
+export { DecisionEngine } from './intelligence/DecisionEngine';
+export type {
+  DecisionExplanation,
+  DecisionReason,
+} from './intelligence/DecisionEngine';
+export { RiskInterpreter } from './intelligence/RiskInterpreter';
+export type { RiskLevel, RiskAssessment } from './intelligence/RiskInterpreter';
+
+// Compliance Dashboard
+export { default as ComplianceConfidenceDashboard } from './dashboard/ComplianceConfidenceDashboard';
+export { default as ComplianceScore } from './dashboard/components/ComplianceScore';
+export { default as RiskHeatMap } from './dashboard/components/RiskHeatMap';
+export { default as ReadinessTimeline } from './dashboard/components/ReadinessTimeline';
+export type { RiskCategory } from './dashboard/components/RiskHeatMap';
+export type { TimelineItem } from './dashboard/components/ReadinessTimeline';
+
+// Wizard Extensions
+export { AdaptiveFlowController } from './wizard/extensions/AdaptiveFlowController';
+export type { FlowDecision } from './wizard/extensions/AdaptiveFlowController';
+export {
+  BranchingLogic,
+  BranchConditions,
+} from './wizard/extensions/BranchingLogic';
+export type {
+  BranchCondition,
+  BranchRule,
+  Branch,
+} from './wizard/extensions/BranchingLogic';
+
+// Enterprise Trust Layer
+export { AuditProofCore } from './enterprise/AuditProofCore';
+export type { AuditEvent, AuditLog } from './enterprise/AuditProofCore';
+export { IntegrityLedger } from './enterprise/IntegrityLedger';
+export type {
+  LedgerEntry,
+  VerificationResult,
+} from './enterprise/IntegrityLedger';
