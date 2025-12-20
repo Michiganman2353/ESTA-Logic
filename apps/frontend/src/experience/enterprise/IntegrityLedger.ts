@@ -125,10 +125,7 @@ export class IntegrityLedger {
   /**
    * Get entries within date range
    */
-  static getEntriesByDateRange(
-    startDate: Date,
-    endDate: Date
-  ): LedgerEntry[] {
+  static getEntriesByDateRange(startDate: Date, endDate: Date): LedgerEntry[] {
     return this.entries.filter(
       (e) => e.timestamp >= startDate && e.timestamp <= endDate
     );
@@ -163,7 +160,7 @@ export class IntegrityLedger {
    * Generate unique entry ID
    */
   private static generateEntryId(): string {
-    return `ledger-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    return `ledger-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
   }
 
   /**
