@@ -9,6 +9,26 @@
  * - Orientation normalization
  */
 
+/**
+ * Helper to create OpenCV Mat instances
+ * Required due to OpenCV's dynamic typing
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function createMat(): any {
+  if (!window.cv) throw new Error('OpenCV not loaded');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return new (window.cv.Mat as any)();
+}
+
+/**
+ * Helper to delete OpenCV objects safely
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function deleteMat(mat: any): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (mat as any).delete();
+}
+
 export interface ProcessingOptions {
   enableEdgeDetection?: boolean;
   enableAutoCrop?: boolean;
@@ -175,7 +195,6 @@ export async function processDocument(
     if (!window.cv) {
       throw new Error('OpenCV not loaded');
     }
-    // @ts-expect-error OpenCV mat type
     window.cv.imshow(outputCanvas, mat);
 
     // Convert to blob
@@ -252,11 +271,8 @@ function detectDocumentEdges(src: any): { x: number; y: number }[] | null {
     let maxArea = 0;
     let maxContourIndex = -1;
 
-    // @ts-expect-error OpenCV type
     for (let i = 0; i < contours.size(); i++) {
-      // @ts-expect-error OpenCV type
       const contour = contours.get(i);
-      // @ts-expect-error OpenCV type
       const area = window.cv?.Mat ? window.cv.contourArea(contour) : 0;
 
       if (area > maxArea) {
@@ -270,9 +286,8 @@ function detectDocumentEdges(src: any): { x: number; y: number }[] | null {
     }
 
     // Get approximated polygon for the largest contour
-    // @ts-expect-error OpenCV type
     const contour = contours.get(maxContourIndex);
-    const approx = new window.cv.Mat();
+    const approx = createMat();
     const perimeter = window.cv.arcLength(contour, true);
     window.cv.approxPolyDP(contour, approx, 0.02 * perimeter, true);
 
@@ -322,6 +337,17 @@ function deskewDocument(src: any, corners: { x: number; y: number }[]): any {
     // Sort corners: top-left, top-right, bottom-right, bottom-left
     const sorted = sortCorners(corners);
 
+    // Ensure we have exactly 4 corners
+    if (
+      sorted.length !== 4 ||
+      !sorted[0] ||
+      !sorted[1] ||
+      !sorted[2] ||
+      !sorted[3]
+    ) {
+      return src;
+    }
+
     // Calculate output dimensions
     const width = Math.max(
       distance(sorted[0], sorted[1]),
@@ -360,7 +386,7 @@ function deskewDocument(src: any, corners: { x: number; y: number }[]): any {
     const M = window.cv.getPerspectiveTransform(srcPoints, dstPoints);
 
     // Apply transform
-    const dst = new window.cv.Mat();
+    const dst = createMat();
     const dsize = new window.cv.Size(width, height);
     window.cv.warpPerspective(
       src,
@@ -373,9 +399,9 @@ function deskewDocument(src: any, corners: { x: number; y: number }[]): any {
     );
 
     // Clean up
-    srcPoints.delete();
-    dstPoints.delete();
-    M.delete();
+    deleteMat(srcPoints);
+    deleteMat(dstPoints);
+    deleteMat(M);
 
     return dst;
   } catch (error) {
@@ -405,7 +431,7 @@ function resizeDocument(src: any, maxWidth: number, maxHeight: number): any {
   const newWidth = Math.round(src.cols * ratio);
   const newHeight = Math.round(src.rows * ratio);
 
-  const dst = new window.cv.Mat();
+  const dst = createMat();
   const dsize = new window.cv.Size(newWidth, newHeight);
   window.cv.resize(src, dst, dsize, 0, 0, window.cv.INTER_LINEAR);
 
@@ -460,12 +486,4 @@ function loadImageFromBlob(blob: Blob): Promise<HTMLImageElement> {
 
     img.src = url;
   });
-}
-
-// Type declaration for OpenCV (matches component)
-declare global {
-  interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    cv: any;
-  }
 }

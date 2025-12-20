@@ -65,6 +65,14 @@ interface OpenCVInstance {
     borderValue: unknown
   ) => void;
   imshow: (canvasElement: HTMLCanvasElement, mat: unknown) => void;
+  resize: (
+    src: unknown,
+    dst: unknown,
+    dsize: unknown,
+    fx: number,
+    fy: number,
+    interpolation: number
+  ) => void;
   MatVector: new () => unknown;
   Size: new (width: number, height: number) => unknown;
   Scalar: new () => unknown;

@@ -5,13 +5,7 @@
  * throughout the component tree.
  */
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  ReactNode,
-} from 'react';
+import { createContext, useState, useEffect, ReactNode } from 'react';
 import { wizard } from './WizardEngine';
 
 interface WizardContextType {
@@ -31,6 +25,8 @@ interface WizardContextType {
 }
 
 const WizardContext = createContext<WizardContextType | undefined>(undefined);
+
+export { WizardContext };
 
 interface WizardProviderProps {
   children: ReactNode;
@@ -100,15 +96,4 @@ export function WizardProvider({ children }: WizardProviderProps) {
   return (
     <WizardContext.Provider value={value}>{children}</WizardContext.Provider>
   );
-}
-
-/**
- * useWizard - Hook to access wizard context
- */
-export function useWizard() {
-  const context = useContext(WizardContext);
-  if (!context) {
-    throw new Error('useWizard must be used within WizardProvider');
-  }
-  return context;
 }

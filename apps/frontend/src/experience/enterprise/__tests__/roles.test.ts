@@ -107,7 +107,7 @@ describe('Enterprise Roles', () => {
     });
 
     it('should return 0 for unknown role', () => {
-      expect(getRoleLevel('UNKNOWN' as any)).toBe(0);
+      expect(getRoleLevel('UNKNOWN' as never)).toBe(0);
     });
   });
 

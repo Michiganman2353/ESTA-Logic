@@ -3,7 +3,7 @@
  */
 
 import PageTransition from '../../animations/PageTransition';
-import { useWizard } from '../core/WizardContext';
+import { useWizard } from '../core/useWizard';
 
 export default function ReviewStep() {
   const { next, back, getData } = useWizard();

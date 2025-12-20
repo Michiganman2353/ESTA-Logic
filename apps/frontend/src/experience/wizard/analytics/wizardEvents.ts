@@ -14,7 +14,7 @@ export interface WizardEvent {
   stepId?: string;
   stepIndex?: number;
   timestamp: number;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
 }
 
 class WizardAnalytics {
@@ -38,8 +38,7 @@ class WizardAnalytics {
   trackStepComplete(
     stepId: string,
     stepIndex: number,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    data?: Record<string, any>
+    data?: Record<string, unknown>
   ) {
     this.trackEvent({
       type: 'step_complete',
@@ -65,8 +64,7 @@ class WizardAnalytics {
   /**
    * Track wizard completion
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  trackWizardComplete(data?: Record<string, any>) {
+  trackWizardComplete(data?: Record<string, unknown>) {
     this.trackEvent({
       type: 'wizard_complete',
       timestamp: Date.now(),

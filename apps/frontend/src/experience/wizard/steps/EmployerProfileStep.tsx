@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import PageTransition from '../../animations/PageTransition';
-import { useWizard } from '../core/WizardContext';
+import { useWizard } from '../core/useWizard';
 
 export default function EmployerProfileStep() {
   const { next, back, setData, getData } = useWizard();

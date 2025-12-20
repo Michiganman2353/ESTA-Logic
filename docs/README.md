@@ -6,13 +6,13 @@ Welcome to the ESTA Tracker documentation. This directory contains all technical
 
 **ESTA-Logic is undergoing a strategic reset to become a TurboTax-style guided compliance experience.** These documents define our new product vision and experience-first approach:
 
-| Document | Purpose |
-|----------|---------|
-| **[Experience Vision](./Experience-Vision.md)** | Public announcement of strategic direction shift |
-| **[Strategic Roadmap](./ROADMAP.md)** | Experience-first implementation phases |
-| **[UX Blueprint](./UX-Blueprint.md)** | TurboTax-inspired user experience design |
-| **[GuidedFlowEngine](./GuidedFlowEngine.md)** | Architecture concept for guided journeys |
-| **[Experience-First Architecture](./Experience-First-Architecture.md)** | Architectural principles that serve UX |
+| Document                                                                | Purpose                                          |
+| ----------------------------------------------------------------------- | ------------------------------------------------ |
+| **[Experience Vision](./Experience-Vision.md)**                         | Public announcement of strategic direction shift |
+| **[Strategic Roadmap](./ROADMAP.md)**                                   | Experience-first implementation phases           |
+| **[UX Blueprint](./UX-Blueprint.md)**                                   | TurboTax-inspired user experience design         |
+| **[GuidedFlowEngine](./GuidedFlowEngine.md)**                           | Architecture concept for guided journeys         |
+| **[Experience-First Architecture](./Experience-First-Architecture.md)** | Architectural principles that serve UX           |
 
 **Core Philosophy:** We're building a guided compliance partner that makes users feel confident, supported, and secure — not a tool they operate.
 
@@ -23,27 +23,35 @@ Welcome to the ESTA Tracker documentation. This directory contains all technical
 ```
 docs/
 ├── abi/                # Kernel ABI specifications
+├── adr/                # Architecture Decision Records (deprecated - moved to architecture/adr/)
 ├── architecture/       # System architecture and technical documentation
-│   └── adr/           # Architecture Decision Records
+│   ├── adr/           # Architecture Decision Records
+│   ├── ARCHITECTURE_QUICK_REFERENCE.md
+│   ├── ARCHITECTURE_VISUAL_GUIDE.md
+│   ├── MICROKERNEL_ARCHITECTURE.md
+│   ├── WORKSPACE_ARCHITECTURE.md
+│   └── WASM_ARCHITECTURE.md
 ├── deployment/         # Deployment guides and procedures
-├── design/            # Archived design documents and planning
+├── design/            # Design documents and planning
 ├── security/          # Security documentation and guidelines
+│   └── SECURITY_SUMMARY.md
 ├── setup/             # Setup and configuration guides
 └── archive/           # Historical documentation and reports
+    └── implementations/ # Archived implementation summaries
 ```
 
 ## 🚀 Quick Start Documentation
 
 ### Essential Reading (Start Here!)
 
-| Document                                                              | Purpose                              |
-| --------------------------------------------------------------------- | ------------------------------------ |
-| **[Developer Onboarding](./DEVELOPER_ONBOARDING.md)**                 | New team member setup guide          |
-| **[Architecture Quick Reference](./ARCHITECTURE_QUICK_REFERENCE.md)** | One-page architecture overview       |
-| **[Engineering Ecosystem](./ENGINEERING_ECOSYSTEM.md)**               | Unified engineering ecosystem vision |
-| **[Engineering Principles](./ENGINEERING_PRINCIPLES.md)**             | Codified engineering charter         |
-| **[Engineering Standards](./ENGINEERING_STANDARDS.md)**               | Git, commits, versioning, reviews    |
-| **[ADR Index](./architecture/adr/README.md)**                         | All architecture decisions           |
+| Document                                                                           | Purpose                              |
+| ---------------------------------------------------------------------------------- | ------------------------------------ |
+| **[Developer Onboarding](./DEVELOPER_ONBOARDING.md)**                              | New team member setup guide          |
+| **[Architecture Quick Reference](./architecture/ARCHITECTURE_QUICK_REFERENCE.md)** | One-page architecture overview       |
+| **[Engineering Ecosystem](./ENGINEERING_ECOSYSTEM.md)**                            | Unified engineering ecosystem vision |
+| **[Engineering Principles](./ENGINEERING_PRINCIPLES.md)**                          | Codified engineering charter         |
+| **[Engineering Standards](./ENGINEERING_STANDARDS.md)**                            | Git, commits, versioning, reviews    |
+| **[ADR Index](./architecture/adr/README.md)**                                      | All architecture decisions           |
 
 ### Core Documentation
 

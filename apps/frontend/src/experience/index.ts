@@ -12,7 +12,8 @@ export { typography } from './design-system/tokens/typography';
 // Wizard Core
 export { wizard, WizardEngine } from './wizard/core/WizardEngine';
 export { WizardState } from './wizard/core/WizardState';
-export { WizardProvider, useWizard } from './wizard/core/WizardContext';
+export { WizardProvider } from './wizard/core/WizardContext';
+export { useWizard } from './wizard/core/useWizard';
 
 // Wizard Routing
 export { default as WizardRouter } from './wizard/routing/WizardRouter';
@@ -55,14 +56,21 @@ export { default as EncryptionIndicator } from './trust/EncryptionIndicator';
 // Tone & Narrative
 export { ToneEngine } from './tone/ToneEngine';
 export type { ToneType } from './tone/ToneEngine';
-export { NarrativeLibrary, getNarrative, getNarrativeMessage } from './tone/NarrativeLibrary';
+export {
+  NarrativeLibrary,
+  getNarrative,
+  getNarrativeMessage,
+} from './tone/NarrativeLibrary';
 export type { NarrativeKey, NarrativeContent } from './tone/NarrativeLibrary';
 export {
   comfortingCopy,
   personalizedComfortingCopy,
   encouragementMessage,
 } from './tone/EmotionalUXWriter';
-export type { EmotionalContext, ComfortingCopyOptions } from './tone/EmotionalUXWriter';
+export type {
+  EmotionalContext,
+  ComfortingCopyOptions,
+} from './tone/EmotionalUXWriter';
 
 // Intelligence & Personalization
 export { PersonalizationEngine } from './intelligence/PersonalizationEngine';
