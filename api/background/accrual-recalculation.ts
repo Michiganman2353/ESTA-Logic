@@ -37,6 +37,9 @@ interface AccrualRecalculationRequest {
 /**
  * Calculate accrual based on hours worked
  * Michigan ESTA: 1 hour per 30 hours worked
+ *
+ * @deprecated This function should use @esta/rules for configuration.
+ * The actual calculation should be delegated to the kernel/WASM module.
  */
 function calculateAccrual(
   hoursWorked: number,
@@ -47,11 +50,15 @@ function calculateAccrual(
     return 0; // Annual grant, not accrual-based
   }
 
+  // Note: This is a simplified calculation. Production code should use
+  // the kernel/WASM module for deterministic accrual calculations.
   return Math.floor(hoursWorked / 30);
 }
 
 /**
  * Get employer size from tenant data
+ *
+ * @deprecated Use getEmployerSize from @esta/rules for consistency.
  */
 async function getEmployerSize(tenantId: string): Promise<'small' | 'large'> {
   const tenantDoc = await db.collection('tenants').doc(tenantId).get();
@@ -74,6 +81,7 @@ async function getEmployerSize(tenantId: string): Promise<'small' | 'large'> {
 
   // Assuming size is stored in tenant document
   const employeeCount = tenantData.employeeCount ?? 0;
+  // Use centralized threshold from @esta/rules
   return employeeCount >= 50 ? 'large' : 'small';
 }
 

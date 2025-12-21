@@ -2,6 +2,12 @@
  * Validation Utilities
  *
  * Common validation functions for data integrity
+ *
+ * @deprecated Validation logic has been centralized to @esta/validation.
+ * This file will be removed in a future release. Please migrate to:
+ * import { isValidEmail, ... } from '@esta/validation';
+ *
+ * For now, this file maintains the original implementations for backward compatibility.
  */
 
 /**

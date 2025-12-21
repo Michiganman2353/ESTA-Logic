@@ -292,6 +292,12 @@ export interface PolicyVersion {
 
 /**
  * Retention periods in years based on ESTA 2025 requirements
+ *
+ * @deprecated Retention periods have been centralized to @esta/rules.
+ * This constant will be removed in a future release. Please migrate to:
+ * import { RETENTION_PERIODS } from '@esta/rules';
+ *
+ * For now, this maintains the original implementation for backward compatibility.
  */
 export const RETENTION_PERIODS = {
   APPROVED: 7,
@@ -310,6 +316,9 @@ export const RETENTION_PERIODS = {
 
 /**
  * Get retention period based on application status
+ *
+ * @deprecated This function has been centralized to @esta/rules.
+ * Please migrate to: import { getRetentionPeriodForStatus } from '@esta/rules';
  */
 export function getRetentionPeriodForStatus(status: ApplicationStatus): number {
   switch (status) {
