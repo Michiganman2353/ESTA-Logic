@@ -1,0 +1,76 @@
+/**
+ * ESTA Tracker Design Tokens - CSS Custom Properties
+ * 
+ * CSS variables generated from design tokens for use in CSS/SCSS files.
+ * These are automatically synced with the TypeScript design token system.
+ * 
+ * @see apps/frontend/src/design-tokens/ for token source
+ * @see docs/design/DESIGN_TOKENS.md for documentation
+ */
+
+:root {
+  /* ========================================================================
+     COLOR TOKENS
+     ======================================================================== */
+  
+  /* Primary Brand Colors */
+  --color-navy-deep: #0A1E45;
+  --color-royal-blue: #1E63FF;
+  --color-sky-blue: #74B7FF;
+  --color-graphite: #1B1B1B;
+
+  /* Semantic Colors */
+  --color-trust-blue: #1E4BD8;
+  --color-accent-blue: #3B82F6;
+  --color-gov-trust-green: #00B289;
+  --color-success-green: #10B981;
+  --color-compliance-error: #D32F2F;
+  --color-warning-amber: #F59E0B;
+  --color-info-blue: #3B82F6;
+
+  /* Text Colors */
+  --color-text-primary: #111827;
+  --color-text-secondary: #4B5563;
+  --color-text-tertiary: #6B7280;
+  --color-text-disabled: #9CA3AF;
+  --color-text-inverse: #FFFFFF;
+
+  /* Surface Colors */
+  --color-background: #F7FAFE;
+  --color-surface: #FFFFFF;
+
+  /* ========================================================================
+     TYPOGRAPHY TOKENS
+     ======================================================================== */
+
+  --font-family-sans: Inter, system-ui, sans-serif;
+  --font-size-base: 1rem;      /* 16px */
+  --font-size-lg: 1.125rem;    /* 18px */
+  --font-size-xl: 1.25rem;     /* 20px */
+  --font-size-2xl: 1.5rem;     /* 24px */
+  --font-size-4xl: 2.25rem;    /* 36px */
+
+  /* ========================================================================
+     SPACING TOKENS
+     ======================================================================== */
+
+  --spacing-2: 0.5rem;       /* 8px */
+  --spacing-4: 1rem;         /* 16px */
+  --spacing-6: 1.5rem;       /* 24px */
+  --spacing-8: 2rem;         /* 32px */
+
+  /* ========================================================================
+     SHADOW TOKENS
+     ======================================================================== */
+
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+  /* ========================================================================
+     BORDER TOKENS
+     ======================================================================== */
+
+  --border-radius-lg: 0.5rem;     /* 8px */
+  --border-radius-card: 1.125rem; /* 18px */
+}
