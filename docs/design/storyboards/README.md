@@ -7,6 +7,15 @@ Visual storyboards documenting ESTA Tracker's user flows and interface design. T
 
 ## 📚 Storyboard Index
 
+### 🎭 Complete Experience Narrative
+
+**[00. Experience Narrative: Complete Customer Journey](./00-experience-narrative.md)**
+- **THE FOUNDATIONAL DOCUMENT** — Start here to understand the emotional journey
+- Shows the complete user transformation from fear to advocacy
+- Six-step flow: Welcome → Setup → Linking → Score → Dashboard → Trust
+- Includes emotional copy examples and confidence-building elements
+- **Essential reading** for understanding ESTA Tracker's experience philosophy
+
 ### Core User Flows
 
 1. **[Welcome & Eligibility Wizard](./01-welcome-flow.md)**
