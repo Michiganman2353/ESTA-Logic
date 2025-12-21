@@ -15,3 +15,4 @@ export * from './request.js';
 export * from './compliance.js';
 export * from './escrow.js';
 export * from './risk.js';
+export * from './ux-experience-contract.js';

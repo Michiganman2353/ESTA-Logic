@@ -4,6 +4,12 @@
  * Pure function handlers for accrual calculations.
  * All state is passed in via messages - no side effects.
  *
+ * Enhanced with UX Experience Contract Layer to provide:
+ * - Human-readable explanations
+ * - Emotional reassurance
+ * - Clear next steps
+ * - Trust-building messaging
+ *
  * @module services/accrual-engine/handlers
  */
 
@@ -16,6 +22,12 @@ import type {
   SickTimeBalanceQuery,
   SickTimeBalanceResponse,
 } from '../../../kernel/abi/messages';
+
+import type {
+  AccrualExperienceResponse,
+} from '../../../libs/shared-types/src/ux-experience-contract.js';
+
+import { transformAccrualToExperience } from '../../../libs/shared-utils/src/experience-transformers.js';
 
 // ============================================================================
 // ESTA 2025 CONSTANTS
@@ -45,6 +57,8 @@ const MAX_CARRYOVER_LARGE = 72;
  *
  * This is a pure function - given the same inputs, it always produces
  * the same outputs. No external state is accessed.
+ *
+ * Returns both raw calculation and UX-enhanced experience response.
  */
 export function handleAccrualCalculate(
   request: AccrualCalculateRequest
@@ -88,6 +102,16 @@ export function handleAccrualCalculate(
       appliedAccrual,
     },
   };
+}
+
+/**
+ * Calculate accrual with UX-enhanced experience response
+ */
+export function handleAccrualCalculateWithExperience(
+  request: AccrualCalculateRequest
+): AccrualExperienceResponse {
+  const result = handleAccrualCalculate(request);
+  return transformAccrualToExperience(result);
 }
 
 // ============================================================================
@@ -171,6 +195,7 @@ export function handleBalanceQuery(
  * Main message handler for the accrual engine.
  *
  * Routes incoming IPC messages to the appropriate handler.
+ * Supports both raw calculations and UX-enhanced experience responses.
  */
 export function handleMessage(message: IPCMessage): IPCMessage {
   const { opcode, payload, metadata } = message;
@@ -182,6 +207,13 @@ export function handleMessage(message: IPCMessage): IPCMessage {
     switch (opcode) {
       case 'accrual.calculate':
         result = handleAccrualCalculate(payload as AccrualCalculateRequest);
+        break;
+
+      case 'accrual.calculate.experience':
+        // UX-enhanced response with human-readable explanations
+        result = handleAccrualCalculateWithExperience(
+          payload as AccrualCalculateRequest
+        );
         break;
 
       case 'accrual.carryover':
