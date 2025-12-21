@@ -1,11 +1,11 @@
 /**
  * DecisionExplanation Component
- * 
+ *
  * Displays why a recommendation was made with confidence levels and reasoning.
  * Integrates with DecisionEngine to provide transparent, trust-building explanations.
  */
 
-import { DecisionEngine, type DecisionExplanation as DecisionData } from '../../intelligence/DecisionEngine';
+import { DecisionEngine } from '../../intelligence/DecisionEngine';
 
 export interface DecisionExplanationProps {
   recommendation: string;

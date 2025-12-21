@@ -39,9 +39,16 @@ export { default as CompletionStep } from './wizard/steps/CompletionStep';
 // Wizard Components
 export { default as EnhancedWizardStep } from './wizard/components/EnhancedWizardStep';
 export type { EnhancedWizardStepProps } from './wizard/components/EnhancedWizardStep';
-export { default as DecisionExplanation, PolicyDecisionExplanation, AccrualRateDecisionExplanation } from './wizard/components/DecisionExplanation';
+export {
+  default as DecisionExplanationComponent,
+  PolicyDecisionExplanation,
+  AccrualRateDecisionExplanation,
+} from './wizard/components/DecisionExplanation';
 export type { DecisionExplanationProps } from './wizard/components/DecisionExplanation';
-export { default as ConfidenceIndicator, StepConfidenceIndicator } from './wizard/components/ConfidenceIndicator';
+export {
+  default as ConfidenceIndicator,
+  StepConfidenceIndicator,
+} from './wizard/components/ConfidenceIndicator';
 export type { ConfidenceIndicatorProps } from './wizard/components/ConfidenceIndicator';
 
 // Capture

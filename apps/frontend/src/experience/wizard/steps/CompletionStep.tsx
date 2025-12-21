@@ -1,14 +1,19 @@
 /**
  * CompletionStep - Final step showing completion status
+ * Enhanced with final confidence score and trust signals
  */
 
-import PageTransition from '../../animations/PageTransition';
 import { useWizard } from '../core/useWizard';
+import EnhancedWizardStep from '../components/EnhancedWizardStep';
+import ConfidenceIndicator from '../components/ConfidenceIndicator';
+import { TrustBadgeGroup } from '../../../components/Settings/TrustBadge';
+import { ToneEngine } from '../../tone/ToneEngine';
 
 export default function CompletionStep() {
   const { reset, getData } = useWizard();
 
   const companyName = getData('companyName');
+  const employeeCount = getData('employeeCount');
 
   const handleStartOver = () => {
     reset();
@@ -21,10 +26,25 @@ export default function CompletionStep() {
   };
 
   return (
-    <PageTransition>
-      <div className="mx-auto max-w-3xl px-4 py-8">
-        <div className="mb-8 text-center">
-          <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
+    <EnhancedWizardStep
+      title={ToneEngine.celebratory('🎉 Setup Complete!')}
+      subtitle={`Congratulations, ${companyName}! Your ESTA compliance setup is now complete.`}
+      showTrustBadges={false}
+      showSecuritySignals={false}
+      stepNumber={6}
+      totalSteps={6}
+    >
+      <div className="space-y-6">
+        {/* Final Confidence Score */}
+        <ConfidenceIndicator
+          score={100}
+          label="Fully Configured"
+          variant="dashboard"
+        />
+
+        {/* Success Icon */}
+        <div className="flex justify-center">
+          <div className="flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
             <svg
               className="h-12 w-12 text-green-600"
               fill="currentColor"
@@ -37,16 +57,10 @@ export default function CompletionStep() {
               />
             </svg>
           </div>
-          <h1 className="mb-4 text-4xl font-bold text-gray-900">
-            Setup Complete!
-          </h1>
-          <p className="text-lg text-gray-600">
-            Congratulations, {companyName}! Your ESTA compliance setup is now
-            complete.
-          </p>
         </div>
 
-        <div className="mb-8 rounded-xl bg-white p-8 shadow-lg">
+        {/* What's Next */}
+        <div className="rounded-xl bg-white p-8 shadow-lg">
           <h2 className="mb-6 text-2xl font-semibold text-gray-900">
             What's Next?
           </h2>
@@ -76,8 +90,8 @@ export default function CompletionStep() {
                   Add Employees
                 </h3>
                 <p className="text-gray-600">
-                  Import your employee roster to start tracking their sick time
-                  accruals.
+                  Import your employee roster (up to {employeeCount || 'your'}{' '}
+                  employees) to start tracking their sick time accruals.
                 </p>
               </div>
             </div>
@@ -99,7 +113,16 @@ export default function CompletionStep() {
           </div>
         </div>
 
-        <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-6">
+        {/* Trust Badges */}
+        <div className="flex justify-center">
+          <TrustBadgeGroup
+            badges={['security', 'compliance', 'verified']}
+            size="lg"
+          />
+        </div>
+
+        {/* Security Reassurance */}
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-6">
           <div className="flex items-start">
             <svg
               className="mr-3 h-6 w-6 flex-shrink-0 text-blue-600"
@@ -126,12 +149,13 @@ export default function CompletionStep() {
           </div>
         </div>
 
+        {/* Action Buttons */}
         <div className="flex flex-col gap-3 sm:flex-row">
           <button
             onClick={handleGoToDashboard}
             className="flex-1 rounded-xl bg-blue-600 px-8 py-3 font-semibold text-white shadow-md transition-all hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            Go to Dashboard
+            Go to Dashboard →
           </button>
           <button
             onClick={handleStartOver}
@@ -141,6 +165,6 @@ export default function CompletionStep() {
           </button>
         </div>
       </div>
-    </PageTransition>
+    </EnhancedWizardStep>
   );
 }
