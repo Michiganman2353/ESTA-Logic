@@ -11,7 +11,7 @@
  */
 
 import type { VercelResponse } from '@vercel/node';
-import { encryptWithKMS } from '../lib/services/kmsHybridEncryption';
+import { encryptWithKMS } from '@esta-tracker/shared-utils/server';
 import {
   requireAuth,
   logSecurityEvent,
