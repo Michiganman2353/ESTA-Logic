@@ -126,6 +126,8 @@ The system must be:
 - **Understandable** ✅ (now guaranteed)
 - **Emotionally Trustworthy** ✅ (now guaranteed)
 
+**📖 Complete Documentation: [UX Response API Guide](./docs/api/README.md)**
+
 ### The Contract
 
 Every engine output MUST implement the `ExperienceResponse` interface:
@@ -263,6 +265,15 @@ The contract ensures:
 4. **Safe experimentation** - Try new logic without touching UI
 
 This solves the branching complexity problem: changes are localized and tested independently.
+
+### Documentation
+
+For detailed implementation guides and examples:
+
+- **[UX Response API Guide](./docs/api/UX_RESPONSE_API_GUIDE.md)** — Complete specification and examples
+- **[Quick Reference](./docs/api/DECISION_EXPLANATION_QUICKREF.md)** — One-page cheat sheet
+- **[Integration Examples](./docs/api/INTEGRATION_EXAMPLES.md)** — Real-world patterns
+- **[Type Definitions](./libs/shared-types/src/ux-experience-contract.ts)** — TypeScript source
 
 ## Directory Structure
 
