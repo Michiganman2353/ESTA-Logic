@@ -8,6 +8,7 @@ import {
   createESTANotification,
 } from '@/components/AccrualNotificationBanner.utils';
 import { Navigation } from '@/components/Navigation';
+import { SecurityStatusBanner } from '@/components/SecurityStatusBanner';
 
 interface EmployeeDashboardProps {
   user: User;
@@ -102,6 +103,11 @@ export default function EmployeeDashboard({ user }: EmployeeDashboardProps) {
           onDismiss={removeNotification}
           className="animate-fade-in mb-6"
         />
+
+        {/* Security Status Indicator */}
+        <div className="animate-fade-in mb-6">
+          <SecurityStatusBanner variant="compact" />
+        </div>
 
         {/* Quick Stats */}
         <section
