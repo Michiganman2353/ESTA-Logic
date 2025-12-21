@@ -1,6 +1,7 @@
 import { User } from '@/types';
 import { TrustBadgeGroup } from '@/components/Settings';
 import { SecurityStatusBanner } from '@/components/SecurityStatusBanner';
+import { ComplianceSecurityPanel } from '@/components/trust';
 
 interface AuditLogProps {
   user: User;
@@ -18,7 +19,8 @@ export default function AuditLog({ user }: AuditLogProps) {
               Audit Trail
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              3-year compliance audit trail - view all accruals, usage, and actions
+              3-year compliance audit trail - view all accruals, usage, and
+              actions
             </p>
           </div>
           <TrustBadgeGroup badges={['security', 'compliance']} size="sm" />
@@ -27,6 +29,11 @@ export default function AuditLog({ user }: AuditLogProps) {
         {/* Security Status Banner */}
         <div className="mb-6">
           <SecurityStatusBanner variant="detailed" showDetails={true} />
+        </div>
+
+        {/* Enhanced Compliance Security Panel */}
+        <div className="mb-6">
+          <ComplianceSecurityPanel />
         </div>
 
         {/* Security Features Information */}
@@ -52,7 +59,9 @@ export default function AuditLog({ user }: AuditLogProps) {
               <ul className="space-y-1 text-sm text-blue-800 dark:text-blue-200">
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
-                  <span>All records are cryptographically signed and immutable</span>
+                  <span>
+                    All records are cryptographically signed and immutable
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
@@ -60,7 +69,9 @@ export default function AuditLog({ user }: AuditLogProps) {
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">•</span>
-                  <span>Complete audit trail with timestamps and user identities</span>
+                  <span>
+                    Complete audit trail with timestamps and user identities
+                  </span>
                 </li>
                 <li className="flex items-start">
                   <span className="mr-2">•</span>

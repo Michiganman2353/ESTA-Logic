@@ -9,6 +9,7 @@
 
 import { useNavigate } from 'react-router-dom';
 import { Navigation } from '@/components/Navigation';
+import { TrustBadgeCompact } from '@/components/trust';
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -354,7 +355,9 @@ export default function Landing() {
               Enterprise-Grade Security You Can Trust
             </h2>
             <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-400">
-              Your employee data deserves the highest level of protection. ESTA Tracker uses bank-level encryption and comprehensive security measures.
+              Your employee data deserves the highest level of protection. ESTA
+              Tracker uses bank-level encryption and comprehensive security
+              measures.
             </p>
           </div>
 
@@ -379,7 +382,8 @@ export default function Landing() {
                 AES-256 Encryption
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Military-grade encryption protects all sensitive employee data at rest and in transit.
+                Military-grade encryption protects all sensitive employee data
+                at rest and in transit.
               </p>
             </div>
 
@@ -403,7 +407,8 @@ export default function Landing() {
                 Tamper-Proof Audit Logs
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Every action is cryptographically signed and immutable. Complete audit trail for 3+ years.
+                Every action is cryptographically signed and immutable. Complete
+                audit trail for 3+ years.
               </p>
             </div>
 
@@ -427,7 +432,8 @@ export default function Landing() {
                 Google Cloud KMS
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Hardware security modules (HSM) protect encryption keys. Same tech as banks and governments.
+                Hardware security modules (HSM) protect encryption keys. Same
+                tech as banks and governments.
               </p>
             </div>
 
@@ -451,7 +457,8 @@ export default function Landing() {
                 SOC 2 Compliant
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Following industry-standard security controls and third-party audited practices.
+                Following industry-standard security controls and third-party
+                audited practices.
               </p>
             </div>
 
@@ -475,7 +482,8 @@ export default function Landing() {
                 Automated Security Scanning
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                CodeQL analysis and vulnerability scanning on every code change. Proactive threat detection.
+                CodeQL analysis and vulnerability scanning on every code change.
+                Proactive threat detection.
               </p>
             </div>
 
@@ -499,7 +507,8 @@ export default function Landing() {
                 Multi-Tenant Isolation
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                Complete data separation between employers. Zero cross-tenant data access possible.
+                Complete data separation between employers. Zero cross-tenant
+                data access possible.
               </p>
             </div>
           </div>
@@ -507,22 +516,52 @@ export default function Landing() {
           {/* Security Badge Trust Bar */}
           <div className="mt-12 flex flex-wrap items-center justify-center gap-6">
             <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-2 dark:border-green-800 dark:bg-green-900/20">
-              <svg className="h-5 w-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              <svg
+                className="h-5 w-5 text-green-600 dark:text-green-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
               </svg>
-              <span className="text-sm font-medium text-green-800 dark:text-green-200">GDPR Compliant</span>
+              <span className="text-sm font-medium text-green-800 dark:text-green-200">
+                GDPR Compliant
+              </span>
             </div>
             <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 dark:border-blue-800 dark:bg-blue-900/20">
-              <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              <svg
+                className="h-5 w-5 text-blue-600 dark:text-blue-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
               </svg>
-              <span className="text-sm font-medium text-blue-800 dark:text-blue-200">CCPA Compliant</span>
+              <span className="text-sm font-medium text-blue-800 dark:text-blue-200">
+                CCPA Compliant
+              </span>
             </div>
             <div className="flex items-center gap-2 rounded-lg border border-purple-200 bg-purple-50 px-4 py-2 dark:border-purple-800 dark:bg-purple-900/20">
-              <svg className="h-5 w-5 text-purple-600 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              <svg
+                className="h-5 w-5 text-purple-600 dark:text-purple-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
               </svg>
-              <span className="text-sm font-medium text-purple-800 dark:text-purple-200">99.9% Uptime SLA</span>
+              <span className="text-sm font-medium text-purple-800 dark:text-purple-200">
+                99.9% Uptime SLA
+              </span>
             </div>
           </div>
         </div>
@@ -639,6 +678,26 @@ export default function Landing() {
               </ul>
             </div>
           </div>
+
+          {/* Security Trust Badges in Footer */}
+          <div className="mb-8 flex flex-wrap items-center justify-center gap-3 border-t border-gray-800 pt-8">
+            <TrustBadgeCompact
+              icon="encrypted"
+              label="Bank-Level Encryption"
+              variant="success"
+            />
+            <TrustBadgeCompact
+              icon="shield-check"
+              label="Audit Trail Enabled"
+              variant="info"
+            />
+            <TrustBadgeCompact
+              icon="verified"
+              label="ESTA Compliant"
+              variant="primary"
+            />
+          </div>
+
           <div className="border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
             <p>
               &copy; {new Date().getFullYear()} ESTA Tracker. All rights
