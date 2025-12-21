@@ -5,6 +5,9 @@ import { User } from '@/types';
 import { useRegistrationStatus } from '@/hooks/useEdgeConfig';
 import { PasswordField } from '@/components/PasswordField';
 import { LoadingButton } from '@/components/LoadingButton';
+import { createLogger } from '@esta-tracker/shared-utils';
+
+const logger = createLogger('RegisterEmployee');
 
 interface RegisterEmployeeProps {
   onRegister: (user: User) => void;
@@ -44,12 +47,8 @@ export default function RegisterEmployee({
     setLoading(true);
 
     try {
-      console.log('[DEBUG] Starting employee registration');
-      console.log('[DEBUG] Registration data:', {
-        name,
-        email,
+      logger.debug('Starting employee registration', {
         hasTenantCode: !!tenantCode.trim(),
-        // Don't log password for security
       });
 
       // Use Firebase authentication
@@ -60,25 +59,17 @@ export default function RegisterEmployee({
         tenantCode: tenantCode.trim() || undefined,
       });
 
-      console.log('[DEBUG] Employee registration successful:', {
-        userId: user.id,
-        email: user.email,
+      logger.info('Employee registration successful', {
         role: user.role,
       });
 
       // Email verification is disabled for development - auto-login immediately
-      console.log(
-        '[DEBUG] Auto-login after registration, skipping email verification'
+      logger.debug(
+        'Auto-login after registration, skipping email verification'
       );
-      console.log('[DEBUG] Calling onRegister callback');
       onRegister(user);
     } catch (err) {
-      console.error('[DEBUG] Employee registration error:', err);
-      console.error('[DEBUG] Error details:', {
-        name: err instanceof Error ? err.name : 'Unknown',
-        message: err instanceof Error ? err.message : String(err),
-        stack: err instanceof Error ? err.stack : undefined,
-      });
+      logger.error('Employee registration error', { error: err });
 
       if (err instanceof Error) {
         setError(err.message);
@@ -90,9 +81,8 @@ export default function RegisterEmployee({
           isNetworkError?: boolean;
         };
 
-        console.error('[DEBUG] API error details:', {
+        logger.error('API error details', {
           status: error.status,
-          message: error.message,
           isNetworkError: error.isNetworkError,
         });
 
@@ -115,7 +105,7 @@ export default function RegisterEmployee({
       }
     } finally {
       setLoading(false);
-      console.log('[DEBUG] Employee registration flow completed');
+      logger.debug('Employee registration flow completed');
     }
   }
 

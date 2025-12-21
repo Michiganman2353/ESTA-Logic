@@ -27,6 +27,14 @@ import {
   checkRateLimit,
   sanitizeForLogging,
 } from '@/utils/security';
+import {
+  createLogger,
+  APP_CONSTANTS,
+  AUTH_ERROR_CODES,
+  NON_RETRYABLE_AUTH_ERRORS,
+} from '@esta-tracker/shared-utils';
+
+const logger = createLogger('AuthService');
 
 export interface RegisterManagerData {
   name: string;
@@ -48,9 +56,9 @@ export interface RegisterEmployeeData {
  * Generate a unique tenant code (company code)
  */
 function generateTenantCode(): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const chars = APP_CONSTANTS.TENANT_CODE.ALLOWED_CHARS;
   let code = '';
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < APP_CONSTANTS.TENANT_CODE.LEGACY_LENGTH; i++) {
     code += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return code;
@@ -61,8 +69,8 @@ function generateTenantCode(): string {
  */
 async function retryWithBackoff<T>(
   fn: () => Promise<T>,
-  maxRetries: number = 3,
-  initialDelay: number = 1000
+  maxRetries: number = APP_CONSTANTS.RETRY_CONFIG.MAX_RETRIES,
+  initialDelay: number = APP_CONSTANTS.RETRY_CONFIG.INITIAL_DELAY_MS
 ): Promise<T> {
   let lastError: Error | unknown;
 
@@ -74,24 +82,15 @@ async function retryWithBackoff<T>(
 
       // Don't retry on certain errors
       const err = error as { code?: string };
-      if (
-        err.code &&
-        [
-          'auth/email-already-in-use',
-          'auth/invalid-email',
-          'auth/weak-password',
-          'auth/invalid-credential',
-          'auth/user-not-found',
-          'auth/wrong-password',
-          'auth/too-many-requests',
-        ].includes(err.code)
-      ) {
+      if (err.code && NON_RETRYABLE_AUTH_ERRORS.includes(err.code as any)) {
         throw error;
       }
 
       if (attempt < maxRetries - 1) {
-        const delay = initialDelay * Math.pow(2, attempt);
-        console.log(`Attempt ${attempt + 1} failed, retrying in ${delay}ms...`);
+        const delay =
+          initialDelay *
+          Math.pow(APP_CONSTANTS.RETRY_CONFIG.BACKOFF_MULTIPLIER, attempt);
+        logger.debug('Retry attempt', { attempt: attempt + 1, delayMs: delay });
         await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
@@ -107,9 +106,15 @@ export async function registerManager(
   data: RegisterManagerData
 ): Promise<{ user: User; needsVerification: boolean }> {
   // Rate limiting check
-  const rateCheck = checkRateLimit('manager_registration', 3, 300000); // 3 attempts per 5 minutes
+  const rateCheck = checkRateLimit(
+    'manager_registration',
+    APP_CONSTANTS.RATE_LIMITS.MANAGER_REGISTRATION_ATTEMPTS,
+    APP_CONSTANTS.RATE_LIMITS.RATE_LIMIT_WINDOW_MS
+  );
   if (!rateCheck.allowed) {
-    const waitMinutes = Math.ceil((rateCheck.resetTime - Date.now()) / 60000);
+    const waitMinutes = Math.ceil(
+      (rateCheck.resetTime - Date.now()) / APP_CONSTANTS.TIME.MINUTE_MS
+    );
     throw new Error(
       `Too many registration attempts. Please wait ${waitMinutes} minutes and try again.`
     );
@@ -117,13 +122,10 @@ export async function registerManager(
 
   // Pre-flight validation checks
   if (!auth || !db) {
-    console.error(
-      'Firebase configuration check failed:',
-      sanitizeForLogging({
-        auth: !!auth,
-        db: !!db,
-      })
-    );
+    logger.error('Firebase configuration check failed', {
+      auth: !!auth,
+      db: !!db,
+    });
     throw new Error(
       'Firebase not configured. Please check your environment variables or contact support.'
     );
@@ -139,7 +141,10 @@ export async function registerManager(
   }
 
   // Validate and sanitize input data
-  const sanitizedEmail = sanitizeInput(data.email, 254).toLowerCase();
+  const sanitizedEmail = sanitizeInput(
+    data.email,
+    APP_CONSTANTS.USER_LIMITS.MAX_EMAIL_LENGTH
+  ).toLowerCase();
   if (!isValidEmail(sanitizedEmail)) {
     throw new Error(
       'Invalid email address format. Please enter a valid email.'
@@ -151,13 +156,26 @@ export async function registerManager(
     throw new Error(passwordValidation.message || 'Invalid password');
   }
 
-  const sanitizedName = sanitizeInput(data.name, 100);
-  if (!sanitizedName || sanitizedName.length < 2) {
+  const sanitizedName = sanitizeInput(
+    data.name,
+    APP_CONSTANTS.USER_LIMITS.MAX_NAME_LENGTH
+  );
+  if (
+    !sanitizedName ||
+    sanitizedName.length < APP_CONSTANTS.USER_LIMITS.MIN_NAME_LENGTH
+  ) {
     throw new Error('Please enter your full name (at least 2 characters)');
   }
 
-  const sanitizedCompanyName = sanitizeInput(data.companyName, 200);
-  if (!sanitizedCompanyName || sanitizedCompanyName.length < 2) {
+  const sanitizedCompanyName = sanitizeInput(
+    data.companyName,
+    APP_CONSTANTS.USER_LIMITS.MAX_COMPANY_NAME_LENGTH
+  );
+  if (
+    !sanitizedCompanyName ||
+    sanitizedCompanyName.length <
+      APP_CONSTANTS.USER_LIMITS.MIN_COMPANY_NAME_LENGTH
+  ) {
     throw new Error(
       'Please enter a valid company name (at least 2 characters)'
     );
@@ -165,21 +183,20 @@ export async function registerManager(
 
   if (
     !data.employeeCount ||
-    data.employeeCount < 1 ||
-    data.employeeCount > 10000
+    data.employeeCount < APP_CONSTANTS.USER_LIMITS.MIN_EMPLOYEES ||
+    data.employeeCount > APP_CONSTANTS.USER_LIMITS.MAX_EMPLOYEES
   ) {
-    throw new Error('Please enter a valid employee count (1-10000)');
+    throw new Error(
+      `Please enter a valid employee count (${APP_CONSTANTS.USER_LIMITS.MIN_EMPLOYEES}-${APP_CONSTANTS.USER_LIMITS.MAX_EMPLOYEES})`
+    );
   }
 
   try {
-    console.log('Starting manager registration for:', sanitizedEmail);
-    console.log(
-      'Registration environment:',
-      sanitizeForLogging({
-        origin: window.location.origin,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    logger.info('Starting manager registration');
+    logger.debug('Registration environment', {
+      origin: window.location.origin,
+      timestamp: new Date().toISOString(),
+    });
 
     // Create Firebase Auth user with retry logic
     const userCredential: UserCredential = await retryWithBackoff(async () => {
@@ -191,7 +208,7 @@ export async function registerManager(
     });
 
     const { user: firebaseUser } = userCredential;
-    console.log('Firebase user created:', firebaseUser.uid);
+    logger.debug('Firebase user created');
 
     // Generate unique tenant code
     const tenantCode = generateTenantCode();
@@ -200,7 +217,7 @@ export async function registerManager(
     const employerSize = data.employeeCount >= 10 ? 'large' : 'small';
 
     // Create employer profile with 4-digit code
-    console.log('Creating employer profile with unique code');
+    logger.debug('Creating employer profile with unique code');
     const employerProfile = await createEmployerProfile(
       firebaseDb,
       firebaseUser.uid,
@@ -210,14 +227,13 @@ export async function registerManager(
         contactEmail: sanitizedEmail,
       }
     );
-    console.log(
-      'Employer profile created with code:',
-      employerProfile.employerCode
-    );
+    logger.debug('Employer profile created', {
+      hasEmployerCode: !!employerProfile.employerCode,
+    });
 
     // Create tenant/company document with retry (for backwards compatibility)
     const tenantId = `tenant_${firebaseUser.uid}`;
-    console.log('Creating tenant document:', tenantId);
+    logger.debug('Creating tenant document');
 
     await retryWithBackoff(async () => {
       await setDoc(doc(firebaseDb, 'tenants', tenantId), {
@@ -235,7 +251,7 @@ export async function registerManager(
     });
 
     // Create user document in Firestore with retry
-    console.log('Creating user document in Firestore');
+    logger.debug('Creating user document in Firestore');
     const userData: User = {
       id: firebaseUser.uid,
       email: sanitizedEmail,
@@ -281,11 +297,7 @@ export async function registerManager(
     // DISABLED FOR DEVELOPMENT: Email verification temporarily bypassed
     // Send email verification with action code settings and retry
     // Don't fail registration if email sending fails - user can resend later
-    console.log('[DEV MODE] Email verification bypassed for:', data.email);
-    console.log(
-      '[DEV MODE] In production, verification email would be sent to:',
-      data.email
-    );
+    logger.debug('Email verification bypassed in development mode');
 
     // Temporarily disabled for development - uncomment to re-enable
     /*
@@ -293,53 +305,53 @@ export async function registerManager(
       url: window.location.origin + '/login?verified=true',
       handleCodeInApp: false,
     };
-    console.log('Action code settings:', actionCodeSettings);
+    logger.debug('Action code settings configured');
     
     try {
       await retryWithBackoff(async () => {
         await sendEmailVerification(firebaseUser, actionCodeSettings);
-      }, 2, 2000); // Fewer retries for email, shorter delay
+      }, APP_CONSTANTS.RETRY_CONFIG.EMAIL_MAX_RETRIES, APP_CONSTANTS.RETRY_CONFIG.EMAIL_INITIAL_DELAY_MS);
       
-      console.log('Email verification sent successfully');
+      logger.info('Email verification sent successfully');
     } catch (emailError) {
       // Log the error but don't fail registration
-      console.error('Failed to send verification email (non-fatal):', emailError);
+      logger.error('Failed to send verification email (non-fatal)', { error: emailError });
       // User can resend from verification page
     }
     */
 
     return { user: userData, needsVerification: false }; // FIXED: Email verification is optional, not required
   } catch (error: unknown) {
-    console.error('Manager registration error:', error);
+    logger.error('Manager registration error', { error });
 
     const err = error as { code?: string; message?: string };
 
     // Enhanced error messages with actionable guidance
-    if (err.code === 'auth/email-already-in-use') {
+    if (err.code === AUTH_ERROR_CODES.EMAIL_ALREADY_IN_USE) {
       throw new Error(
         'This email is already registered. Please use a different email or try logging in.'
       );
-    } else if (err.code === 'auth/invalid-email') {
+    } else if (err.code === AUTH_ERROR_CODES.INVALID_EMAIL) {
       throw new Error(
         'Invalid email address format. Please check and try again.'
       );
-    } else if (err.code === 'auth/weak-password') {
+    } else if (err.code === AUTH_ERROR_CODES.WEAK_PASSWORD) {
       throw new Error(
         'Password is too weak. Please use at least 8 characters with letters.'
       );
-    } else if (err.code === 'auth/configuration-not-found') {
+    } else if (err.code === AUTH_ERROR_CODES.CONFIGURATION_NOT_FOUND) {
       throw new Error(
         'Firebase authentication is not properly configured. Please contact support at support@estatracker.com.'
       );
-    } else if (err.code === 'auth/network-request-failed') {
+    } else if (err.code === AUTH_ERROR_CODES.NETWORK_REQUEST_FAILED) {
       throw new Error(
         'Network error. Please check your internet connection and try again. If the problem persists, contact support.'
       );
-    } else if (err.code === 'auth/timeout') {
+    } else if (err.code === AUTH_ERROR_CODES.TIMEOUT) {
       throw new Error(
         'Request timed out. Please check your internet connection and try again.'
       );
-    } else if (err.code === 'auth/too-many-requests') {
+    } else if (err.code === AUTH_ERROR_CODES.TOO_MANY_REQUESTS) {
       throw new Error(
         'Too many registration attempts. Please wait a few minutes and try again.'
       );
@@ -363,9 +375,15 @@ export async function registerEmployee(
   data: RegisterEmployeeData
 ): Promise<{ user: User; needsVerification: boolean }> {
   // Rate limiting check
-  const rateCheck = checkRateLimit('employee_registration', 5, 300000); // 5 attempts per 5 minutes
+  const rateCheck = checkRateLimit(
+    'employee_registration',
+    APP_CONSTANTS.RATE_LIMITS.EMPLOYEE_REGISTRATION_ATTEMPTS,
+    APP_CONSTANTS.RATE_LIMITS.RATE_LIMIT_WINDOW_MS
+  );
   if (!rateCheck.allowed) {
-    const waitMinutes = Math.ceil((rateCheck.resetTime - Date.now()) / 60000);
+    const waitMinutes = Math.ceil(
+      (rateCheck.resetTime - Date.now()) / APP_CONSTANTS.TIME.MINUTE_MS
+    );
     throw new Error(
       `Too many registration attempts. Please wait ${waitMinutes} minutes and try again.`
     );
@@ -373,13 +391,10 @@ export async function registerEmployee(
 
   // Pre-flight validation checks
   if (!auth || !db) {
-    console.error(
-      'Firebase configuration check failed:',
-      sanitizeForLogging({
-        auth: !!auth,
-        db: !!db,
-      })
-    );
+    logger.error('Firebase configuration check failed', {
+      auth: !!auth,
+      db: !!db,
+    });
     throw new Error(
       'Firebase not configured. Please check your environment variables or contact support.'
     );
@@ -395,7 +410,10 @@ export async function registerEmployee(
   }
 
   // Validate and sanitize input data
-  const sanitizedEmail = sanitizeInput(data.email, 254).toLowerCase();
+  const sanitizedEmail = sanitizeInput(
+    data.email,
+    APP_CONSTANTS.USER_LIMITS.MAX_EMAIL_LENGTH
+  ).toLowerCase();
   if (!isValidEmail(sanitizedEmail)) {
     throw new Error(
       'Invalid email address format. Please enter a valid email.'
@@ -407,8 +425,14 @@ export async function registerEmployee(
     throw new Error(passwordValidation.message || 'Invalid password');
   }
 
-  const sanitizedName = sanitizeInput(data.name, 100);
-  if (!sanitizedName || sanitizedName.length < 2) {
+  const sanitizedName = sanitizeInput(
+    data.name,
+    APP_CONSTANTS.USER_LIMITS.MAX_NAME_LENGTH
+  );
+  if (
+    !sanitizedName ||
+    sanitizedName.length < APP_CONSTANTS.USER_LIMITS.MIN_NAME_LENGTH
+  ) {
     throw new Error('Please enter your full name (at least 2 characters)');
   }
 
@@ -417,14 +441,11 @@ export async function registerEmployee(
   }
 
   try {
-    console.log('Starting employee registration for:', sanitizedEmail);
-    console.log(
-      'Registration environment:',
-      sanitizeForLogging({
-        origin: window.location.origin,
-        timestamp: new Date().toISOString(),
-      })
-    );
+    logger.info('Starting employee registration');
+    logger.debug('Registration environment', {
+      origin: window.location.origin,
+      timestamp: new Date().toISOString(),
+    });
 
     // Validate employer code (new system)
     let employerId = '';
@@ -433,7 +454,7 @@ export async function registerEmployee(
     let tenantId = '';
 
     if (data.tenantCode) {
-      console.log('Looking up employer by code:', data.tenantCode);
+      logger.debug('Looking up employer by code');
 
       // First try new employer profile system with 4-digit code
       const employerProfile = await getEmployerProfileByCode(
@@ -447,10 +468,10 @@ export async function registerEmployee(
         employerSize = employerProfile.size;
         companyName = employerProfile.displayName;
         tenantId = `tenant_${employerId}`; // For backwards compatibility
-        console.log('Found employer profile:', employerId, companyName);
+        logger.debug('Found employer profile');
       } else {
         // Fallback to old tenant code system (8-character alphanumeric)
-        console.log('Employer profile not found, trying legacy tenant code');
+        logger.debug('Employer profile not found, trying legacy tenant code');
         const tenantSnapshot = await retryWithBackoff(async () => {
           const tenantsQuery = query(
             collection(firebaseDb, 'tenants'),
@@ -474,7 +495,7 @@ export async function registerEmployee(
         employerSize = tenantData.size;
         companyName = tenantData.companyName;
         employerId = tenantData.employerProfileId || tenantData.ownerId;
-        console.log('Found tenant (legacy):', tenantId, companyName);
+        logger.debug('Found tenant (legacy)');
       }
     } else if (data.employerEmail) {
       // Find tenant by employer email domain with retry (legacy system only)
@@ -512,7 +533,7 @@ export async function registerEmployee(
     }
 
     // Create Firebase Auth user with retry
-    console.log('Creating Firebase auth user for employee');
+    logger.debug('Creating Firebase auth user for employee');
     const userCredential: UserCredential = await retryWithBackoff(async () => {
       return await createUserWithEmailAndPassword(
         firebaseAuth,
@@ -522,7 +543,7 @@ export async function registerEmployee(
     });
 
     const { user: firebaseUser } = userCredential;
-    console.log('Firebase user created:', firebaseUser.uid);
+    logger.debug('Firebase user created');
 
     // Create user document in Firestore with retry
     const userData: User = {
@@ -549,20 +570,22 @@ export async function registerEmployee(
     });
 
     // Link employee to employer profile
-    console.log('Linking employee to employer profile');
+    logger.debug('Linking employee to employer profile');
     try {
       await linkEmployeeToEmployer(firebaseDb, firebaseUser.uid, employerId, {
         email: sanitizedEmail,
         displayName: sanitizedName,
         role: 'employee',
       });
-      console.log('Employee linked to employer successfully');
+      logger.debug('Employee linked to employer successfully');
     } catch (linkError) {
-      console.error('Failed to link employee to employer profile:', linkError);
+      logger.error('Failed to link employee to employer profile', {
+        error: linkError,
+      });
       // Log to monitoring but don't fail registration
       // The employerId is set in the user document, so basic linking is complete
       // The subcollection link can be recreated later if needed
-      console.error(
+      logger.warn(
         'Employee registration completed but subcollection link failed - employerId is set in user document'
       );
     }
@@ -587,11 +610,7 @@ export async function registerEmployee(
     // DISABLED FOR DEVELOPMENT: Email verification temporarily bypassed
     // Send email verification with action code settings and retry
     // Don't fail registration if email sending fails - user can resend later
-    console.log('[DEV MODE] Email verification bypassed for:', data.email);
-    console.log(
-      '[DEV MODE] In production, verification email would be sent to:',
-      data.email
-    );
+    logger.debug('Email verification bypassed in development mode');
 
     // Temporarily disabled for development - uncomment to re-enable
     /*
@@ -599,53 +618,53 @@ export async function registerEmployee(
       url: window.location.origin + '/login?verified=true',
       handleCodeInApp: false,
     };
-    console.log('Action code settings:', actionCodeSettings);
+    logger.debug('Action code settings configured');
     
     try {
       await retryWithBackoff(async () => {
         await sendEmailVerification(firebaseUser, actionCodeSettings);
-      }, 2, 2000); // Fewer retries for email, shorter delay
+      }, APP_CONSTANTS.RETRY_CONFIG.EMAIL_MAX_RETRIES, APP_CONSTANTS.RETRY_CONFIG.EMAIL_INITIAL_DELAY_MS);
       
-      console.log('Email verification sent successfully');
+      logger.info('Email verification sent successfully');
     } catch (emailError) {
       // Log the error but don't fail registration
-      console.error('Failed to send verification email (non-fatal):', emailError);
+      logger.error('Failed to send verification email (non-fatal)', { error: emailError });
       // User can resend from verification page
     }
     */
 
     return { user: userData, needsVerification: false }; // FIXED: Email verification is optional, not required
   } catch (error: unknown) {
-    console.error('Employee registration error:', error);
+    logger.error('Employee registration error', { error });
 
     const err = error as { code?: string; message?: string };
 
     // Enhanced error messages with actionable guidance
-    if (err.code === 'auth/email-already-in-use') {
+    if (err.code === AUTH_ERROR_CODES.EMAIL_ALREADY_IN_USE) {
       throw new Error(
         'This email is already registered. Please use a different email or try logging in.'
       );
-    } else if (err.code === 'auth/invalid-email') {
+    } else if (err.code === AUTH_ERROR_CODES.INVALID_EMAIL) {
       throw new Error(
         'Invalid email address format. Please check and try again.'
       );
-    } else if (err.code === 'auth/weak-password') {
+    } else if (err.code === AUTH_ERROR_CODES.WEAK_PASSWORD) {
       throw new Error(
         'Password is too weak. Please use at least 8 characters with letters.'
       );
-    } else if (err.code === 'auth/configuration-not-found') {
+    } else if (err.code === AUTH_ERROR_CODES.CONFIGURATION_NOT_FOUND) {
       throw new Error(
         'Firebase authentication is not properly configured. Please contact support at support@estatracker.com.'
       );
-    } else if (err.code === 'auth/network-request-failed') {
+    } else if (err.code === AUTH_ERROR_CODES.NETWORK_REQUEST_FAILED) {
       throw new Error(
         'Network error. Please check your internet connection and try again. If the problem persists, contact support.'
       );
-    } else if (err.code === 'auth/timeout') {
+    } else if (err.code === AUTH_ERROR_CODES.TIMEOUT) {
       throw new Error(
         'Request timed out. Please check your internet connection and try again.'
       );
-    } else if (err.code === 'auth/too-many-requests') {
+    } else if (err.code === AUTH_ERROR_CODES.TOO_MANY_REQUESTS) {
       throw new Error(
         'Too many registration attempts. Please wait a few minutes and try again.'
       );
@@ -708,7 +727,7 @@ export async function signIn(email: string, password: string): Promise<User> {
     // Email verification is now optional, not a blocking requirement
     // This allows users to access the system immediately after registration
     if (userData.status === 'pending') {
-      console.log('Auto-approving user on first login');
+      logger.debug('Auto-approving user on first login');
       try {
         await setDoc(
           doc(db, 'users', firebaseUser.uid),
@@ -738,7 +757,7 @@ export async function signIn(email: string, password: string): Promise<User> {
           timestamp: serverTimestamp(),
         });
       } catch (activationError) {
-        console.error('Error auto-approving user:', activationError);
+        logger.error('Error auto-approving user', { error: activationError });
         // Continue - allow login even if approval fails
       }
     }
@@ -752,20 +771,20 @@ export async function signIn(email: string, password: string): Promise<User> {
 
     return userData;
   } catch (error: unknown) {
-    console.error('Sign in error:', sanitizeForLogging(error));
+    logger.error('Sign in error', { error });
 
     const err = error as { code?: string; message?: string };
     if (
-      err.code === 'auth/invalid-credential' ||
-      err.code === 'auth/user-not-found' ||
-      err.code === 'auth/wrong-password'
+      err.code === AUTH_ERROR_CODES.INVALID_CREDENTIAL ||
+      err.code === AUTH_ERROR_CODES.USER_NOT_FOUND ||
+      err.code === AUTH_ERROR_CODES.WRONG_PASSWORD
     ) {
       throw new Error('Invalid email or password. Please try again.');
-    } else if (err.code === 'auth/too-many-requests') {
+    } else if (err.code === AUTH_ERROR_CODES.TOO_MANY_REQUESTS) {
       throw new Error(
         'Too many failed login attempts. Please try again later.'
       );
-    } else if (err.code === 'auth/user-disabled') {
+    } else if (err.code === AUTH_ERROR_CODES.USER_DISABLED) {
       throw new Error(
         'This account has been disabled. Please contact support.'
       );
