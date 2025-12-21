@@ -1,17 +1,17 @@
 /**
  * ESTA Tracker Design Tokens - Main Export
- * 
+ *
  * Central export point for all design tokens.
  * Import from this file to access the complete design system.
- * 
+ *
  * @example
  * ```typescript
  * import { colors, typography, spacing } from '@/design-tokens';
- * 
+ *
  * const buttonStyle = {
  *   backgroundColor: colors.primary.royalBlue,
  *   fontSize: typography.fontSizes.base,
- *   padding: spacing.base[4],
+ *   padding: spacing[4],
  * };
  * ```
  */

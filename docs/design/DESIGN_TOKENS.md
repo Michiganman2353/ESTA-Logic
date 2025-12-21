@@ -1,6 +1,7 @@
 # ESTA Tracker Design Tokens
 
 ## Overview
+
 Design tokens are the single source of truth for ESTA Tracker's visual design language. They ensure consistency between design (Figma) and code (React/Tailwind), enabling designers and engineers to speak the same language.
 
 ---
@@ -27,8 +28,9 @@ Design tokens are the single source of truth for ESTA Tracker's visual design la
 ### Example
 
 ❌ **Without Tokens** (hard-coded, inconsistent):
+
 ```tsx
-<button style={{ 
+<button style={{
   backgroundColor: '#1E63FF',
   padding: '12px 24px',
   borderRadius: '8px',
@@ -37,12 +39,13 @@ Design tokens are the single source of truth for ESTA Tracker's visual design la
 ```
 
 ✅ **With Tokens** (semantic, maintainable):
+
 ```tsx
 import { colors, spacing, borders, typography } from '@/design-tokens';
 
 <button style={{
   backgroundColor: colors.primary.royalBlue,
-  padding: `${spacing.base[3]} ${spacing.base[6]}`,
+  padding: `${spacing[3]} ${spacing[6]}`,
   borderRadius: borders.componentRadius.button.default,
   fontSize: typography.fontSizes.base
 }}>
@@ -61,6 +64,7 @@ import { colors, spacing, borders, typography } from '@/design-tokens';
 ## Token Structure
 
 All design tokens are located in:
+
 ```
 apps/frontend/src/design-tokens/
 ├── colors.ts         # Color palette and semantic colors
@@ -91,24 +95,24 @@ import { designTokens } from '@/design-tokens';
 
 The core ESTA Tracker brand palette:
 
-| Token | Hex | Usage |
-|-------|-----|-------|
-| `primaryColors.navyDeep` | `#0A1E45` | Deep navy for headers, key UI elements |
-| `primaryColors.royalBlue` | `#1E63FF` | Primary brand color for actions |
-| `primaryColors.skyBlue` | `#74B7FF` | Accent color for secondary elements |
-| `primaryColors.graphite` | `#1B1B1B` | Professional dark neutral |
+| Token                     | Hex       | Usage                                  |
+| ------------------------- | --------- | -------------------------------------- |
+| `primaryColors.navyDeep`  | `#0A1E45` | Deep navy for headers, key UI elements |
+| `primaryColors.royalBlue` | `#1E63FF` | Primary brand color for actions        |
+| `primaryColors.skyBlue`   | `#74B7FF` | Accent color for secondary elements    |
+| `primaryColors.graphite`  | `#1B1B1B` | Professional dark neutral              |
 
 ### Semantic Colors
 
 Intent-based colors for specific UI purposes:
 
-| Token | Hex | Usage |
-|-------|-----|-------|
-| `semanticColors.trustBlue` | `#1E4BD8` | Primary buttons, trust signals |
-| `semanticColors.accentBlue` | `#3B82F6` | Hover states, secondary actions |
-| `semanticColors.govTrustGreen` | `#00B289` | Success states, compliance indicators |
-| `semanticColors.complianceError` | `#D32F2F` | Errors, warnings, critical alerts |
-| `semanticColors.warningAmber` | `#F59E0B` | Warning states, caution messages |
+| Token                            | Hex       | Usage                                 |
+| -------------------------------- | --------- | ------------------------------------- |
+| `semanticColors.trustBlue`       | `#1E4BD8` | Primary buttons, trust signals        |
+| `semanticColors.accentBlue`      | `#3B82F6` | Hover states, secondary actions       |
+| `semanticColors.govTrustGreen`   | `#00B289` | Success states, compliance indicators |
+| `semanticColors.complianceError` | `#D32F2F` | Errors, warnings, critical alerts     |
+| `semanticColors.warningAmber`    | `#F59E0B` | Warning states, caution messages      |
 
 ### Color Scales
 
@@ -116,15 +120,15 @@ Full 50-950 scales for navy, royal, and sky blue:
 
 ```typescript
 // Navy scale (50-950)
-colors.navy[50]   // Lightest
-colors.navy[500]  // Medium
-colors.navy[900]  // Darkest (primary anchor)
+colors.navy[50]; // Lightest
+colors.navy[500]; // Medium
+colors.navy[900]; // Darkest (primary anchor)
 
 // Royal blue scale (50-950)
-colors.royal[500] // Core brand color
+colors.royal[500]; // Core brand color
 
 // Sky blue scale (50-950)
-colors.sky[400]   // Primary accent
+colors.sky[400]; // Primary accent
 ```
 
 ### Text Colors
@@ -132,12 +136,12 @@ colors.sky[400]   // Primary accent
 Hierarchy of text colors:
 
 ```typescript
-textColors.primary    // #111827 - Main body text
-textColors.secondary  // #4B5563 - Supporting text
-textColors.tertiary   // #6B7280 - Meta information
-textColors.disabled   // #9CA3AF - Disabled states
-textColors.inverse    // #FFFFFF - Text on dark backgrounds
-textColors.link       // #1E63FF - Hyperlinks
+textColors.primary; // #111827 - Main body text
+textColors.secondary; // #4B5563 - Supporting text
+textColors.tertiary; // #6B7280 - Meta information
+textColors.disabled; // #9CA3AF - Disabled states
+textColors.inverse; // #FFFFFF - Text on dark backgrounds
+textColors.link; // #1E63FF - Hyperlinks
 ```
 
 ### Surface Colors
@@ -145,10 +149,10 @@ textColors.link       // #1E63FF - Hyperlinks
 Background colors for different surface levels:
 
 ```typescript
-surfaces.background       // #F7FAFE - Page background
-surfaces.surface          // #FFFFFF - Card/container background
-surfaces.surfaceElevated  // #FAFBFC - Elevated surfaces
-surfaces.overlay          // rgba(0,0,0,0.5) - Modal overlays
+surfaces.background; // #F7FAFE - Page background
+surfaces.surface; // #FFFFFF - Card/container background
+surfaces.surfaceElevated; // #FAFBFC - Elevated surfaces
+surfaces.overlay; // rgba(0,0,0,0.5) - Modal overlays
 ```
 
 ### Usage Examples
@@ -160,7 +164,7 @@ surfaces.overlay          // rgba(0,0,0,0.5) - Modal overlays
 </button>
 
 // Success message
-<div style={{ 
+<div style={{
   backgroundColor: colors.status.success.light,
   color: colors.status.success.dark
 }}>
@@ -183,40 +187,40 @@ surfaces.overlay          // rgba(0,0,0,0.5) - Modal overlays
 ### Font Families
 
 ```typescript
-fontFamilies.sans   // Inter, system-ui, ... (primary UI)
-fontFamilies.mono   // JetBrains Mono, ... (code)
-fontFamilies.serif  // Georgia, ... (special cases)
+fontFamilies.sans; // Inter, system-ui, ... (primary UI)
+fontFamilies.mono; // JetBrains Mono, ... (code)
+fontFamilies.serif; // Georgia, ... (special cases)
 ```
 
 ### Font Size Scale
 
-| Token | Size | Usage |
-|-------|------|-------|
-| `fontSizes['6xl']` | 60px | Hero headings |
-| `fontSizes['5xl']` | 48px | Major headings |
-| `fontSizes['4xl']` | 36px | Page titles (H1) |
+| Token              | Size | Usage                |
+| ------------------ | ---- | -------------------- |
+| `fontSizes['6xl']` | 60px | Hero headings        |
+| `fontSizes['5xl']` | 48px | Major headings       |
+| `fontSizes['4xl']` | 36px | Page titles (H1)     |
 | `fontSizes['2xl']` | 24px | Section headers (H2) |
-| `fontSizes.xl` | 20px | Subheadings (H3) |
-| `fontSizes.lg` | 18px | Large body text |
-| `fontSizes.base` | 16px | Default body text |
-| `fontSizes.sm` | 14px | Small text, labels |
-| `fontSizes.xs` | 12px | Captions, meta info |
+| `fontSizes.xl`     | 20px | Subheadings (H3)     |
+| `fontSizes.lg`     | 18px | Large body text      |
+| `fontSizes.base`   | 16px | Default body text    |
+| `fontSizes.sm`     | 14px | Small text, labels   |
+| `fontSizes.xs`     | 12px | Captions, meta info  |
 
 ### Font Weights
 
 ```typescript
-fontWeights.regular   // 400 - Body text
-fontWeights.medium    // 500 - Labels, emphasis
-fontWeights.semibold  // 600 - Subheadings
-fontWeights.bold      // 700 - Headings
+fontWeights.regular; // 400 - Body text
+fontWeights.medium; // 500 - Labels, emphasis
+fontWeights.semibold; // 600 - Subheadings
+fontWeights.bold; // 700 - Headings
 ```
 
 ### Line Heights
 
 ```typescript
-lineHeights.tight     // 1.25 - Headlines
-lineHeights.normal    // 1.5 - Body text
-lineHeights.relaxed   // 1.625 - Long-form content
+lineHeights.tight; // 1.25 - Headlines
+lineHeights.normal; // 1.5 - Body text
+lineHeights.relaxed; // 1.625 - Long-form content
 ```
 
 ### Pre-composed Text Styles
@@ -225,19 +229,19 @@ Common text styles ready to use:
 
 ```typescript
 // Headings
-textStyles.h1  // 36px Bold, tight line height
-textStyles.h2  // 24px Semibold, snug line height
-textStyles.h3  // 20px Semibold, snug line height
+textStyles.h1; // 36px Bold, tight line height
+textStyles.h2; // 24px Semibold, snug line height
+textStyles.h3; // 20px Semibold, snug line height
 
 // Body
-textStyles.body       // 16px Regular, normal line height
-textStyles.bodyLarge  // 18px Regular, relaxed line height
-textStyles.bodySmall  // 14px Regular, normal line height
+textStyles.body; // 16px Regular, normal line height
+textStyles.bodyLarge; // 18px Regular, relaxed line height
+textStyles.bodySmall; // 14px Regular, normal line height
 
 // Specialized
-textStyles.label   // 14px Medium, tight, wide tracking
-textStyles.caption // 12px Regular
-textStyles.button  // 16px Medium, no line height, wide tracking
+textStyles.label; // 14px Medium, tight, wide tracking
+textStyles.caption; // 12px Regular
+textStyles.button; // 16px Medium, no line height, wide tracking
 ```
 
 ### Usage Examples
@@ -273,16 +277,16 @@ textStyles.button  // 16px Medium, no line height, wide tracking
 
 8px base grid system using rem units:
 
-| Token | Value | Pixels |
-|-------|-------|--------|
-| `spacing[1]` | 0.25rem | 4px |
-| `spacing[2]` | 0.5rem | 8px |
-| `spacing[3]` | 0.75rem | 12px |
-| `spacing[4]` | 1rem | 16px |
-| `spacing[6]` | 1.5rem | 24px |
-| `spacing[8]` | 2rem | 32px |
-| `spacing[12]` | 3rem | 48px |
-| `spacing[16]` | 4rem | 64px |
+| Token         | Value   | Pixels |
+| ------------- | ------- | ------ |
+| `spacing[1]`  | 0.25rem | 4px    |
+| `spacing[2]`  | 0.5rem  | 8px    |
+| `spacing[3]`  | 0.75rem | 12px   |
+| `spacing[4]`  | 1rem    | 16px   |
+| `spacing[6]`  | 1.5rem  | 24px   |
+| `spacing[8]`  | 2rem    | 32px   |
+| `spacing[12]` | 3rem    | 48px   |
+| `spacing[16]` | 4rem    | 64px   |
 
 ### Component Spacing
 
@@ -290,27 +294,27 @@ Pre-configured spacing for common patterns:
 
 ```typescript
 // Padding
-componentSpacing.padding.xs   // 8px
-componentSpacing.padding.md   // 16px
-componentSpacing.padding.lg   // 24px
+componentSpacing.padding.xs; // 8px
+componentSpacing.padding.md; // 16px
+componentSpacing.padding.lg; // 24px
 
 // Gaps
-componentSpacing.gap.sm   // 8px
-componentSpacing.gap.md   // 16px
-componentSpacing.gap.lg   // 24px
+componentSpacing.gap.sm; // 8px
+componentSpacing.gap.md; // 16px
+componentSpacing.gap.lg; // 24px
 
 // Form spacing
-componentSpacing.form.fieldGap    // 16px - Between fields
-componentSpacing.form.labelGap    // 6px - Label to input
-componentSpacing.form.groupGap    // 24px - Between groups
+componentSpacing.form.fieldGap; // 16px - Between fields
+componentSpacing.form.labelGap; // 6px - Label to input
+componentSpacing.form.groupGap; // 24px - Between groups
 
 // Button padding
-componentSpacing.button.md  // "12px 24px"
-componentSpacing.button.lg  // "16px 32px"
+componentSpacing.button.md; // "12px 24px"
+componentSpacing.button.lg; // "16px 32px"
 
 // Card padding
-componentSpacing.card.default  // 24px
-componentSpacing.card.compact  // 16px
+componentSpacing.card.default; // 24px
+componentSpacing.card.compact; // 16px
 ```
 
 ### Usage Examples
@@ -351,25 +355,25 @@ componentSpacing.card.compact  // 16px
 
 Progressive elevation levels:
 
-| Token | Usage |
-|-------|-------|
-| `shadows.none` | No shadow |
-| `shadows.xs` | Subtle hover effect |
-| `shadows.sm` | Minimal elevation |
-| `shadows.md` | Default cards |
-| `shadows.lg` | Prominent cards |
-| `shadows.xl` | Modals, popovers |
-| `shadows['2xl']` | Maximum elevation |
+| Token            | Usage               |
+| ---------------- | ------------------- |
+| `shadows.none`   | No shadow           |
+| `shadows.xs`     | Subtle hover effect |
+| `shadows.sm`     | Minimal elevation   |
+| `shadows.md`     | Default cards       |
+| `shadows.lg`     | Prominent cards     |
+| `shadows.xl`     | Modals, popovers    |
+| `shadows['2xl']` | Maximum elevation   |
 
 ### Colored Shadows
 
 Brand-colored shadows for interactive elements:
 
 ```typescript
-coloredShadows.royalSoft     // Royal blue, 8% opacity
-coloredShadows.royalMedium   // Royal blue, 15% opacity
-coloredShadows.successSoft   // Green, 8% opacity
-coloredShadows.errorSoft     // Red, 8% opacity
+coloredShadows.royalSoft; // Royal blue, 8% opacity
+coloredShadows.royalMedium; // Royal blue, 15% opacity
+coloredShadows.successSoft; // Green, 8% opacity
+coloredShadows.errorSoft; // Red, 8% opacity
 ```
 
 ### Glow Effects
@@ -377,10 +381,10 @@ coloredShadows.errorSoft     // Red, 8% opacity
 Luminous effects for interactive states:
 
 ```typescript
-glowEffects.blueGlow          // Standard blue glow
-glowEffects.blueGlowStrong    // Prominent blue glow
-glowEffects.focusGlow         // 3px focus ring
-glowEffects.successGlow       // Green glow for success
+glowEffects.blueGlow; // Standard blue glow
+glowEffects.blueGlowStrong; // Prominent blue glow
+glowEffects.focusGlow; // 3px focus ring
+glowEffects.successGlow; // Green glow for success
 ```
 
 ### Component Shadows
@@ -388,11 +392,11 @@ glowEffects.successGlow       // Green glow for success
 Pre-configured for common components:
 
 ```typescript
-componentShadows.card.default     // md shadow
-componentShadows.card.hover       // lg shadow
-componentShadows.button.focus     // Focus glow
-componentShadows.modal.content    // 2xl shadow
-componentShadows.input.focus      // Focus glow
+componentShadows.card.default; // md shadow
+componentShadows.card.hover; // lg shadow
+componentShadows.button.focus; // Focus glow
+componentShadows.modal.content; // 2xl shadow
+componentShadows.input.focus; // Focus glow
 ```
 
 ### Usage Examples
@@ -402,16 +406,16 @@ componentShadows.input.focus      // Focus glow
 <div style={{
   boxShadow: shadowSystem.component.card.default
 }}
-  onMouseEnter={(e) => 
+  onMouseEnter={(e) =>
     e.currentTarget.style.boxShadow = shadowSystem.component.card.hover
   }>
   Card content
 </div>
 
 // Input with focus glow
-<input 
+<input
   style={{ boxShadow: 'none' }}
-  onFocus={(e) => 
+  onFocus={(e) =>
     e.currentTarget.style.boxShadow = shadowSystem.glow.focusGlow
   }
 />
@@ -425,33 +429,33 @@ componentShadows.input.focus      // Focus glow
 
 ### Border Radius
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| `borderRadius.none` | 0 | Sharp corners |
-| `borderRadius.sm` | 4px | Subtle rounding |
-| `borderRadius.md` | 6px | Default inputs |
-| `borderRadius.lg` | 8px | Buttons, inputs |
-| `borderRadius.xl` | 12px | Cards (compact) |
-| `borderRadius['2xl']` | 16px | Modals |
-| `borderRadius.full` | 9999px | Pills, circles |
+| Token                 | Value  | Usage           |
+| --------------------- | ------ | --------------- |
+| `borderRadius.none`   | 0      | Sharp corners   |
+| `borderRadius.sm`     | 4px    | Subtle rounding |
+| `borderRadius.md`     | 6px    | Default inputs  |
+| `borderRadius.lg`     | 8px    | Buttons, inputs |
+| `borderRadius.xl`     | 12px   | Cards (compact) |
+| `borderRadius['2xl']` | 16px   | Modals          |
+| `borderRadius.full`   | 9999px | Pills, circles  |
 
 ### Component Border Radius
 
 ```typescript
-componentBorderRadius.button.default  // 8px
-componentBorderRadius.input.default   // 8px
-componentBorderRadius.card.default    // 18px (custom)
-componentBorderRadius.modal.default   // 16px
-componentBorderRadius.avatar.circle   // full (9999px)
+componentBorderRadius.button.default; // 8px
+componentBorderRadius.input.default; // 8px
+componentBorderRadius.card.default; // 18px (custom)
+componentBorderRadius.modal.default; // 16px
+componentBorderRadius.avatar.circle; // full (9999px)
 ```
 
 ### Border Width
 
 ```typescript
-borderWidth[0]  // 0
-borderWidth[1]  // 1px (default)
-borderWidth[2]  // 2px (focus states)
-borderWidth[4]  // 4px (prominent outlines)
+borderWidth[0]; // 0
+borderWidth[1]; // 1px (default)
+borderWidth[2]; // 2px (focus states)
+borderWidth[4]; // 4px (prominent outlines)
 ```
 
 ### Border Presets
@@ -459,10 +463,10 @@ borderWidth[4]  // 4px (prominent outlines)
 Complete border combinations:
 
 ```typescript
-borderPresets.default          // "1px solid #E5E7EB"
-borderPresets.input.default    // "1px solid #D1D5DB"
-borderPresets.input.focus      // "2px solid #1E63FF"
-borderPresets.input.error      // "2px solid #D32F2F"
+borderPresets.default; // "1px solid #E5E7EB"
+borderPresets.input.default; // "1px solid #D1D5DB"
+borderPresets.input.focus; // "2px solid #1E63FF"
+borderPresets.input.error; // "2px solid #D32F2F"
 ```
 
 ### Usage Examples
@@ -481,7 +485,7 @@ borderPresets.input.error      // "2px solid #D32F2F"
   borderRadius: borderSystem.componentRadius.input.default,
   border: borderSystem.presets.input.default
 }}
-  onFocus={(e) => 
+  onFocus={(e) =>
     e.currentTarget.style.border = borderSystem.presets.input.focus
   }
 />
@@ -506,17 +510,19 @@ import { colors, typography, spacing, shadows, borders } from '@/design-tokens';
 
 function PrimaryButton({ children }: { children: React.ReactNode }) {
   return (
-    <button style={{
-      backgroundColor: colors.semantic.trustBlue,
-      color: colors.text.inverse,
-      padding: `${spacing.base[3]} ${spacing.base[6]}`,
-      borderRadius: borders.componentRadius.button.default,
-      fontSize: typography.fontSizes.base,
-      fontWeight: typography.fontWeights.medium,
-      border: 'none',
-      boxShadow: shadows.sm,
-      cursor: 'pointer'
-    }}>
+    <button
+      style={{
+        backgroundColor: colors.semantic.trustBlue,
+        color: colors.text.inverse,
+        padding: `${spacing.base[3]} ${spacing.base[6]}`,
+        borderRadius: borders.componentRadius.button.default,
+        fontSize: typography.fontSizes.base,
+        fontWeight: typography.fontWeights.medium,
+        border: 'none',
+        boxShadow: shadows.sm,
+        cursor: 'pointer',
+      }}
+    >
       {children}
     </button>
   );
@@ -555,16 +561,16 @@ Create CSS variables from tokens:
   --color-trust-blue: #1E4BD8;
   --color-royal-blue: #1E63FF;
   --color-text-primary: #111827;
-  
+
   /* Spacing */
   --spacing-2: 0.5rem;
   --spacing-4: 1rem;
   --spacing-6: 1.5rem;
-  
+
   /* Typography */
   --font-size-base: 1rem;
   --font-weight-medium: 500;
-  
+
   /* Shadows */
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }

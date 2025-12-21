@@ -1,6 +1,7 @@
 # ESTA Tracker Component Library
 
 ## Overview
+
 The ESTA Tracker Component Library is a collection of reusable, accessible, and consistent UI components built on top of the design token system. These components form the building blocks of all user interfaces in the application.
 
 ---
@@ -8,15 +9,19 @@ The ESTA Tracker Component Library is a collection of reusable, accessible, and 
 ## 🎯 Design Principles
 
 ### Consistency
+
 All components use design tokens for styling, ensuring visual coherence across the application.
 
 ### Accessibility
+
 Components are built to WCAG 2.1 AA standards with keyboard navigation, screen reader support, and proper ARIA attributes.
 
 ### Reusability
+
 Each component is self-contained and can be composed to create complex interfaces.
 
 ### Customization
+
 Components accept props for customization while maintaining design system constraints.
 
 ---
@@ -26,11 +31,13 @@ Components accept props for customization while maintaining design system constr
 ### 1. Foundation Components
 
 #### Button
+
 **Location**: `apps/frontend/src/components/DesignSystem/Button.tsx`
 
 Primary interactive element for user actions.
 
 **Variants**:
+
 - `primary` - Main call-to-action (trust blue background)
 - `secondary` - Secondary actions (gray background)
 - `ghost` - Transparent background, colored text
@@ -38,6 +45,7 @@ Primary interactive element for user actions.
 - `success` - Positive confirmations (green)
 
 **Sizes**:
+
 - `xs` - Extra small (rare use)
 - `sm` - Small
 - `md` - Default
@@ -45,6 +53,7 @@ Primary interactive element for user actions.
 - `xl` - Extra large
 
 **Props**:
+
 ```typescript
 interface ButtonProps {
   variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'success';
@@ -61,6 +70,7 @@ interface ButtonProps {
 ```
 
 **Usage**:
+
 ```tsx
 import { Button } from '@/components/DesignSystem';
 
@@ -78,6 +88,7 @@ import { Button } from '@/components/DesignSystem';
 ```
 
 **Design Tokens Used**:
+
 - Colors: `semanticColors.trustBlue`, `semanticColors.complianceError`
 - Spacing: `componentSpacing.button.md`
 - Typography: `textStyles.button`
@@ -87,11 +98,13 @@ import { Button } from '@/components/DesignSystem';
 ---
 
 #### Card
+
 **Location**: `apps/frontend/src/components/DesignSystem/Card.tsx`
 
 Container component for grouping related content.
 
 **Variants**:
+
 - `default` - Standard white card
 - `gradient` - Subtle gradient background
 - `elevated` - Higher elevation with stronger shadow
@@ -99,6 +112,7 @@ Container component for grouping related content.
 - `glass` - Glassmorphism effect
 
 **Props**:
+
 ```typescript
 interface CardProps {
   variant?: 'default' | 'gradient' | 'elevated' | 'outlined' | 'glass';
@@ -112,6 +126,7 @@ interface CardProps {
 ```
 
 **Usage**:
+
 ```tsx
 import { Card } from '@/components/DesignSystem';
 
@@ -126,6 +141,7 @@ import { Card } from '@/components/DesignSystem';
 ```
 
 **Design Tokens Used**:
+
 - Spacing: `componentSpacing.card.*`
 - Borders: `componentBorderRadius.card.default`
 - Shadows: `componentShadows.card.*`
@@ -134,11 +150,13 @@ import { Card } from '@/components/DesignSystem';
 ---
 
 #### Input
+
 **Location**: `apps/frontend/src/components/Input.tsx`
 
 Text input field with label, help text, and validation support.
 
 **Types**:
+
 - `text` - Standard text input
 - `email` - Email with validation
 - `password` - Password with toggle visibility
@@ -147,6 +165,7 @@ Text input field with label, help text, and validation support.
 - `url` - URL with validation
 
 **Props**:
+
 ```typescript
 interface InputProps {
   type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url';
@@ -165,6 +184,7 @@ interface InputProps {
 ```
 
 **Usage**:
+
 ```tsx
 import { Input } from '@/components';
 
@@ -189,6 +209,7 @@ import { Input } from '@/components';
 ```
 
 **Design Tokens Used**:
+
 - Spacing: `componentSpacing.form.*`
 - Typography: `textStyles.label`, `fontSizes.base`
 - Borders: `componentBorderRadius.input.default`, `borderPresets.input.*`
@@ -200,15 +221,18 @@ import { Input } from '@/components';
 ### 2. Navigation Components
 
 #### Stepper
+
 **Location**: `apps/frontend/src/components/Stepper.tsx`
 
 Progress indicator for multi-step flows.
 
 **Variants**:
+
 - `horizontal` - Default, steps shown left to right
 - `vertical` - Steps shown top to bottom (mobile)
 
 **Props**:
+
 ```typescript
 interface StepperProps {
   steps: Array<{
@@ -224,6 +248,7 @@ interface StepperProps {
 ```
 
 **Usage**:
+
 ```tsx
 import { Stepper } from '@/components';
 
@@ -232,15 +257,16 @@ import { Stepper } from '@/components';
     { label: 'Company Info', description: 'Basic details' },
     { label: 'Contact', description: 'Primary contact' },
     { label: 'Branding', description: 'Customize appearance' },
-    { label: 'Complete', description: 'Review and finish' }
+    { label: 'Complete', description: 'Review and finish' },
   ]}
   currentStep={2}
   onStepClick={(step) => navigateToStep(step)}
   showStepNumbers
-/>
+/>;
 ```
 
 **Design Tokens Used**:
+
 - Colors: `semanticColors.trustBlue`, `grayScale.*`
 - Spacing: `spacing.base[4]`
 - Typography: `fontSizes.sm`, `fontWeights.medium`
@@ -250,17 +276,20 @@ import { Stepper } from '@/components';
 ### 3. Feedback Components
 
 #### Toast
+
 **Location**: `apps/frontend/src/components/Toast.tsx`
 
 Temporary notification messages.
 
 **Types**:
+
 - `success` - Success messages (green)
 - `error` - Error messages (red)
 - `warning` - Warning messages (amber)
 - `info` - Informational messages (blue)
 
 **Props**:
+
 ```typescript
 interface ToastProps {
   type: 'success' | 'error' | 'warning' | 'info';
@@ -276,6 +305,7 @@ interface ToastProps {
 ```
 
 **Usage**:
+
 ```tsx
 import { useToast } from '@/components/Toast.hooks';
 
@@ -286,7 +316,7 @@ showToast({
   type: 'success',
   title: 'Profile Saved',
   message: 'Your changes have been saved successfully.',
-  duration: 5000
+  duration: 5000,
 });
 
 // Error toast with action
@@ -296,12 +326,13 @@ showToast({
   message: 'Unable to upload logo. Please try again.',
   action: {
     label: 'Retry',
-    onClick: retryUpload
-  }
+    onClick: retryUpload,
+  },
 });
 ```
 
 **Design Tokens Used**:
+
 - Colors: `statusColors.*`
 - Shadows: `shadows.xl`
 - Borders: `borderRadius.lg`
@@ -310,11 +341,13 @@ showToast({
 ---
 
 #### LoadingSpinner
+
 **Location**: `apps/frontend/src/components/DesignSystem/LoadingSpinner.tsx`
 
 Visual indicator for loading states.
 
 **Sizes**:
+
 - `xs` - 16px
 - `sm` - 24px
 - `md` - 32px
@@ -322,6 +355,7 @@ Visual indicator for loading states.
 - `xl` - 64px
 
 **Props**:
+
 ```typescript
 interface LoadingSpinnerProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -332,6 +366,7 @@ interface LoadingSpinnerProps {
 ```
 
 **Usage**:
+
 ```tsx
 import { LoadingSpinner } from '@/components/DesignSystem';
 
@@ -350,17 +385,20 @@ import { LoadingSpinner } from '@/components/DesignSystem';
 ### 4. Data Display Components
 
 #### Tooltip
+
 **Location**: `apps/frontend/src/components/DesignSystem/Tooltip.tsx`
 
 Contextual information on hover or focus.
 
 **Placements**:
+
 - `top`, `top-start`, `top-end`
 - `right`, `right-start`, `right-end`
 - `bottom`, `bottom-start`, `bottom-end`
 - `left`, `left-start`, `left-end`
 
 **Props**:
+
 ```typescript
 interface TooltipProps {
   content: string | React.ReactNode;
@@ -372,6 +410,7 @@ interface TooltipProps {
 ```
 
 **Usage**:
+
 ```tsx
 import { Tooltip } from '@/components/DesignSystem';
 
@@ -379,7 +418,7 @@ import { Tooltip } from '@/components/DesignSystem';
   <HelpIcon />
 </Tooltip>
 
-<Tooltip 
+<Tooltip
   content="Click to copy enrollment code to clipboard"
   placement="top"
 >
@@ -392,11 +431,13 @@ import { Tooltip } from '@/components/DesignSystem';
 ### 5. Layout Components
 
 #### SkipLinks
+
 **Location**: `apps/frontend/src/components/SkipLinks.tsx`
 
 Accessibility navigation for keyboard users.
 
 **Props**:
+
 ```typescript
 interface SkipLinksProps {
   links: Array<{
@@ -407,14 +448,17 @@ interface SkipLinksProps {
 ```
 
 **Usage**:
+
 ```tsx
 import { SkipLinks } from '@/components';
 
-<SkipLinks links={[
-  { href: '#main-content', label: 'Skip to main content' },
-  { href: '#navigation', label: 'Skip to navigation' },
-  { href: '#footer', label: 'Skip to footer' }
-]} />
+<SkipLinks
+  links={[
+    { href: '#main-content', label: 'Skip to main content' },
+    { href: '#navigation', label: 'Skip to navigation' },
+    { href: '#footer', label: 'Skip to footer' },
+  ]}
+/>;
 ```
 
 ---
@@ -422,11 +466,13 @@ import { SkipLinks } from '@/components';
 ### 6. Form Components
 
 #### FormField
+
 **Location**: `apps/frontend/src/components/FormField.tsx`
 
 Wrapper for form inputs with label, help text, and error display.
 
 **Props**:
+
 ```typescript
 interface FormFieldProps {
   label: string;
@@ -439,6 +485,7 @@ interface FormFieldProps {
 ```
 
 **Usage**:
+
 ```tsx
 import { FormField } from '@/components';
 
@@ -450,7 +497,7 @@ import { FormField } from '@/components';
   htmlFor="company-name"
 >
   <input id="company-name" type="text" />
-</FormField>
+</FormField>;
 ```
 
 ---
@@ -468,7 +515,7 @@ All components should use design tokens instead of hard-coded values:
 // ✅ Do this
 import { colors, spacing } from '@/design-tokens';
 
-<div style={{ 
+<div style={{
   backgroundColor: colors.semantic.trustBlue,
   padding: spacing.base[3]
 }}>
@@ -479,7 +526,7 @@ import { colors, spacing } from '@/design-tokens';
 Components can use Tailwind classes that reference design tokens:
 
 ```tsx
-<button className="bg-trust-blue text-white px-6 py-3 rounded-lg hover:bg-accent-blue">
+<button className="bg-trust-blue hover:bg-accent-blue rounded-lg px-6 py-3 text-white">
   Click me
 </button>
 ```
@@ -509,6 +556,7 @@ const buttonClasses = clsx(
 ### Keyboard Navigation
 
 All interactive components must be keyboard accessible:
+
 - **Tab** - Move to next element
 - **Shift+Tab** - Move to previous element
 - **Enter/Space** - Activate buttons, links
@@ -519,23 +567,23 @@ All interactive components must be keyboard accessible:
 
 ```tsx
 // Visible focus indicator
-<button className="focus:outline-none focus:ring-2 focus:ring-trust-blue focus:ring-offset-2">
+<button className="focus:ring-trust-blue focus:outline-none focus:ring-2 focus:ring-offset-2">
   Click me
-</button>
+</button>;
 
 // Focus trap in modals
 import { FocusTrap } from '@/components';
 
 <FocusTrap>
   <Modal>...</Modal>
-</FocusTrap>
+</FocusTrap>;
 ```
 
 ### ARIA Attributes
 
 ```tsx
 // Button with loading state
-<button 
+<button
   aria-busy={isLoading}
   aria-label={isLoading ? 'Saving...' : 'Save changes'}
 >
@@ -582,13 +630,15 @@ import { Button } from './Button';
 describe('Button', () => {
   it('renders with correct text', () => {
     render(<Button>Click me</Button>);
-    expect(screen.getByRole('button', { name: 'Click me' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Click me' })
+    ).toBeInTheDocument();
   });
 
   it('calls onClick when clicked', async () => {
     const onClick = jest.fn();
     render(<Button onClick={onClick}>Click me</Button>);
-    
+
     await userEvent.click(screen.getByRole('button'));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
@@ -596,11 +646,11 @@ describe('Button', () => {
   it('is keyboard accessible', async () => {
     const onClick = jest.fn();
     render(<Button onClick={onClick}>Click me</Button>);
-    
+
     const button = screen.getByRole('button');
     button.focus();
     await userEvent.keyboard('{Enter}');
-    
+
     expect(onClick).toHaveBeenCalled();
   });
 });
@@ -651,10 +701,10 @@ interface MyComponentProps {
   children: React.ReactNode;
 }
 
-export function MyComponent({ 
+export function MyComponent({
   variant = 'default',
   disabled = false,
-  children 
+  children,
 }: MyComponentProps) {
   const classes = clsx(
     'my-component-base',
@@ -664,10 +714,7 @@ export function MyComponent({
   );
 
   return (
-    <div 
-      className={classes}
-      aria-disabled={disabled}
-    >
+    <div className={classes} aria-disabled={disabled}>
       {children}
     </div>
   );
@@ -680,7 +727,7 @@ export function MyComponent({
 
 - **[Design Tokens](./DESIGN_TOKENS.md)** - Color, typography, spacing tokens
 - **[Storyboards](./storyboards/README.md)** - Visual flow documentation
-- **[Figma Integration](./FIGMA_INTEGRATION_GUIDE.md)** - Design-code sync
+- **[Figma Integration](../FIGMA_INTEGRATION_GUIDE.md)** - Design-code sync
 
 ---
 

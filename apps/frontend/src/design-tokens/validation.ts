@@ -82,9 +82,11 @@ export function validateDesignTokens(): ValidationResult {
 
     // Validate spacing
     if (designTokens.spacing?.base) {
-      if (!designTokens.spacing.base[4]) {
+      if (!designTokens.spacing.base['4']) {
         errors.push('Missing spacing.base[4] (1rem)');
       }
+    } else {
+      errors.push('Missing spacing system');
     }
 
     // Count total tokens
