@@ -156,6 +156,9 @@ Our platform is built with the same rigor and precision demanded by aerospace an
 
 - **Nx Monorepo**: Advanced build orchestration with intelligent caching
 - **Automated Testing**: Comprehensive test coverage with Vitest and Playwright
+  - Technical functional tests for all core features
+  - Behavioral UX tests validating user experience narratives
+  - See [Behavioral Testing Guide](./docs/BEHAVIORAL_TESTING_GUIDE.md)
 - **Continuous Security**: CodeQL analysis and automated vulnerability scanning
 - **CI/CD Excellence**: Automated deployments with zero-downtime releases
 - **Version Control**: Git-based workflow with comprehensive code review
@@ -358,9 +361,14 @@ npm run dev:backend      # Backend only (port 3000)
 # Building & Testing
 npm run build            # Build all production bundles
 npm run test             # Run complete test suite
-npm run test:e2e         # End-to-end integration tests
+npm run test:e2e         # End-to-end integration tests (includes behavioral UX tests)
+npm run test:e2e:ui      # Run E2E tests with visual UI
 npm run lint             # Code quality checks
 npm run typecheck        # TypeScript validation
+
+# Behavioral/Narrative UX Testing
+npm run test:e2e -- e2e/narratives  # Run user journey tests
+# See docs/BEHAVIORAL_TESTING_GUIDE.md for details
 
 # Advanced Nx Commands
 npx nx graph             # Visualize project dependencies
