@@ -23,6 +23,7 @@ export * from './formatting.js';
 export * from './constants.js';
 export * from './errors.js';
 export * from './rbac-claims.js';
+export * from './experience-transformers.js';
 
 // NOTE: tenant-identifier.js uses Node.js 'crypto' module and is NOT browser-safe.
 // Import from '@esta-tracker/shared-utils/server' for server-side use.

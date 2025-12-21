@@ -4,6 +4,12 @@
  * Pure function handlers for compliance checking.
  * Rules are loaded as data and evaluated deterministically.
  *
+ * Enhanced with UX Experience Contract Layer to provide:
+ * - Human-readable explanations of violations
+ * - Emotional reassurance and trust messaging
+ * - Clear remediation guidance
+ * - Risk transparency
+ *
  * @module services/compliance-engine/handlers
  */
 
@@ -14,6 +20,12 @@ import type {
   ComplianceViolation,
   ComplianceWarning,
 } from '../../../kernel/abi/messages';
+
+import type {
+  ComplianceExperienceResponse,
+} from '../../../libs/shared-types/src/ux-experience-contract.js';
+
+import { transformComplianceToExperience } from '../../../libs/shared-utils/src/experience-transformers.js';
 
 // ============================================================================
 // ESTA 2025 COMPLIANCE RULES
@@ -334,12 +346,23 @@ export function checkCompliance(
   };
 }
 
+/**
+ * Check compliance with UX-enhanced experience response
+ */
+export function checkComplianceWithExperience(
+  request: ComplianceCheckRequest
+): ComplianceExperienceResponse {
+  const result = checkCompliance(request);
+  return transformComplianceToExperience(result);
+}
+
 // ============================================================================
 // MESSAGE ROUTER
 // ============================================================================
 
 /**
  * Main message handler for the compliance engine.
+ * Supports both raw compliance checks and UX-enhanced experience responses.
  */
 export function handleMessage(message: IPCMessage): IPCMessage {
   const { opcode, payload, metadata } = message;
@@ -351,6 +374,13 @@ export function handleMessage(message: IPCMessage): IPCMessage {
     switch (opcode) {
       case 'compliance.check':
         result = checkCompliance(payload as ComplianceCheckRequest);
+        break;
+
+      case 'compliance.check.experience':
+        // UX-enhanced response with human-readable explanations and trust messaging
+        result = checkComplianceWithExperience(
+          payload as ComplianceCheckRequest
+        );
         break;
 
       case 'compliance.validate':

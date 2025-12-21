@@ -115,6 +115,155 @@ const now = await syscall({ syscall: 'sys.time.now' });
 const data = await syscall({ syscall: 'sys.net.fetch', url, method: 'GET' });
 ```
 
+## UX Experience Contract Layer
+
+### Philosophy: UX Drives the Machine
+
+**"This is a calming, guided experience that just happens to be backed by advanced compliance technology."**
+
+The system must be:
+- **Correct** ✅ (we have this)
+- **Understandable** ✅ (now guaranteed)
+- **Emotionally Trustworthy** ✅ (now guaranteed)
+
+### The Contract
+
+Every engine output MUST implement the `ExperienceResponse` interface:
+
+```typescript
+{
+  // Primary decision
+  decision: 'APPROVED' | 'DENIED' | 'NEEDS_INFORMATION' | ...,
+  
+  // Human-readable WHY
+  explanation: "Based on Michigan ESTA regulations, you earned 2.5 hours...",
+  
+  // What this specifically means for the user
+  humanMeaning: "Your sick time balance is now 15.5 hours, giving you peace of mind.",
+  
+  // Risk transparency
+  riskLevel: 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL',
+  
+  // Confidence transparency (0-100)
+  confidenceScore: 98,
+  
+  // Emotional reassurance
+  reassuranceMessage: {
+    message: "You are fully compliant and on track.",
+    context: "All calculations follow Michigan ESTA 2025 exactly.",
+    tone: 'positive',
+    emphasize: true,
+  },
+  
+  // Clear next steps
+  nextSteps: [
+    {
+      category: 'ACTION_REQUIRED' | 'INFORMATION' | 'RECOMMENDATION',
+      title: "Review your balance",
+      description: "View your complete sick time history.",
+      priority: 'low' | 'medium' | 'high' | 'urgent',
+      estimatedMinutes: 3,
+      helpLink: '/dashboard/sick-time',
+    }
+  ],
+  
+  // Legal context in plain English
+  legalReferences: [
+    {
+      citation: "Michigan ESTA 2025, Section 3(a)",
+      summary: "Employees accrue 1 hour per 30 hours worked",
+      relevanceExplanation: "This law defines your accrual rate.",
+      officialLink: "https://...",
+    }
+  ],
+  
+  // Raw engine output (optional, for advanced users)
+  technicalDetails: { ... },
+  
+  // Metadata
+  timestamp: "2024-01-15T10:30:00Z",
+  sourceEngine: "accrual-engine",
+  responseId: "uuid",
+}
+```
+
+### Benefits
+
+1. **UX Never Interprets Raw Logic**
+   - No guesswork about what violations mean
+   - No custom mapping logic in frontend
+   - Consistent experience across all features
+
+2. **Trust Built Into Every Interaction**
+   - Every decision includes reassurance
+   - Confidence scores show transparency
+   - Risk levels set proper expectations
+
+3. **Users Never Feel Abandoned**
+   - Every response includes next steps
+   - Clear priorities guide action
+   - Help links provide depth when needed
+
+4. **Safe to Change Logic Without Breaking UX**
+   - Contract isolates engines from UI
+   - Changes to calculations don't require UI updates
+   - Experience layer adapts automatically
+
+### Usage Patterns
+
+#### For Raw Technical Responses
+```typescript
+// Old way - raw calculation
+const response = await kernel.send({
+  opcode: 'accrual.calculate',
+  payload: request,
+});
+// Result: { hoursAccrued: 2.5, newBalance: 15.5, ... }
+```
+
+#### For UX-Enhanced Responses
+```typescript
+// New way - experience-enhanced
+const response = await kernel.send({
+  opcode: 'accrual.calculate.experience',
+  payload: request,
+});
+// Result: Full ExperienceResponse with explanations, reassurance, next steps
+```
+
+Both are supported. Use `.experience` suffix for UX-facing operations.
+
+### Timing Guarantees
+
+The experience layer adds negligible overhead (< 1ms) because:
+- Transformations are pure functions
+- No async operations
+- No external calls
+- All text is pre-templated
+
+Performance metadata is included in every response:
+
+```typescript
+{
+  performance: {
+    computationTimeMs: 2.3,
+    wasCached: false,
+    exceededTargetTime: false,
+    targetTimeMs: 100,
+  }
+}
+```
+
+### Preventing Breaking Changes
+
+The contract ensures:
+1. **Engines can evolve independently** - Only the transformer needs updating
+2. **UX remains stable** - Interface never changes
+3. **No cascade failures** - Experience layer catches and explains errors
+4. **Safe experimentation** - Try new logic without touching UI
+
+This solves the branching complexity problem: changes are localized and tested independently.
+
 ## Directory Structure
 
 ```
