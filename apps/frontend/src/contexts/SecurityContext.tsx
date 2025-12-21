@@ -69,7 +69,7 @@ export function SecurityProvider({ children }: { children: ReactNode }) {
   // Periodic security status check
   useEffect(() => {
     checkSecurityStatus();
-    const interval = setInterval(checkSecurityStatus, 60000); // Check every minute
+    const interval = setInterval(checkSecurityStatus, 300000); // Check every 5 minutes
     return () => clearInterval(interval);
   }, []);
 
