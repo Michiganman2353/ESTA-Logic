@@ -22,8 +22,8 @@ vi.mock('../lib/authMiddleware', async () => {
   };
 });
 
-vi.mock('../lib/encryption/hybridEncryption', async () => {
-  const actual = await vi.importActual('../lib/encryption/hybridEncryption');
+vi.mock('@esta-tracker/shared-utils/server', async () => {
+  const actual = await vi.importActual('@esta-tracker/shared-utils/server');
   return {
     ...actual,
     decryptHybrid: vi.fn(),
