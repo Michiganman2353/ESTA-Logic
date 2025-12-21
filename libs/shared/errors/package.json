@@ -1,0 +1,19 @@
+{
+  "name": "@esta/errors",
+  "version": "1.0.0",
+  "description": "Centralized error messages and handling for ESTA Tracker",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "esta",
+    "errors",
+    "messages"
+  ],
+  "author": "ESTA Tracker Team",
+  "license": "MIT"
+}
