@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json.schemastore.org/performance-budget.json",
+  "name": "ESTA Tracker Performance Budgets",
+  "description": "Performance budgets for ESTA Tracker to ensure optimal user experience",
+  "budgets": {
+    "frontend": {
+      "initial": {
+        "description": "Initial bundle loaded on first page visit",
+        "js": {
+          "limit": "200KB",
+          "warning": "180KB",
+          "gzipped": true
+        },
+        "css": {
+          "limit": "50KB",
+          "warning": "45KB",
+          "gzipped": true
+        },
+        "total": {
+          "limit": "250KB",
+          "warning": "225KB",
+          "gzipped": true
+        }
+      },
+      "lazy": {
+        "description": "Lazy-loaded route chunks",
+        "js": {
+          "limit": "50KB",
+          "warning": "45KB",
+          "gzipped": true
+        }
+      },
+      "vendor": {
+        "description": "Third-party dependencies",
+        "react": {
+          "limit": "150KB",
+          "warning": "135KB",
+          "gzipped": true
+        },
+        "firebase": {
+          "limit": "150KB",
+          "warning": "135KB",
+          "gzipped": true
+        }
+      },
+      "assets": {
+        "images": {
+          "limit": "500KB",
+          "warning": "450KB",
+          "description": "Total image size per page"
+        },
+        "fonts": {
+          "limit": "100KB",
+          "warning": "90KB",
+          "description": "Total web fonts"
+        }
+      }
+    },
+    "webVitals": {
+      "description": "Core Web Vitals targets",
+      "LCP": {
+        "good": "2.5s",
+        "needsImprovement": "4.0s",
+        "description": "Largest Contentful Paint"
+      },
+      "FID": {
+        "good": "100ms",
+        "needsImprovement": "300ms",
+        "description": "First Input Delay"
+      },
+      "CLS": {
+        "good": 0.1,
+        "needsImprovement": 0.25,
+        "description": "Cumulative Layout Shift"
+      },
+      "FCP": {
+        "good": "1.8s",
+        "needsImprovement": "3.0s",
+        "description": "First Contentful Paint"
+      },
+      "TTFB": {
+        "good": "600ms",
+        "needsImprovement": "1.5s",
+        "description": "Time to First Byte"
+      },
+      "INP": {
+        "good": "200ms",
+        "needsImprovement": "500ms",
+        "description": "Interaction to Next Paint"
+      }
+    },
+    "api": {
+      "description": "Backend API performance budgets",
+      "responseTime": {
+        "p50": "200ms",
+        "p95": "500ms",
+        "p99": "1000ms"
+      },
+      "throughput": {
+        "minRequestsPerSecond": 100,
+        "targetRequestsPerSecond": 500
+      }
+    },
+    "build": {
+      "description": "Build time budgets",
+      "frontend": {
+        "limit": "60s",
+        "warning": "45s"
+      },
+      "backend": {
+        "limit": "30s",
+        "warning": "20s"
+      },
+      "fullBuild": {
+        "limit": "180s",
+        "warning": "150s"
+      }
+    },
+    "wasm": {
+      "description": "WASM module size and performance budgets",
+      "moduleSize": {
+        "accrualEngine": {
+          "limit": "100KB",
+          "warning": "80KB",
+          "gzipped": true
+        },
+        "complianceEngine": {
+          "limit": "150KB",
+          "warning": "120KB",
+          "gzipped": true
+        }
+      },
+      "loadTime": {
+        "limit": "500ms",
+        "warning": "300ms",
+        "description": "Time to load and compile WASM module"
+      },
+      "executionTime": {
+        "accrualCalculation": {
+          "limit": "50ms",
+          "warning": "30ms"
+        },
+        "complianceCheck": {
+          "limit": "100ms",
+          "warning": "75ms"
+        }
+      }
+    }
+  },
+  "enforcement": {
+    "ci": {
+      "enabled": true,
+      "failOnExceed": true,
+      "warnOnWarning": true
+    },
+    "local": {
+      "enabled": true,
+      "failOnExceed": false,
+      "warnOnWarning": true
+    }
+  },
+  "reporting": {
+    "formats": ["console", "json", "html"],
+    "destinations": {
+      "ci": ["console", "json"],
+      "local": ["console"]
+    }
+  }
+}

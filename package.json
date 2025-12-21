@@ -39,6 +39,8 @@
     "test:e2e:debug": "playwright test --debug",
     "test:perf": "vitest run --config test/performance/vitest.config.ts",
     "test:perf:watch": "vitest --config test/performance/vitest.config.ts",
+    "perf:check": "node scripts/check-performance-budgets.js",
+    "perf:check:ci": "node scripts/check-performance-budgets.js --ci",
     "lint": "nx run-many --target=lint --all",
     "lint:fix": "nx run-many --target=lint --all -- --fix",
     "lint:affected": "nx affected --target=lint",

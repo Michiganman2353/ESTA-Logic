@@ -477,6 +477,101 @@ Libraries build independently and in parallel.
 
 ## Monitoring & Metrics
 
+### Performance Budgets
+
+ESTA Tracker enforces strict performance budgets to ensure optimal user experience. Budgets are defined in `performance-budgets.json` and automatically checked during builds.
+
+**Budget Configuration:**
+
+```json
+{
+  "frontend": {
+    "initial": {
+      "js": { "limit": "200KB", "warning": "180KB" },
+      "css": { "limit": "50KB", "warning": "45KB" },
+      "total": { "limit": "250KB", "warning": "225KB" }
+    },
+    "lazy": {
+      "js": { "limit": "50KB", "warning": "45KB" }
+    }
+  }
+}
+```
+
+**Check Budgets Locally:**
+
+```bash
+# Build frontend first
+npm run build:frontend
+
+# Check performance budgets
+npm run perf:check
+```
+
+**CI Integration:**
+
+Performance budgets are automatically checked in CI/CD:
+
+```bash
+# In CI, fails build if exceeded
+npm run perf:check:ci
+```
+
+### Web Vitals Tracking
+
+ESTA Tracker automatically collects Core Web Vitals using the `web-vitals` library:
+
+```typescript
+import { initWebVitalsTracking } from '@/services/performanceMonitoring';
+
+// Initialize in your app entry point
+initWebVitalsTracking();
+```
+
+**Metrics Collected:**
+
+- **LCP (Largest Contentful Paint)**: Target < 2.5s
+- **FID (First Input Delay)**: Target < 100ms
+- **CLS (Cumulative Layout Shift)**: Target < 0.1
+- **FCP (First Contentful Paint)**: Target < 1.8s
+- **TTFB (Time to First Byte)**: Target < 600ms
+- **INP (Interaction to Next Paint)**: Target < 200ms
+
+### Performance Dashboard
+
+Access the real-time performance telemetry dashboard at `/performance`:
+
+```
+http://localhost:5173/performance
+```
+
+**Features:**
+
+- Real-time Web Vitals visualization
+- Historical performance trends
+- Custom performance metrics
+- Build size analysis
+- Auto-refresh every 5 seconds
+
+**Custom Metrics:**
+
+Track custom performance metrics in your code:
+
+```typescript
+import { mark, measure, trackComponentRender } from '@/services/performanceMonitoring';
+
+// Mark start of operation
+mark('data_fetch_start');
+
+// ... perform operation ...
+
+// Measure duration
+measure('data_fetch', 'data_fetch_start');
+
+// Track component render time
+trackComponentRender('Dashboard', renderTime);
+```
+
 ### Web Vitals
 
 Track Core Web Vitals:
