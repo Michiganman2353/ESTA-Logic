@@ -24,6 +24,8 @@
     "isolatedModules": true,
     "baseUrl": ".",
     "paths": {
+      "@esta/api-contracts": ["libs/api-contracts/dist"],
+      "@esta/api-contracts/*": ["libs/api-contracts/dist/*"],
       "@esta/shared-types": ["libs/shared-types/dist"],
       "@esta/shared-types/*": ["libs/shared-types/dist/*"],
       "@esta-tracker/shared-utils": ["libs/shared-utils/dist"],
