@@ -905,9 +905,11 @@ The Enterprise Subscription System is the revenue backbone of ESTA Tracker, buil
 - **[Design Tokens](./docs/design/DESIGN_TOKENS.md)** — Color, typography, spacing tokens
 - **[Visual Storyboards](./docs/design/storyboards/README.md)** — User flow documentation
 - **[Component Library](./docs/design/COMPONENT_LIBRARY.md)** — Reusable UI components
+- **[UI Directory Structure](./docs/ui/UI_DIRECTORY_STRUCTURE.md)** — Frontend architecture guide
 - **[UX Blueprint](./docs/UX-Blueprint.md)** — Experience design principles
 - **[Design Tone Guide](./docs/Design-Tone-Guide.md)** — Voice and tone standards
 - **[Figma Integration](./docs/FIGMA_INTEGRATION_GUIDE.md)** — Design-code synchronization
+- **[Figma Design Files](./docs/design/FIGMA_LINKS.md)** — Links to design source files
 
 ### 🔒 Security Documentation
 
@@ -929,6 +931,7 @@ The Enterprise Subscription System is the revenue backbone of ESTA Tracker, buil
 - **[Libs Directory](./libs/README.md)** — Shared libraries
 - **[Guided Flow Module](./apps/frontend/src/modules/guidedFlow/README.md)** — Wizard implementation
 - **[Employer Profile System](./docs/employer-profile.md)** — 4-digit code system
+- **[UX Content Library](./content/ux-writing/README.md)** — UX copy, tone, and emotional patterns
 
 ### 🎯 API Documentation
 
