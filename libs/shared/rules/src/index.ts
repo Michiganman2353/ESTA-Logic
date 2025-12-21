@@ -4,7 +4,11 @@
  * Single source of truth for ESTA compliance rules, employer size thresholds,
  * accrual rates, and other business decision logic.
  *
- * This module provides configuration values derived from ESTA 2025 legal requirements.
+ * This module provides configuration values derived from Michigan's Earned Sick Time Act (ESTA).
+ * Effective February 21, 2025, these regulations require Michigan employers to provide paid sick time.
+ *
+ * Note: These values reflect the law as enacted. If amended, this module should be updated accordingly.
+ *
  * It does NOT perform calculations - those are delegated to the kernel/WASM modules.
  */
 

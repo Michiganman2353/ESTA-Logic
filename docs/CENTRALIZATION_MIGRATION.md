@@ -279,8 +279,19 @@ npm run build
 4. 🔄 Update API endpoints to use `@esta/errors`
 5. 🔄 Update frontend components to use `@esta/ux-text`
 6. ⏳ Add comprehensive tests
-7. ⏳ Remove deprecated files after full migration
+7. ⏳ Remove deprecated files after full migration (target: after v3.0.0 release)
+   - Criteria for removal:
+     - All direct consumers migrated to new libraries
+     - No references in codebase to old imports
+     - At least one major version released with deprecation warnings
+     - Migration guide published and communicated to team
 8. ⏳ Add localization support (future)
+
+## Deprecation Timeline
+
+**Current Phase (v2.x)**: Deprecation notices in place, both old and new code coexist
+**Next Phase (v3.0.0)**: Remove deprecated files, breaking change for any remaining consumers
+**Target Date**: Removal of deprecated files in v3.0.0 (estimated Q1 2026)
 
 ## Questions or Issues?
 

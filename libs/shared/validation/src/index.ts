@@ -106,15 +106,26 @@ export function isValidHoursPerWeek(hours: number): boolean {
 /**
  * Sanitize string input for safe display
  *
- * NOTE: This is a basic sanitizer for display purposes only.
- * For HTML context, use a proper HTML sanitizer like DOMPurify.
- * For SQL context, use parameterized queries.
- * For shell context, use proper escaping.
+ * ⚠️ SECURITY WARNING: This is a basic sanitizer for display purposes only.
+ * This provides minimal protection and should NOT be relied upon for security.
  *
- * This function only removes obviously dangerous characters.
+ * For proper security:
+ * - HTML context: Use DOMPurify or similar HTML sanitizer
+ * - SQL context: Always use parameterized queries
+ * - Shell context: Use proper command escaping
+ * - User input validation: Use comprehensive input validation
+ *
+ * This function performs minimal sanitization by removing obviously dangerous characters.
+ * It is NOT sufficient for preventing XSS attacks or other injection vulnerabilities.
+ *
+ * @deprecated Consider using DOMPurify for HTML sanitization or proper validation
+ * @param input - String to sanitize
+ * @returns Sanitized string with dangerous characters removed
  */
 export function sanitizeString(input: string): string {
-  return input.trim().replace(/[<>]/g, ''); // Remove HTML tag markers only
+  // Remove HTML tag markers and other dangerous characters
+  // This is minimal sanitization only - use DOMPurify for real protection
+  return input.trim().replace(/[<>'"&]/g, ''); // Remove common XSS attack vectors
 }
 
 /**
@@ -187,9 +198,15 @@ export function isValidEmployeeCount(count: number): boolean {
 }
 
 /**
+ * Tenant code configuration
+ */
+const TENANT_CODE_LENGTH = 8;
+
+/**
  * Validate tenant code format
  */
 export function isValidTenantCode(code: string): boolean {
-  // 8 alphanumeric characters
-  return /^[A-Z0-9]{8}$/.test(code);
+  // 8 alphanumeric characters (uppercase)
+  const pattern = new RegExp(`^[A-Z0-9]{${TENANT_CODE_LENGTH}}$`);
+  return pattern.test(code);
 }
