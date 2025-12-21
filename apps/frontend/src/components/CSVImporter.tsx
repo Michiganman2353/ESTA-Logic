@@ -10,6 +10,7 @@ import {
   type EmployeeCSVRow,
   type HoursCSVRow,
 } from '@/lib/csvImport';
+import { TrustBadge, TrustBadgeCompact } from '@/components/trust';
 
 type ImportType = 'employees' | 'hours';
 
@@ -124,6 +125,17 @@ export default function CSVImporter({
         <button onClick={handleDownloadTemplate} className="btn btn-secondary">
           📥 Download Template
         </button>
+      </div>
+
+      {/* Security UX - Show protection upfront */}
+      <div className="my-4 space-y-3">
+        <TrustBadge
+          icon="encrypted"
+          title="Secure Data Import"
+          description="Your CSV data will be validated, encrypted, and stored securely. All imports are logged in your audit trail for compliance."
+          variant="success"
+          showPulse={true}
+        />
       </div>
 
       {step === 'upload' && (
@@ -304,6 +316,16 @@ export default function CSVImporter({
             <p>
               This action cannot be undone. Are you sure you want to continue?
             </p>
+          </div>
+
+          {/* Final reassurance before import */}
+          <div className="my-4">
+            <TrustBadge
+              icon="shield-check"
+              title="Import Will Be Secure & Logged"
+              description="Once confirmed, this import will be processed securely. All records will be encrypted and logged with timestamp and user details for audit purposes."
+              variant="info"
+            />
           </div>
 
           <div className="confirm-actions">

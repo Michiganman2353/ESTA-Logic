@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import './DocumentScanner.css';
 import EncryptionIndicator from '@/experience/trust/EncryptionIndicator';
+import { TrustBadge, TrustBadgeCompact } from '@/components/trust';
 
 /**
  * DocumentScanner Component
@@ -778,10 +779,26 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
             {enableEdgeDetection && <li>Auto edge detection enabled</li>}
           </ul>
         </div>
-        {/* Security indicator */}
-        <div className="my-4 flex justify-center">
-          <EncryptionIndicator isActive={enableEncryption} showLabel={true} />
+
+        {/* Enhanced Security UX Messaging */}
+        <div className="my-4 space-y-3">
+          {enableEncryption && (
+            <TrustBadge
+              icon="encrypted"
+              title="Encrypted Capture"
+              description="Your document will be encrypted immediately after capture using industry-standard protection. Only authorized users can access it."
+              variant="success"
+              showPulse={true}
+            />
+          )}
+          <TrustBadge
+            icon="shield-check"
+            title="Secure & Logged"
+            description="This scan will be recorded in your audit trail with timestamp and user details for compliance validation."
+            variant="info"
+          />
         </div>
+
         {error && <div className="scanner-error">{error}</div>}
         <button onClick={startCamera} className="btn-start">
           Start Camera
@@ -795,7 +812,17 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
     return (
       <div className="document-scanner">
         <div className="scanner-header">
-          <h3>Position Document</h3>
+          <div className="flex w-full items-center justify-between">
+            <h3>Position Document</h3>
+            {enableEncryption && (
+              <TrustBadgeCompact
+                label="Protected"
+                icon="encrypted"
+                variant="success"
+                showPulse={true}
+              />
+            )}
+          </div>
           <button onClick={handleCancel} className="btn-cancel">
             Cancel
           </button>
@@ -880,6 +907,21 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
             {detectedEdges && <p>✓ Edges detected and corrected</p>}
           </div>
         )}
+
+        {/* Security Reassurance before upload */}
+        <div className="my-4">
+          <TrustBadge
+            icon={enableEncryption ? 'encrypted' : 'shield-check'}
+            title="Ready for Secure Upload"
+            description={
+              enableEncryption
+                ? "Clicking 'Confirm & Upload' will encrypt this document and store it securely. It will be logged in your audit trail and ready for compliance processing."
+                : "Clicking 'Confirm & Upload' will store this document securely and log it in your audit trail for compliance purposes."
+            }
+            variant="success"
+          />
+        </div>
+
         {error && <div className="scanner-error">{error}</div>}
         <div className="scanner-actions">
           <button onClick={retake} className="btn-retake">
