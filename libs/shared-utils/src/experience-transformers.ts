@@ -48,7 +48,8 @@ export function transformAccrualToExperience(
   userContext?: UserExperienceContext
 ): AccrualExperienceResponse {
   const percentOfMax = (result.newBalance / result.maxBalance) * 100;
-  const isNearingMax = percentOfMax >= 80;
+  // At max is different from nearing max - when at 100%, user is not "nearing" anymore
+  const isNearingMax = percentOfMax >= 80 && percentOfMax < 100;
 
   // Calculate confidence (accrual calculations are deterministic)
   const confidenceScore: ConfidenceScore = 100;
@@ -386,7 +387,8 @@ function determineComplianceRiskLevel(
     return 'MEDIUM';
   }
 
-  if (result.warnings.length > 2) {
+  // Any warnings indicate low risk - items that need attention
+  if (result.warnings.length > 0) {
     return 'LOW';
   }
 
