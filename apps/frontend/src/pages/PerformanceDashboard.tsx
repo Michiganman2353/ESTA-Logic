@@ -1,6 +1,6 @@
 /**
  * Performance Telemetry Dashboard
- * 
+ *
  * Displays real-time and historical performance metrics including:
  * - Core Web Vitals (LCP, FID, CLS, FCP, TTFB, INP)
  * - Custom performance metrics
@@ -36,6 +36,7 @@ export default function PerformanceDashboard() {
       const interval = setInterval(loadMetrics, 5000);
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [autoRefresh]);
 
   const loadMetrics = () => {
@@ -81,10 +82,10 @@ export default function PerformanceDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-7xl mx-auto">
+      <div className="mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1 className="mb-2 text-3xl font-bold text-gray-900">
             Performance Telemetry Dashboard
           </h1>
           <p className="text-gray-600">
@@ -96,13 +97,13 @@ export default function PerformanceDashboard() {
         <div className="mb-6 flex gap-4">
           <button
             onClick={loadMetrics}
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+            className="rounded bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
           >
             Refresh Now
           </button>
           <button
             onClick={handleClearMetrics}
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
+            className="rounded bg-red-600 px-4 py-2 text-white transition hover:bg-red-700"
           >
             Clear Metrics
           </button>
@@ -122,36 +123,36 @@ export default function PerformanceDashboard() {
 
         {/* Web Vitals Summary */}
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+          <h2 className="mb-4 text-2xl font-semibold text-gray-800">
             Core Web Vitals
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {webVitalsSummary.length > 0 ? (
               webVitalsSummary.map((metric) => (
                 <div
                   key={metric.name}
-                  className={`p-6 rounded-lg border-2 ${getRatingColor(metric.rating)}`}
+                  className={`rounded-lg border-2 p-6 ${getRatingColor(metric.rating || 'good')}`}
                 >
-                  <div className="flex justify-between items-start mb-2">
+                  <div className="mb-2 flex items-start justify-between">
                     <h3 className="text-lg font-semibold">{metric.name}</h3>
-                    <span className="text-xs uppercase font-bold">
+                    <span className="text-xs font-bold uppercase">
                       {metric.rating}
                     </span>
                   </div>
-                  <div className="text-3xl font-bold mb-3">
-                    {formatValue(metric.name, metric.average)}
+                  <div className="mb-3 text-3xl font-bold">
+                    {formatValue(metric.name, metric.average || 0)}
                   </div>
-                  <div className="text-sm space-y-1">
+                  <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
                       <span className="text-gray-600">Min:</span>
                       <span className="font-medium">
-                        {formatValue(metric.name, metric.min)}
+                        {formatValue(metric.name, metric.min || 0)}
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Max:</span>
                       <span className="font-medium">
-                        {formatValue(metric.name, metric.max)}
+                        {formatValue(metric.name, metric.max || 0)}
                       </span>
                     </div>
                     <div className="flex justify-between">
@@ -162,8 +163,9 @@ export default function PerformanceDashboard() {
                 </div>
               ))
             ) : (
-              <div className="col-span-full text-center py-12 text-gray-500">
-                No Web Vitals data collected yet. Browse the app to generate metrics.
+              <div className="col-span-full py-12 text-center text-gray-500">
+                No Web Vitals data collected yet. Browse the app to generate
+                metrics.
               </div>
             )}
           </div>
@@ -172,46 +174,46 @@ export default function PerformanceDashboard() {
         {/* Custom Metrics */}
         {customMetrics.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            <h2 className="mb-4 text-2xl font-semibold text-gray-800">
               Custom Performance Metrics
             </h2>
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="overflow-hidden rounded-lg bg-white shadow">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
                       Metric
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
                       Average
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
                       Min
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
                       Max
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
                       Samples
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200 bg-white">
                   {customMetrics.map((metric) => (
                     <tr key={metric.name}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
                         {metric.name}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {Math.round(metric.average)}ms
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                        {Math.round(metric.average || 0)}ms
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {Math.round(metric.min)}ms
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                        {Math.round(metric.min || 0)}ms
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {Math.round(metric.max)}ms
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                        {Math.round(metric.max || 0)}ms
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
                         {metric.count}
                       </td>
                     </tr>
@@ -223,11 +225,11 @@ export default function PerformanceDashboard() {
         )}
 
         {/* Performance Budgets Info */}
-        <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-blue-900 mb-3">
+        <div className="rounded-lg border-2 border-blue-200 bg-blue-50 p-6">
+          <h2 className="mb-3 text-xl font-semibold text-blue-900">
             Performance Budget Targets
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+          <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-2 lg:grid-cols-3">
             <div>
               <div className="font-semibold text-blue-900">LCP</div>
               <div className="text-blue-700">Good: &lt; 2.5s</div>
@@ -257,49 +259,52 @@ export default function PerformanceDashboard() {
 
         {/* Recent Metrics Log */}
         <div className="mt-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+          <h2 className="mb-4 text-2xl font-semibold text-gray-800">
             Recent Metrics (Last 20)
           </h2>
-          <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="overflow-hidden rounded-lg bg-white shadow">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
                       Time
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
                       Metric
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
                       Value
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">
                       Rating
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {metrics.slice(-20).reverse().map((metric, idx) => (
-                    <tr key={`${metric.id}-${idx}`}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(metric.timestamp).toLocaleTimeString()}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {metric.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {formatValue(metric.name, metric.value)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-1 text-xs font-semibold rounded ${getRatingColor(metric.rating)}`}
-                        >
-                          {metric.rating}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {metrics
+                    .slice(-20)
+                    .reverse()
+                    .map((metric, idx) => (
+                      <tr key={`${metric.id}-${idx}`}>
+                        <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500">
+                          {new Date(metric.timestamp).toLocaleTimeString()}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                          {metric.name}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
+                          {formatValue(metric.name, metric.value)}
+                        </td>
+                        <td className="whitespace-nowrap px-6 py-4">
+                          <span
+                            className={`rounded px-2 py-1 text-xs font-semibold ${getRatingColor(metric.rating)}`}
+                          >
+                            {metric.rating}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>

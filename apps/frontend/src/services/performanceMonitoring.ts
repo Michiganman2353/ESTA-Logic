@@ -1,9 +1,9 @@
 /**
  * Performance Monitoring Service
- * 
+ *
  * Collects and reports Web Vitals and custom performance metrics
  * for the ESTA Tracker application.
- * 
+ *
  * Features:
  * - Core Web Vitals tracking (LCP, FID, CLS, FCP, TTFB, INP)
  * - Custom performance marks and measures
@@ -41,11 +41,11 @@ export interface TelemetryData {
  */
 const WEB_VITALS_THRESHOLDS = {
   LCP: { good: 2500, needsImprovement: 4000 }, // ms
-  FID: { good: 100, needsImprovement: 300 },   // ms
-  CLS: { good: 0.1, needsImprovement: 0.25 },  // score
+  FID: { good: 100, needsImprovement: 300 }, // ms
+  CLS: { good: 0.1, needsImprovement: 0.25 }, // score
   FCP: { good: 1800, needsImprovement: 3000 }, // ms
   TTFB: { good: 600, needsImprovement: 1500 }, // ms
-  INP: { good: 200, needsImprovement: 500 },   // ms
+  INP: { good: 200, needsImprovement: 500 }, // ms
 };
 
 /**
@@ -55,7 +55,8 @@ function getRating(
   metricName: string,
   value: number
 ): 'good' | 'needs-improvement' | 'poor' {
-  const thresholds = WEB_VITALS_THRESHOLDS[metricName as keyof typeof WEB_VITALS_THRESHOLDS];
+  const thresholds =
+    WEB_VITALS_THRESHOLDS[metricName as keyof typeof WEB_VITALS_THRESHOLDS];
   if (!thresholds) return 'good';
 
   if (value <= thresholds.good) return 'good';
@@ -90,7 +91,7 @@ async function sendToAnalytics(metric: PerformanceMetric): Promise<void> {
     const blob = new Blob([JSON.stringify(telemetryData)], {
       type: 'application/json',
     });
-    
+
     if (navigator.sendBeacon) {
       navigator.sendBeacon('/api/telemetry', blob);
     } else {
@@ -114,13 +115,13 @@ function storeMetricLocally(metric: PerformanceMetric): void {
     const key = 'esta_performance_metrics';
     const stored = localStorage.getItem(key);
     const metrics: PerformanceMetric[] = stored ? JSON.parse(stored) : [];
-    
+
     // Keep last 100 metrics
     metrics.push(metric);
     if (metrics.length > 100) {
       metrics.shift();
     }
-    
+
     localStorage.setItem(key, JSON.stringify(metrics));
   } catch (error) {
     // Ignore localStorage errors
@@ -134,10 +135,10 @@ function storeMetricLocally(metric: PerformanceMetric): void {
 export async function initWebVitalsTracking(): Promise<void> {
   try {
     // Dynamic import to avoid blocking initial load
-    const { onCLS, onFID, onLCP, onFCP, onTTFB, onINP } = await import('web-vitals');
+    const { onCLS, onLCP, onFCP, onTTFB, onINP } = await import('web-vitals');
 
     // Track Cumulative Layout Shift
-    onCLS((metric) => {
+    onCLS((metric: any) => {
       const perfMetric: PerformanceMetric = {
         name: 'CLS',
         value: metric.value,
@@ -151,23 +152,8 @@ export async function initWebVitalsTracking(): Promise<void> {
       storeMetricLocally(perfMetric);
     });
 
-    // Track First Input Delay
-    onFID((metric) => {
-      const perfMetric: PerformanceMetric = {
-        name: 'FID',
-        value: metric.value,
-        rating: getRating('FID', metric.value),
-        delta: metric.delta,
-        id: metric.id,
-        navigationType: metric.navigationType,
-        timestamp: Date.now(),
-      };
-      sendToAnalytics(perfMetric);
-      storeMetricLocally(perfMetric);
-    });
-
     // Track Largest Contentful Paint
-    onLCP((metric) => {
+    onLCP((metric: any) => {
       const perfMetric: PerformanceMetric = {
         name: 'LCP',
         value: metric.value,
@@ -182,7 +168,7 @@ export async function initWebVitalsTracking(): Promise<void> {
     });
 
     // Track First Contentful Paint
-    onFCP((metric) => {
+    onFCP((metric: any) => {
       const perfMetric: PerformanceMetric = {
         name: 'FCP',
         value: metric.value,
@@ -197,7 +183,7 @@ export async function initWebVitalsTracking(): Promise<void> {
     });
 
     // Track Time to First Byte
-    onTTFB((metric) => {
+    onTTFB((metric: any) => {
       const perfMetric: PerformanceMetric = {
         name: 'TTFB',
         value: metric.value,
@@ -212,7 +198,7 @@ export async function initWebVitalsTracking(): Promise<void> {
     });
 
     // Track Interaction to Next Paint
-    onINP((metric) => {
+    onINP((metric: any) => {
       const perfMetric: PerformanceMetric = {
         name: 'INP',
         value: metric.value,
@@ -244,15 +230,19 @@ export function mark(name: string): void {
 /**
  * Create custom performance measure
  */
-export function measure(name: string, startMark: string, endMark?: string): number | null {
+export function measure(
+  name: string,
+  startMark: string,
+  endMark?: string
+): number | null {
   try {
     const measureName = `measure_${name}`;
     performance.measure(measureName, startMark, endMark);
-    
+
     const entries = performance.getEntriesByName(measureName, 'measure');
-    if (entries.length > 0) {
-      const duration = entries[0].duration;
-      
+    if (entries && entries.length > 0) {
+      const duration = entries[0]?.duration || 0;
+
       // Send custom metric
       const metric: PerformanceMetric = {
         name,
@@ -261,16 +251,16 @@ export function measure(name: string, startMark: string, endMark?: string): numb
         id: crypto.randomUUID(),
         timestamp: Date.now(),
       };
-      
+
       sendToAnalytics(metric);
       storeMetricLocally(metric);
-      
+
       return duration;
     }
   } catch (error) {
     console.error('Failed to create performance measure:', error);
   }
-  
+
   return null;
 }
 
@@ -315,20 +305,29 @@ export function getPerformanceSummary(): {
   const summary: any = {};
 
   // Group by metric name
-  const grouped = metrics.reduce((acc, metric) => {
-    if (!acc[metric.name]) {
-      acc[metric.name] = [];
-    }
-    acc[metric.name].push(metric);
-    return acc;
-  }, {} as Record<string, PerformanceMetric[]>);
+  const grouped = metrics.reduce(
+    (acc, metric) => {
+      if (!acc[metric.name]) {
+        acc[metric.name] = [];
+      }
+      const group = acc[metric.name];
+      if (group) {
+        group.push(metric);
+      }
+      return acc;
+    },
+    {} as Record<string, PerformanceMetric[]>
+  );
 
   // Calculate statistics for each metric
   Object.keys(grouped).forEach((name) => {
-    const metricValues = grouped[name].map((m) => m.value);
+    const groupMetrics = grouped[name];
+    if (!groupMetrics) return;
+
+    const metricValues = groupMetrics.map((m) => m.value);
     const sum = metricValues.reduce((a, b) => a + b, 0);
     const average = sum / metricValues.length;
-    
+
     summary[name] = {
       average,
       min: Math.min(...metricValues),
@@ -346,26 +345,46 @@ export function getPerformanceSummary(): {
  */
 export function trackRouteChange(routeName: string): void {
   mark(`route_change_start_${routeName}`);
-  
+
   // Track when route finishes loading
-  requestIdleCallback(() => {
-    mark(`route_change_end_${routeName}`);
-    measure(`route_change_${routeName}`, `route_change_start_${routeName}`, `route_change_end_${routeName}`);
-  });
+  if (typeof requestIdleCallback !== 'undefined') {
+    requestIdleCallback(() => {
+      mark(`route_change_end_${routeName}`);
+      measure(
+        `route_change_${routeName}`,
+        `route_change_start_${routeName}`,
+        `route_change_end_${routeName}`
+      );
+    });
+  } else {
+    // Fallback for browsers without requestIdleCallback
+    setTimeout(() => {
+      mark(`route_change_end_${routeName}`);
+      measure(
+        `route_change_${routeName}`,
+        `route_change_start_${routeName}`,
+        `route_change_end_${routeName}`
+      );
+    }, 0);
+  }
 }
 
 /**
  * Track component render time
  */
-export function trackComponentRender(componentName: string, renderTime: number): void {
+export function trackComponentRender(
+  componentName: string,
+  renderTime: number
+): void {
   const metric: PerformanceMetric = {
     name: `component_render_${componentName}`,
     value: renderTime,
-    rating: renderTime < 16 ? 'good' : renderTime < 50 ? 'needs-improvement' : 'poor',
+    rating:
+      renderTime < 16 ? 'good' : renderTime < 50 ? 'needs-improvement' : 'poor',
     id: crypto.randomUUID(),
     timestamp: Date.now(),
   };
-  
+
   sendToAnalytics(metric);
   storeMetricLocally(metric);
 }
