@@ -894,6 +894,7 @@ The Enterprise Subscription System is the revenue backbone of ESTA Tracker, buil
 
 - **[Architecture Overview](./ARCHITECTURE.md)** — System design and technical vision
 - **[User Experience Vision](./USER_EXPERIENCE_VISION.md)** — UX philosophy and user journey narratives
+- **[UX Response API Layer](./docs/api/README.md)** — Decision explanation API contract
 - **[Workspace Architecture](./docs/WORKSPACE_ARCHITECTURE.md)** — Monorepo structure
 - **[Engineering Ecosystem](./docs/ENGINEERING_ECOSYSTEM.md)** — Platform vision
 - **[Engineering Principles](./docs/ENGINEERING_PRINCIPLES.md)** — Development standards
@@ -928,6 +929,13 @@ The Enterprise Subscription System is the revenue backbone of ESTA Tracker, buil
 - **[Libs Directory](./libs/README.md)** — Shared libraries
 - **[Guided Flow Module](./apps/frontend/src/modules/guidedFlow/README.md)** — Wizard implementation
 - **[Employer Profile System](./docs/employer-profile.md)** — 4-digit code system
+
+### 🎯 API Documentation
+
+- **[UX Response API Guide](./docs/api/UX_RESPONSE_API_GUIDE.md)** — Complete API contract specification
+- **[Decision Explanation Quick Reference](./docs/api/DECISION_EXPLANATION_QUICKREF.md)** — One-page API cheat sheet
+- **[Integration Examples](./docs/api/INTEGRATION_EXAMPLES.md)** — Real-world integration patterns
+- **[UX Experience Contract](./docs/UX_EXPERIENCE_CONTRACT.md)** — Original contract documentation
 
 ### 🔧 Configuration & Setup
 
