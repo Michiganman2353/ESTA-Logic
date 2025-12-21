@@ -36,6 +36,21 @@ export { default as DocumentCaptureStep } from './wizard/steps/DocumentCaptureSt
 export { default as ReviewStep } from './wizard/steps/ReviewStep';
 export { default as CompletionStep } from './wizard/steps/CompletionStep';
 
+// Wizard Components
+export { default as EnhancedWizardStep } from './wizard/components/EnhancedWizardStep';
+export type { EnhancedWizardStepProps } from './wizard/components/EnhancedWizardStep';
+export {
+  default as DecisionExplanationComponent,
+  PolicyDecisionExplanation,
+  AccrualRateDecisionExplanation,
+} from './wizard/components/DecisionExplanation';
+export type { DecisionExplanationProps } from './wizard/components/DecisionExplanation';
+export {
+  default as ConfidenceIndicator,
+  StepConfidenceIndicator,
+} from './wizard/components/ConfidenceIndicator';
+export type { ConfidenceIndicatorProps } from './wizard/components/ConfidenceIndicator';
+
 // Capture
 export { SecureCapture } from './capture/SecureCapture';
 

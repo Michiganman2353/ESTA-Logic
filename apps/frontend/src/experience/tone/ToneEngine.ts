@@ -3,7 +3,13 @@
  * Adapts messaging tone based on user emotional state
  */
 
-export type ToneType = 'friendly' | 'reassuring' | 'authoritative' | 'encouraging' | 'professional';
+export type ToneType =
+  | 'friendly'
+  | 'reassuring'
+  | 'authoritative'
+  | 'encouraging'
+  | 'professional'
+  | 'celebratory';
 
 export const ToneEngine = {
   /**
@@ -42,6 +48,13 @@ export const ToneEngine = {
   },
 
   /**
+   * Apply celebratory, success tone
+   */
+  celebratory(message: string): string {
+    return message; // Already includes emoji, just return as is
+  },
+
+  /**
    * Transform message with specified tone
    */
   transform(message: string, tone: ToneType): string {
@@ -56,6 +69,8 @@ export const ToneEngine = {
         return this.encouraging(message);
       case 'professional':
         return this.professional(message);
+      case 'celebratory':
+        return this.celebratory(message);
       default:
         return message;
     }

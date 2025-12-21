@@ -1,10 +1,13 @@
 /**
  * EmployeePolicyStep - Configure employee policy
+ * Enhanced with decision explanations and confidence indicators
  */
 
 import { useState } from 'react';
-import PageTransition from '../../animations/PageTransition';
 import { useWizard } from '../core/useWizard';
+import EnhancedWizardStep from '../components/EnhancedWizardStep';
+import { AccrualRateDecisionExplanation } from '../components/DecisionExplanation';
+import { StepConfidenceIndicator } from '../components/ConfidenceIndicator';
 
 export default function EmployeePolicyStep() {
   const { next, back, setData, getData } = useWizard();
@@ -25,18 +28,32 @@ export default function EmployeePolicyStep() {
   const accrualRate =
     count < 50 ? '1 hour per 30 hours worked' : '1 hour per 30 hours worked';
 
-  return (
-    <PageTransition>
-      <div className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="mb-4 text-3xl font-bold text-gray-900">
-          Employee Count
-        </h1>
-        <p className="mb-8 text-gray-600">
-          How many employees do you currently have? This determines your
-          compliance requirements.
-        </p>
+  // Calculate confidence score
+  const stepData = { employeeCount: count };
+  const requiredFields = ['employeeCount'];
 
-        <div className="mb-8 rounded-xl bg-white p-8 shadow-lg">
+  return (
+    <EnhancedWizardStep
+      title="Employee Count"
+      subtitle="How many employees do you currently have? This determines your compliance requirements."
+      showTrustBadges={true}
+      showLegalAssurance={true}
+      stepNumber={3}
+      totalSteps={6}
+    >
+      <div className="space-y-6">
+        {/* Confidence Indicator */}
+        {isValid && (
+          <div className="flex justify-end">
+            <StepConfidenceIndicator
+              stepData={stepData}
+              requiredFields={requiredFields}
+            />
+          </div>
+        )}
+
+        {/* Employee Count Input */}
+        <div className="rounded-xl bg-white p-8 shadow-lg">
           <div className="mb-6">
             <label
               htmlFor="employeeCount"
@@ -79,6 +96,15 @@ export default function EmployeePolicyStep() {
           )}
         </div>
 
+        {/* Decision Explanation */}
+        {isValid && count > 0 && (
+          <AccrualRateDecisionExplanation
+            employeeCount={count}
+            className="animate-fade-in"
+          />
+        )}
+
+        {/* Navigation */}
         <div className="flex justify-between">
           <button
             onClick={back}
@@ -95,6 +121,6 @@ export default function EmployeePolicyStep() {
           </button>
         </div>
       </div>
-    </PageTransition>
+    </EnhancedWizardStep>
   );
 }

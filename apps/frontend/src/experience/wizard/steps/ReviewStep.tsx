@@ -1,9 +1,12 @@
 /**
  * ReviewStep - Review configuration before completion
+ * Enhanced with compliance confidence dashboard and trust signals
  */
 
-import PageTransition from '../../animations/PageTransition';
 import { useWizard } from '../core/useWizard';
+import EnhancedWizardStep from '../components/EnhancedWizardStep';
+import ConfidenceIndicator from '../components/ConfidenceIndicator';
+import LegalAssurance from '../../trust/LegalAssurance';
 
 export default function ReviewStep() {
   const { next, back, getData } = useWizard();
@@ -17,17 +20,37 @@ export default function ReviewStep() {
     next();
   };
 
-  return (
-    <PageTransition>
-      <div className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="mb-4 text-3xl font-bold text-gray-900">
-          Review Your Configuration
-        </h1>
-        <p className="mb-8 text-gray-600">
-          Please review your information before completing the setup.
-        </p>
+  // Calculate overall confidence score based on collected data
+  const calculateConfidenceScore = () => {
+    let score = 0;
+    if (companyName) score += 25;
+    if (employerType) score += 25;
+    if (employeeCount) score += 25;
+    if (documentCaptured) score += 25;
+    return score;
+  };
 
-        <div className="mb-8 rounded-xl bg-white p-8 shadow-lg">
+  const confidenceScore = calculateConfidenceScore();
+
+  return (
+    <EnhancedWizardStep
+      title="Review Your Configuration"
+      subtitle="Please review your information before completing the setup."
+      showTrustBadges={true}
+      showSecuritySignals={true}
+      stepNumber={5}
+      totalSteps={6}
+    >
+      <div className="space-y-6">
+        {/* Confidence Dashboard */}
+        <ConfidenceIndicator
+          score={confidenceScore}
+          variant="dashboard"
+          showTips={true}
+        />
+
+        {/* Configuration Summary */}
+        <div className="rounded-xl bg-white p-8 shadow-lg">
           <h2 className="mb-6 text-xl font-semibold text-gray-900">
             Configuration Summary
           </h2>
@@ -107,6 +130,10 @@ export default function ReviewStep() {
           </div>
         </div>
 
+        {/* Legal Assurance */}
+        <LegalAssurance variant="banner" />
+
+        {/* Navigation */}
         <div className="flex justify-between">
           <button
             onClick={back}
@@ -122,6 +149,6 @@ export default function ReviewStep() {
           </button>
         </div>
       </div>
-    </PageTransition>
+    </EnhancedWizardStep>
   );
 }

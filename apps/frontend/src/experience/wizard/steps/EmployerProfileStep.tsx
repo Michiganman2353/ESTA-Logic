@@ -1,10 +1,13 @@
 /**
  * EmployerProfileStep - Collect employer information
+ * Enhanced with TurboTax-style UX: confidence indicators, decision explanations, trust signals
  */
 
 import { useState } from 'react';
-import PageTransition from '../../animations/PageTransition';
 import { useWizard } from '../core/useWizard';
+import EnhancedWizardStep from '../components/EnhancedWizardStep';
+import { StepConfidenceIndicator } from '../components/ConfidenceIndicator';
+import { ToneEngine } from '../../tone/ToneEngine';
 
 export default function EmployerProfileStep() {
   const { next, back, setData, getData } = useWizard();
@@ -21,17 +24,31 @@ export default function EmployerProfileStep() {
 
   const isValid = companyName.trim() !== '' && employerType !== '';
 
-  return (
-    <PageTransition>
-      <div className="mx-auto max-w-3xl px-4 py-8">
-        <h1 className="mb-4 text-3xl font-bold text-gray-900">
-          Tell Us About Your Business
-        </h1>
-        <p className="mb-8 text-gray-600">
-          This helps us determine which ESTA requirements apply to you.
-        </p>
+  // Calculate confidence score for this step
+  const stepData = { companyName, employerType };
+  const requiredFields = ['companyName', 'employerType'];
 
-        <div className="mb-8 rounded-xl bg-white p-8 shadow-lg">
+  return (
+    <EnhancedWizardStep
+      title="Tell Us About Your Business"
+      subtitle={ToneEngine.reassuring('This helps us determine which ESTA requirements apply to you.')}
+      showTrustBadges={true}
+      showSecuritySignals={false}
+      showLegalAssurance={false}
+      stepNumber={2}
+      totalSteps={6}
+    >
+      <div className="space-y-6">
+        {/* Confidence Indicator */}
+        <div className="flex justify-end">
+          <StepConfidenceIndicator
+            stepData={stepData}
+            requiredFields={requiredFields}
+          />
+        </div>
+
+        {/* Main Input Card */}
+        <div className="rounded-xl bg-white p-8 shadow-lg">
           <div className="mb-6">
             <label
               htmlFor="companyName"
@@ -53,6 +70,9 @@ export default function EmployerProfileStep() {
             <label className="mb-2 block font-semibold text-gray-900">
               Employer Type
             </label>
+            <p className="mb-3 text-sm text-gray-600">
+              💡 Choose the category that best describes your organization
+            </p>
             <div className="grid gap-4 sm:grid-cols-2">
               {[
                 {
@@ -95,6 +115,38 @@ export default function EmployerProfileStep() {
           </div>
         </div>
 
+        {/* Why This Matters - Educational Component */}
+        {employerType && (
+          <div className="animate-fade-in rounded-lg border border-blue-200 bg-blue-50 p-6">
+            <div className="flex items-start gap-3">
+              <svg
+                className="mt-0.5 h-6 w-6 flex-shrink-0 text-blue-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <div>
+                <h3 className="mb-2 font-semibold text-blue-900">
+                  Why This Matters
+                </h3>
+                <p className="text-sm text-blue-800">
+                  Your employer type determines specific ESTA requirements and
+                  benefits. We'll automatically configure the correct policies and
+                  accrual rates for your organization.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Navigation */}
         <div className="flex justify-between">
           <button
             onClick={back}
@@ -111,6 +163,6 @@ export default function EmployerProfileStep() {
           </button>
         </div>
       </div>
-    </PageTransition>
+    </EnhancedWizardStep>
   );
 }
