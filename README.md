@@ -48,6 +48,15 @@ We combine **NASA-level engineering precision** with **effortless user experienc
 
 While we're laser-focused on serving Michigan employers today, our platform architecture is designed to expand to all 16+ states with paid sick time laws — positioning us as the future national standard for employment compliance automation.
 
+### Dual Vision: Technical Excellence Meets Human Compassion
+
+Our platform succeeds through the balance of **two equal visions**:
+
+- **[Architecture Vision](./ARCHITECTURE.md)** — Deterministic correctness, security, and scalability
+- **[User Experience Vision](./USER_EXPERIENCE_VISION.md)** — Trust, clarity, and emotional resilience
+
+We don't just calculate sick time correctly — we make people **feel confident that we've calculated it correctly**. That difference is everything.
+
 ---
 
 ## 💼 Our Premium Services
@@ -644,7 +653,8 @@ The Enterprise Subscription System is the revenue backbone of ESTA Tracker, buil
 
 ### 🏗️ Architecture & Design
 
-- **[Architecture Overview](./docs/architecture/architecture.md)** — System design
+- **[Architecture Overview](./ARCHITECTURE.md)** — System design and technical vision
+- **[User Experience Vision](./USER_EXPERIENCE_VISION.md)** — UX philosophy and user journey narratives
 - **[Workspace Architecture](./docs/WORKSPACE_ARCHITECTURE.md)** — Monorepo structure
 - **[Engineering Ecosystem](./docs/ENGINEERING_ECOSYSTEM.md)** — Platform vision
 - **[Engineering Principles](./docs/ENGINEERING_PRINCIPLES.md)** — Development standards
