@@ -1,0 +1,30 @@
+{
+  "name": "errors",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/errors/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "libs/shared/errors/dist",
+        "main": "libs/shared/errors/src/index.ts",
+        "tsConfig": "libs/shared/errors/tsconfig.json"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit -p libs/shared/errors/tsconfig.json"
+      }
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf libs/shared/errors/dist"
+      }
+    }
+  },
+  "tags": ["type:library", "scope:shared"]
+}

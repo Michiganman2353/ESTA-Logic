@@ -1,0 +1,30 @@
+{
+  "name": "rules",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/rules/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "libs/shared/rules/dist",
+        "main": "libs/shared/rules/src/index.ts",
+        "tsConfig": "libs/shared/rules/tsconfig.json"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit -p libs/shared/rules/tsconfig.json"
+      }
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf libs/shared/rules/dist"
+      }
+    }
+  },
+  "tags": ["type:library", "scope:shared"]
+}

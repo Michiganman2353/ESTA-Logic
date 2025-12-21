@@ -1,0 +1,23 @@
+{
+  "name": "@esta/validation",
+  "version": "1.0.0",
+  "description": "Centralized validation logic for ESTA Tracker",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "esta",
+    "validation"
+  ],
+  "author": "ESTA Tracker Team",
+  "license": "MIT",
+  "devDependencies": {
+    "vitest": "^1.0.0"
+  }
+}

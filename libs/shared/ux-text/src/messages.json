@@ -1,0 +1,121 @@
+{
+  "errors": {
+    "auth": {
+      "sessionExpired": "Session expired. Please login again.",
+      "loginFailed": "Login failed. Please try again later.",
+      "registrationFailed": "Registration failed. Please try again later.",
+      "invalidEmail": "Invalid email address format. Please enter a valid email.",
+      "weakPassword": "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.",
+      "emailInUse": "An account with this email already exists.",
+      "tooManyAttempts": "Too many registration attempts. Please wait {minutes} minutes and try again.",
+      "configurationError": "Firebase not configured. Please check your environment variables or contact support.",
+      "productionLoginDisabled": "Email/password login is not supported in production. Please use the Firebase Auth client SDK.",
+      "windowLocationUnavailable": "Window location not available. Please try again."
+    },
+    "rateLimit": {
+      "exceeded": "Rate limit exceeded. Please try again later.",
+      "uploadExceeded": "Upload rate limit exceeded. Please try again later."
+    },
+    "server": {
+      "configurationError": "Server configuration error. Please contact support.",
+      "unknownError": "Unknown error",
+      "connectionError": "Connection error. Please try again or contact support if the problem persists."
+    },
+    "validation": {
+      "requiredFieldMissing": "Failed to construct {context}: missing required fields ({fields})",
+      "invalidFormat": "Invalid format for {field}"
+    },
+    "registration": {
+      "failed": "Registration failed. Please check your information and try again.",
+      "closedMessage": "Employer registration is currently closed. Please check back later or contact support for more information."
+    },
+    "policy": {
+      "saveFailed": "Failed to save policy. Please try again.",
+      "applyFailed": "Failed to apply policy. Please try again."
+    },
+    "email": {
+      "verificationFailed": "Failed to send verification email. Please try again later or contact support.",
+      "sendFailed": "Please try again or contact support if the problem persists."
+    }
+  },
+  "success": {
+    "auth": {
+      "registrationComplete": "Registration successful! Welcome to ESTA Tracker.",
+      "loginSuccess": "Login successful!",
+      "emailVerified": "Email verified successfully!"
+    },
+    "policy": {
+      "saved": "Policy saved successfully!",
+      "applied": "Policy applied successfully!"
+    },
+    "upload": {
+      "complete": "Upload completed successfully!"
+    }
+  },
+  "ux": {
+    "trust": {
+      "security": "Your data is secure and encrypted",
+      "privacy": "We protect your privacy",
+      "compliance": "100% ESTA Compliant",
+      "support": "24/7 support available",
+      "peaceOfMind": "Simple, secure, and giving you peace of mind",
+      "weAreHere": "We're here to help you stay compliant",
+      "together": "Let's make compliance simple together",
+      "confidence": "Track with confidence",
+      "trustInUs": "Trust in automated accuracy"
+    },
+    "onboarding": {
+      "welcome": "Welcome to ESTA Tracker",
+      "stepByStep": "We'll guide you step-by-step",
+      "simple": "Making compliance simple",
+      "easy": "Easy to set up and use",
+      "noGuesswork": "No more spreadsheets, no more guesswork"
+    },
+    "loading": {
+      "default": "Loading...",
+      "checkingStatus": "Checking status...",
+      "processing": "Processing your request..."
+    },
+    "cta": {
+      "getStarted": "Start Your Free Trial",
+      "viewPricing": "View Pricing",
+      "returnToLogin": "Return to Login",
+      "tryAgain": "Try Again",
+      "contactSupport": "Contact Support"
+    },
+    "features": {
+      "noCardRequired": "No credit card required",
+      "freeTrial": "14-day free trial",
+      "cancelAnytime": "Cancel anytime"
+    }
+  },
+  "validation": {
+    "email": {
+      "required": "Email is required",
+      "invalid": "Please enter a valid email address"
+    },
+    "password": {
+      "required": "Password is required",
+      "tooShort": "Password must be at least 8 characters",
+      "confirmRequired": "Please confirm your new password",
+      "mismatch": "Passwords do not match"
+    },
+    "required": "{field} is required",
+    "invalidRange": "{field} must be between {min} and {max}"
+  },
+  "compliance": {
+    "esta": {
+      "title": "Michigan ESTA Compliance Made Simple",
+      "description": "Automatically track earned sick time, stay compliant with Michigan's Earned Sick Time Act, and give your employees easy access to their balances.",
+      "smallEmployer": "Small employer (under 50 employees)",
+      "largeEmployer": "Large employer (50+ employees)",
+      "accrualRate": "1 hour per 30 hours worked",
+      "annualGrant": "Annual grant for small employers"
+    }
+  },
+  "support": {
+    "email": "support@estatracker.com",
+    "contactMessage": "Contact support at {email}",
+    "helpMessage": "Need help? We're here for you."
+  }
+}

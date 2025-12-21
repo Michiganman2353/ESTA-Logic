@@ -1,0 +1,19 @@
+{
+  "name": "@esta/rules",
+  "version": "1.0.0",
+  "description": "Centralized business rules and decision schemas for ESTA Tracker",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "esta",
+    "rules",
+    "compliance"
+  ],
+  "author": "ESTA Tracker Team",
+  "license": "MIT"
+}

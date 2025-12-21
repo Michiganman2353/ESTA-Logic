@@ -1,0 +1,31 @@
+{
+  "name": "ux-text",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/ux-text/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "libs/shared/ux-text/dist",
+        "main": "libs/shared/ux-text/src/index.ts",
+        "tsConfig": "libs/shared/ux-text/tsconfig.json",
+        "assets": ["libs/shared/ux-text/src/messages.json"]
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit -p libs/shared/ux-text/tsconfig.json"
+      }
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf libs/shared/ux-text/dist"
+      }
+    }
+  },
+  "tags": ["type:library", "scope:shared"]
+}

@@ -1,5 +1,11 @@
 /**
  * Validation utilities for API endpoints
+ *
+ * @deprecated Validation logic has been centralized to @esta/validation.
+ * This file will be removed in a future release. Please migrate to:
+ * import { validateRequiredFields } from '@esta/validation';
+ *
+ * For now, this file maintains the original implementation for backward compatibility.
  */
 
 /**

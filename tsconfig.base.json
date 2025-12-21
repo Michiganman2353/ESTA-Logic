@@ -40,7 +40,15 @@
       "@esta/core": ["packages/esta-core/dist"],
       "@esta/core/*": ["packages/esta-core/dist/*"],
       "@esta/redis": ["packages/redis/src"],
-      "@esta/redis/*": ["packages/redis/src/*"]
+      "@esta/redis/*": ["packages/redis/src/*"],
+      "@esta/ux-text": ["libs/shared/ux-text/dist"],
+      "@esta/ux-text/*": ["libs/shared/ux-text/dist/*"],
+      "@esta/validation": ["libs/shared/validation/dist"],
+      "@esta/validation/*": ["libs/shared/validation/dist/*"],
+      "@esta/errors": ["libs/shared/errors/dist"],
+      "@esta/errors/*": ["libs/shared/errors/dist/*"],
+      "@esta/rules": ["libs/shared/rules/dist"],
+      "@esta/rules/*": ["libs/shared/rules/dist/*"]
     }
   },
   "include": ["src"]

@@ -1,0 +1,30 @@
+{
+  "name": "validation",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/validation/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "libs/shared/validation/dist",
+        "main": "libs/shared/validation/src/index.ts",
+        "tsConfig": "libs/shared/validation/tsconfig.json"
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc --noEmit -p libs/shared/validation/tsconfig.json"
+      }
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "rm -rf libs/shared/validation/dist"
+      }
+    }
+  },
+  "tags": ["type:library", "scope:shared"]
+}

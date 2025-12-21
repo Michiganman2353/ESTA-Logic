@@ -1,0 +1,20 @@
+{
+  "name": "@esta/ux-text",
+  "version": "1.0.0",
+  "description": "Centralized UX messaging and emotional copy for ESTA Tracker",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "esta",
+    "ux",
+    "messaging",
+    "copy"
+  ],
+  "author": "ESTA Tracker Team",
+  "license": "MIT"
+}
