@@ -346,6 +346,188 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* Security & Trust Section */}
+      <section className="bg-white/50 px-4 py-20 sm:px-6 lg:px-8 dark:bg-gray-800/50">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-16 text-center">
+            <h2 className="mb-4 text-3xl font-bold text-gray-900 sm:text-4xl dark:text-white">
+              Enterprise-Grade Security You Can Trust
+            </h2>
+            <p className="mx-auto max-w-2xl text-lg text-gray-600 dark:text-gray-400">
+              Your employee data deserves the highest level of protection. ESTA Tracker uses bank-level encryption and comprehensive security measures.
+            </p>
+          </div>
+
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <div className="glass-card-hover group p-8">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 transition-transform group-hover:scale-110 dark:from-blue-900 dark:to-blue-800">
+                <svg
+                  className="h-7 w-7 text-blue-600 dark:text-blue-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+              </div>
+              <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">
+                AES-256 Encryption
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Military-grade encryption protects all sensitive employee data at rest and in transit.
+              </p>
+            </div>
+
+            <div className="glass-card-hover group p-8">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-green-100 to-green-200 transition-transform group-hover:scale-110 dark:from-green-900 dark:to-green-800">
+                <svg
+                  className="h-7 w-7 text-green-600 dark:text-green-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
+              <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">
+                Tamper-Proof Audit Logs
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Every action is cryptographically signed and immutable. Complete audit trail for 3+ years.
+              </p>
+            </div>
+
+            <div className="glass-card-hover group p-8">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 transition-transform group-hover:scale-110 dark:from-purple-900 dark:to-purple-800">
+                <svg
+                  className="h-7 w-7 text-purple-600 dark:text-purple-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                  />
+                </svg>
+              </div>
+              <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">
+                Google Cloud KMS
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Hardware security modules (HSM) protect encryption keys. Same tech as banks and governments.
+              </p>
+            </div>
+
+            <div className="glass-card-hover group p-8">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-orange-100 to-orange-200 transition-transform group-hover:scale-110 dark:from-orange-900 dark:to-orange-800">
+                <svg
+                  className="h-7 w-7 text-orange-600 dark:text-orange-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+              </div>
+              <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">
+                SOC 2 Compliant
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Following industry-standard security controls and third-party audited practices.
+              </p>
+            </div>
+
+            <div className="glass-card-hover group p-8">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-red-100 to-red-200 transition-transform group-hover:scale-110 dark:from-red-900 dark:to-red-800">
+                <svg
+                  className="h-7 w-7 text-red-600 dark:text-red-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+              </div>
+              <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">
+                Automated Security Scanning
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                CodeQL analysis and vulnerability scanning on every code change. Proactive threat detection.
+              </p>
+            </div>
+
+            <div className="glass-card-hover group p-8">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-teal-100 to-teal-200 transition-transform group-hover:scale-110 dark:from-teal-900 dark:to-teal-800">
+                <svg
+                  className="h-7 w-7 text-teal-600 dark:text-teal-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+              </div>
+              <h3 className="mb-3 text-xl font-bold text-gray-900 dark:text-white">
+                Multi-Tenant Isolation
+              </h3>
+              <p className="text-gray-600 dark:text-gray-400">
+                Complete data separation between employers. Zero cross-tenant data access possible.
+              </p>
+            </div>
+          </div>
+
+          {/* Security Badge Trust Bar */}
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-6">
+            <div className="flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-4 py-2 dark:border-green-800 dark:bg-green-900/20">
+              <svg className="h-5 w-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-medium text-green-800 dark:text-green-200">GDPR Compliant</span>
+            </div>
+            <div className="flex items-center gap-2 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 dark:border-blue-800 dark:bg-blue-900/20">
+              <svg className="h-5 w-5 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-medium text-blue-800 dark:text-blue-200">CCPA Compliant</span>
+            </div>
+            <div className="flex items-center gap-2 rounded-lg border border-purple-200 bg-purple-50 px-4 py-2 dark:border-purple-800 dark:bg-purple-900/20">
+              <svg className="h-5 w-5 text-purple-600 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+              <span className="text-sm font-medium text-purple-800 dark:text-purple-200">99.9% Uptime SLA</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">

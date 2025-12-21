@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import './DocumentScanner.css';
+import EncryptionIndicator from '@/experience/trust/EncryptionIndicator';
 
 /**
  * DocumentScanner Component
@@ -776,6 +777,10 @@ export const DocumentScanner: React.FC<DocumentScannerProps> = ({
             <li>Hold camera steady</li>
             {enableEdgeDetection && <li>Auto edge detection enabled</li>}
           </ul>
+        </div>
+        {/* Security indicator */}
+        <div className="my-4 flex justify-center">
+          <EncryptionIndicator isActive={enableEncryption} showLabel={true} />
         </div>
         {error && <div className="scanner-error">{error}</div>}
         <button onClick={startCamera} className="btn-start">
