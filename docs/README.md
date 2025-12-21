@@ -8,6 +8,7 @@ Welcome to the ESTA Tracker documentation. This directory contains all technical
 
 | Document                                                                | Purpose                                          |
 | ----------------------------------------------------------------------- | ------------------------------------------------ |
+| **[User Experience Vision](../USER_EXPERIENCE_VISION.md)**              | User journey narratives and emotional design principles |
 | **[Experience Vision](./Experience-Vision.md)**                         | Public announcement of strategic direction shift |
 | **[Strategic Roadmap](./ROADMAP.md)**                                   | Experience-first implementation phases           |
 | **[UX Blueprint](./UX-Blueprint.md)**                                   | TurboTax-inspired user experience design         |
@@ -15,6 +16,8 @@ Welcome to the ESTA Tracker documentation. This directory contains all technical
 | **[Experience-First Architecture](./Experience-First-Architecture.md)** | Architectural principles that serve UX           |
 
 **Core Philosophy:** We're building a guided compliance partner that makes users feel confident, supported, and secure — not a tool they operate.
+
+**Dual Vision:** Technical excellence ([Architecture](../ARCHITECTURE.md)) meets human compassion ([User Experience](../USER_EXPERIENCE_VISION.md)) — both are equal pillars of our platform.
 
 ---
 
