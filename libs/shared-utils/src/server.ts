@@ -18,3 +18,6 @@ export * from './tenant-identifier.js';
 
 // Cache utilities with Redis/in-memory fallback
 export * from './cache.js';
+
+// KMS (Google Cloud Key Management Service)
+export * from './kms/kmsService.js';

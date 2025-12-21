@@ -12,7 +12,7 @@
  */
 
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
-import { kmsService, KMSEncryptionResult } from './kmsService';
+import { kmsService, KMSEncryptionResult } from '@esta-tracker/shared-utils/server';
 
 /**
  * AES-GCM encryption result

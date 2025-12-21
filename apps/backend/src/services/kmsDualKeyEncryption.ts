@@ -25,7 +25,7 @@ import {
   randomBytes,
   createHash,
 } from 'crypto';
-import { kmsService } from './kmsService';
+import { kmsService } from '@esta-tracker/shared-utils/server';
 import {
   generateKyber768KeyPair,
   kyber768Encapsulate,

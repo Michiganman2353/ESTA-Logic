@@ -14,7 +14,7 @@
  * @module keyRotationScheduler
  */
 
-import { kmsService } from './kmsService';
+import { kmsService } from '@esta-tracker/shared-utils/server';
 
 /**
  * Key rotation configuration

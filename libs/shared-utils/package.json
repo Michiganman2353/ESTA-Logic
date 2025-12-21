@@ -27,6 +27,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
+    "@google-cloud/kms": "^5.2.1",
     "date-fns": "^4.1.0",
     "zod": "^3.22.4"
   },
