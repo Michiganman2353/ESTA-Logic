@@ -11,6 +11,9 @@ import {
   type HoursCSVRow,
 } from '@/lib/csvImport';
 import { TrustBadge } from '@/components/trust';
+import { createLogger } from '@esta-tracker/shared-utils';
+
+const logger = createLogger('CSVImporter');
 
 type ImportType = 'employees' | 'hours';
 
@@ -103,7 +106,7 @@ export default function CSVImporter({
       await new Promise((resolve) => setTimeout(resolve, 1000));
       onImportComplete?.(importResult.data);
     } catch (error) {
-      console.error('Import failed:', error);
+      logger.error('Import failed', { error });
     } finally {
       setImporting(false);
     }

@@ -11,6 +11,10 @@
  * - Real-time telemetry dashboard data
  */
 
+import { createLogger } from '@esta-tracker/shared-utils';
+
+const logger = createLogger('PerformanceMonitoring');
+
 export interface PerformanceMetric {
   name: string;
   value: number;
@@ -70,7 +74,8 @@ function getRating(
 async function sendToAnalytics(metric: PerformanceMetric): Promise<void> {
   // In development, log to console
   if (import.meta.env.DEV) {
-    console.log('[Performance]', metric.name, {
+    logger.debug('Performance metric', {
+      name: metric.name,
       value: metric.value,
       rating: metric.rating,
       id: metric.id,
@@ -103,7 +108,7 @@ async function sendToAnalytics(metric: PerformanceMetric): Promise<void> {
       });
     }
   } catch (error) {
-    console.error('Failed to send performance metric:', error);
+    logger.error('Failed to send performance metric', { error });
   }
 }
 
@@ -212,7 +217,7 @@ export async function initWebVitalsTracking(): Promise<void> {
       storeMetricLocally(perfMetric);
     });
   } catch (error) {
-    console.error('Failed to initialize Web Vitals tracking:', error);
+    logger.error('Failed to initialize Web Vitals tracking', { error });
   }
 }
 
@@ -223,7 +228,7 @@ export function mark(name: string): void {
   try {
     performance.mark(name);
   } catch (error) {
-    console.error('Failed to create performance mark:', error);
+    logger.error('Failed to create performance mark', { error, name });
   }
 }
 
@@ -258,7 +263,11 @@ export function measure(
       return duration;
     }
   } catch (error) {
-    console.error('Failed to create performance measure:', error);
+    logger.error('Failed to create performance measure', {
+      error,
+      startMark,
+      endMark,
+    });
   }
 
   return null;

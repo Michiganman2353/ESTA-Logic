@@ -6,6 +6,9 @@
  */
 
 import { lazy, ComponentType, LazyExoticComponent } from 'react';
+import { createLogger } from '@esta-tracker/shared-utils';
+
+const logger = createLogger('LazyLoading');
 
 /**
  * Retry wrapper for lazy imports
@@ -27,9 +30,9 @@ export function lazyWithRetry<T extends ComponentType<any>>(
               return;
             }
 
-            console.warn(
-              `Failed to load component, retrying... (${retriesLeft} attempts left)`
-            );
+            logger.warn('Failed to load component, retrying', {
+              retriesLeft,
+            });
 
             setTimeout(() => {
               attemptLoad(retriesLeft - 1);

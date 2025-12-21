@@ -8,7 +8,8 @@ interface AuditLogProps {
 }
 
 export default function AuditLog({ user }: AuditLogProps) {
-  console.log('User:', user.name); // Using user to avoid unused var error
+  // User prop is passed for potential future use
+  void user;
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 dark:bg-gray-900">

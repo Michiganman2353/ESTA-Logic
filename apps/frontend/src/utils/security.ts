@@ -3,6 +3,10 @@
  * Prevents XSS, SQL injection, and other security vulnerabilities
  */
 
+import { createLogger } from '@esta-tracker/shared-utils';
+
+const logger = createLogger('SecurityUtils');
+
 /**
  * Sanitize HTML to prevent XSS attacks
  * Removes all HTML tags and dangerous characters
@@ -219,7 +223,7 @@ export function checkRateLimit(
       resetTime: data.resetTime,
     };
   } catch (error) {
-    console.error('Rate limit check failed:', error);
+    logger.error('Rate limit check failed', { error });
     // Fail open - allow the action if localStorage fails
     return {
       allowed: true,
@@ -236,7 +240,7 @@ export function clearRateLimit(action: string): void {
   try {
     localStorage.removeItem(`rateLimit_${action}`);
   } catch (error) {
-    console.error('Failed to clear rate limit:', error);
+    logger.error('Failed to clear rate limit', { error });
   }
 }
 
