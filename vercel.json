@@ -23,12 +23,12 @@
       "memory": 512,
       "runtime": "nodejs20.x"
     },
-    "api/*.ts": {
+    "api/*.js": {
       "maxDuration": 30,
       "memory": 512,
       "runtime": "nodejs20.x"
     },
-    "api/*.js": {
+    "api/*.ts": {
       "maxDuration": 30,
       "memory": 512,
       "runtime": "nodejs20.x"
