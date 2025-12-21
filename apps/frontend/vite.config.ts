@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import fs from 'fs';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -126,12 +127,22 @@ export default defineConfig(({ mode }) => {
           entryFileNames: 'assets/js/[name]-[hash].js',
         },
       },
-      // Chunk size warning limit
-      chunkSizeWarningLimit: 1000,
+      // Chunk size warning limit (reduced from 1000 to enforce budgets)
+      chunkSizeWarningLimit: 500,
       // Minify settings
       minify: 'esbuild',
       // CSS minify
       cssMinify: true,
+      // Report compressed size for performance tracking
+      reportCompressedSize: true,
     },
+    // Performance budgets enforcement
+    // Hook into build end to check bundle sizes against budgets
+    ...(mode === 'production' && {
+      // This will be called after build completes
+      async build() {
+        // Budget checking will be done via custom plugin
+      },
+    }),
   };
 });

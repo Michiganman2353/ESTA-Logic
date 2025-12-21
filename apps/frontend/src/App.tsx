@@ -17,6 +17,7 @@
  * - Includes debug panel for development
  * - Uses React lazy loading for optimal performance
  * - WCAG 2.1 AA accessibility compliant with skip links and focus management
+ * - Performance monitoring with Web Vitals tracking
  *
  * Uses:
  * - React Router for client-side navigation
@@ -25,6 +26,7 @@
  * - Design system components for consistent UI feedback
  * - React.lazy and Suspense for code splitting
  * - SkipLinks for keyboard accessibility
+ * - Performance monitoring service for telemetry
  *
  * All application pages and layout are controlled from here.
  */
@@ -44,6 +46,7 @@ import { MaintenanceMode } from '@/components/MaintenanceMode';
 import { DebugPanel } from '@/components/DebugPanel';
 import { SkipLinks, FocusAnchor } from '@/components/SkipLinks';
 import { PageLoader } from '@/components/DesignSystem';
+import { initWebVitalsTracking } from '@/services/performanceMonitoring';
 
 // Eagerly load critical components that appear on first render
 import Login from '@/pages/Login';
@@ -61,6 +64,7 @@ const Settings = lazy(() => import('@/pages/Settings'));
 const Pricing = lazy(() => import('@/pages/Pricing'));
 const UIShowcase = lazy(() => import('@/pages/UIShowcase'));
 const GuidedFlow = lazy(() => import('@/pages/GuidedFlow'));
+const PerformanceDashboard = lazy(() => import('@/pages/PerformanceDashboard'));
 
 /**
  * Focus management component for route changes
@@ -102,6 +106,11 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
+
+  // Initialize performance monitoring on app load
+  useEffect(() => {
+    initWebVitalsTracking();
+  }, []);
 
   // Log authentication state changes for debugging
   useEffect(() => {
@@ -299,6 +308,9 @@ function App() {
 
           {/* UI Showcase (Development/Design) */}
           <Route path="/ui-showcase" element={<UIShowcase />} />
+
+          {/* Performance Dashboard (Development/Monitoring) */}
+          <Route path="/performance" element={<PerformanceDashboard />} />
 
           {/* Protected routes - require authentication */}
           {user ? (
