@@ -38,14 +38,14 @@ export type DecisionStatus = z.infer<typeof DecisionStatusSchema>;
 /**
  * Risk level assessment for transparency
  */
-export const RiskLevelSchema = z.enum([
+export const ExperienceRiskLevelSchema = z.enum([
   'NONE',
   'LOW',
   'MEDIUM',
   'HIGH',
   'CRITICAL',
 ]);
-export type RiskLevel = z.infer<typeof RiskLevelSchema>;
+export type ExperienceRiskLevel = z.infer<typeof ExperienceRiskLevelSchema>;
 
 /**
  * Confidence score for decision transparency (0-100)
@@ -59,19 +59,19 @@ export type ConfidenceScore = z.infer<typeof ConfidenceScoreSchema>;
 export interface UserGuidanceHint {
   /** Category of guidance */
   category: 'ACTION_REQUIRED' | 'INFORMATION' | 'RECOMMENDATION' | 'WARNING';
-  
+
   /** Short, actionable title */
   title: string;
-  
+
   /** Detailed description of what to do */
   description: string;
-  
+
   /** Optional link to more information */
   helpLink?: string;
-  
+
   /** Estimated time to complete (in minutes) */
   estimatedMinutes?: number;
-  
+
   /** Priority level */
   priority: 'low' | 'medium' | 'high' | 'urgent';
 }
@@ -96,13 +96,13 @@ export const UserGuidanceHintSchema = z.object({
 export interface ReassuranceMessage {
   /** Main reassuring statement */
   message: string;
-  
+
   /** Supporting context that builds confidence */
   context?: string;
-  
+
   /** Tone of the message */
   tone: 'positive' | 'neutral' | 'encouraging' | 'empathetic';
-  
+
   /** Whether to prominently display this message */
   emphasize: boolean;
 }
@@ -120,16 +120,16 @@ export const ReassuranceMessageSchema = z.object({
 export interface LegalReference {
   /** Legal code or statute */
   citation: string;
-  
+
   /** Human-readable summary */
   summary: string;
-  
+
   /** Full text (optional) */
   fullText?: string;
-  
+
   /** Link to official documentation */
   officialLink?: string;
-  
+
   /** Relevance to this specific decision */
   relevanceExplanation: string;
 }
@@ -201,7 +201,7 @@ export interface ExperienceResponse<TTechnical = unknown> {
   /**
    * Risk assessment for transparency
    */
-  riskLevel: RiskLevel;
+  riskLevel: ExperienceRiskLevel;
 
   /**
    * Confidence score (0-100) indicating certainty of the decision
@@ -251,7 +251,7 @@ export const ExperienceResponseSchema = z.object({
   decision: DecisionStatusSchema,
   explanation: z.string().min(10).max(500),
   humanMeaning: z.string().min(5).max(300),
-  riskLevel: RiskLevelSchema,
+  riskLevel: ExperienceRiskLevelSchema,
   confidenceScore: ConfidenceScoreSchema,
   reassuranceMessage: ReassuranceMessageSchema,
   nextSteps: z.array(UserGuidanceHintSchema),
@@ -320,8 +320,8 @@ export interface ComplianceExperienceResponse extends ExperienceResponse {
   }[];
 }
 
-export const ComplianceExperienceResponseSchema = ExperienceResponseSchema.extend(
-  {
+export const ComplianceExperienceResponseSchema =
+  ExperienceResponseSchema.extend({
     decision: z.enum(['APPROVED', 'DENIED', 'WARNING']),
     complianceSummary: z.object({
       totalRulesChecked: z.number().int().nonnegative(),
@@ -347,8 +347,7 @@ export const ComplianceExperienceResponseSchema = ExperienceResponseSchema.exten
         severity: z.literal('warning'),
       })
     ),
-  }
-);
+  });
 
 // ============================================================================
 // Section 4: Experience Context
@@ -449,16 +448,18 @@ export const PerformanceMetadataSchema = z.object({
 /**
  * Extended experience response with performance tracking
  */
-export interface EnhancedExperienceResponse<TTechnical = unknown>
-  extends ExperienceResponse<TTechnical> {
+export interface EnhancedExperienceResponse<
+  TTechnical = unknown,
+> extends ExperienceResponse<TTechnical> {
   /** Performance metadata */
   performance: PerformanceMetadata;
 }
 
-export const EnhancedExperienceResponseSchema =
-  ExperienceResponseSchema.extend({
+export const EnhancedExperienceResponseSchema = ExperienceResponseSchema.extend(
+  {
     performance: PerformanceMetadataSchema,
-  });
+  }
+);
 
 // ============================================================================
 // Section 8: Experience Transformer Interface
@@ -500,24 +501,3 @@ export interface IExperienceTransformer<TInput, TOutput> {
    */
   generateLegalReferences(input: TInput): LegalReference[];
 }
-
-// ============================================================================
-// Exports
-// ============================================================================
-
-export type {
-  DecisionStatus,
-  RiskLevel,
-  ConfidenceScore,
-  UserGuidanceHint,
-  ReassuranceMessage,
-  LegalReference,
-  ExperienceResponse,
-  AccrualExperienceResponse,
-  ComplianceExperienceResponse,
-  UserExperienceContext,
-  ExperienceRequest,
-  PerformanceMetadata,
-  EnhancedExperienceResponse,
-  IExperienceTransformer,
-};

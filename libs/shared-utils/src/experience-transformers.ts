@@ -12,19 +12,20 @@ import type {
   ComplianceExperienceResponse,
   ConfidenceScore,
   DecisionStatus,
+  ExperienceResponse,
+  ExperienceRiskLevel,
   LegalReference,
   ReassuranceMessage,
-  RiskLevel,
   UserExperienceContext,
   UserGuidanceHint,
-} from '@esta-logic/shared-types/ux-experience-contract';
+} from '../../shared-types/src/ux-experience-contract';
 
 import type {
   AccrualCalculateResult,
   ComplianceCheckResult,
   ComplianceViolation,
   ComplianceWarning,
-} from '../../../kernel/abi/messages.js';
+} from '../../../kernel/abi/messages';
 
 // Simple UUID v4 generator to avoid external dependency
 function generateUUID(): string {
@@ -53,7 +54,7 @@ export function transformAccrualToExperience(
   const confidenceScore: ConfidenceScore = 100;
 
   // Determine risk level
-  const riskLevel: RiskLevel = isNearingMax ? 'LOW' : 'NONE';
+  const riskLevel: ExperienceRiskLevel = isNearingMax ? 'LOW' : 'NONE';
 
   // Generate human-friendly explanation
   const explanation = generateAccrualExplanation(result, userContext);
@@ -274,7 +275,10 @@ export function transformComplianceToExperience(
   const totalRulesChecked = result.violations.length + result.warnings.length;
   const violationCount = result.violations.length;
   const warningCount = result.warnings.length;
-  const rulesCompliant = totalRulesChecked > 0 ? totalRulesChecked - violationCount - warningCount : 0;
+  const rulesCompliant =
+    totalRulesChecked > 0
+      ? totalRulesChecked - violationCount - warningCount
+      : 0;
 
   // Determine overall status
   const overallStatus =
@@ -306,7 +310,7 @@ export function transformComplianceToExperience(
   );
 
   // Generate next steps
-  const nextSteps = generateComplianceNextSteps(result, userContext);
+  const nextSteps = generateComplianceNextSteps(result);
 
   // Generate legal references
   const legalReferences = generateComplianceLegalReferences(result);
@@ -369,7 +373,7 @@ function calculateComplianceConfidence(
 
 function determineComplianceRiskLevel(
   result: ComplianceCheckResult
-): RiskLevel {
+): ExperienceRiskLevel {
   if (result.violations.some((v) => v.severity === 'critical')) {
     return 'CRITICAL';
   }
@@ -491,7 +495,8 @@ function generateComplianceReassurance(
       };
     }
     return {
-      message: "We've identified critical issues that need immediate attention.",
+      message:
+        "We've identified critical issues that need immediate attention.",
       context:
         "Don't worry - we'll guide you through exactly what to fix. You can resolve this.",
       tone: 'empathetic',
@@ -509,8 +514,7 @@ function generateComplianceReassurance(
 }
 
 function generateComplianceNextSteps(
-  result: ComplianceCheckResult,
-  userContext?: UserExperienceContext
+  result: ComplianceCheckResult
 ): UserGuidanceHint[] {
   const steps: UserGuidanceHint[] = [];
 
@@ -674,7 +678,7 @@ export function createSimpleExperienceResponse<T>(
   humanMeaning: string,
   technicalDetails: T,
   sourceEngine: string
-): import('@esta-logic/shared-types/ux-experience-contract').ExperienceResponse<T> {
+): ExperienceResponse<T> {
   return {
     decision,
     explanation,
@@ -695,12 +699,4 @@ export function createSimpleExperienceResponse<T>(
   };
 }
 
-// ============================================================================
-// Exports
-// ============================================================================
-
-export {
-  transformAccrualToExperience,
-  transformComplianceToExperience,
-  createSimpleExperienceResponse,
-};
+// Note: No need to re-export as they're already exported above
