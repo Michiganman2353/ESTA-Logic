@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { KMSService } from '../kmsService';
+import { KMSService } from '@esta-tracker/shared-utils/server';
 
 describe('KMSService Configuration', () => {
   let originalEnv: NodeJS.ProcessEnv;

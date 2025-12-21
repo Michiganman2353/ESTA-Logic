@@ -14,11 +14,11 @@ import type { VercelResponse } from '@vercel/node';
 import {
   decryptHybrid,
   type HybridDecryptionPayload,
-} from '../lib/encryption/hybridEncryption';
+} from '@esta-tracker/shared-utils/server';
 import {
   decryptWithKMS,
   type KMSDecryptionPayload,
-} from '../lib/services/kmsHybridEncryption';
+} from '@esta-tracker/shared-utils/server';
 import {
   requireAuth,
   isResourceOwner,

@@ -12,7 +12,7 @@
  */
 
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
-import { kmsService, KMSEncryptionResult } from './kmsService';
+import { kmsService, KMSEncryptionResult } from '../kms/kmsService.js';
 
 /**
  * AES-GCM encryption result
