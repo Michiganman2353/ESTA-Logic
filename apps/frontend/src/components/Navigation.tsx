@@ -8,6 +8,7 @@
  * - Branded logo integration
  * - Responsive mobile/desktop layouts
  * - User info display
+ * - Security badge display
  * - Gradient background with glass effect
  * - Smooth animations
  * - Accessibility compliant
@@ -16,6 +17,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import clsx from 'clsx';
+import { TrustBadge } from '@/components/Settings';
 
 interface NavigationProps {
   user?: {
@@ -72,6 +74,8 @@ export function Navigation({ user, onLogout, className }: NavigationProps) {
           {/* Desktop Navigation */}
           {user ? (
             <div className="hidden items-center space-x-6 md:flex">
+              {/* Security Badge */}
+              <TrustBadge variant="security" size="sm" />
               <Link
                 to="/settings"
                 className="hover:text-royal-600 dark:hover:text-royal-400 text-sm text-gray-700 transition-colors dark:text-gray-300"

@@ -5,6 +5,7 @@ import { InsightCard, DashboardCard } from '@/components/DashboardWidgets';
 import { AccrualNotificationBanner } from '@/components/AccrualNotificationBanner';
 import { useAccrualNotifications } from '@/components/AccrualNotificationBanner.utils';
 import { Navigation } from '@/components/Navigation';
+import { SecurityStatusBanner } from '@/components/SecurityStatusBanner';
 
 interface EmployerDashboardProps {
   user: User;
@@ -89,6 +90,11 @@ export default function EmployerDashboard({ user }: EmployerDashboardProps) {
           onDismiss={removeNotification}
           className="animate-fade-in mb-6"
         />
+
+        {/* Security Status Indicator */}
+        <div className="animate-fade-in mb-6">
+          <SecurityStatusBanner variant="compact" />
+        </div>
 
         {/* Insights Cards */}
         <section

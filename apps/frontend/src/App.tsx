@@ -38,6 +38,7 @@ import {
 } from 'react-router-dom';
 import { useEffect, useState, lazy, Suspense } from 'react';
 import { useAuth } from '@/contexts/useAuth';
+import { SecurityProvider } from '@/contexts/SecurityContext';
 import { User } from '@/types';
 import { MaintenanceMode } from '@/components/MaintenanceMode';
 import { DebugPanel } from '@/components/DebugPanel';
@@ -230,30 +231,31 @@ function App() {
   }
 
   return (
-    <BrowserRouter
-      future={{
-        v7_startTransition: true,
-        v7_relativeSplatPath: true,
-      }}
-    >
-      {/* Skip Links for keyboard navigation - WCAG 2.4.1 */}
-      <SkipLinks
-        targets={[
-          { id: 'main-content', label: 'Skip to main content' },
-          { id: 'main-navigation', label: 'Skip to navigation' },
-        ]}
-      />
+    <SecurityProvider>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        {/* Skip Links for keyboard navigation - WCAG 2.4.1 */}
+        <SkipLinks
+          targets={[
+            { id: 'main-content', label: 'Skip to main content' },
+            { id: 'main-navigation', label: 'Skip to navigation' },
+          ]}
+        />
 
-      {/* Focus management for route changes - WCAG 2.4.3 */}
-      <FocusManager />
+        {/* Focus management for route changes - WCAG 2.4.3 */}
+        <FocusManager />
 
-      <MaintenanceMode />
-      <DebugPanel />
+        <MaintenanceMode />
+        <DebugPanel />
 
-      {/* Main content area with focus anchor */}
-      <FocusAnchor id="main-content" label="Main content" />
+        {/* Main content area with focus anchor */}
+        <FocusAnchor id="main-content" label="Main content" />
 
-      <Suspense fallback={<PageLoaderFallback />}>
+        <Suspense fallback={<PageLoaderFallback />}>
         <Routes>
           {/* Public routes - accessible without authentication */}
           <Route
@@ -319,6 +321,7 @@ function App() {
         </Routes>
       </Suspense>
     </BrowserRouter>
+    </SecurityProvider>
   );
 }
 
