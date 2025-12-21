@@ -2,6 +2,8 @@
 
 This document outlines performance optimization strategies and best practices for the ESTA Tracker application.
 
+> **Quick Start**: For a quick overview of performance features, see [Performance Features Summary](./PERFORMANCE_FEATURES.md)
+
 ## Table of Contents
 
 1. [Frontend Performance](#frontend-performance)
@@ -9,6 +11,29 @@ This document outlines performance optimization strategies and best practices fo
 3. [Build Optimization](#build-optimization)
 4. [Monitoring & Metrics](#monitoring--metrics)
 5. [Best Practices](#best-practices)
+
+## Performance Features
+
+ESTA Tracker includes comprehensive performance monitoring and optimization:
+
+- **Performance Budgets**: Enforced bundle size limits (see [performance-budgets.json](../performance-budgets.json))
+- **Lazy Loading**: Automatic code splitting and on-demand loading (see [Lazy Loading Guide](./LAZY_LOADING_GUIDE.md))
+- **Telemetry Dashboard**: Real-time Web Vitals monitoring at `/performance`
+- **Web Vitals Tracking**: Automatic LCP, CLS, FCP, TTFB, INP tracking
+
+### Quick Commands
+
+```bash
+# Check performance budgets
+npm run perf:check
+
+# View telemetry dashboard
+npm run dev:frontend
+# Then visit http://localhost:5173/performance
+
+# Run performance tests
+npm run test:perf
+```
 
 ## Frontend Performance
 
@@ -558,7 +583,11 @@ http://localhost:5173/performance
 Track custom performance metrics in your code:
 
 ```typescript
-import { mark, measure, trackComponentRender } from '@/services/performanceMonitoring';
+import {
+  mark,
+  measure,
+  trackComponentRender,
+} from '@/services/performanceMonitoring';
 
 // Mark start of operation
 mark('data_fetch_start');
