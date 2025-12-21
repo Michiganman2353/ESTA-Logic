@@ -17,8 +17,6 @@
  * - Responsive design with dark mode support
  */
 
-import React from 'react';
-
 export interface TrustBadgeProps {
   /** Icon type to display */
   icon?: 'shield-check' | 'lock' | 'verified' | 'encrypted';

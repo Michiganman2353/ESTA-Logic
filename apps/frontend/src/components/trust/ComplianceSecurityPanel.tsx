@@ -11,7 +11,6 @@
  * - Build ongoing confidence
  */
 
-import React from 'react';
 import { TrustBadge } from './TrustBadge';
 
 export interface ComplianceSecurityPanelProps {

@@ -10,7 +10,6 @@
  * - Visual trust signals via badges and icons
  */
 
-import React from 'react';
 import { TrustBadge } from './TrustBadge';
 
 export interface SecureUploadPanelProps {

@@ -11,7 +11,6 @@
  * - Empower user to proceed confidently
  */
 
-import React from 'react';
 import { TrustBadge } from './TrustBadge';
 
 export interface UploadSuccessMessageProps {

@@ -1,6 +1,5 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import './DocumentScanner.css';
-import EncryptionIndicator from '@/experience/trust/EncryptionIndicator';
 import { TrustBadge, TrustBadgeCompact } from '@/components/trust';
 
 /**

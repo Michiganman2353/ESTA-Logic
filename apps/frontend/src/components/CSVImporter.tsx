@@ -10,7 +10,7 @@ import {
   type EmployeeCSVRow,
   type HoursCSVRow,
 } from '@/lib/csvImport';
-import { TrustBadge, TrustBadgeCompact } from '@/components/trust';
+import { TrustBadge } from '@/components/trust';
 
 type ImportType = 'employees' | 'hours';
 
