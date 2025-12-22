@@ -208,18 +208,15 @@ function validateVercelIgnore() {
       .split('\n')
       .filter((line) => line.trim() && !line.startsWith('#'));
 
-    // Check for critical files being ignored
-    const criticalPatterns = ['package.json', 'vercel.json', 'node_modules'];
+    // Check for critical build/config files being ignored (node_modules is OK to ignore)
+    const criticalFiles = ['package.json', 'vercel.json'];
     const ignoredCritical = lines.filter((line) => {
-      return criticalPatterns.some(
+      return criticalFiles.some(
         (pattern) => line.includes(pattern) && !line.startsWith('!')
       );
     });
 
-    if (
-      ignoredCritical.length > 0 &&
-      !ignoredCritical.includes('node_modules/')
-    ) {
+    if (ignoredCritical.length > 0) {
       log(
         `⚠️  Warning: Critical files may be ignored: ${ignoredCritical.join(', ')}`,
         'yellow'
