@@ -1,6 +1,6 @@
 /**
  * SecurityStatusBanner Component Tests
- * 
+ *
  * Tests the security status banner displays correct security states
  * and provides expandable details when needed.
  */
@@ -11,7 +11,7 @@ import { SecurityStatusBanner } from '../SecurityStatusBanner';
 import { SecurityProvider } from '@/contexts/SecurityContext';
 
 // Mock the SecurityContext
-vi.mock('@/contexts/SecurityContext', async () => {
+vi.mock('@/contexts/SecurityContext.helpers', async () => {
   const actual = await vi.importActual('@/contexts/SecurityContext');
   return {
     ...actual,

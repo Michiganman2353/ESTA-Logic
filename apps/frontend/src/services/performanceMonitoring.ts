@@ -12,6 +12,7 @@
  */
 
 import { createLogger } from '@esta-tracker/shared-utils';
+import type { Metric } from 'web-vitals';
 
 const logger = createLogger('PerformanceMonitoring');
 
@@ -128,7 +129,7 @@ function storeMetricLocally(metric: PerformanceMetric): void {
     }
 
     localStorage.setItem(key, JSON.stringify(metrics));
-  } catch (error) {
+  } catch (_error) {
     // Ignore localStorage errors
   }
 }
@@ -143,7 +144,7 @@ export async function initWebVitalsTracking(): Promise<void> {
     const { onCLS, onLCP, onFCP, onTTFB, onINP } = await import('web-vitals');
 
     // Track Cumulative Layout Shift
-    onCLS((metric: any) => {
+    onCLS((metric: Metric) => {
       const perfMetric: PerformanceMetric = {
         name: 'CLS',
         value: metric.value,
@@ -158,7 +159,7 @@ export async function initWebVitalsTracking(): Promise<void> {
     });
 
     // Track Largest Contentful Paint
-    onLCP((metric: any) => {
+    onLCP((metric: Metric) => {
       const perfMetric: PerformanceMetric = {
         name: 'LCP',
         value: metric.value,
@@ -173,7 +174,7 @@ export async function initWebVitalsTracking(): Promise<void> {
     });
 
     // Track First Contentful Paint
-    onFCP((metric: any) => {
+    onFCP((metric: Metric) => {
       const perfMetric: PerformanceMetric = {
         name: 'FCP',
         value: metric.value,
@@ -188,7 +189,7 @@ export async function initWebVitalsTracking(): Promise<void> {
     });
 
     // Track Time to First Byte
-    onTTFB((metric: any) => {
+    onTTFB((metric: Metric) => {
       const perfMetric: PerformanceMetric = {
         name: 'TTFB',
         value: metric.value,
@@ -203,7 +204,7 @@ export async function initWebVitalsTracking(): Promise<void> {
     });
 
     // Track Interaction to Next Paint
-    onINP((metric: any) => {
+    onINP((metric: Metric) => {
       const perfMetric: PerformanceMetric = {
         name: 'INP',
         value: metric.value,
@@ -281,7 +282,7 @@ export function getStoredMetrics(): PerformanceMetric[] {
     const key = 'esta_performance_metrics';
     const stored = localStorage.getItem(key);
     return stored ? JSON.parse(stored) : [];
-  } catch (error) {
+  } catch (_error) {
     return [];
   }
 }
@@ -293,7 +294,7 @@ export function clearStoredMetrics(): void {
   try {
     const key = 'esta_performance_metrics';
     localStorage.removeItem(key);
-  } catch (error) {
+  } catch (_error) {
     // Ignore errors
   }
 }
@@ -311,7 +312,16 @@ export function getPerformanceSummary(): {
   };
 } {
   const metrics = getStoredMetrics();
-  const summary: any = {};
+  const summary: Record<
+    string,
+    {
+      average: number;
+      min: number;
+      max: number;
+      count: number;
+      rating: 'good' | 'needs-improvement' | 'poor';
+    }
+  > = {};
 
   // Group by metric name
   const grouped = metrics.reduce(

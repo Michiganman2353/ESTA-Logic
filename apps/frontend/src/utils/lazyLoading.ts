@@ -14,6 +14,9 @@ const logger = createLogger('LazyLoading');
  * Retry wrapper for lazy imports
  * Automatically retries failed chunk loads
  */
+// TODO: ESTA-Logic Architecture Note - ComponentType<any> is intentional here
+// to accept any React component regardless of props. Consider constraining to
+// ComponentType<Record<string, unknown>> for stricter typing if needed.
 export function lazyWithRetry<T extends ComponentType<any>>(
   componentImport: () => Promise<{ default: T }>,
   retries = 3,
@@ -49,19 +52,23 @@ export function lazyWithRetry<T extends ComponentType<any>>(
  * Preload a lazy component
  * Useful for prefetching components that will likely be needed
  */
+// TODO: ESTA-Logic Architecture Note - ComponentType<any> is intentional here
+// to accept any React component regardless of props.
 export function preloadComponent<T extends ComponentType<any>>(
   lazyComponent: LazyExoticComponent<T>
 ): void {
-  // @ts-ignore - accessing internal preload method
+  // @ts-expect-error - accessing internal React lazy component payload for preloading
   if (lazyComponent._payload && lazyComponent._payload._result === null) {
-    // @ts-ignore
-    lazyComponent._payload._result;
+    // @ts-expect-error - triggering lazy load by accessing internal result
+    void lazyComponent._payload._result;
   }
 }
 
 /**
  * Create a lazy component with automatic prefetching on hover
  */
+// TODO: ESTA-Logic Architecture Note - ComponentType<any> is intentional here
+// to accept any React component regardless of props.
 export function createPrefetchComponent<T extends ComponentType<any>>(
   componentImport: () => Promise<{ default: T }>
 ): {
@@ -166,6 +173,8 @@ export const firebaseServices = {
  * Intersection Observer based lazy loading
  * Load components when they enter the viewport
  */
+// TODO: ESTA-Logic Architecture Note - ComponentType<any> is intentional here
+// to accept any React component regardless of props.
 export function useLazyLoadOnView<T extends ComponentType<any>>(
   componentImport: () => Promise<{ default: T }>
 ): {
