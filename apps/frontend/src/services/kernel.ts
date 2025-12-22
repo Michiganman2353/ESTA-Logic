@@ -27,6 +27,10 @@
  * ============================================================================
  */
 
+import { createLogger } from '@esta-tracker/shared-utils';
+
+const logger = createLogger('KernelClient');
+
 // Type definitions for kernel API
 
 export interface KernelRequest {
@@ -178,7 +182,7 @@ export class KernelClient {
     }
 
     // Mock implementation for non-Tauri environments
-    console.warn(`[KernelClient] Running in mock mode for command: ${command}`);
+    logger.warn('Running in mock mode', { command });
     return this.mockInvoke(command, args);
   }
 

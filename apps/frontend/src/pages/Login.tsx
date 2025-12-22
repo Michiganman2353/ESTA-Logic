@@ -4,8 +4,14 @@ import { signIn } from '@/lib/authService';
 import { User } from '@/types';
 import { PasswordField } from '@/components/PasswordField';
 import { LoadingButton } from '@/components/LoadingButton';
-import { ErrorCode, ERROR_MESSAGES } from '@esta-tracker/shared-utils';
+import {
+  ErrorCode,
+  ERROR_MESSAGES,
+  createLogger,
+} from '@esta-tracker/shared-utils';
 import { Navigation } from '@/components/Navigation';
+
+const logger = createLogger('LoginPage');
 
 interface LoginProps {
   onLogin: (user: User) => void;
@@ -62,22 +68,18 @@ export default function Login({ onLogin }: LoginProps) {
     setLoading(true);
 
     // Log login attempt for debugging
-    console.log('=== Login Attempt ===');
-    console.log('Email:', email);
-    console.log('Firebase Configured: YES');
-    console.log('Timestamp:', new Date().toISOString());
-    console.log('====================');
+    logger.debug('Login attempt started', {
+      timestamp: new Date().toISOString(),
+    });
 
     try {
       // Use Firebase authentication
-      console.log('Attempting Firebase login...');
+      logger.debug('Attempting Firebase login');
       const user = await signIn(email, password);
-      console.log('Firebase login successful:', user);
+      logger.info('Firebase login successful');
       onLogin(user);
     } catch (err) {
-      console.error('=== Login Error ===');
-      console.error('Error:', err);
-      console.error('==================');
+      logger.error('Login error', { error: err });
 
       if (err instanceof Error) {
         // For standard errors, use the message directly
