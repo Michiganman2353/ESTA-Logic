@@ -153,6 +153,9 @@ jobs:
           fi
           echo "✅ vercel.json is valid JSON"
 
+      - name: Validate Vercel Configuration
+        run: npm run validate:vercel
+
       - name: Validate Environment Secrets
         run: |
           # Fail fast if any required secret is missing
