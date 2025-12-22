@@ -5,7 +5,7 @@
  * optimized lazy loading throughout the application.
  */
 
-import { lazy, ComponentType, LazyExoticComponent } from 'react';
+import React, { lazy, ComponentType, LazyExoticComponent } from 'react';
 import { createLogger } from '@esta-tracker/shared-utils';
 
 const logger = createLogger('LazyLoading');
@@ -45,6 +45,29 @@ export function lazyWithRetry<T extends ComponentType<any>>(
   });
 }
 
+// React intentionally hides _payload in its public typing, but it is present at runtime.
+// We define a constrained structural wrapper so we can safely resolve the lazy module
+// without weakening global TypeScript strictness.
+
+type InternalLazyComponent = React.LazyExoticComponent<any> & {
+  _payload?: {
+    _result?: {
+      default?: React.ComponentType<any>;
+    };
+  };
+};
+
+export function resolveLazyComponent<T extends React.ComponentType<any>>(
+  lazyComponent: React.LazyExoticComponent<T>
+): T | null {
+  const internal = lazyComponent as InternalLazyComponent;
+
+  const resolved =
+    internal._payload?._result?.default ?? internal._payload?._result ?? null;
+
+  return resolved as T | null;
+}
+
 /**
  * Preload a lazy component
  * Useful for prefetching components that will likely be needed
@@ -52,10 +75,10 @@ export function lazyWithRetry<T extends ComponentType<any>>(
 export function preloadComponent<T extends ComponentType<any>>(
   lazyComponent: LazyExoticComponent<T>
 ): void {
-  // @ts-ignore - accessing internal preload method
-  if (lazyComponent._payload && lazyComponent._payload._result === null) {
-    // @ts-ignore
-    lazyComponent._payload._result;
+  const internal = lazyComponent as InternalLazyComponent;
+  if (internal._payload && internal._payload._result === null) {
+    // Intentionally access _result to potentially trigger React's lazy loading
+    void internal._payload._result;
   }
 }
 
@@ -206,6 +229,3 @@ export function useLazyLoadOnView<T extends ComponentType<any>>(
 
   return { Component, ref };
 }
-
-// Add React import for useLazyLoadOnView
-import React from 'react';
