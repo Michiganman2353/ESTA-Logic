@@ -315,6 +315,12 @@ export function getPerformanceSummary(): Record<
   PerformanceSummaryMetric
 > {
   const metrics = getStoredMetrics();
+
+  // Return early if no metrics
+  if (metrics.length === 0) {
+    return {};
+  }
+
   const summary: Record<string, PerformanceSummaryMetric> = {};
 
   // Group by metric name

@@ -53,16 +53,26 @@ export function lazyWithRetry<T extends ComponentType<any>>(
 /**
  * Preload a lazy component
  * Useful for prefetching components that will likely be needed
+ *
+ * Note: This is a placeholder implementation. React's lazy components don't have
+ * a public preload API. For proper preloading, use createPrefetchComponent instead.
  */
 // TODO: ESTA-Logic Architecture Note - ComponentType<any> matches React's standard
 // generic component pattern. This allows preloading any lazy-loaded component.
+// TODO: Implement proper preloading using the component's import function instead of
+// accessing React internals which may not trigger actual loading.
 export function preloadComponent<T extends ComponentType<any>>(
   lazyComponent: LazyExoticComponent<T>
 ): void {
-  // @ts-expect-error - accessing internal React lazy component payload for preloading
-  if (lazyComponent._payload && lazyComponent._payload._result === null) {
-    // @ts-expect-error - triggering lazy load by accessing internal result
-    void lazyComponent._payload._result;
+  // @ts-expect-error - accessing internal React lazy component payload
+  // Note: This may not actually trigger preloading in current React versions
+  if (lazyComponent._payload && lazyComponent._payload._init) {
+    // @ts-expect-error - calling internal init function
+    try {
+      lazyComponent._payload._init(lazyComponent._payload);
+    } catch {
+      // Ignore errors during preload attempt
+    }
   }
 }
 
