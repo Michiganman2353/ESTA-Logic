@@ -15,8 +15,10 @@ const logger = createLogger('LazyLoading');
  * Automatically retries failed chunk loads
  */
 // TODO: ESTA-Logic Architecture Note - ComponentType<any> is intentional here
-// to accept any React component regardless of props. Consider constraining to
-// ComponentType<Record<string, unknown>> for stricter typing if needed.
+// to accept any React component regardless of props. This is the standard pattern
+// for generic lazy loading utilities as documented in React's ComponentType definition.
+// If strict typing is needed for specific use cases, create a typed wrapper that
+// constrains to ComponentType<Record<string, unknown>> or a specific props interface.
 export function lazyWithRetry<T extends ComponentType<any>>(
   componentImport: () => Promise<{ default: T }>,
   retries = 3,
@@ -52,8 +54,8 @@ export function lazyWithRetry<T extends ComponentType<any>>(
  * Preload a lazy component
  * Useful for prefetching components that will likely be needed
  */
-// TODO: ESTA-Logic Architecture Note - ComponentType<any> is intentional here
-// to accept any React component regardless of props.
+// TODO: ESTA-Logic Architecture Note - ComponentType<any> matches React's standard
+// generic component pattern. This allows preloading any lazy-loaded component.
 export function preloadComponent<T extends ComponentType<any>>(
   lazyComponent: LazyExoticComponent<T>
 ): void {
@@ -67,8 +69,8 @@ export function preloadComponent<T extends ComponentType<any>>(
 /**
  * Create a lazy component with automatic prefetching on hover
  */
-// TODO: ESTA-Logic Architecture Note - ComponentType<any> is intentional here
-// to accept any React component regardless of props.
+// TODO: ESTA-Logic Architecture Note - ComponentType<any> matches React's standard
+// generic component pattern for utility functions that work with any component type.
 export function createPrefetchComponent<T extends ComponentType<any>>(
   componentImport: () => Promise<{ default: T }>
 ): {
@@ -173,8 +175,8 @@ export const firebaseServices = {
  * Intersection Observer based lazy loading
  * Load components when they enter the viewport
  */
-// TODO: ESTA-Logic Architecture Note - ComponentType<any> is intentional here
-// to accept any React component regardless of props.
+// TODO: ESTA-Logic Architecture Note - ComponentType<any> matches React's standard
+// generic component pattern. This hook works with any component type for viewport-based loading.
 export function useLazyLoadOnView<T extends ComponentType<any>>(
   componentImport: () => Promise<{ default: T }>
 ): {

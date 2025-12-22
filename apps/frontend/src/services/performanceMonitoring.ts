@@ -41,6 +41,14 @@ export interface TelemetryData {
   timestamp: number;
 }
 
+export interface PerformanceSummaryMetric {
+  average: number;
+  min: number;
+  max: number;
+  count: number;
+  rating: 'good' | 'needs-improvement' | 'poor';
+}
+
 /**
  * Thresholds for Web Vitals based on performance budgets
  */
@@ -302,26 +310,12 @@ export function clearStoredMetrics(): void {
 /**
  * Get performance summary for dashboard
  */
-export function getPerformanceSummary(): {
-  [key: string]: {
-    average: number;
-    min: number;
-    max: number;
-    count: number;
-    rating: 'good' | 'needs-improvement' | 'poor';
-  };
-} {
+export function getPerformanceSummary(): Record<
+  string,
+  PerformanceSummaryMetric
+> {
   const metrics = getStoredMetrics();
-  const summary: Record<
-    string,
-    {
-      average: number;
-      min: number;
-      max: number;
-      count: number;
-      rating: 'good' | 'needs-improvement' | 'poor';
-    }
-  > = {};
+  const summary: Record<string, PerformanceSummaryMetric> = {};
 
   // Group by metric name
   const grouped = metrics.reduce(
