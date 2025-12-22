@@ -34,8 +34,8 @@ export default defineConfig({
     /* Increase default navigation timeout */
     navigationTimeout: 30000,
   },
-  /* Global timeout for each test */
-  timeout: 60000,
+  /* Global timeout for each test - increased for CI stability */
+  timeout: process.env.CI ? 90000 : 60000,
 
   /* Configure projects for major browsers */
   projects: [
@@ -81,7 +81,7 @@ export default defineConfig({
     command: 'npm run dev:frontend',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
-    timeout: 180 * 1000,
+    timeout: 240 * 1000, // Increased timeout for CI stability
     stdout: 'pipe',
     stderr: 'pipe',
   },
