@@ -201,14 +201,11 @@ export function assertValidTokens(): void {
  */
 export function getToken(path: string): unknown {
   const parts = path.split('.');
-  let current: Record<string, unknown> = designTokens as Record<
-    string,
-    unknown
-  >;
+  let current: unknown = designTokens;
 
   for (const part of parts) {
     if (current && typeof current === 'object' && part in current) {
-      current = current[part] as Record<string, unknown>;
+      current = (current as Record<string, unknown>)[part];
     } else {
       return undefined;
     }
