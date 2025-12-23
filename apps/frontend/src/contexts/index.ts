@@ -6,3 +6,5 @@ export type {
   OnboardingContextValue,
 } from './OnboardingContext';
 export { useOnboarding } from './useOnboarding';
+export { SecurityProvider, SecurityContext } from './SecurityContext';
+export { useSecurityContext } from './useSecurityContext';

@@ -91,14 +91,14 @@ export function validateDesignTokens(): ValidationResult {
 
     // Count total tokens
     let tokenCount = 0;
-    const countTokens = (obj: any, depth = 0): void => {
+    const countTokens = (obj: Record<string, unknown>, depth = 0): void => {
       if (depth > 10) return; // Prevent infinite recursion
 
       for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(obj, key)) {
           const value = obj[key];
           if (typeof value === 'object' && value !== null) {
-            countTokens(value, depth + 1);
+            countTokens(value as Record<string, unknown>, depth + 1);
           } else {
             tokenCount++;
           }
@@ -199,13 +199,13 @@ export function assertValidTokens(): void {
  * Get a specific token value with type safety
  * Returns undefined if token doesn't exist
  */
-export function getToken(path: string): any {
+export function getToken(path: string): unknown {
   const parts = path.split('.');
-  let current: any = designTokens;
+  let current: unknown = designTokens;
 
   for (const part of parts) {
     if (current && typeof current === 'object' && part in current) {
-      current = current[part];
+      current = (current as Record<string, unknown>)[part];
     } else {
       return undefined;
     }

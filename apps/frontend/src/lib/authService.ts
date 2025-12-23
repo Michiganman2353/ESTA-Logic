@@ -25,7 +25,6 @@ import {
   validatePassword,
   sanitizeInput,
   checkRateLimit,
-  sanitizeForLogging,
 } from '@/utils/security';
 import {
   createLogger,
@@ -82,7 +81,12 @@ async function retryWithBackoff<T>(
 
       // Don't retry on certain errors
       const err = error as { code?: string };
-      if (err.code && NON_RETRYABLE_AUTH_ERRORS.includes(err.code as any)) {
+      if (
+        err.code &&
+        NON_RETRYABLE_AUTH_ERRORS.includes(
+          err.code as (typeof NON_RETRYABLE_AUTH_ERRORS)[number]
+        )
+      ) {
         throw error;
       }
 

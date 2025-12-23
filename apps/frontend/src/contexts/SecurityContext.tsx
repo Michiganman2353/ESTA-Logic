@@ -1,19 +1,19 @@
 /**
  * SecurityContext - Global security state management
- * 
+ *
  * Provides real-time security status information across the application.
  * Tracks encryption state, audit logging status, and compliance indicators.
- * 
+ *
  * Features:
  * - Real-time encryption status
  * - Audit logging state
  * - Firebase connection status
  * - Security event notifications
- * 
+ *
  * Used by security indicators throughout the UX to show active protection.
  */
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useState, useEffect, ReactNode } from 'react';
 
 export interface SecurityState {
   /** Whether end-to-end encryption is active */
@@ -34,7 +34,13 @@ interface SecurityContextType {
   recordSecurityEvent: (event: string) => void;
 }
 
-const SecurityContext = createContext<SecurityContextType | undefined>(undefined);
+// Context is exported in a separate file (useSecurityContext.ts) to satisfy react-refresh
+const SecurityContext = createContext<SecurityContextType | undefined>(
+  undefined
+);
+
+// Re-export for the hook
+export { SecurityContext };
 
 export function SecurityProvider({ children }: { children: ReactNode }) {
   const [securityState, setSecurityState] = useState<SecurityState>({
@@ -47,10 +53,11 @@ export function SecurityProvider({ children }: { children: ReactNode }) {
 
   const checkSecurityStatus = () => {
     // Perform security checks
-    const encryptionAvailable = typeof crypto !== 'undefined' && crypto.subtle !== undefined;
+    const encryptionAvailable =
+      typeof crypto !== 'undefined' && crypto.subtle !== undefined;
     const timestamp = new Date();
-    
-    setSecurityState(prev => ({
+
+    setSecurityState((prev) => ({
       ...prev,
       encryptionActive: encryptionAvailable,
       lastSecurityCheck: timestamp,
@@ -60,7 +67,7 @@ export function SecurityProvider({ children }: { children: ReactNode }) {
 
   const recordSecurityEvent = (event: string) => {
     console.debug('[Security Event]', event, new Date().toISOString());
-    setSecurityState(prev => ({
+    setSecurityState((prev) => ({
       ...prev,
       lastSecurityCheck: new Date(),
     }));
@@ -84,12 +91,4 @@ export function SecurityProvider({ children }: { children: ReactNode }) {
       {children}
     </SecurityContext.Provider>
   );
-}
-
-export function useSecurityContext() {
-  const context = useContext(SecurityContext);
-  if (!context) {
-    throw new Error('useSecurityContext must be used within SecurityProvider');
-  }
-  return context;
 }
