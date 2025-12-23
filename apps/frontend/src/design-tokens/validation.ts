@@ -208,7 +208,7 @@ export function getToken(path: string): unknown {
 
   for (const part of parts) {
     if (current && typeof current === 'object' && part in current) {
-      current = current[part];
+      current = current[part] as Record<string, unknown>;
     } else {
       return undefined;
     }

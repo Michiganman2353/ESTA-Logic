@@ -225,7 +225,9 @@ export async function initWebVitalsTracking(): Promise<void> {
       storeMetricLocally(perfMetric);
     });
   } catch (_error) {
-    logger.error('Failed to initialize Web Vitals tracking', { error });
+    logger.error('Failed to initialize Web Vitals tracking', {
+      error: _error,
+    });
   }
 }
 

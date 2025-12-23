@@ -34,7 +34,8 @@ interface SecurityContextType {
   recordSecurityEvent: (event: string) => void;
 }
 
-const SecurityContext = createContext<SecurityContextType | undefined>(
+// Export the context so it can be used by the hook
+export const SecurityContext = createContext<SecurityContextType | undefined>(
   undefined
 );
 

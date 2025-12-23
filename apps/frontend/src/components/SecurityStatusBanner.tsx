@@ -17,6 +17,7 @@
 
 import { useState } from 'react';
 import { useSecurityContext } from '@/contexts/useSecurityContext';
+import { SecurityState } from '@/contexts/SecurityContext';
 
 export interface SecurityStatusBannerProps {
   variant?: 'compact' | 'detailed';
@@ -32,7 +33,7 @@ export function SecurityStatusBanner({
   const { securityState } = useSecurityContext();
   const [isExpanded, setIsExpanded] = useState(showDetails);
 
-  const statusColors = {
+  const statusColors: Record<SecurityState['securityStatus'], string> = {
     secure:
       'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800',
     warning:
@@ -40,7 +41,7 @@ export function SecurityStatusBanner({
     error: 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800',
   };
 
-  const iconColors = {
+  const iconColors: Record<SecurityState['securityStatus'], string> = {
     secure: 'text-green-600 dark:text-green-400',
     warning: 'text-yellow-600 dark:text-yellow-400',
     error: 'text-red-600 dark:text-red-400',
