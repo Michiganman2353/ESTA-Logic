@@ -10,11 +10,14 @@ import { createLogger } from '@esta-tracker/shared-utils';
 
 const logger = createLogger('LazyLoading');
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyComponentType = ComponentType<any>;
+
 /**
  * Retry wrapper for lazy imports
  * Automatically retries failed chunk loads
  */
-export function lazyWithRetry<T extends ComponentType<any>>(
+export function lazyWithRetry<T extends AnyComponentType>(
   componentImport: () => Promise<{ default: T }>,
   retries = 3,
   interval = 1000
@@ -49,15 +52,17 @@ export function lazyWithRetry<T extends ComponentType<any>>(
 // We define a constrained structural wrapper so we can safely resolve the lazy module
 // without weakening global TypeScript strictness.
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type InternalLazyComponent = React.LazyExoticComponent<any> & {
   _payload?: {
     _result?: {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       default?: React.ComponentType<any>;
     };
   };
 };
 
-export function resolveLazyComponent<T extends React.ComponentType<any>>(
+export function resolveLazyComponent<T extends AnyComponentType>(
   lazyComponent: React.LazyExoticComponent<T>
 ): T | null {
   const internal = lazyComponent as InternalLazyComponent;
@@ -72,7 +77,7 @@ export function resolveLazyComponent<T extends React.ComponentType<any>>(
  * Preload a lazy component
  * Useful for prefetching components that will likely be needed
  */
-export function preloadComponent<T extends ComponentType<any>>(
+export function preloadComponent<T extends AnyComponentType>(
   lazyComponent: LazyExoticComponent<T>
 ): void {
   const internal = lazyComponent as InternalLazyComponent;
@@ -85,7 +90,7 @@ export function preloadComponent<T extends ComponentType<any>>(
 /**
  * Create a lazy component with automatic prefetching on hover
  */
-export function createPrefetchComponent<T extends ComponentType<any>>(
+export function createPrefetchComponent<T extends AnyComponentType>(
   componentImport: () => Promise<{ default: T }>
 ): {
   Component: LazyExoticComponent<T>;
@@ -189,7 +194,7 @@ export const firebaseServices = {
  * Intersection Observer based lazy loading
  * Load components when they enter the viewport
  */
-export function useLazyLoadOnView<T extends ComponentType<any>>(
+export function useLazyLoadOnView<T extends AnyComponentType>(
   componentImport: () => Promise<{ default: T }>
 ): {
   Component: LazyExoticComponent<T> | null;

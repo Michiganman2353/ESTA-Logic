@@ -1,9 +1,9 @@
 /**
  * SecurityStatusBanner Component
- * 
+ *
  * Displays a persistent security status banner that provides real-time
  * reassurance of active security measures.
- * 
+ *
  * Features:
  * - Real-time encryption status
  * - Audit logging indicator
@@ -11,12 +11,12 @@
  * - Animated pulse for active states
  * - Collapsible detailed view
  * - Dark mode support
- * 
+ *
  * Used in: Document Scanner, Audit Log, Dashboards
  */
 
 import { useState } from 'react';
-import { useSecurityContext } from '@/contexts/SecurityContext';
+import { useSecurityContext } from '@/contexts/useSecurityContext';
 
 export interface SecurityStatusBannerProps {
   variant?: 'compact' | 'detailed';
@@ -33,8 +33,10 @@ export function SecurityStatusBanner({
   const [isExpanded, setIsExpanded] = useState(showDetails);
 
   const statusColors = {
-    secure: 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800',
-    warning: 'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800',
+    secure:
+      'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800',
+    warning:
+      'bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800',
     error: 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800',
   };
 
@@ -66,8 +68,11 @@ export function SecurityStatusBanner({
             />
           </svg>
           {securityState.encryptionActive && (
-            <span className="absolute -right-1 -top-1 flex h-2 w-2" aria-hidden="true">
-              <span className="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span
+              className="absolute -right-1 -top-1 flex h-2 w-2"
+              aria-hidden="true"
+            >
+              <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 motion-safe:animate-ping"></span>
               <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
             </span>
           )}
@@ -137,7 +142,9 @@ export function SecurityStatusBanner({
               <div className="flex items-center gap-2">
                 <span
                   className={`flex h-2 w-2 rounded-full ${
-                    securityState.encryptionActive ? 'bg-green-500' : 'bg-gray-300'
+                    securityState.encryptionActive
+                      ? 'bg-green-500'
+                      : 'bg-gray-300'
                   }`}
                 ></span>
                 <span className="text-sm text-gray-700 dark:text-gray-300">
@@ -153,7 +160,9 @@ export function SecurityStatusBanner({
               <div className="flex items-center gap-2">
                 <span
                   className={`flex h-2 w-2 rounded-full ${
-                    securityState.auditLoggingActive ? 'bg-green-500' : 'bg-gray-300'
+                    securityState.auditLoggingActive
+                      ? 'bg-green-500'
+                      : 'bg-gray-300'
                   }`}
                 ></span>
                 <span className="text-sm text-gray-700 dark:text-gray-300">
@@ -169,7 +178,9 @@ export function SecurityStatusBanner({
               <div className="flex items-center gap-2">
                 <span
                   className={`flex h-2 w-2 rounded-full ${
-                    securityState.firebaseConnected ? 'bg-green-500' : 'bg-gray-300'
+                    securityState.firebaseConnected
+                      ? 'bg-green-500'
+                      : 'bg-gray-300'
                   }`}
                 ></span>
                 <span className="text-sm text-gray-700 dark:text-gray-300">
@@ -184,7 +195,8 @@ export function SecurityStatusBanner({
             {securityState.lastSecurityCheck && (
               <div className="mt-3 border-t border-gray-200 pt-3 dark:border-gray-700">
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Last verified: {securityState.lastSecurityCheck.toLocaleTimeString()}
+                  Last verified:{' '}
+                  {securityState.lastSecurityCheck.toLocaleTimeString()}
                 </p>
               </div>
             )}
