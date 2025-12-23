@@ -34,10 +34,13 @@ interface SecurityContextType {
   recordSecurityEvent: (event: string) => void;
 }
 
-// Export the context so it can be used by the hook
-export const SecurityContext = createContext<SecurityContextType | undefined>(
+// Context is exported in a separate file (useSecurityContext.ts) to satisfy react-refresh
+const SecurityContext = createContext<SecurityContextType | undefined>(
   undefined
 );
+
+// Re-export for the hook
+export { SecurityContext };
 
 export function SecurityProvider({ children }: { children: ReactNode }) {
   const [securityState, setSecurityState] = useState<SecurityState>({
