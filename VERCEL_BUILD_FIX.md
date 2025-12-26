@@ -76,11 +76,25 @@ The `api/package.json` specified a version range instead of a specific major ver
   }
 ```
 
+### Changes to `api/edge/encrypt.ts`
+
+**Replaced Next.js type with standard Web API Request type:**
+
+```diff
+- import type { NextRequest } from 'next/server';
+- export default async function handler(request: NextRequest) {
++ export default async function handler(request: Request) {
+```
+
+The standard `Request` type from the Web Fetch API is built into Vercel Edge Functions and provides all the functionality needed for edge function handlers without requiring Next.js.
+
 ### Why This Fix Works
 
 1. **Removing Next.js** eliminates confusion in Vercel's project type detection, ensuring it treats the API directory as standard serverless functions.
 
-2. **Specifying "20.x"** creates proper alignment between:
+2. **Replacing NextRequest with Request** removes the only usage of Next.js types in the codebase, making the Next.js dependency truly unnecessary.
+
+3. **Specifying "20.x"** creates proper alignment between:
    - `api/package.json` engines field → `"node": "20.x"`
    - `vercel.json` runtime configuration → `"runtime": "nodejs20.x"`
    - `.nvmrc` version → `20`
@@ -140,11 +154,12 @@ When deployed to Vercel, the build system will now:
 
 ## Files Modified
 
-| File                | Changes                          | Reason                                           |
-| ------------------- | -------------------------------- | ------------------------------------------------ |
-| `api/package.json`  | Removed `next` dependency        | Unused dependency causing project type confusion |
-| `api/package.json`  | Changed engines.node to "20.x"   | Match vercel.json runtime specification          |
-| `package-lock.json` | Updated after dependency removal | Automatic update from npm install                |
+| File                  | Changes                           | Reason                                                |
+| --------------------- | --------------------------------- | ----------------------------------------------------- |
+| `api/package.json`    | Removed `next` dependency         | Unused dependency causing project type confusion      |
+| `api/package.json`    | Changed engines.node to "20.x"    | Match vercel.json runtime specification               |
+| `api/edge/encrypt.ts` | Replaced NextRequest with Request | Use standard Web API instead of Next.js-specific type |
+| `package-lock.json`   | Updated after dependency removal  | Automatic update from npm install                     |
 
 ## Testing Recommendations
 
