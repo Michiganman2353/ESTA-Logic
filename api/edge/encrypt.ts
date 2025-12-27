@@ -7,8 +7,6 @@
  * Runtime: Edge (Vercel Edge Functions)
  */
 
-import type { NextRequest } from 'next/server';
-
 // Specify Edge runtime
 export const config = {
   runtime: 'edge',
@@ -35,7 +33,7 @@ export const config = {
  *   }
  * }
  */
-export default async function handler(request: NextRequest) {
+export default async function handler(request: Request) {
   // Handle CORS preflight
   if (request.method === 'OPTIONS') {
     return new Response(null, {
