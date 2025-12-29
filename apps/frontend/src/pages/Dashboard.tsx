@@ -25,6 +25,7 @@ import { User } from '@/types';
 import { Link } from 'react-router-dom';
 import { TrustBadgeGroup } from '@/components/Settings';
 import { Navigation } from '@/components/Navigation';
+import { Alert } from '@/components/Alert';
 
 interface DashboardProps {
   user: User;
@@ -35,63 +36,42 @@ export default function Dashboard({ user }: DashboardProps) {
     <div className="gradient-bg min-h-screen">
       <Navigation user={user} />
 
-      <main className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
         <div className="px-0 sm:px-0">
           {/* Show pending status notification for managers */}
           {user.role === 'employer' && user.status === 'pending' && (
-            <div className="animate-fade-in-down mb-6 rounded-lg border-l-4 border-yellow-400 bg-yellow-50 p-4 dark:bg-yellow-900/20">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-5 w-5 text-yellow-400"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-                    Account Pending Approval
-                  </h3>
-                  <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-300">
-                    <p>
-                      Your manager account is currently pending approval. You
-                      can explore the dashboard, but some features may be
-                      limited until your account is approved by an
-                      administrator.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <Alert
+              variant="warning"
+              title="Account Pending Approval"
+              className="mb-6"
+            >
+              Your manager account is currently pending approval. You can
+              explore the dashboard, but some features may be limited until your
+              account is approved by an administrator.
+            </Alert>
           )}
 
-          <div className="animate-fade-in-up mb-6 text-center sm:mb-8">
-            <h2 className="gradient-header mb-2 text-2xl font-bold sm:text-3xl">
+          <div className="animate-fade-in-up mb-8 text-center">
+            <h2 className="gradient-header mb-3 text-3xl font-bold sm:text-4xl">
               Welcome back, {user.name}! 👋
             </h2>
-            <p className="text-sm text-gray-600 sm:text-base dark:text-gray-400">
+            <p className="text-base text-gray-600 sm:text-lg dark:text-gray-400">
               Michigan Earned Sick Time Act Compliance System
             </p>
           </div>
 
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:mt-8 sm:gap-6 md:grid-cols-2">
+          <div className="mt-8 grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2">
             {(user.role === 'employee' || user.role === 'admin') && (
               <Link
                 to="/employee"
-                className="glass-card-hover animate-fade-in-up group p-4 sm:p-6"
+                className="glass-card-hover animate-fade-in-up group p-6 sm:p-8"
                 style={{ animationDelay: '0.1s' }}
               >
-                <div className="flex items-start space-x-3 sm:space-x-4">
+                <div className="flex items-start space-x-4 sm:space-x-5">
                   <div className="flex-shrink-0">
-                    <div className="from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-lg transition-transform duration-300 group-hover:scale-110 sm:h-12 sm:w-12">
+                    <div className="from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg transition-transform duration-300 group-hover:scale-110 sm:h-16 sm:w-16">
                       <svg
-                        className="text-royal-600 dark:text-royal-400 h-6 w-6 sm:h-7 sm:w-7"
+                        className="text-royal-600 dark:text-royal-400 h-7 w-7 sm:h-8 sm:w-8"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -106,12 +86,12 @@ export default function Dashboard({ user }: DashboardProps) {
                     </div>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="group-hover:text-royal-600 dark:group-hover:text-royal-400 mb-1 text-lg font-semibold text-gray-900 transition-colors sm:mb-2 sm:text-xl dark:text-white">
+                    <h3 className="group-hover:text-royal-600 dark:group-hover:text-royal-400 mb-2 text-xl font-bold text-gray-900 transition-colors sm:text-2xl dark:text-white">
                       Employee Dashboard
                     </h3>
-                    <p className="text-sm text-gray-600 sm:text-base dark:text-gray-400">
+                    <p className="text-sm leading-relaxed text-gray-600 sm:text-base dark:text-gray-400">
                       View your sick time balance, request time off, and track
-                      your accrual
+                      your accrual history
                     </p>
                   </div>
                 </div>
@@ -121,14 +101,14 @@ export default function Dashboard({ user }: DashboardProps) {
             {(user.role === 'employer' || user.role === 'admin') && (
               <Link
                 to="/employer"
-                className="glass-card-hover animate-fade-in-up group p-4 sm:p-6"
+                className="glass-card-hover animate-fade-in-up group p-6 sm:p-8"
                 style={{ animationDelay: '0.2s' }}
               >
-                <div className="flex items-start space-x-3 sm:space-x-4">
+                <div className="flex items-start space-x-4 sm:space-x-5">
                   <div className="flex-shrink-0">
-                    <div className="from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-lg transition-transform duration-300 group-hover:scale-110 sm:h-12 sm:w-12">
+                    <div className="from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg transition-transform duration-300 group-hover:scale-110 sm:h-16 sm:w-16">
                       <svg
-                        className="text-royal-600 dark:text-royal-400 h-6 w-6 sm:h-7 sm:w-7"
+                        className="text-royal-600 dark:text-royal-400 h-7 w-7 sm:h-8 sm:w-8"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -143,12 +123,12 @@ export default function Dashboard({ user }: DashboardProps) {
                     </div>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3 className="group-hover:text-royal-600 dark:group-hover:text-royal-400 mb-1 text-lg font-semibold text-gray-900 transition-colors sm:mb-2 sm:text-xl dark:text-white">
+                    <h3 className="group-hover:text-royal-600 dark:group-hover:text-royal-400 mb-2 text-xl font-bold text-gray-900 transition-colors sm:text-2xl dark:text-white">
                       Employer Dashboard
                     </h3>
-                    <p className="text-sm text-gray-600 sm:text-base dark:text-gray-400">
+                    <p className="text-sm leading-relaxed text-gray-600 sm:text-base dark:text-gray-400">
                       Manage employees, approve requests, and maintain
-                      compliance
+                      compliance with Michigan ESTA law
                     </p>
                   </div>
                 </div>
@@ -157,14 +137,14 @@ export default function Dashboard({ user }: DashboardProps) {
 
             <Link
               to="/audit"
-              className="glass-card-hover animate-fade-in-up group p-4 sm:p-6"
+              className="glass-card-hover animate-fade-in-up group p-6 sm:p-8"
               style={{ animationDelay: '0.3s' }}
             >
-              <div className="flex items-start space-x-3 sm:space-x-4">
+              <div className="flex items-start space-x-4 sm:space-x-5">
                 <div className="flex-shrink-0">
-                  <div className="from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-lg transition-transform duration-300 group-hover:scale-110 sm:h-12 sm:w-12">
+                  <div className="from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg transition-transform duration-300 group-hover:scale-110 sm:h-16 sm:w-16">
                     <svg
-                      className="text-royal-600 dark:text-royal-400 h-6 w-6 sm:h-7 sm:w-7"
+                      className="text-royal-600 dark:text-royal-400 h-7 w-7 sm:h-8 sm:w-8"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -179,11 +159,12 @@ export default function Dashboard({ user }: DashboardProps) {
                   </div>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="group-hover:text-royal-600 dark:group-hover:text-royal-400 mb-1 text-lg font-semibold text-gray-900 transition-colors sm:mb-2 sm:text-xl dark:text-white">
+                  <h3 className="group-hover:text-royal-600 dark:group-hover:text-royal-400 mb-2 text-xl font-bold text-gray-900 transition-colors sm:text-2xl dark:text-white">
                     Audit Trail
                   </h3>
-                  <p className="text-sm text-gray-600 sm:text-base dark:text-gray-400">
-                    3-year compliance audit trail and export reports
+                  <p className="text-sm leading-relaxed text-gray-600 sm:text-base dark:text-gray-400">
+                    Complete 3-year compliance history and exportable reports
+                    for state audits
                   </p>
                 </div>
               </div>
@@ -191,14 +172,14 @@ export default function Dashboard({ user }: DashboardProps) {
 
             <Link
               to="/settings"
-              className="glass-card-hover animate-fade-in-up group p-4 sm:p-6"
+              className="glass-card-hover animate-fade-in-up group p-6 sm:p-8"
               style={{ animationDelay: '0.4s' }}
             >
-              <div className="flex items-start space-x-3 sm:space-x-4">
+              <div className="flex items-start space-x-4 sm:space-x-5">
                 <div className="flex-shrink-0">
-                  <div className="from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-lg transition-transform duration-300 group-hover:scale-110 sm:h-12 sm:w-12">
+                  <div className="from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg transition-transform duration-300 group-hover:scale-110 sm:h-16 sm:w-16">
                     <svg
-                      className="text-royal-600 dark:text-royal-400 h-6 w-6 sm:h-7 sm:w-7"
+                      className="text-royal-600 dark:text-royal-400 h-7 w-7 sm:h-8 sm:w-8"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -219,25 +200,26 @@ export default function Dashboard({ user }: DashboardProps) {
                   </div>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="group-hover:text-royal-600 dark:group-hover:text-royal-400 mb-1 text-lg font-semibold text-gray-900 transition-colors sm:mb-2 sm:text-xl dark:text-white">
+                  <h3 className="group-hover:text-royal-600 dark:group-hover:text-royal-400 mb-2 text-xl font-bold text-gray-900 transition-colors sm:text-2xl dark:text-white">
                     Settings
                   </h3>
-                  <p className="text-sm text-gray-600 sm:text-base dark:text-gray-400">
-                    Account settings, security information, and integrations
+                  <p className="text-sm leading-relaxed text-gray-600 sm:text-base dark:text-gray-400">
+                    Manage account settings, security preferences, and system
+                    integrations
                   </p>
                 </div>
               </div>
             </Link>
 
             <div
-              className="glass-card from-primary-50/80 dark:from-primary-900/30 animate-fade-in-up bg-gradient-to-br to-purple-50/80 p-4 sm:p-6 dark:to-purple-900/30"
+              className="glass-card from-royal-50/90 dark:from-royal-900/30 animate-fade-in-up bg-gradient-to-br to-sky-50/90 p-6 sm:p-8 dark:to-sky-900/30"
               style={{ animationDelay: '0.5s' }}
             >
-              <div className="flex items-start space-x-3 sm:space-x-4">
+              <div className="flex items-start space-x-4 sm:space-x-5">
                 <div className="flex-shrink-0">
-                  <div className="from-primary-100 to-primary-200 dark:from-primary-900 dark:to-primary-800 flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br shadow-lg sm:h-12 sm:w-12">
+                  <div className="from-royal-100 to-royal-200 dark:from-royal-900 dark:to-royal-800 flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br shadow-lg sm:h-16 sm:w-16">
                     <svg
-                      className="text-primary-600 dark:text-primary-400 h-6 w-6 sm:h-7 sm:w-7"
+                      className="text-royal-600 dark:text-royal-400 h-7 w-7 sm:h-8 sm:w-8"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                     >
@@ -250,17 +232,41 @@ export default function Dashboard({ user }: DashboardProps) {
                   </div>
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h3 className="text-primary-900 dark:text-primary-100 mb-1 text-lg font-semibold sm:mb-2 sm:text-xl">
-                    Michigan ESTA Compliance
+                  <h3 className="text-royal-900 dark:text-royal-100 mb-3 text-xl font-bold sm:text-2xl">
+                    Michigan ESTA Requirements
                   </h3>
-                  <ul className="text-primary-800 dark:text-primary-200 space-y-1 text-xs sm:text-sm">
+                  <ul className="text-royal-800 dark:text-royal-200 space-y-2 text-sm sm:text-base">
                     <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
-                      <span className="mr-2 flex-shrink-0">✓</span>
-                      <span>Small employer (&lt;10): 40 hrs/year</span>
+                      <svg
+                        className="mr-2 h-5 w-5 flex-shrink-0 text-green-600"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <span className="font-medium">
+                        Small employers (&lt;10): 40 hours per year
+                      </span>
                     </li>
                     <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
-                      <span className="mr-2 flex-shrink-0">✓</span>
-                      <span>Large employer (10+): 1 hr/30 worked</span>
+                      <svg
+                        className="mr-2 h-5 w-5 flex-shrink-0 text-green-600"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <span className="font-medium">
+                        Large employers (10+): 1 hour per 30 worked
+                      </span>
                     </li>
                     <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
                       <span className="mr-2 flex-shrink-0">✓</span>
