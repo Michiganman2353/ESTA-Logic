@@ -288,7 +288,13 @@ export class ReactiveDataService {
     const online$ = fromEvent(window, 'online').pipe(map(() => true));
     const offline$ = fromEvent(window, 'offline').pipe(map(() => false));
 
-    return merge(of(navigator.onLine), online$, offline$).pipe(
+    // Use navigator.onLine if available, otherwise default to true
+    const initialStatus =
+      typeof navigator !== 'undefined' && typeof navigator.onLine === 'boolean'
+        ? navigator.onLine
+        : true;
+
+    return merge(of(initialStatus), online$, offline$).pipe(
       distinctUntilChanged(),
       shareReplay(1)
     );

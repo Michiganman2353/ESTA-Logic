@@ -64,10 +64,13 @@ describe('AuditProofCore', () => {
     AuditProofCore.record('CREATE', 'employee', {}, 'user2');
     AuditProofCore.record('UPDATE', 'policy', {}, 'user1');
 
-    const report = AuditProofCore.generateComplianceReport(
-      new Date('2024-01-01'),
-      new Date('2024-12-31')
-    );
+    // Use a date range that includes the current date
+    const startDate = new Date();
+    startDate.setFullYear(startDate.getFullYear() - 1); // 1 year ago
+    const endDate = new Date();
+    endDate.setFullYear(endDate.getFullYear() + 1); // 1 year from now
+
+    const report = AuditProofCore.generateComplianceReport(startDate, endDate);
 
     expect(report.totalEvents).toBe(3);
     expect(report.eventsByAction['CREATE']).toBe(2);
