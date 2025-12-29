@@ -4,7 +4,7 @@
 
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import ComplianceScore from '../ComplianceScore';
+import ComplianceScore from '../components/ComplianceScore';
 
 describe('ComplianceScore', () => {
   it('should render with score', () => {
