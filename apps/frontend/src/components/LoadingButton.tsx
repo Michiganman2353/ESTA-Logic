@@ -3,7 +3,8 @@ import { ButtonHTMLAttributes } from 'react';
 interface LoadingButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
   loadingText?: string;
-  variant?: 'primary' | 'secondary' | 'danger' | 'success';
+  variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'ghost';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   children: React.ReactNode;
 }
 
@@ -21,6 +22,7 @@ export function LoadingButton({
   loading = false,
   loadingText,
   variant = 'primary',
+  size = 'md',
   children,
   disabled,
   className = '',
@@ -32,20 +34,28 @@ export function LoadingButton({
     secondary: 'btn-secondary',
     danger: 'btn-danger',
     success: 'btn-success',
+    ghost: 'btn-ghost',
+  };
+
+  const sizeClasses = {
+    sm: 'btn-sm',
+    md: '',
+    lg: 'btn-lg',
+    xl: 'btn-xl',
   };
 
   return (
     <button
       {...props}
       disabled={disabled || loading}
-      className={`${baseClasses} ${variantClasses[variant]} ${className}`.trim()}
+      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`.trim()}
       aria-busy={loading}
       aria-live="polite"
     >
-      <span className="relative z-10 flex items-center justify-center">
+      <span className="relative z-10 flex items-center justify-center gap-2">
         {loading && (
           <svg
-            className="-ml-1 mr-3 h-5 w-5 animate-spin text-current"
+            className="h-5 w-5 animate-spin text-current"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
