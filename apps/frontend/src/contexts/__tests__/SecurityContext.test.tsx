@@ -33,9 +33,13 @@ function TestComponent() {
 describe('SecurityContext', () => {
   beforeEach(() => {
     // Mock crypto.subtle as available
-    global.crypto = {
-      subtle: {},
-    } as unknown as Crypto;
+    Object.defineProperty(global, 'crypto', {
+      value: {
+        subtle: {},
+      },
+      writable: true,
+      configurable: true,
+    });
   });
 
   afterEach(() => {
