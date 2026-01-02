@@ -19,11 +19,6 @@
       "memory": 512,
       "runtime": "nodejs20.x"
     },
-    "api/edge/*.ts": {
-      "maxDuration": 60,
-      "memory": 512,
-      "runtime": "nodejs20.x"
-    },
     "api/v1/**/*.ts": {
       "maxDuration": 30,
       "memory": 512,
