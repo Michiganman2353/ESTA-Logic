@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-- Node.js 20.x (see `.nvmrc`)
+- Node.js 22.x (see `.nvmrc`)
 - npm ≥10.0.0
 - [Vercel Account](https://vercel.com/signup)
 

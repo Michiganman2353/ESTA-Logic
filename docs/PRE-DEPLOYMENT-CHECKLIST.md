@@ -41,16 +41,16 @@ npm run validate:deployment     # ✓ Deployment validation passes
 
 - [ ] All commands above completed successfully
 - [ ] No errors in build output
-- [ ] Build artifacts exist in `packages/frontend/dist/`
-- [ ] `packages/frontend/dist/index.html` exists
+- [ ] Build artifacts exist in `apps/frontend/dist/`
+- [ ] `apps/frontend/dist/index.html` exists
 - [ ] Asset files are generated in `dist/assets/`
 
 ### Build Output Verification
 
 ```bash
 # Check build output:
-ls -lh packages/frontend/dist/
-ls -lh packages/frontend/dist/assets/
+ls -lh apps/frontend/dist/
+ls -lh apps/frontend/dist/assets/
 ```
 
 - [ ] Total bundle size is reasonable (< 1MB gzipped recommended)
@@ -102,7 +102,7 @@ npm audit
 
 ### vercel.json
 
-- [ ] `outputDirectory` is correct (`packages/frontend/dist`)
+- [ ] `outputDirectory` is correct (`apps/frontend/dist`)
 - [ ] `buildCommand` is correct (`npm run build:frontend`)
 - [ ] API functions are properly configured
 - [ ] Security headers are in place
@@ -112,7 +112,7 @@ npm audit
 
 - [ ] Workflow file is valid YAML
 - [ ] All required steps are present
-- [ ] Node.js version matches project requirements (20.x)
+- [ ] Node.js version matches project requirements (22.x)
 - [ ] Caching is properly configured
 
 ## 🔍 Code Quality

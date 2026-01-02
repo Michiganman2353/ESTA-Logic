@@ -143,7 +143,7 @@ Error: The engine "node" is incompatible with this module
    - name: Setup Node.js
      uses: actions/setup-node@v4
      with:
-       node-version: 20.x
+       node-version: 22.x
    ```
 
 3. **Update .nvmrc file:**

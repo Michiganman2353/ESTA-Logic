@@ -161,8 +161,8 @@ git commit -m "chore: resolve package-lock.json conflicts"
 }
 ```
 
-**Current**: Node v20.19.5, npm 10.8.2  
-**Vercel**: Uses Node 20.x (specified in .nvmrc)  
+**Current**: Node v22.x, npm 10.x  
+**Vercel**: Uses Node 22.x (specified in .nvmrc)  
 **Status**: ✅ Compatible
 
 ### Key Dependencies
