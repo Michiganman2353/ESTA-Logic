@@ -12,32 +12,32 @@
     "api/background/*.ts": {
       "maxDuration": 300,
       "memory": 1024,
-      "runtime": "nodejs22.x"
+      "runtime": "nodejs20.x"
     },
     "api/secure/*.ts": {
       "maxDuration": 60,
       "memory": 512,
-      "runtime": "nodejs22.x"
+      "runtime": "nodejs20.x"
     },
     "api/edge/*.ts": {
       "maxDuration": 60,
       "memory": 512,
-      "runtime": "nodejs22.x"
+      "runtime": "nodejs20.x"
     },
     "api/v1/**/*.ts": {
       "maxDuration": 30,
       "memory": 512,
-      "runtime": "nodejs22.x"
+      "runtime": "nodejs20.x"
     },
     "api/*.js": {
       "maxDuration": 30,
       "memory": 512,
-      "runtime": "nodejs22.x"
+      "runtime": "nodejs20.x"
     },
     "api/*.ts": {
       "maxDuration": 30,
       "memory": 512,
-      "runtime": "nodejs22.x"
+      "runtime": "nodejs20.x"
     }
   },
   "rewrites": [

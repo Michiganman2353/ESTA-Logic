@@ -54,6 +54,7 @@
     "prepare": "husky || echo 'Husky not available (CI environment)'",
     "setup:kms": "node scripts/setup-kms.js",
     "validate:deployment": "bash scripts/validate-deployment.sh",
+    "validate:runtime": "bash scripts/validate-runtime.sh",
     "validate:vercel": "node scripts/validate-vercel-config.js",
     "validate:tsconfig": "node scripts/validate-tsconfig-paths.js",
     "validate:workspace": "nx graph --file=/tmp/nx-graph.json && echo 'Workspace graph validated'",
@@ -109,7 +110,7 @@
     }
   },
   "engines": {
-    "node": "22.x",
+    "node": ">=20.0.0",
     "npm": ">=10.0.0"
   },
   "packageManager": "npm@10.2.3"
