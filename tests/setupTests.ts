@@ -95,7 +95,7 @@ vi.mock('firebase/auth', () => {
 
 // ===== Navigator Media Devices Mocking =====
 // Mock navigator.mediaDevices.getUserMedia for camera access tests
-// Ensure navigator.userAgent is defined for React DOM compatibility
+// and ensure navigator.userAgent is defined for React DOM compatibility
 if (
   typeof globalThis.navigator === 'undefined' ||
   !globalThis.navigator.mediaDevices
@@ -107,7 +107,7 @@ if (
       // Ensure userAgent is defined for React DOM (jsdom should set this, but we ensure it's there)
       userAgent:
         existingNavigator.userAgent ||
-        'Mozilla/5.0 (linux) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/20.0.0',
+        'Mozilla/5.0 (Linux) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/20.0.0',
       mediaDevices: {
         getUserMedia: vi.fn(async (constraints: any) => {
           // Return a minimal fake MediaStream
