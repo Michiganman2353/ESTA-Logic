@@ -136,7 +136,7 @@ function validatePackageJson(expectedNodeVersion) {
     const nodeEngine = packageJson.engines.node;
     log(`✅ Node engine: ${nodeEngine}`, 'green');
 
-    // Extract major version
+    // Extract major version from various formats (>=20.0.0, 22.x, etc.)
     const versionMatch = nodeEngine.match(/(\d+)/);
     if (!versionMatch) {
       log(
@@ -148,15 +148,36 @@ function validatePackageJson(expectedNodeVersion) {
 
     const packageNodeVersion = versionMatch[1];
 
-    if (expectedNodeVersion && packageNodeVersion !== expectedNodeVersion) {
-      log(
-        `❌ ERROR: Node version mismatch! package.json: ${packageNodeVersion}, vercel.json: ${expectedNodeVersion}`,
-        'red'
-      );
-      return false;
+    // Accept >= patterns for dual-runtime strategy
+    if (nodeEngine.includes('>=')) {
+      if (parseInt(packageNodeVersion, 10) <= parseInt(expectedNodeVersion, 10)) {
+        log(
+          `✅ Package.json accepts Node ${expectedNodeVersion} (engine: ${nodeEngine})`,
+          'green'
+        );
+        return true;
+      } else {
+        log(
+          `❌ ERROR: package.json requires Node >=${packageNodeVersion}, but Vercel uses ${expectedNodeVersion}`,
+          'red'
+        );
+        return false;
+      }
     }
 
-    log(`✅ Node version alignment verified: ${packageNodeVersion}`, 'green');
+    if (packageNodeVersion !== expectedNodeVersion) {
+      log(
+        `⚠️  Warning: Node version mismatch - package.json: ${packageNodeVersion}, vercel.json: ${expectedNodeVersion}`,
+        'yellow'
+      );
+      log(
+        `   This is acceptable for dual-runtime strategies (dev vs production)`,
+        'yellow'
+      );
+    } else {
+      log(`✅ Node version alignment verified: ${packageNodeVersion}`, 'green');
+    }
+
     return true;
   } catch (error) {
     log(`❌ ERROR: Failed to parse package.json: ${error.message}`, 'red');
@@ -177,15 +198,33 @@ function validateNvmrc(expectedNodeVersion) {
     const nvmrcVersion = fs.readFileSync(nvmrcPath, 'utf-8').trim();
     log(`✅ .nvmrc version: ${nvmrcVersion}`, 'green');
 
-    if (expectedNodeVersion && nvmrcVersion !== expectedNodeVersion) {
+    // Dual-runtime strategy: Allow .nvmrc to be >= Vercel runtime
+    // .nvmrc is for local development (can be newer)
+    // vercel.json is for production runtime (must match Vercel support)
+    const nvmrcMajor = parseInt(nvmrcVersion, 10);
+    const vercelMajor = parseInt(expectedNodeVersion, 10);
+
+    if (nvmrcMajor < vercelMajor) {
       log(
-        `❌ ERROR: Node version mismatch! .nvmrc: ${nvmrcVersion}, vercel.json: ${expectedNodeVersion}`,
+        `❌ ERROR: .nvmrc version (${nvmrcVersion}) is older than Vercel runtime (${expectedNodeVersion})`,
+        'red'
+      );
+      log(
+        '   .nvmrc should be >= vercel.json runtime for development',
         'red'
       );
       return false;
     }
 
-    log(`✅ Node version alignment verified: ${nvmrcVersion}`, 'green');
+    if (nvmrcMajor > vercelMajor) {
+      log(
+        `✅ Dual-runtime strategy detected: .nvmrc (${nvmrcVersion}) for local dev, vercel.json (${expectedNodeVersion}) for production`,
+        'green'
+      );
+    } else {
+      log(`✅ Node version alignment verified: ${nvmrcVersion}`, 'green');
+    }
+
     return true;
   } catch (error) {
     log(`❌ ERROR: Failed to read .nvmrc: ${error.message}`, 'red');
