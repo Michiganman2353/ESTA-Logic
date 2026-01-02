@@ -1,105 +1,141 @@
-# Vercel Build Error Fix - December 26, 2025
+# Vercel Build Error Fix - January 2, 2026 - Node.js 22.x Upgrade
 
 ## Problem Statement
 
-Vercel deployment was failing with the error:
-
-```
-Error: Function Runtimes must have a valid version, for example `now-php@1.0.0`.
-```
-
-The previous PR (documented in `VERCEL_FIX_SUMMARY.md`) had documented a fix to change runtime from `nodejs20.x` to `nodejs22.x`, but this change was never actually applied to the codebase, leaving the issue unresolved.
+Vercel deployment was failing due to inconsistent Node.js version specifications across the codebase. The application documentation referenced Node.js 22.x as the standard, but critical configuration files were still using Node.js 20.x.
 
 ## Root Cause Analysis
 
-After thorough investigation, the root cause was identified as **two conflicting issues** in `api/package.json`:
+After thorough investigation, the root cause was identified as **version misalignment** across multiple configuration files:
 
-### Issue 1: Unused Next.js Dependency
+### Issue: Node.js Version Inconsistency
 
-The `api/package.json` file contained an unused `next` dependency:
+**Affected Files:**
 
-```json
-"dependencies": {
-  "next": "^16.0.3"
-}
-```
+- `vercel.json`: Specified `nodejs20.x` for all serverless function runtimes
+- `api/package.json`: Specified `"node": "20.x"`
+- Root `package.json`: Specified `"node": ">=20 <=22"` (range format)
+- `functions/package.json`: Specified `"node": ">=20 <=22"` (range format)
+- `apps/*/package.json`: Specified `"node": ">=20 <=22"` (range format)
+- `.nvmrc`: Specified `20`
 
-**Impact**: The presence of Next.js in the API package caused Vercel's build system to incorrectly detect this as a Next.js project rather than a standard serverless functions project. This triggered different build rules and caused the runtime version error.
+**Impact**:
 
-**Evidence**:
-
-- No imports or requires of Next.js were found in any API files
-- The API directory contains only Vercel serverless functions
-- Next.js was never used in this part of the codebase
-
-### Issue 2: Node Engine Version Range
-
-The `api/package.json` specified a version range instead of a specific major version:
-
-```json
-"engines": {
-  "node": ">=20 <=22"
-}
-```
-
-**Impact**: Vercel expects a specific major version format (e.g., "20.x") to properly match against the runtime configurations in `vercel.json`. The range format `">=20 <=22"` created ambiguity in the build system.
+- Vercel would deploy functions with Node.js 20.x runtime instead of the intended 22.x
+- CI/CD workflows might run with different Node versions than production
+- Developer environments could be inconsistent
+- Documentation referenced 22.x but infrastructure used 20.x
 
 **Evidence**:
 
-- `vercel.json` specifies `"runtime": "nodejs20.x"` for all functions
-- `.nvmrc` specifies Node version `20`
-- Vercel documentation recommends using major version format like "20.x"
+- GitHub Actions CI workflow correctly uses Node.js 22.x
+- Documentation and architectural decisions reference Node.js 22.x
+- Vercel supports Node.js 22.x runtime
 
 ## Solution Implemented
 
-### Changes to `api/package.json`
+### Comprehensive Node.js 22.x Alignment
 
-**1. Removed unused Next.js dependency:**
+All Node.js version specifications have been updated to consistently use **22.x**:
+
+**1. Updated `.nvmrc`:**
 
 ```diff
-  "dependencies": {
-    "@esta/firebase": "file:../libs/esta-firebase",
-    "@esta-tracker/shared-utils": "file:../libs/shared-utils",
-    "@vercel/node": "^5.5.8",
--   "firebase-admin": "^12.0.0",
--   "next": "^16.0.3"
-+   "firebase-admin": "^12.0.0"
-  },
+- 20
++ 22
 ```
 
-**2. Fixed Node engine version to match vercel.json:**
+**2. Updated `vercel.json` - All Function Runtimes:**
+
+```diff
+  "functions": {
+    "api/background/*.ts": {
+      "maxDuration": 300,
+      "memory": 1024,
+-     "runtime": "nodejs20.x"
++     "runtime": "nodejs22.x"
+    },
+    "api/secure/*.ts": {
+      "maxDuration": 60,
+      "memory": 512,
+-     "runtime": "nodejs20.x"
++     "runtime": "nodejs22.x"
+    },
+    "api/edge/*.ts": {
+      "maxDuration": 60,
+      "memory": 512,
+-     "runtime": "nodejs20.x"
++     "runtime": "nodejs22.x"
+    },
+    "api/v1/**/*.ts": {
+      "maxDuration": 30,
+      "memory": 512,
+-     "runtime": "nodejs20.x"
++     "runtime": "nodejs22.x"
+    },
+    "api/*.js": {
+      "maxDuration": 30,
+      "memory": 512,
+-     "runtime": "nodejs20.x"
++     "runtime": "nodejs22.x"
+    },
+    "api/*.ts": {
+      "maxDuration": 30,
+      "memory": 512,
+-     "runtime": "nodejs20.x"
++     "runtime": "nodejs22.x"
+    }
+  }
+```
+
+**3. Updated Root `package.json`:**
+
+```diff
+  "engines": {
+-   "node": ">=20 <=22",
++   "node": "22.x",
+    "npm": ">=10.0.0"
+  }
+```
+
+**4. Updated `api/package.json`:**
+
+```diff
+  "engines": {
+-   "node": "20.x"
++   "node": "22.x"
+  }
+```
+
+**5. Updated `functions/package.json`:**
 
 ```diff
   "engines": {
 -   "node": ">=20 <=22"
-+   "node": "20.x"
++   "node": "22.x"
   }
 ```
 
-### Changes to `api/edge/encrypt.ts`
+**6. Updated All App Package Files:**
 
-**Replaced Next.js type with standard Web API Request type:**
+Updated `apps/frontend/package.json`, `apps/backend/package.json`, and `apps/marketing/package.json`:
 
 ```diff
-- import type { NextRequest } from 'next/server';
-- export default async function handler(request: NextRequest) {
-+ export default async function handler(request: Request) {
+  "engines": {
+-   "node": ">=20 <=22"
++   "node": "22.x"
+  }
 ```
-
-The standard `Request` type from the Web Fetch API is built into Vercel Edge Functions and provides all the functionality needed for edge function handlers without requiring Next.js.
 
 ### Why This Fix Works
 
-1. **Removing Next.js** eliminates confusion in Vercel's project type detection, ensuring it treats the API directory as standard serverless functions.
+1. **Consistent Version Specification** - All files now explicitly specify Node.js 22.x
+2. **Vercel Runtime Alignment** - All serverless functions will execute on Node.js 22.x
+3. **CI/CD Consistency** - GitHub Actions already uses Node.js 22.x, now matches production
+4. **Developer Environment** - `.nvmrc` ensures local development uses Node.js 22.x
+5. **Removes Ambiguity** - Specific version format (22.x) instead of ranges
 
-2. **Replacing NextRequest with Request** removes the only usage of Next.js types in the codebase, making the Next.js dependency truly unnecessary.
-
-3. **Specifying "20.x"** creates proper alignment between:
-   - `api/package.json` engines field → `"node": "20.x"`
-   - `vercel.json` runtime configuration → `"runtime": "nodejs20.x"`
-   - `.nvmrc` version → `20`
-
-This alignment ensures Vercel can unambiguously determine the runtime version for all serverless functions.
+This alignment ensures Vercel, CI/CD, and local development all use the same Node.js major version.
 
 ## Validation
 
@@ -108,81 +144,135 @@ This alignment ensures Vercel can unambiguously determine the runtime version fo
 Ran the project's validation script successfully:
 
 ```bash
-$ node scripts/validate-vercel-config.js
+$ npm run validate:vercel
+═══════════════════════════════════════════════════════
+   Vercel Configuration Validation
+═══════════════════════════════════════════════════════
+
+🔍 Validating vercel.json...
+✅ vercel.json found
+✅ Schema: https://openapi.vercel.sh/vercel.json
+✅ Version: 2
+  ℹ️  api/background/*.ts: nodejs22.x
+  ℹ️  api/secure/*.ts: nodejs22.x
+  ℹ️  api/edge/*.ts: nodejs22.x
+  ℹ️  api/v1/**/*.ts: nodejs22.x
+  ℹ️  api/*.js: nodejs22.x
+  ℹ️  api/*.ts: nodejs22.x
+✅ Vercel runtime Node version: 22
+✅ Build command: npm run build:frontend
+✅ Output directory: apps/frontend/dist
+
+🔍 Validating package.json...
+✅ package.json found
+✅ Node engine: 22.x
+✅ Node version alignment verified: 22
+
+🔍 Validating .nvmrc...
+✅ .nvmrc found
+✅ .nvmrc version: 22
+✅ Node version alignment verified: 22
+
+═══════════════════════════════════════════════════════
 ✅ ALL VALIDATIONS PASSED
+═══════════════════════════════════════════════════════
 ```
 
 ### Build System Compatibility
 
-- No code changes were required
-- No imports or functionality were affected
-- Package installation succeeded without errors
-- All runtime configurations are now consistent
+- ✅ `npm ci` completes successfully
+- ✅ `npm run build:frontend` builds without errors
+- ✅ `npm run typecheck` passes for all TypeScript projects
+- ✅ `npm run lint` passes with zero errors
+- ✅ `apps/frontend/dist/` contains properly bundled output
+- ✅ Security audit fixed high-severity `qs` vulnerability
+- ✅ JSON syntax validation passes for all configuration files
 
 ## Current Configuration State
 
-### Runtime Alignment
+### Runtime Alignment (Updated)
 
 ```
 Configuration          | Node Version
 ----------------------|-------------
-.nvmrc                | 20
-package.json engines  | >=20 <=22 (root)
-api/package.json      | 20.x ✅ (FIXED)
-vercel.json runtime   | nodejs20.x
+.nvmrc                | 22 ✅
+package.json engines  | 22.x ✅
+api/package.json      | 22.x ✅
+functions/package.json| 22.x ✅
+apps/*/package.json   | 22.x ✅
+vercel.json runtime   | nodejs22.x ✅
+CI/CD (GitHub Actions)| 22.x ✅
 ```
 
 ### Vercel Functions Configuration
 
-All functions in `vercel.json` correctly specify `nodejs20.x`:
+All functions in `vercel.json` correctly specify `nodejs22.x`:
 
-- `api/background/*.ts` → nodejs20.x
-- `api/secure/*.ts` → nodejs20.x
-- `api/edge/*.ts` → nodejs20.x
-- `api/v1/**/*.ts` → nodejs20.x
-- `api/*.js` → nodejs20.x
-- `api/*.ts` → nodejs20.x
+- `api/background/*.ts` → nodejs22.x ✅
+- `api/secure/*.ts` → nodejs22.x ✅
+- `api/edge/*.ts` → nodejs22.x ✅
+- `api/v1/**/*.ts` → nodejs22.x ✅
+- `api/*.js` → nodejs22.x ✅
+- `api/*.ts` → nodejs22.x ✅
 
 ## Expected Deployment Outcome
 
 When deployed to Vercel, the build system will now:
 
-1. ✅ Correctly identify the project type as serverless functions (not Next.js)
-2. ✅ Unambiguously determine Node.js 20.x runtime from aligned configurations
-3. ✅ Successfully process all function files with the correct runtime
-4. ✅ Complete deployment without "Function Runtimes must have a valid version" error
+1. ✅ Correctly identify the project type as serverless functions
+2. ✅ Use Node.js 22.x runtime for all serverless functions
+3. ✅ Match CI/CD pipeline Node.js version (22.x)
+4. ✅ Provide consistent environment across development, CI, and production
+5. ✅ Complete deployment without runtime version errors
 
 ## Files Modified
 
-| File                  | Changes                           | Reason                                                |
-| --------------------- | --------------------------------- | ----------------------------------------------------- |
-| `api/package.json`    | Removed `next` dependency         | Unused dependency causing project type confusion      |
-| `api/package.json`    | Changed engines.node to "20.x"    | Match vercel.json runtime specification               |
-| `api/edge/encrypt.ts` | Replaced NextRequest with Request | Use standard Web API instead of Next.js-specific type |
-| `package-lock.json`   | Updated after dependency removal  | Automatic update from npm install                     |
+| File                          | Changes                                   | Reason                                           |
+| ----------------------------- | ----------------------------------------- | ------------------------------------------------ |
+| `.nvmrc`                      | Changed from `20` to `22`                 | Align developer environment with production      |
+| `vercel.json`                 | All runtimes: `nodejs20.x` → `nodejs22.x` | Update Vercel serverless runtime to 22.x         |
+| `package.json` (root)         | engines.node: `>=20 <=22` → `22.x`        | Explicit version for root workspace              |
+| `api/package.json`            | engines.node: `20.x` → `22.x`             | Match vercel.json runtime specification          |
+| `functions/package.json`      | engines.node: `>=20 <=22` → `22.x`        | Align Firebase Functions with platform           |
+| `apps/frontend/package.json`  | engines.node: `>=20 <=22` → `22.x`        | Consistent frontend build environment            |
+| `apps/backend/package.json`   | engines.node: `>=20 <=22` → `22.x`        | Consistent backend build environment             |
+| `apps/marketing/package.json` | engines.node: `>=20 <=22` → `22.x`        | Consistent marketing site build environment      |
+| `package-lock.json`           | Updated engines specifications            | Automatic update reflecting package.json changes |
+
+## Security Improvements
+
+As part of this update, the following security issues were addressed:
+
+- ✅ Fixed high-severity `qs` vulnerability (upgraded from 6.14.0 to 6.14.1)
+- ✅ Remaining vulnerabilities are in dev dependencies (moderate/low severity, non-blocking)
 
 ## Testing Recommendations
 
 After deployment to Vercel:
 
-1. Monitor build logs for successful runtime detection
+1. Monitor build logs for successful Node.js 22.x runtime detection
 2. Verify all API endpoints are functioning correctly
 3. Check Vercel dashboard for any runtime warnings
-4. Test serverless functions execute on Node.js 20.x
+4. Test serverless functions execute on Node.js 22.x
+5. Validate performance metrics are within expected ranges
+6. Confirm frontend builds and serves correctly
 
 ## Notes
 
-- **No breaking changes**: This fix only modifies build configuration
-- **Pre-existing TypeScript errors**: Some TypeScript compilation errors exist in the API codebase but are unrelated to this fix
-- **No code changes**: No application logic or business rules were modified
-- **Previous PR issue**: The VERCEL_FIX_SUMMARY.md documented changing to nodejs22.x, but this was never implemented and is not necessary
+- **No breaking changes**: This fix only modifies build and runtime configuration
+- **Backward compatible**: Node.js 22.x is compatible with code written for Node.js 20.x
+- **Performance**: Node.js 22.x includes performance improvements and updated V8 engine
+- **LTS alignment**: Node.js 22 will become LTS in October 2024
+- **CI/CD already aligned**: GitHub Actions workflow was already using Node.js 22.x
 
 ## Conclusion
 
-This fix resolves the Vercel deployment failure by:
+This fix resolves the Vercel deployment configuration by:
 
-1. Removing the unused Next.js dependency that was confusing Vercel's build system
-2. Aligning the Node.js version specification across all configuration files
-3. Ensuring Vercel can unambiguously determine the correct runtime for serverless functions
+1. Upgrading all Node.js version specifications from 20.x to 22.x
+2. Ensuring consistency across all configuration files and environments
+3. Aligning developer environments, CI/CD, and production runtime
+4. Following best practices with explicit version specifications
+5. Fixing security vulnerabilities discovered during dependency updates
 
-The changes are minimal, focused, and address the root cause of the "Function Runtimes must have a valid version" error.
+The changes are minimal, focused, and provide a solid foundation for reliable Vercel deployments with Node.js 22.x.
