@@ -25,15 +25,18 @@ This library defines the formal contract between the frontend (UX layer) and bac
 ### Backend (API Endpoints)
 
 ```typescript
-import { LoginRequestSchema, LoginResponseSchema } from '@esta/api-contracts/v1';
+import {
+  LoginRequestSchema,
+  LoginResponseSchema,
+} from '@esta/api-contracts/v1';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Validate request
   const body = LoginRequestSchema.parse(req.body);
-  
+
   // Process...
   const result = await authenticate(body);
-  
+
   // Validate response before sending
   const response = LoginResponseSchema.parse(result);
   res.json(response);
@@ -85,6 +88,7 @@ When evolving the API:
 ## Testing
 
 Contracts include schema validation tests to ensure:
+
 - Request schemas accept valid data
 - Request schemas reject invalid data
 - Response schemas match expected shape

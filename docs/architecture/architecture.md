@@ -3,6 +3,7 @@
 **Last Updated:** December 19, 2025
 
 > **🎯 Strategic Direction Update:** ESTA-Logic is pivoting to become a TurboTax-style guided compliance experience. This architecture document describes the technical foundation. For our experience-first design philosophy and guided user journey architecture, see:
+>
 > - [Experience Vision](../Experience-Vision.md) — Strategic direction
 > - [Experience-First Architecture](../Experience-First-Architecture.md) — Architectural principles
 > - [GuidedFlowEngine](../GuidedFlowEngine.md) — Journey orchestration concept

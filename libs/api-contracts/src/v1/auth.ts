@@ -1,6 +1,6 @@
 /**
  * Authentication API Contracts
- * 
+ *
  * Defines the contract for authentication endpoints:
  * - POST /api/v1/auth/login
  * - POST /api/v1/auth/register/employee
@@ -10,7 +10,11 @@
  */
 
 import { z } from 'zod';
-import { UserRoleSchema, EmployerSizeSchema, UserStatusSchema } from './common.js';
+import {
+  UserRoleSchema,
+  EmployerSizeSchema,
+  UserStatusSchema,
+} from './common.js';
 
 /**
  * User DTO
@@ -58,10 +62,15 @@ export const RegisterEmployeeRequestSchema = z.object({
   email: z.string().email('Invalid email format'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
   name: z.string().min(1, 'Name is required'),
-  enrollmentCode: z.string().length(4, 'Enrollment code must be 4 digits').optional(),
+  enrollmentCode: z
+    .string()
+    .length(4, 'Enrollment code must be 4 digits')
+    .optional(),
 });
 
-export type RegisterEmployeeRequest = z.infer<typeof RegisterEmployeeRequestSchema>;
+export type RegisterEmployeeRequest = z.infer<
+  typeof RegisterEmployeeRequestSchema
+>;
 
 export const RegisterEmployeeResponseSchema = z.object({
   success: z.boolean(),
@@ -69,7 +78,9 @@ export const RegisterEmployeeResponseSchema = z.object({
   user: UserDtoSchema,
 });
 
-export type RegisterEmployeeResponse = z.infer<typeof RegisterEmployeeResponseSchema>;
+export type RegisterEmployeeResponse = z.infer<
+  typeof RegisterEmployeeResponseSchema
+>;
 
 // ============================================================================
 // Register Manager Endpoint: POST /api/v1/auth/register/manager
@@ -83,7 +94,9 @@ export const RegisterManagerRequestSchema = z.object({
   employeeCount: z.number().int().min(1, 'Employee count must be at least 1'),
 });
 
-export type RegisterManagerRequest = z.infer<typeof RegisterManagerRequestSchema>;
+export type RegisterManagerRequest = z.infer<
+  typeof RegisterManagerRequestSchema
+>;
 
 export const RegisterManagerResponseSchema = z.object({
   success: z.boolean(),
@@ -98,7 +111,9 @@ export const RegisterManagerResponseSchema = z.object({
   }),
 });
 
-export type RegisterManagerResponse = z.infer<typeof RegisterManagerResponseSchema>;
+export type RegisterManagerResponse = z.infer<
+  typeof RegisterManagerResponseSchema
+>;
 
 // ============================================================================
 // Logout Endpoint: POST /api/v1/auth/logout
@@ -126,4 +141,6 @@ export const GetCurrentUserResponseSchema = z.object({
   user: UserDtoSchema,
 });
 
-export type GetCurrentUserResponse = z.infer<typeof GetCurrentUserResponseSchema>;
+export type GetCurrentUserResponse = z.infer<
+  typeof GetCurrentUserResponseSchema
+>;

@@ -59,13 +59,17 @@ test.describe('DocumentScanner E2E', () => {
   test('should start camera and show capture interface', async () => {
     // Wait a bit for the page to be fully ready
     await page.waitForTimeout(1000);
-    
+
     const startButton = page.getByText('Start Camera');
     await startButton.click();
 
     // Wait for camera to start - increased timeout for CI
-    await expect(page.getByText('Position Document')).toBeVisible({ timeout: 15000 });
-    await expect(page.getByText('Capture Document')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('Position Document')).toBeVisible({
+      timeout: 15000,
+    });
+    await expect(page.getByText('Capture Document')).toBeVisible({
+      timeout: 5000,
+    });
 
     // Check for video element
     const video = page.locator('video');
@@ -185,19 +189,25 @@ test.describe('DocumentScanner E2E', () => {
 
     const startButton = page.getByText('Start Camera');
     await startButton.click();
-    
+
     // Increased timeout for mobile viewport
-    await expect(page.getByText('Position Document')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('Position Document')).toBeVisible({
+      timeout: 15000,
+    });
 
     // Capture and verify
     const captureButton = page.getByText('Capture Document');
     await captureButton.click();
-    
-    await expect(page.getByText('Review Document')).toBeVisible({ timeout: 10000 });
+
+    await expect(page.getByText('Review Document')).toBeVisible({
+      timeout: 10000,
+    });
 
     // Check that UI is still usable
     await expect(page.getByText('Retake')).toBeVisible({ timeout: 5000 });
-    await expect(page.getByText('Confirm & Upload')).toBeVisible({ timeout: 5000 });
+    await expect(page.getByText('Confirm & Upload')).toBeVisible({
+      timeout: 5000,
+    });
   });
 
   test('should work on tablet viewport', async () => {
@@ -209,32 +219,40 @@ test.describe('DocumentScanner E2E', () => {
 
     const startButton = page.getByText('Start Camera');
     await startButton.click();
-    
+
     // Increased timeout for tablet viewport
-    await expect(page.getByText('Position Document')).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText('Position Document')).toBeVisible({
+      timeout: 15000,
+    });
 
     const captureButton = page.getByText('Capture Document');
     await captureButton.click();
-    
-    await expect(page.getByText('Review Document')).toBeVisible({ timeout: 10000 });
+
+    await expect(page.getByText('Review Document')).toBeVisible({
+      timeout: 10000,
+    });
   });
 
   test('should respect edge detection setting', async () => {
     // This test assumes you have a way to toggle edge detection
     // via props or UI controls
-    
+
     // Wait for page to be ready
     await page.waitForTimeout(1000);
-    
+
     const startButton = page.getByText('Start Camera');
     await startButton.click();
-    
-    await expect(page.getByText('Position Document')).toBeVisible({ timeout: 15000 });
+
+    await expect(page.getByText('Position Document')).toBeVisible({
+      timeout: 15000,
+    });
 
     const captureButton = page.getByText('Capture Document');
     await captureButton.click();
-    
-    await expect(page.getByText('Review Document')).toBeVisible({ timeout: 10000 });
+
+    await expect(page.getByText('Review Document')).toBeVisible({
+      timeout: 10000,
+    });
 
     // If edges were detected, there should be an indicator
     // This depends on your implementation

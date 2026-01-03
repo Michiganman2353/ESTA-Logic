@@ -5,6 +5,7 @@
 These tests validate the **user experience and emotional journey** described in [USER_EXPERIENCE_VISION.md](../../USER_EXPERIENCE_VISION.md), not just technical functionality.
 
 Unlike traditional technical tests that verify "does this button work?", narrative tests verify:
+
 - **Does this experience feel right?**
 - **Does the user feel confident, not confused?**
 - **Does the flow build trust, not anxiety?**
@@ -13,11 +14,13 @@ Unlike traditional technical tests that verify "does this button work?", narrati
 ## Test Suites
 
 ### 1. Sarah - The Overwhelmed Small Business Owner
+
 **File:** `sarah-small-business-owner.spec.ts`
 
 **Journey:** 😰 Fear → 🤔 Curiosity → 😌 Relief → ✅ Confidence → 💚 Advocacy
 
 **What it tests:**
+
 - Landing page builds hope, not overwhelm
 - Registration feels guided, not abandoned
 - Setup provides reassurance at each step
@@ -25,17 +28,20 @@ Unlike traditional technical tests that verify "does this button work?", narrati
 - Daily use is simple and fast
 
 **UX Principles Validated:**
+
 - Trust Before Transaction
 - Clarity Reduces Anxiety
 - Guidance Prevents Abandonment
 - Reassurance Is an Active Feature
 
 ### 2. Marcus - The Skeptical Employee
+
 **File:** `marcus-skeptical-employee.spec.ts`
 
 **Journey:** 🤨 Skepticism → 🤔 Curiosity → 💡 Understanding → 💪 Empowerment → 👍 Trust
 
 **What it tests:**
+
 - Employee portal is accessible and clean
 - Balance is immediately visible (no confusion)
 - Calculation transparency builds trust
@@ -43,6 +49,7 @@ Unlike traditional technical tests that verify "does this button work?", narrati
 - Self-service reduces HR dependency
 
 **UX Principles Validated:**
+
 - Transparency Builds Trust
 - Mobile-First Design
 - Plain Language (no jargon)
@@ -50,11 +57,13 @@ Unlike traditional technical tests that verify "does this button work?", narrati
 - Empowerment Through Access
 
 ### 3. Jennifer - The Multi-Location Manager
+
 **File:** `jennifer-multi-location-manager.spec.ts`
 
 **Journey:** 😵 Overwhelm → 🤞 Hope → 😲 Amazement → 😌 Relief → 🌟 Empowerment
 
 **What it tests:**
+
 - System acknowledges multi-location complexity
 - Bulk operations prevent manual tedium
 - Unified dashboard consolidates information
@@ -62,15 +71,18 @@ Unlike traditional technical tests that verify "does this button work?", narrati
 - Analytics enable strategic decisions
 
 **UX Principles Validated:**
+
 - Scalability Without Complexity
 - Time Savings Are Measurable
 - Automation Reduces Configuration
 - Strategic Insights, Not Just Data
 
 ### 4. TurboTax-Style Guided Flow
+
 **File:** `turbotax-guided-flow.spec.ts`
 
 **What it tests:**
+
 - One question at a time (not overwhelming)
 - Progress indicators show journey status
 - Plain language (8th-grade reading level)
@@ -80,6 +92,7 @@ Unlike traditional technical tests that verify "does this button work?", narrati
 - Success celebrations at milestones
 
 **TurboTax Principles Validated:**
+
 - Guided Interview Format
 - Plain Language Explanations
 - Automatic Calculations
@@ -90,14 +103,14 @@ Unlike traditional technical tests that verify "does this button work?", narrati
 
 ## Key Differences from Technical Tests
 
-| Technical Tests | Narrative/Behavioral Tests |
-|----------------|----------------------------|
-| ✅ Button clicks work | ✅ Flow feels guided |
-| ✅ Form submits correctly | ✅ User feels confident |
+| Technical Tests              | Narrative/Behavioral Tests                 |
+| ---------------------------- | ------------------------------------------ |
+| ✅ Button clicks work        | ✅ Flow feels guided                       |
+| ✅ Form submits correctly    | ✅ User feels confident                    |
 | ✅ Validation catches errors | ✅ Error messages are helpful, not blaming |
-| ✅ Data saves properly | ✅ Success is celebrated |
-| ✅ Navigation works | ✅ Progress is always visible |
-| ✅ API calls succeed | ✅ Trust is actively built |
+| ✅ Data saves properly       | ✅ Success is celebrated                   |
+| ✅ Navigation works          | ✅ Progress is always visible              |
+| ✅ API calls succeed         | ✅ Trust is actively built                 |
 
 ## Running Narrative Tests
 
@@ -115,12 +128,14 @@ npm run test:e2e:ui -- e2e/narratives
 ## Test Philosophy
 
 ### What These Tests Are
+
 - **Experience validation** - Does the UX deliver on the promise?
 - **Emotional journey mapping** - Does the user go through the intended transformation?
 - **UX contract enforcement** - Are the experience principles honored?
 - **Trust-building verification** - Does each interaction build confidence?
 
 ### What These Tests Are NOT
+
 - Not pure functional tests (we have those elsewhere)
 - Not API tests (backend testing)
 - Not unit tests (component testing)
@@ -158,7 +173,7 @@ When adding a new user narrative:
 ### Example Template
 
 ```typescript
-test.describe('User Name\'s Journey: Title', () => {
+test.describe("User Name's Journey: Title", () => {
   test.describe('Act 1: Emotional State (Context)', () => {
     test('specific experience validation', async ({ page }) => {
       // Test the experience, not just the feature

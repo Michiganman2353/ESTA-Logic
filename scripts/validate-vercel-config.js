@@ -150,7 +150,9 @@ function validatePackageJson(expectedNodeVersion) {
 
     // Accept >= patterns for dual-runtime strategy
     if (nodeEngine.includes('>=')) {
-      if (parseInt(packageNodeVersion, 10) <= parseInt(expectedNodeVersion, 10)) {
+      if (
+        parseInt(packageNodeVersion, 10) <= parseInt(expectedNodeVersion, 10)
+      ) {
         log(
           `✅ Package.json accepts Node ${expectedNodeVersion} (engine: ${nodeEngine})`,
           'green'
@@ -209,10 +211,7 @@ function validateNvmrc(expectedNodeVersion) {
         `❌ ERROR: .nvmrc version (${nvmrcVersion}) is older than Vercel runtime (${expectedNodeVersion})`,
         'red'
       );
-      log(
-        '   .nvmrc should be >= vercel.json runtime for development',
-        'red'
-      );
+      log('   .nvmrc should be >= vercel.json runtime for development', 'red');
       return false;
     }
 

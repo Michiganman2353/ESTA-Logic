@@ -1,6 +1,7 @@
 # Welcome & Eligibility Wizard Flow
 
 ## Overview
+
 The Welcome & Eligibility Wizard is the first touchpoint for employers using ESTA Tracker. This guided flow removes anxiety, establishes trust, and collects essential information to determine the employer's compliance path.
 
 ---
@@ -139,6 +140,7 @@ The Welcome & Eligibility Wizard is the first touchpoint for employers using EST
 ## Design Specifications
 
 ### Colors
+
 - **Primary CTA Button**: `trust-blue` (#1E4BD8)
 - **Background**: `background` (#F7FAFE)
 - **Text Primary**: `text-primary` (#111827)
@@ -147,6 +149,7 @@ The Welcome & Eligibility Wizard is the first touchpoint for employers using EST
 - **Help Text Background**: Light blue tint (#F0F4FF)
 
 ### Typography
+
 - **Hero Heading**: 34px Bold (H1)
 - **Section Headers**: 24px Semibold (H2)
 - **Body Text**: 16px Regular
@@ -154,12 +157,14 @@ The Welcome & Eligibility Wizard is the first touchpoint for employers using EST
 - **Button Text**: 16px Medium
 
 ### Spacing
+
 - **Card Padding**: 24px (relaxed on desktop), 16px (compact on mobile)
 - **Section Gaps**: 32px between major sections
 - **Form Field Gaps**: 16px between inputs
 - **Button Padding**: 12px vertical, 24px horizontal
 
 ### Components
+
 - **Progress Indicator**: Horizontal stepper showing 5/5 steps
 - **Radio Buttons**: Large touch targets (48px min height)
 - **Checkboxes**: Standard with clear labels
@@ -171,22 +176,26 @@ The Welcome & Eligibility Wizard is the first touchpoint for employers using EST
 ## Interaction Patterns
 
 ### Progressive Disclosure
+
 - Help text is collapsible to avoid overwhelming users
 - Additional context appears only when relevant
 - Error messages appear inline with specific guidance
 
 ### Validation
+
 - Real-time feedback on employee count (shows classification)
 - Clear error messages with actionable guidance
 - Never block progress without explanation
 
 ### Navigation
+
 - **Primary Action**: Always "Continue →" (blue button, right-aligned)
 - **Secondary Action**: "← Back" (ghost button, left-aligned)
 - **Tertiary Action**: "Save & Exit" (small link, top-right)
 - Progress bar shows current step and total steps
 
 ### Mobile Considerations
+
 - Single column layout
 - Large touch targets (minimum 44x44px)
 - Sticky bottom navigation bar with CTAs
@@ -197,12 +206,14 @@ The Welcome & Eligibility Wizard is the first touchpoint for employers using EST
 ## Copy Tone
 
 ### Voice Characteristics
+
 - **Calm & Reassuring**: "We'll guide you through this step by step"
 - **Professional**: Use proper terminology but explain it
 - **Human**: "You" language, active voice
 - **Confident**: "You're all set" not "You should be fine"
 
 ### Example Copy Patterns
+
 - ✅ "Let's confirm your organization details"
 - ❌ "Please enter your organization information"
 
@@ -217,12 +228,14 @@ The Welcome & Eligibility Wizard is the first touchpoint for employers using EST
 ## Success Metrics
 
 ### User Flow Success
+
 - ✅ **Completion Rate**: >85% of users complete all 5 steps
 - ✅ **Time to Complete**: Average 3-5 minutes
 - ✅ **Error Rate**: <5% validation errors requiring correction
 - ✅ **Drop-off Points**: Monitor each step, optimize high drop-off screens
 
 ### User Confidence
+
 - Post-flow survey: "Did you feel confident in the information provided?" >90% Yes
 - Support tickets related to wizard flow: <2% of total tickets
 
@@ -251,27 +264,30 @@ The Welcome & Eligibility Wizard is the first touchpoint for employers using EST
 ## Technical Implementation Notes
 
 ### State Management
+
 - Store wizard progress in localStorage
 - Sync to Firebase on step completion
 - Resume from last completed step on return
 
 ### Validation Strategy
+
 - Client-side validation for immediate feedback
 - Server-side validation for data integrity
 - Graceful error handling with retry options
 
 ### Analytics Events
+
 ```typescript
 // Track each step completion
 trackEvent('wizard_step_completed', {
   step: 'business_type',
   value: 'small_business',
-  timestamp: Date.now()
+  timestamp: Date.now(),
 });
 
 // Track drop-offs
 trackEvent('wizard_abandoned', {
   last_step: 'employee_count',
-  time_spent: 120 // seconds
+  time_spent: 120, // seconds
 });
 ```

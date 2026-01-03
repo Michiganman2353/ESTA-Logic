@@ -23,9 +23,7 @@ import type {
   SickTimeBalanceResponse,
 } from '../../../kernel/abi/messages';
 
-import type {
-  AccrualExperienceResponse,
-} from '../../../libs/shared-types/src/ux-experience-contract.js';
+import type { AccrualExperienceResponse } from '../../../libs/shared-types/src/ux-experience-contract.js';
 
 import { transformAccrualToExperience } from '../../../libs/shared-utils/src/experience-transformers.js';
 

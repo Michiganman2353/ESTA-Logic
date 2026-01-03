@@ -11,11 +11,13 @@ This document defines the architectural principles that support ESTA-Logic's tra
 > **"Architecture exists to serve experience — not dominate it."**
 
 Traditional software architecture prioritizes:
+
 - Scalability, performance, maintainability
 - Technical elegance and best practices
 - Feature completeness and flexibility
 
 Experience-first architecture prioritizes:
+
 - **User confidence and trust**
 - **Guided journey completeness**
 - **Emotional reassurance**
@@ -30,16 +32,19 @@ Experience-first architecture prioritizes:
 ### 1. Guided Flow as First-Class Concern
 
 **Traditional Approach:**
+
 - User navigates through menus/pages
 - Application exposes all features equally
 - User figures out their own path
 
 **Experience-First Approach:**
+
 - Journey orchestration is architectural core
 - GuidedFlowEngine is primary routing system
 - User follows predetermined optimal path
 
 **Implications:**
+
 - Routing tied to journey state, not just URLs
 - Components designed as "steps" not "pages"
 - State management tracks journey progress
@@ -48,16 +53,19 @@ Experience-first architecture prioritizes:
 ### 2. Progressive Disclosure Architecture
 
 **Traditional Approach:**
+
 - Show all capabilities upfront
 - Expose full feature set
 - Power user optimization
 
 **Experience-First Approach:**
+
 - Show only what's needed now
 - Reveal complexity incrementally
 - Beginner-optimized by default
 
 **Implications:**
+
 - Layered component architecture (simple → advanced)
 - Conditional feature exposure based on journey stage
 - Settings/preferences hidden until needed
@@ -66,17 +74,20 @@ Experience-first architecture prioritizes:
 ### 3. Reassurance-Driven Security
 
 **Traditional Approach:**
+
 - Security through obscurity
 - Technical security measures hidden
 - Users don't see protections
 
 **Experience-First Approach:**
+
 - Visible trust indicators
 - Explained security measures
 - "You are safe" messaging
 - Transparency builds confidence
 
 **Implications:**
+
 - Security indicators as UI components
 - Audit trails visible to users
 - Encryption status shown (not just applied)
@@ -85,17 +96,20 @@ Experience-first architecture prioritizes:
 ### 4. Contextual Intelligence
 
 **Traditional Approach:**
+
 - Generic interfaces for all users
 - User customization required
 - One-size-fits-all
 
 **Experience-First Approach:**
+
 - Persona-specific journeys
 - Adaptive guidance
 - Context-aware defaults
 - Smart suggestions
 
 **Implications:**
+
 - User context stored and propagated
 - Compliance rules applied automatically
 - Pre-filled forms based on profile
@@ -104,17 +118,20 @@ Experience-first architecture prioritizes:
 ### 5. Failure as User Experience
 
 **Traditional Approach:**
+
 - Error messages for developers
 - Stack traces and codes
 - "Something went wrong"
 
 **Experience-First Approach:**
+
 - Human-readable explanations
 - Suggested recovery actions
 - Never blame the user
 - Graceful degradation
 
 **Implications:**
+
 - Error boundaries with helpful messages
 - User-facing error dictionary
 - Automatic fallbacks and retries
@@ -129,6 +146,7 @@ Experience-first architecture prioritizes:
 **Primary Goal:** Guide, reassure, and build confidence
 
 **Responsibilities:**
+
 - Render guided journey steps
 - Display contextual guidance
 - Show trust indicators
@@ -136,18 +154,20 @@ Experience-first architecture prioritizes:
 - Celebrate progress
 
 **Must NOT:**
+
 - Expose technical complexity
 - Show raw data structures
 - Use developer terminology
 - Present overwhelming options
 
 **Example:**
+
 ```typescript
 // ❌ Traditional
 <EmployeeList employees={data} onEdit={handleEdit} />
 
 // ✅ Experience-First
-<GuidedStep 
+<GuidedStep
   title="Let's add your first employee"
   guidance="We'll start with just the basics. You can add more details later."
   progress={{ current: 4, total: 7 }}
@@ -161,6 +181,7 @@ Experience-first architecture prioritizes:
 **Primary Goal:** Coordinate user progression through guided experiences
 
 **Responsibilities:**
+
 - Determine next step based on state
 - Apply branching logic
 - Track progress
@@ -168,6 +189,7 @@ Experience-first architecture prioritizes:
 - Provide contextual guidance
 
 **Example:**
+
 ```typescript
 class JourneyOrchestrator {
   async determineNextStep(currentState: FlowState): Promise<Step> {
@@ -175,10 +197,10 @@ class JourneyOrchestrator {
     if (!currentState.employeeCount) {
       return steps.employeeCount;
     }
-    
+
     const isSmallEmployer = currentState.employeeCount < 10;
-    return isSmallEmployer 
-      ? steps.smallEmployerPolicy 
+    return isSmallEmployer
+      ? steps.smallEmployerPolicy
       : steps.largeEmployerPolicy;
   }
 }
@@ -189,6 +211,7 @@ class JourneyOrchestrator {
 **Primary Goal:** Execute compliance rules and business logic deterministically
 
 **Responsibilities:**
+
 - Apply ESTA regulations
 - Calculate accruals
 - Enforce caps and limits
@@ -196,12 +219,14 @@ class JourneyOrchestrator {
 - Generate compliance reports
 
 **Must:**
+
 - Return user-friendly explanations (not just results)
 - Provide legal context for decisions
 - Be completely deterministic
 - Maintain audit trails
 
 **Example:**
+
 ```typescript
 interface ComplianceResult {
   compliant: boolean;
@@ -217,12 +242,14 @@ interface ComplianceResult {
 **Primary Goal:** Maintain state with confidence-building reliability
 
 **Responsibilities:**
+
 - Auto-save journey progress
 - Store immutable audit logs
 - Provide data recovery
 - Enable resume capability
 
 **Must:**
+
 - Never lose user progress
 - Provide rollback capability
 - Maintain version history
@@ -251,6 +278,7 @@ UI Component (shows confirmation + next step)
 ```
 
 ### Key Characteristics
+
 - **One direction:** User → System → Feedback
 - **No ambiguity:** Always clear what happens next
 - **Auto-save:** Every step persisted immediately
@@ -269,19 +297,19 @@ interface GuidedStepProps {
   title: string;
   explanation: string;
   helpText?: string;
-  
+
   // Progress
   stepNumber: number;
   totalSteps: number;
-  
+
   // Navigation
   onNext: (data: any) => void;
   onBack?: () => void;
   canSkip?: boolean;
-  
+
   // Validation
   validationRules: ValidationRule[];
-  
+
   // Guidance
   contextualHelp?: ReactNode;
   legalContext?: string;
@@ -300,7 +328,7 @@ interface TrustIndicatorProps {
 }
 
 // Usage
-<TrustIndicator 
+<TrustIndicator
   type="encrypted"
   message="Your data is encrypted and secure"
   details="We use bank-level AES-256 encryption"
@@ -339,19 +367,19 @@ interface JourneyState {
   // Identity
   journeyId: string;
   userId: string;
-  
+
   // Progress
   currentStepId: string;
   completedSteps: string[];
-  
+
   // Data
   stepData: Record<string, any>;
-  
+
   // Metadata
   startedAt: Date;
   lastUpdatedAt: Date;
   estimatedCompletion: Date;
-  
+
   // Status
   status: 'in-progress' | 'paused' | 'completed';
 }
@@ -373,6 +401,7 @@ interface JourneyState {
 **Goal:** First step visible in < 2 seconds
 
 **Techniques:**
+
 - Lazy load future steps
 - Prefetch next likely step
 - Optimize critical rendering path
@@ -383,6 +412,7 @@ interface JourneyState {
 **Goal:** Step-to-step transition < 300ms
 
 **Techniques:**
+
 - Optimistic UI updates
 - Transition animations
 - Skeleton screens
@@ -399,11 +429,9 @@ Users should see and understand security measures:
 1. **Encryption Indicators**
    - "🔒 Encrypted" badges on sensitive fields
    - Explanation tooltips
-   
 2. **Audit Trail Access**
    - Users can view their own audit log
    - Plain language descriptions
-   
 3. **Data Control**
    - Clear data deletion options
    - Export capabilities
@@ -412,6 +440,7 @@ Users should see and understand security measures:
 ### Behind-the-Scenes Security
 
 Traditional security still applies:
+
 - Firebase Security Rules
 - Google Cloud KMS encryption
 - HTTPS everywhere
@@ -430,18 +459,18 @@ But users shouldn't see technical details unless requested.
 describe('Employer Onboarding Journey', () => {
   it('guides small employer through correct path', async () => {
     const journey = await startJourney('employer-onboarding');
-    
+
     // Step 1: Welcome
     expect(journey.currentStep).toBe('welcome');
-    
+
     // Step 2: Company info
     await journey.next({ companyName: 'Test Co' });
     expect(journey.currentStep).toBe('employee-count');
-    
+
     // Step 3: Employee count (triggers small employer path)
     await journey.next({ employeeCount: 5 });
     expect(journey.currentStep).toBe('small-employer-policy');
-    
+
     // Verify compliance rules applied correctly
     expect(journey.state.accrualCap).toBe(40);
   });
@@ -461,18 +490,21 @@ describe('Employer Onboarding Journey', () => {
 ## Migration Strategy
 
 ### Phase 1: Foundation
+
 - Build GuidedFlowEngine
 - Create first journey (employer onboarding)
 - Implement state persistence
 - Deploy alongside existing app
 
 ### Phase 2: Gradual Replacement
+
 - New features built as guided journeys
 - Existing features wrapped in guidance
 - Analytics on completion rates
 - User feedback collection
 
 ### Phase 3: Full Transition
+
 - All features accessed through journeys
 - Legacy navigation removed
 - Experience-first architecture complete
@@ -482,12 +514,14 @@ describe('Employer Onboarding Journey', () => {
 ## Success Metrics
 
 ### Technical
+
 - Journey completion rate > 95%
 - Step-to-step transition < 300ms
 - Zero data loss incidents
 - Auto-save reliability 99.99%
 
 ### Experience
+
 - User confidence score > 8/10
 - Time to first value < 10 minutes
 - Support tickets reduced 50%
@@ -506,6 +540,7 @@ If the answer is no, reconsider the approach.
 ---
 
 **Related Documentation:**
+
 - [GuidedFlowEngine Concept](./GuidedFlowEngine.md)
 - [UX Blueprint](./UX-Blueprint.md)
 - [Strategic Roadmap](./ROADMAP.md)

@@ -19,12 +19,14 @@ Traditional applications expose functionality through menus, forms, and features
 ### 1. Journey Orchestration
 
 **What it does:**
+
 - Maintains the canonical path for each user persona
 - Determines which step comes next based on current state
 - Handles branching logic based on user responses
 - Manages progress through multi-step workflows
 
 **Example:**
+
 ```typescript
 // Pseudo-code concept
 guidedFlow.start('employer-onboarding')
@@ -40,12 +42,14 @@ guidedFlow.start('employer-onboarding')
 ### 2. State Management
 
 **What it does:**
+
 - Tracks where user is in their journey
 - Persists progress automatically
 - Allows users to resume from any point
 - Maintains history of completed steps
 
 **Key Features:**
+
 - Auto-save on every interaction
 - Resume capability after logout
 - Undo/redo for recent steps
@@ -54,52 +58,59 @@ guidedFlow.start('employer-onboarding')
 ### 3. Contextual Guidance
 
 **What it does:**
+
 - Provides just-in-time explanations
 - Offers help text specific to current step
 - Explains "why" for each requirement
 - Surfaces relevant compliance information
 
 **Example:**
+
 ```typescript
 // At employee count step
 context.guidance = {
-  title: "How many employees do you have?",
-  explanation: "This determines your compliance requirements under Michigan ESTA.",
-  helpText: "Count all employees, including part-time and seasonal workers.",
-  legalReason: "Employers with 10+ employees have different accrual caps."
-}
+  title: 'How many employees do you have?',
+  explanation:
+    'This determines your compliance requirements under Michigan ESTA.',
+  helpText: 'Count all employees, including part-time and seasonal workers.',
+  legalReason: 'Employers with 10+ employees have different accrual caps.',
+};
 ```
 
 ### 4. Validation & Guard Rails
 
 **What it does:**
+
 - Validates input before proceeding
 - Prevents impossible states
 - Enforces legal requirements
 - Provides friendly error messages
 
 **Example:**
+
 ```typescript
 // Validation at policy configuration
 if (accrualRate > legalMaximum) {
   return {
     valid: false,
-    message: "This accrual rate exceeds Michigan ESTA requirements.",
-    suggestion: "Maximum allowed is 1 hour per 30 hours worked.",
-    action: "Adjust to recommended rate"
-  }
+    message: 'This accrual rate exceeds Michigan ESTA requirements.',
+    suggestion: 'Maximum allowed is 1 hour per 30 hours worked.',
+    action: 'Adjust to recommended rate',
+  };
 }
 ```
 
 ### 5. Progress Indication
 
 **What it does:**
+
 - Shows current position in journey
 - Estimates time to completion
 - Celebrates milestones
 - Maintains motivation
 
 **UI Elements:**
+
 - Step counter (e.g., "Step 3 of 7")
 - Progress bar showing percentage
 - Checkmarks for completed steps
@@ -158,16 +169,16 @@ class GuidedFlowController {
   async next(stepData: any): Promise<Step>;
   async back(): Promise<Step>;
   async jumpTo(stepId: string): Promise<Step>;
-  
+
   // State management
   async saveProgress(): Promise<void>;
   async loadProgress(): Promise<FlowState>;
   async reset(): Promise<void>;
-  
+
   // Guidance
   getGuidance(stepId: string): GuidanceContent;
   getHelp(topic: string): HelpContent;
-  
+
   // Progress tracking
   getProgress(): ProgressInfo;
   getEstimatedTimeRemaining(): number;
@@ -210,24 +221,28 @@ class GuidedFlowController {
 ## Implementation Strategy
 
 ### Phase 1: Foundation
+
 - Build core GuidedFlowEngine class
 - Create journey definition schema
 - Implement basic state persistence
 - Build simple step navigation
 
 ### Phase 2: Intelligence
+
 - Add branching logic support
 - Implement validation framework
 - Create guidance content system
 - Add progress tracking
 
 ### Phase 3: Polish
+
 - Build smooth transitions
 - Add animations and micro-interactions
 - Implement auto-save
 - Create help system overlay
 
 ### Phase 4: Scale
+
 - Support multiple simultaneous journeys
 - Add journey templates
 - Enable admin journey editing
@@ -238,16 +253,19 @@ class GuidedFlowController {
 ## Integration Points
 
 ### With Compliance Engine
+
 - Guided Flow determines what compliance rules apply
 - Compliance Engine validates configurations
 - Flow surfaces compliance explanations
 
 ### With UI Components
+
 - Flow Engine provides data for progress bars
 - Flow manages which component renders
 - Components report validation state back
 
 ### With Firebase/Backend
+
 - Auto-save progress to Firestore
 - Load user's last position on return
 - Audit trail of journey completion
@@ -268,9 +286,9 @@ const employerOnboardingJourney: Journey = {
       component: WelcomeStep,
       guidance: {
         message: "We'll walk you through setup one step at a time.",
-        tone: 'reassuring'
+        tone: 'reassuring',
       },
-      canSkip: false
+      canSkip: false,
     },
     {
       id: 'company-info',
@@ -279,33 +297,31 @@ const employerOnboardingJourney: Journey = {
       validation: [
         required('companyName'),
         required('industry'),
-        optional('website')
+        optional('website'),
       ],
       guidance: {
-        message: "This helps us customize your compliance requirements.",
-        helpText: "We only collect what's needed for compliance."
-      }
+        message: 'This helps us customize your compliance requirements.',
+        helpText: "We only collect what's needed for compliance.",
+      },
     },
     {
       id: 'employee-count',
       title: 'How many employees do you have?',
       component: EmployeeCountStep,
-      validation: [
-        required('employeeCount'),
-        minimum('employeeCount', 1)
-      ],
+      validation: [required('employeeCount'), minimum('employeeCount', 1)],
       guidance: {
-        message: "This determines your ESTA compliance tier.",
-        legalContext: "Different rules apply for employers with <10 vs ≥10 employees."
+        message: 'This determines your ESTA compliance tier.',
+        legalContext:
+          'Different rules apply for employers with <10 vs ≥10 employees.',
       },
       nextStep: (data) => {
-        return data.employeeCount < 10 
-          ? 'small-employer-policy' 
+        return data.employeeCount < 10
+          ? 'small-employer-policy'
           : 'large-employer-policy';
-      }
+      },
     },
     // ... more steps
-  ]
+  ],
 };
 ```
 
@@ -314,6 +330,7 @@ const employerOnboardingJourney: Journey = {
 ## Benefits
 
 ### For Users
+
 ✅ Never confused about what to do next  
 ✅ Confidence that they're doing it right  
 ✅ Can't skip required steps  
@@ -321,6 +338,7 @@ const employerOnboardingJourney: Journey = {
 ✅ Can pause and resume anytime
 
 ### For Development
+
 ✅ Centralized journey logic  
 ✅ Easy to modify flows without code changes  
 ✅ Consistent UX patterns  
@@ -328,6 +346,7 @@ const employerOnboardingJourney: Journey = {
 ✅ Analytics on drop-off points
 
 ### For Business
+
 ✅ Higher completion rates  
 ✅ Fewer support requests  
 ✅ Better onboarding metrics  
@@ -357,6 +376,7 @@ The Guided Flow Engine is the architectural foundation that enables ESTA-Logic t
 ---
 
 **Related Documentation:**
+
 - [UX Blueprint](./UX-Blueprint.md) — User experience principles
 - [Strategic Roadmap](./ROADMAP.md) — Implementation phases
 - [Experience Vision](./Experience-Vision.md) — Product direction

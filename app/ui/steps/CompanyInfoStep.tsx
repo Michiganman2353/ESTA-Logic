@@ -1,6 +1,6 @@
 /**
  * CompanyInfoStep - Company information collection step
- * 
+ *
  * Purpose: Collect basic company information needed for compliance setup
  * Tone: Supportive, clear about why we need information
  */
@@ -17,20 +17,20 @@ export interface CompanyInfoData {
 export interface CompanyInfoStepProps {
   /** Initial data if returning to this step */
   initialData?: Partial<CompanyInfoData>;
-  
+
   /** Callback when user proceeds */
   onNext: (data: CompanyInfoData) => void;
-  
+
   /** Callback to go back */
   onBack: () => void;
-  
+
   /** Validation errors from parent */
   errors?: Record<string, string>;
 }
 
 /**
  * Company Info Step Component
- * 
+ *
  * Implements guided data collection:
  * - Clear field labels with contextual help
  * - Supportive validation messages
@@ -41,40 +41,40 @@ export const CompanyInfoStep: React.FC<CompanyInfoStepProps> = ({
   initialData = {},
   onNext,
   onBack,
-  errors = {}
+  errors = {},
 }) => {
   const [formData, setFormData] = useState<CompanyInfoData>({
     companyName: initialData.companyName || '',
     industry: initialData.industry || '',
     address: initialData.address || '',
-    contactEmail: initialData.contactEmail || ''
+    contactEmail: initialData.contactEmail || '',
   });
 
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   const handleChange = (field: keyof CompanyInfoData, value: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handleBlur = (field: keyof CompanyInfoData) => {
-    setTouched(prev => ({
+    setTouched((prev) => ({
       ...prev,
-      [field]: true
+      [field]: true,
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Mark all fields as touched
     setTouched({
       companyName: true,
       industry: true,
       address: true,
-      contactEmail: true
+      contactEmail: true,
     });
 
     // Basic validation
@@ -95,8 +95,8 @@ export const CompanyInfoStep: React.FC<CompanyInfoStepProps> = ({
       <div className="step-header">
         <h2 className="step-title">Tell us about your company</h2>
         <p className="step-description">
-          This helps us customize your compliance requirements.
-          We only collect what's needed for compliance.
+          This helps us customize your compliance requirements. We only collect
+          what's needed for compliance.
         </p>
       </div>
 
@@ -121,7 +121,8 @@ export const CompanyInfoStep: React.FC<CompanyInfoStepProps> = ({
             <div className="field-error">
               <span className="error-icon">ℹ️</span>
               <span className="error-text">
-                Company name is needed. This helps us ensure you're compliant with Michigan law.
+                Company name is needed. This helps us ensure you're compliant
+                with Michigan law.
               </span>
             </div>
           )}
@@ -157,7 +158,8 @@ export const CompanyInfoStep: React.FC<CompanyInfoStepProps> = ({
             <div className="field-error">
               <span className="error-icon">ℹ️</span>
               <span className="error-text">
-                Please select your industry. This helps us understand your business context.
+                Please select your industry. This helps us understand your
+                business context.
               </span>
             </div>
           )}
@@ -205,25 +207,18 @@ export const CompanyInfoStep: React.FC<CompanyInfoStepProps> = ({
           <div className="guidance-content">
             <div className="guidance-title">Why do we ask?</div>
             <div className="guidance-text">
-              This information helps us configure the right compliance settings for your business.
-              Everything is encrypted and stored securely.
+              This information helps us configure the right compliance settings
+              for your business. Everything is encrypted and stored securely.
             </div>
           </div>
         </div>
 
         {/* Navigation */}
         <div className="step-navigation">
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={onBack}
-          >
+          <button type="button" className="btn-secondary" onClick={onBack}>
             ← Back
           </button>
-          <button
-            type="submit"
-            className="btn-primary"
-          >
+          <button type="submit" className="btn-primary">
             Continue →
           </button>
         </div>
@@ -244,41 +239,41 @@ export const CompanyInfoStep: React.FC<CompanyInfoStepProps> = ({
 
 /**
  * Example CSS (to be implemented in actual stylesheet):
- * 
+ *
  * .company-info-step {
  *   max-width: 600px;
  *   margin: 0 auto;
  *   padding: 32px 24px;
  * }
- * 
+ *
  * .step-header {
  *   margin-bottom: 32px;
  * }
- * 
+ *
  * .step-title {
  *   font-size: 1.875rem;
  *   font-weight: 600;
  *   color: #1a1a1a;
  *   margin-bottom: 12px;
  * }
- * 
+ *
  * .step-description {
  *   font-size: 1rem;
  *   color: #6a6a6a;
  *   line-height: 1.6;
  * }
- * 
+ *
  * .form-field {
  *   margin-bottom: 24px;
  * }
- * 
+ *
  * .field-label {
  *   display: block;
  *   font-weight: 500;
  *   margin-bottom: 8px;
  *   color: #2a2a2a;
  * }
- * 
+ *
  * .field-input {
  *   width: 100%;
  *   padding: 12px;
@@ -287,17 +282,17 @@ export const CompanyInfoStep: React.FC<CompanyInfoStepProps> = ({
  *   border-radius: 6px;
  *   transition: border-color 0.2s ease;
  * }
- * 
+ *
  * .field-input:focus {
  *   outline: none;
  *   border-color: #2563eb;
  *   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
  * }
- * 
+ *
  * .field-input.error {
  *   border-color: #dc2626;
  * }
- * 
+ *
  * .field-error {
  *   display: flex;
  *   align-items: start;
@@ -307,18 +302,18 @@ export const CompanyInfoStep: React.FC<CompanyInfoStepProps> = ({
  *   background: #fef2f2;
  *   border-radius: 6px;
  * }
- * 
+ *
  * .error-text {
  *   font-size: 0.875rem;
  *   color: #991b1b;
  * }
- * 
+ *
  * .field-help {
  *   margin-top: 6px;
  *   font-size: 0.875rem;
  *   color: #6a6a6a;
  * }
- * 
+ *
  * .guidance-box {
  *   display: flex;
  *   gap: 16px;
@@ -327,13 +322,13 @@ export const CompanyInfoStep: React.FC<CompanyInfoStepProps> = ({
  *   border-radius: 8px;
  *   margin: 32px 0;
  * }
- * 
+ *
  * .step-navigation {
  *   display: flex;
  *   justify-content: space-between;
  *   margin-top: 32px;
  * }
- * 
+ *
  * .btn-primary, .btn-secondary {
  *   padding: 12px 32px;
  *   font-size: 1rem;
@@ -342,13 +337,13 @@ export const CompanyInfoStep: React.FC<CompanyInfoStepProps> = ({
  *   cursor: pointer;
  *   transition: all 0.2s ease;
  * }
- * 
+ *
  * .btn-primary {
  *   background: #2563eb;
  *   color: white;
  *   border: none;
  * }
- * 
+ *
  * .btn-secondary {
  *   background: white;
  *   color: #4a4a4a;

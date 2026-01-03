@@ -1,6 +1,6 @@
 /**
  * Common API Types and Schemas
- * 
+ *
  * Shared request/response patterns used across all API endpoints
  */
 

@@ -22,6 +22,7 @@ The **UX Response API Layer** is ESTA Tracker's formal contract between backend 
 ### The Core Problem This Solves
 
 **Before UX Response Layer:**
+
 ```typescript
 // ❌ Frontend must interpret raw backend data
 {
@@ -33,6 +34,7 @@ The **UX Response API Layer** is ESTA Tracker's formal contract between backend 
 ```
 
 **With UX Response Layer:**
+
 ```typescript
 // ✅ Backend provides human-ready narrative
 {
@@ -64,7 +66,7 @@ The **UX Response API Layer** is ESTA Tracker's formal contract between backend 
 ✅ **Consistent narrative across all features** — Same contract everywhere  
 ✅ **Trust built into every response** — Reassurance is mandatory  
 ✅ **Clear guidance always present** — Users know what to do next  
-✅ **Safe to evolve logic independently** — Contract isolates changes  
+✅ **Safe to evolve logic independently** — Contract isolates changes
 
 ---
 
@@ -77,7 +79,7 @@ interface ExperienceResponse<TTechnical = unknown> {
   // ═══════════════════════════════════════════════════════════════
   // PRIMARY DECISION
   // ═══════════════════════════════════════════════════════════════
-  
+
   /**
    * The primary outcome of this operation
    * @example "APPROVED" | "DENIED" | "NEEDS_INFORMATION"
@@ -87,7 +89,7 @@ interface ExperienceResponse<TTechnical = unknown> {
   // ═══════════════════════════════════════════════════════════════
   // HUMAN NARRATIVE
   // ═══════════════════════════════════════════════════════════════
-  
+
   /**
    * WHY this decision was made (1-2 sentences)
    * @example "Based on Michigan ESTA regulations, you earned 2.5 hours..."
@@ -103,7 +105,7 @@ interface ExperienceResponse<TTechnical = unknown> {
   // ═══════════════════════════════════════════════════════════════
   // TRANSPARENCY METRICS
   // ═══════════════════════════════════════════════════════════════
-  
+
   /**
    * Risk assessment for proper expectation setting
    * @example "NONE" | "LOW" | "MEDIUM" | "HIGH" | "CRITICAL"
@@ -119,7 +121,7 @@ interface ExperienceResponse<TTechnical = unknown> {
   // ═══════════════════════════════════════════════════════════════
   // EMOTIONAL SUPPORT
   // ═══════════════════════════════════════════════════════════════
-  
+
   /**
    * Reassuring message to build trust and reduce anxiety
    */
@@ -133,7 +135,7 @@ interface ExperienceResponse<TTechnical = unknown> {
   // ═══════════════════════════════════════════════════════════════
   // ACTIONABLE GUIDANCE
   // ═══════════════════════════════════════════════════════════════
-  
+
   /**
    * Ordered list of next steps (first = most important)
    */
@@ -149,7 +151,7 @@ interface ExperienceResponse<TTechnical = unknown> {
   // ═══════════════════════════════════════════════════════════════
   // LEGAL GROUNDING
   // ═══════════════════════════════════════════════════════════════
-  
+
   /**
    * Legal references with plain-English interpretations
    */
@@ -164,7 +166,7 @@ interface ExperienceResponse<TTechnical = unknown> {
   // ═══════════════════════════════════════════════════════════════
   // TECHNICAL DETAILS (Optional)
   // ═══════════════════════════════════════════════════════════════
-  
+
   /**
    * Raw engine output for developers/advanced users
    */
@@ -173,7 +175,7 @@ interface ExperienceResponse<TTechnical = unknown> {
   // ═══════════════════════════════════════════════════════════════
   // METADATA
   // ═══════════════════════════════════════════════════════════════
-  
+
   timestamp: string;
   sourceEngine: string;
   responseId: string;
@@ -191,7 +193,7 @@ All API endpoints wrap the UX response in a standard envelope:
 ```typescript
 interface ApiResponse<T> {
   success: boolean;
-  data?: T;  // ExperienceResponse for UX endpoints
+  data?: T; // ExperienceResponse for UX endpoints
   error?: {
     code: string;
     message: string;
@@ -268,48 +270,48 @@ interface ApiResponse<T> {
 ### Decision Status Values
 
 ```typescript
-type DecisionStatus = 
-  | 'APPROVED'            // ✅ Action successful, user can proceed
-  | 'DENIED'              // ❌ Action rejected, user cannot proceed
-  | 'NEEDS_INFORMATION'   // ℹ️  More data required from user
-  | 'PENDING_REVIEW'      // ⏳ Awaiting manual review/approval
-  | 'COMPLETED'           // ✔️  Operation completed successfully
-  | 'WARNING'             // ⚠️  Completed with warnings to review
-  | 'INFO'                // 📊 Informational only, no action needed
+type DecisionStatus =
+  | 'APPROVED' // ✅ Action successful, user can proceed
+  | 'DENIED' // ❌ Action rejected, user cannot proceed
+  | 'NEEDS_INFORMATION' // ℹ️  More data required from user
+  | 'PENDING_REVIEW' // ⏳ Awaiting manual review/approval
+  | 'COMPLETED' // ✔️  Operation completed successfully
+  | 'WARNING' // ⚠️  Completed with warnings to review
+  | 'INFO'; // 📊 Informational only, no action needed
 ```
 
 ### When to Use Each Decision
 
-| Decision | Use When | Example |
-|----------|----------|---------|
-| **APPROVED** | User's action is accepted and will proceed | PTO request approved |
-| **DENIED** | User's action is rejected due to rules/policy | PTO request exceeds available balance |
-| **NEEDS_INFORMATION** | Missing required data to proceed | Medical note required for 3+ day absence |
-| **PENDING_REVIEW** | Requires manual approval from manager | PTO request awaiting manager approval |
-| **COMPLETED** | Background operation finished successfully | Accrual calculation completed |
-| **WARNING** | Success with caveats user should know | Balance updated but nearing maximum |
-| **INFO** | Providing information, no action required | Current balance inquiry |
+| Decision              | Use When                                      | Example                                  |
+| --------------------- | --------------------------------------------- | ---------------------------------------- |
+| **APPROVED**          | User's action is accepted and will proceed    | PTO request approved                     |
+| **DENIED**            | User's action is rejected due to rules/policy | PTO request exceeds available balance    |
+| **NEEDS_INFORMATION** | Missing required data to proceed              | Medical note required for 3+ day absence |
+| **PENDING_REVIEW**    | Requires manual approval from manager         | PTO request awaiting manager approval    |
+| **COMPLETED**         | Background operation finished successfully    | Accrual calculation completed            |
+| **WARNING**           | Success with caveats user should know         | Balance updated but nearing maximum      |
+| **INFO**              | Providing information, no action required     | Current balance inquiry                  |
 
 ### Risk Level Values
 
 ```typescript
 type ExperienceRiskLevel =
-  | 'NONE'      // ✅ Everything is fine
-  | 'LOW'       // 🟡 Minor items to be aware of
-  | 'MEDIUM'    // 🟠 Moderate attention needed
-  | 'HIGH'      // 🔴 Urgent attention required
-  | 'CRITICAL'  // 🚨 Immediate action required
+  | 'NONE' // ✅ Everything is fine
+  | 'LOW' // 🟡 Minor items to be aware of
+  | 'MEDIUM' // 🟠 Moderate attention needed
+  | 'HIGH' // 🔴 Urgent attention required
+  | 'CRITICAL'; // 🚨 Immediate action required
 ```
 
 ### Risk Level Guidelines
 
-| Risk Level | Confidence Range | User Action | Example |
-|------------|------------------|-------------|---------|
-| **NONE** | 95-100 | No action needed | Routine accrual calculation |
-| **LOW** | 85-94 | Optional review | Approaching balance maximum |
-| **MEDIUM** | 70-84 | Review soon | Missing documentation |
-| **HIGH** | 50-69 | Action required this week | Compliance violation detected |
-| **CRITICAL** | 0-49 | Immediate action required | Legal deadline imminent |
+| Risk Level   | Confidence Range | User Action               | Example                       |
+| ------------ | ---------------- | ------------------------- | ----------------------------- |
+| **NONE**     | 95-100           | No action needed          | Routine accrual calculation   |
+| **LOW**      | 85-94            | Optional review           | Approaching balance maximum   |
+| **MEDIUM**   | 70-84            | Review soon               | Missing documentation         |
+| **HIGH**     | 50-69            | Action required this week | Compliance violation detected |
+| **CRITICAL** | 0-49             | Immediate action required | Legal deadline imminent       |
 
 ---
 
@@ -321,10 +323,10 @@ Endpoints that return UX responses use the `.experience` suffix:
 
 ```typescript
 // ❌ Raw endpoint (returns technical data)
-POST /api/v1/accrual/calculate
+POST / api / v1 / accrual / calculate;
 
 // ✅ Experience endpoint (returns UX-enhanced data)
-POST /api/v1/accrual/calculate.experience
+POST / api / v1 / accrual / calculate.experience;
 ```
 
 ### Pattern 2: Backward Compatibility
@@ -353,7 +355,7 @@ export async function calculateAccrualWithExperience(
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data),
   });
-  
+
   return response.json();
 }
 
@@ -369,17 +371,17 @@ function AccrualDisplay({ userId }: Props) {
     <div>
       <h2>{data.explanation}</h2>
       <p>{data.humanMeaning}</p>
-      
+
       {data.reassuranceMessage.emphasize && (
         <Alert tone={data.reassuranceMessage.tone}>
           {data.reassuranceMessage.message}
         </Alert>
       )}
-      
+
       {data.nextSteps.length > 0 && (
         <NextSteps steps={data.nextSteps} />
       )}
-      
+
       {/* Optional: Show technical details for advanced users */}
       <Collapsible title="Technical Details">
         <pre>{JSON.stringify(data.technicalDetails, null, 2)}</pre>
@@ -396,6 +398,7 @@ function AccrualDisplay({ userId }: Props) {
 ### Example 1: Accrual Calculation (Success Case)
 
 **Request:**
+
 ```json
 POST /api/v1/accrual/calculate.experience
 {
@@ -407,6 +410,7 @@ POST /api/v1/accrual/calculate.experience
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -458,6 +462,7 @@ POST /api/v1/accrual/calculate.experience
 ### Example 2: Accrual Calculation (Nearing Maximum)
 
 **Request:**
+
 ```json
 POST /api/v1/accrual/calculate.experience
 {
@@ -469,6 +474,7 @@ POST /api/v1/accrual/calculate.experience
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -530,6 +536,7 @@ POST /api/v1/accrual/calculate.experience
 ### Example 3: Compliance Check (Violation Found)
 
 **Request:**
+
 ```json
 POST /api/v1/compliance/check.experience
 {
@@ -539,6 +546,7 @@ POST /api/v1/compliance/check.experience
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
@@ -628,11 +636,13 @@ POST /api/v1/compliance/check.experience
 ### 1. Writing Effective Explanations
 
 ✅ **Good Explanations:**
+
 - "You earned 2.5 hours of sick time this pay period based on your 75 hours worked."
 - "Your PTO request was approved because you have sufficient balance available."
 - "We found 2 compliance issues that need attention to meet Michigan ESTA requirements."
 
 ❌ **Bad Explanations:**
+
 - "Calculation completed successfully" (too vague)
 - "Accrual processed per ESTA MCL 408.963(3)(a)" (too technical)
 - "Operation successful" (no information)
@@ -640,24 +650,26 @@ POST /api/v1/compliance/check.experience
 ### 2. Crafting Human Meaning
 
 ✅ **Good Human Meaning:**
+
 - "Your balance is now 15.5 hours — enough for almost 2 full days."
 - "You can take time off without worrying about running out."
 - "Your business is not fully compliant, but we'll help you fix this quickly."
 
 ❌ **Bad Human Meaning:**
+
 - "Balance updated to 15.5" (restates technical fact)
 - "Status: APPROVED" (no context)
 - "See details below" (unhelpful)
 
 ### 3. Setting Appropriate Risk Levels
 
-| Scenario | Risk Level | Rationale |
-|----------|-----------|-----------|
-| Routine accrual calculation | NONE | Standard operation |
-| Balance at 85% of maximum | LOW | Worth knowing, not urgent |
-| Missing documentation | MEDIUM | Needs attention soon |
-| Compliance violation | HIGH | Urgent action required |
-| Legal deadline in 48 hours | CRITICAL | Immediate action required |
+| Scenario                    | Risk Level | Rationale                 |
+| --------------------------- | ---------- | ------------------------- |
+| Routine accrual calculation | NONE       | Standard operation        |
+| Balance at 85% of maximum   | LOW        | Worth knowing, not urgent |
+| Missing documentation       | MEDIUM     | Needs attention soon      |
+| Compliance violation        | HIGH       | Urgent action required    |
+| Legal deadline in 48 hours  | CRITICAL   | Immediate action required |
 
 ### 4. Calculating Confidence Scores
 
@@ -705,7 +717,7 @@ const response = ExperienceResponseSchema.parse(data);
 describe('UX Response Contract', () => {
   it('must include all required fields', () => {
     const response = createExperienceResponse(data);
-    
+
     expect(response).toHaveProperty('decision');
     expect(response).toHaveProperty('explanation');
     expect(response).toHaveProperty('humanMeaning');
@@ -729,8 +741,8 @@ describe('UX Response Contract', () => {
 
   it('next steps must be ordered by priority', () => {
     const response = createExperienceResponse(data);
-    const priorities = response.nextSteps.map(s => s.priority);
-    
+    const priorities = response.nextSteps.map((s) => s.priority);
+
     // Urgent should come before low
     const urgentIndex = priorities.indexOf('urgent');
     const lowIndex = priorities.indexOf('low');
@@ -757,7 +769,7 @@ describe('Accrual API with Experience', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
-    
+
     const data = response.body.data;
     expect(data.decision).toBe('COMPLETED');
     expect(data.explanation).toContain('earned');

@@ -122,6 +122,7 @@ const data = await syscall({ syscall: 'sys.net.fetch', url, method: 'GET' });
 **"This is a calming, guided experience that just happens to be backed by advanced compliance technology."**
 
 The system must be:
+
 - **Correct** ✅ (we have this)
 - **Understandable** ✅ (now guaranteed)
 - **Emotionally Trustworthy** ✅ (now guaranteed)
@@ -136,19 +137,19 @@ Every engine output MUST implement the `ExperienceResponse` interface:
 {
   // Primary decision
   decision: 'APPROVED' | 'DENIED' | 'NEEDS_INFORMATION' | ...,
-  
+
   // Human-readable WHY
   explanation: "Based on Michigan ESTA regulations, you earned 2.5 hours...",
-  
+
   // What this specifically means for the user
   humanMeaning: "Your sick time balance is now 15.5 hours, giving you peace of mind.",
-  
+
   // Risk transparency
   riskLevel: 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL',
-  
+
   // Confidence transparency (0-100)
   confidenceScore: 98,
-  
+
   // Emotional reassurance
   reassuranceMessage: {
     message: "You are fully compliant and on track.",
@@ -156,7 +157,7 @@ Every engine output MUST implement the `ExperienceResponse` interface:
     tone: 'positive',
     emphasize: true,
   },
-  
+
   // Clear next steps
   nextSteps: [
     {
@@ -168,7 +169,7 @@ Every engine output MUST implement the `ExperienceResponse` interface:
       helpLink: '/dashboard/sick-time',
     }
   ],
-  
+
   // Legal context in plain English
   legalReferences: [
     {
@@ -178,10 +179,10 @@ Every engine output MUST implement the `ExperienceResponse` interface:
       officialLink: "https://...",
     }
   ],
-  
+
   // Raw engine output (optional, for advanced users)
   technicalDetails: { ... },
-  
+
   // Metadata
   timestamp: "2024-01-15T10:30:00Z",
   sourceEngine: "accrual-engine",
@@ -214,6 +215,7 @@ Every engine output MUST implement the `ExperienceResponse` interface:
 ### Usage Patterns
 
 #### For Raw Technical Responses
+
 ```typescript
 // Old way - raw calculation
 const response = await kernel.send({
@@ -224,6 +226,7 @@ const response = await kernel.send({
 ```
 
 #### For UX-Enhanced Responses
+
 ```typescript
 // New way - experience-enhanced
 const response = await kernel.send({
@@ -238,6 +241,7 @@ Both are supported. Use `.experience` suffix for UX-facing operations.
 ### Timing Guarantees
 
 The experience layer adds negligible overhead (< 1ms) because:
+
 - Transformations are pure functions
 - No async operations
 - No external calls
@@ -259,6 +263,7 @@ Performance metadata is included in every response:
 ### Preventing Breaking Changes
 
 The contract ensures:
+
 1. **Engines can evolve independently** - Only the transformer needs updating
 2. **UX remains stable** - Interface never changes
 3. **No cascade failures** - Experience layer catches and explains errors

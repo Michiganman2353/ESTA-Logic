@@ -7,12 +7,14 @@ ESTA-Logic has completed a formal strategic direction reset, transitioning from 
 ## The Shift
 
 ### From
+
 - A sophisticated technology platform users operate
 - Feature-focused complexity
 - Technical excellence that overshadows experience
 - Engineering-driven design
 
 ### To
+
 - A guided compliance partner that supports users
 - Experience-focused simplicity
 - Technical excellence that serves experience
@@ -42,23 +44,29 @@ ESTA-Logic will guide employers and employees through Michigan Earned Sick Time 
 ## Implementation Phases
 
 ### Phase 1: Experience Definition (Current)
+
 Define personas, emotional journeys, and guidance frameworks
 
 ### Phase 2: Foundational UX Reset
+
 Build guided navigation framework and reassuring UI
 
 ### Phase 3: Compliance Intelligence Engine
+
 Transform logic into a guided partner with explanations
 
 ### Phase 4: Document & Data Confidence Layer
+
 Rebuild capture as trust experience with security indicators
 
 ### Phase 5: Enterprise & Growth
+
 Add proactive alerts and multi-state expansion
 
 ## What Changed
 
 ### New Documentation
+
 1. **Strategic Roadmap** (`docs/ROADMAP.md`)
 2. **Experience Vision** (`docs/Experience-Vision.md`)
 3. **UX Blueprint** (`docs/UX-Blueprint.md`)
@@ -66,6 +74,7 @@ Add proactive alerts and multi-state expansion
 5. **Experience-First Architecture** (`docs/Experience-First-Architecture.md`)
 
 ### Updated Files
+
 - `README.md` — New vision and positioning
 - `docs/README.md` — Strategic direction featured prominently
 - Architecture documents — Cross-referenced with experience-first approach
@@ -73,7 +82,9 @@ Add proactive alerts and multi-state expansion
 ## Key Architectural Concepts
 
 ### GuidedFlowEngine
+
 Central orchestration system that:
+
 - Manages user journeys step-by-step
 - Determines what comes next automatically
 - Provides contextual guidance
@@ -81,7 +92,9 @@ Central orchestration system that:
 - Celebrates milestones
 
 ### Experience-First Architecture
+
 Architectural principles that prioritize:
+
 - User confidence and trust
 - Guided journey completeness
 - Emotional reassurance
@@ -98,14 +111,14 @@ Architectural principles that prioritize:
 
 Like TurboTax transforms taxes, ESTA-Logic will transform compliance:
 
-| TurboTax Does This | ESTA-Logic Will Do This |
-|-------------------|-------------------------|
+| TurboTax Does This             | ESTA-Logic Will Do This        |
+| ------------------------------ | ------------------------------ |
 | Guides through tax preparation | Guides through ESTA compliance |
-| Asks simple questions | Asks simple questions |
-| Explains legal requirements | Explains ESTA requirements |
-| Shows progress clearly | Shows compliance progress |
-| Builds confidence | Builds compliance confidence |
-| "You're doing it right" | "You're compliant" |
+| Asks simple questions          | Asks simple questions          |
+| Explains legal requirements    | Explains ESTA requirements     |
+| Shows progress clearly         | Shows compliance progress      |
+| Builds confidence              | Builds compliance confidence   |
+| "You're doing it right"        | "You're compliant"             |
 
 ## The Result
 

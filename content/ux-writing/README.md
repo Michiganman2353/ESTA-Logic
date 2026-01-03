@@ -11,9 +11,11 @@ Welcome to the ESTA Tracker UX Content Library — the centralized source of tru
 ## 📚 What's in This Library
 
 ### 1. [Tone Library](./TONE_LIBRARY.md)
+
 Defines ESTA Tracker's voice and tone characteristics across different contexts and user states.
 
 **What you'll find**:
+
 - Core voice principles (reassuring, clear, empowering)
 - Tone variations by context (onboarding, errors, success)
 - Do's and Don'ts with real examples
@@ -22,9 +24,11 @@ Defines ESTA Tracker's voice and tone characteristics across different contexts 
 **Use this when**: Writing any user-facing copy to ensure it matches our brand voice.
 
 ### 2. [Copy Tokens](./COPY_TOKENS.md)
+
 Reusable UX copy patterns and templates for common UI scenarios.
 
 **What you'll find**:
+
 - Trust messages and security reassurance
 - Error messages and validation feedback
 - Success states and encouragement
@@ -35,9 +39,11 @@ Reusable UX copy patterns and templates for common UI scenarios.
 **Use this when**: Implementing UI components that need standardized messaging.
 
 ### 3. [Emotional UX Patterns](./EMOTIONAL_UX_PATTERNS.md)
+
 Emotional journey copy organized by user experience stages.
 
 **What you'll find**:
+
 - Welcome and onboarding messages
 - Progress encouragement throughout flows
 - Security reassurance at critical moments
@@ -53,30 +59,35 @@ Emotional journey copy organized by user experience stages.
 ### Our Core Principles
 
 **1. Confidence Over Complexity**
+
 ```
 ❌ "Configure accrual parameters according to MCL 408.963(3)(a)"
 ✅ "Let's set up your sick time policy. We'll handle the legal details."
 ```
 
 **2. Reassurance Over Fear**
+
 ```
 ❌ "WARNING: Non-compliance may result in penalties"
 ✅ "You're doing great! We'll make sure everything stays compliant."
 ```
 
 **3. Clarity Over Jargon**
+
 ```
 ❌ "Authenticate via OIDC provider"
 ✅ "Sign in to continue"
 ```
 
 **4. Empowerment Over Instruction**
+
 ```
 ❌ "Complete all required fields"
 ✅ "You're almost there! Just a few more questions."
 ```
 
 **5. Partnership Over Transaction**
+
 ```
 ❌ "Submit form"
 ✅ "Let's do this together"
@@ -90,15 +101,15 @@ ESTA Tracker's UX writing follows the TurboTax principle: **transform intimidati
 
 ### TurboTax Principles We Embody
 
-| Principle | How We Apply It | Example |
-|-----------|-----------------|---------|
-| **Guided Interview** | Ask one simple question at a time | "How many employees work for you?" |
-| **Plain Language** | 8th-grade reading level, no legal jargon | "small employer" instead of "employer with <50 FTEs" |
-| **Automatic Everything** | Handle complexity invisibly | "We've calculated everything for you" |
-| **Progress Visibility** | Show exactly where you are | "Step 3 of 5 • 60% complete" |
-| **Contextual Help** | Explain exactly when needed | "💡 Why we ask this" collapsible |
-| **Trust Building** | Constant reassurance | "✅ Saved • All data encrypted" |
-| **Celebration** | Acknowledge accomplishments | "🎉 You're 100% compliant!" |
+| Principle                | How We Apply It                          | Example                                              |
+| ------------------------ | ---------------------------------------- | ---------------------------------------------------- |
+| **Guided Interview**     | Ask one simple question at a time        | "How many employees work for you?"                   |
+| **Plain Language**       | 8th-grade reading level, no legal jargon | "small employer" instead of "employer with <50 FTEs" |
+| **Automatic Everything** | Handle complexity invisibly              | "We've calculated everything for you"                |
+| **Progress Visibility**  | Show exactly where you are               | "Step 3 of 5 • 60% complete"                         |
+| **Contextual Help**      | Explain exactly when needed              | "💡 Why we ask this" collapsible                     |
+| **Trust Building**       | Constant reassurance                     | "✅ Saved • All data encrypted"                      |
+| **Celebration**          | Acknowledge accomplishments              | "🎉 You're 100% compliant!"                          |
 
 ---
 
@@ -122,20 +133,19 @@ ESTA Tracker's UX writing follows the TurboTax principle: **transform intimidati
 ### For Frontend Developers
 
 1. **Import copy from centralized locations**:
+
    ```tsx
    import { copyTokens } from '@/experience/tone/emotionalCopy';
-   
-   <Button>{copyTokens.cta.continue}</Button>
+
+   <Button>{copyTokens.cta.continue}</Button>;
    ```
 
 2. **Reference the EmotionalUXWriter** component:
+
    ```tsx
    import { EmotionalUXWriter } from '@/experience/tone/EmotionalUXWriter';
-   
-   <EmotionalUXWriter
-     context="setup_complete"
-     tone="celebratory"
-   />
+
+   <EmotionalUXWriter context="setup_complete" tone="celebratory" />;
    ```
 
 3. **Never hard-code user-facing strings** — always use tokens or the UXWriter
@@ -156,22 +166,23 @@ ESTA Tracker's UX writing follows the TurboTax principle: **transform intimidati
 **Location**: `apps/frontend/src/experience/tone/emotionalCopy.ts`
 
 **Structure**:
+
 ```typescript
 export const copyTokens = {
   trust: {
-    encryption: "Your data is encrypted before it leaves your device",
-    bankLevel: "Bank-level security • Fully compliant",
-    legalAccuracy: "Michigan ESTA law verified",
+    encryption: 'Your data is encrypted before it leaves your device',
+    bankLevel: 'Bank-level security • Fully compliant',
+    legalAccuracy: 'Michigan ESTA law verified',
   },
   errors: {
     emailInvalid: "Let's fix that email address",
-    passwordWeak: "Try a stronger password for better security",
+    passwordWeak: 'Try a stronger password for better security',
     networkError: "Connection issue. We'll retry automatically.",
   },
   success: {
     accountCreated: "Welcome aboard! Let's get you set up.",
     setupComplete: "You're 100% compliant — well done!",
-    documentUploaded: "Document saved securely",
+    documentUploaded: 'Document saved securely',
   },
   // ... more categories
 };
@@ -182,6 +193,7 @@ export const copyTokens = {
 **Location**: `apps/frontend/src/experience/tone/EmotionalUXWriter.ts`
 
 **Usage**:
+
 ```tsx
 import { EmotionalUXWriter } from '@/experience/tone/EmotionalUXWriter';
 
@@ -190,9 +202,9 @@ import { EmotionalUXWriter } from '@/experience/tone/EmotionalUXWriter';
   context="onboarding_welcome"
   tone="reassuring"
   userName="Sarah"
-/>
+/>;
 
-// Output: "Welcome, Sarah! You're in the right place. 
+// Output: "Welcome, Sarah! You're in the right place.
 //          We'll guide you through everything step-by-step."
 ```
 
@@ -203,6 +215,7 @@ import { EmotionalUXWriter } from '@/experience/tone/EmotionalUXWriter';
 **Purpose**: Stores complete narrative arcs and user journey stories.
 
 **Usage**:
+
 ```tsx
 import { NarrativeLibrary } from '@/experience/tone/NarrativeLibrary';
 
@@ -244,24 +257,24 @@ const narrative = NarrativeLibrary.getJourney('small_business_owner');
 
 ### By User State
 
-| User State | Copy Focus | Example |
-|------------|------------|---------|
-| **First Visit** | Welcome, reassurance, orientation | "You're in the right place" |
-| **Onboarding** | Guidance, progress, encouragement | "Step 3 of 5 • You're doing great" |
-| **Active Use** | Efficiency, transparency, trust | "Balance updated • 15.5 hours available" |
-| **Error/Problem** | Empathy, solution, support | "Let's fix that together" |
-| **Success** | Celebration, next steps, confidence | "🎉 You're 100% compliant!" |
-| **Abandonment** | Recovery, value reminder | "Come back anytime — we saved your progress" |
+| User State        | Copy Focus                          | Example                                      |
+| ----------------- | ----------------------------------- | -------------------------------------------- |
+| **First Visit**   | Welcome, reassurance, orientation   | "You're in the right place"                  |
+| **Onboarding**    | Guidance, progress, encouragement   | "Step 3 of 5 • You're doing great"           |
+| **Active Use**    | Efficiency, transparency, trust     | "Balance updated • 15.5 hours available"     |
+| **Error/Problem** | Empathy, solution, support          | "Let's fix that together"                    |
+| **Success**       | Celebration, next steps, confidence | "🎉 You're 100% compliant!"                  |
+| **Abandonment**   | Recovery, value reminder            | "Come back anytime — we saved your progress" |
 
 ### By Emotional Intent
 
-| Emotion | When to Use | Copy Pattern |
-|---------|-------------|--------------|
-| **Reassurance** | New users, critical actions | "We've got this. Here's what happens next..." |
-| **Confidence** | After completions, milestones | "You're doing everything right" |
-| **Empowerment** | Self-service, transparency | "You have complete control" |
-| **Trust** | Security, legal, financial | "Bank-level encryption • Verified by experts" |
-| **Partnership** | Throughout journey | "We'll guide you through this together" |
+| Emotion         | When to Use                   | Copy Pattern                                  |
+| --------------- | ----------------------------- | --------------------------------------------- |
+| **Reassurance** | New users, critical actions   | "We've got this. Here's what happens next..." |
+| **Confidence**  | After completions, milestones | "You're doing everything right"               |
+| **Empowerment** | Self-service, transparency    | "You have complete control"                   |
+| **Trust**       | Security, legal, financial    | "Bank-level encryption • Verified by experts" |
+| **Partnership** | Throughout journey            | "We'll guide you through this together"       |
 
 ---
 
@@ -294,12 +307,14 @@ Before finalizing any user-facing copy:
 ### Content Metrics to Track
 
 **Qualitative**:
+
 - User sentiment (surveys, interviews)
 - Support ticket themes (confusion points)
 - Usability test feedback
 - Session recordings (hesitation, confusion)
 
 **Quantitative**:
+
 - Task completion rate
 - Time to complete flows
 - Error rate (validation failures)

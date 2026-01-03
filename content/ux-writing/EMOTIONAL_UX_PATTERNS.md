@@ -24,12 +24,19 @@ Every user starts somewhere on this arc. Our copy should always move them forwar
 ## 📋 Pattern Categories
 
 ### 1. Welcome & First Impressions
+
 ### 2. Onboarding & Setup Journey
+
 ### 3. Progress & Encouragement
+
 ### 4. Security & Trust Reinforcement
+
 ### 5. Compliance Confidence Building
+
 ### 6. Error Recovery & Support
+
 ### 7. Success & Celebration
+
 ### 8. Long-Term Engagement
 
 ---
@@ -46,7 +53,7 @@ Hero Message:
 "Transform complex compliance into confidence"
 
 Subheadline:
-"Michigan's sick time law made simple, automatic, and legally bulletproof. 
+"Michigan's sick time law made simple, automatic, and legally bulletproof.
 No legal expertise required."
 
 Trust Signal:
@@ -66,8 +73,8 @@ Welcome Screen Title:
 "You're in the right place 👋"
 
 Welcome Message:
-"We know Michigan's sick time law feels overwhelming. That's exactly why we 
-built this. In the next 15 minutes, we'll walk you through everything — 
+"We know Michigan's sick time law feels overwhelming. That's exactly why we
+built this. In the next 15 minutes, we'll walk you through everything —
 one simple question at a time.
 
 You've got this, and we're here to help."
@@ -114,7 +121,7 @@ Proactive Alert (if any):
 
 ```
 Setup Introduction:
-"Let's set up your ESTA Tracker account. We'll ask a few simple questions 
+"Let's set up your ESTA Tracker account. We'll ask a few simple questions
 to customize everything for your business.
 
 This takes about 15 minutes, and we'll save your progress automatically."
@@ -162,7 +169,7 @@ Navigation:
 Checkpoint 1 (After Business Info):
 "✅ Business info complete!
 
-Nice work, ${name}. Your business is registered in our system. 
+Nice work, ${name}. Your business is registered in our system.
 Next, we'll set up your sick time policy based on your company size."
 
 CTA: "Continue to Policy Setup →"
@@ -170,7 +177,7 @@ CTA: "Continue to Policy Setup →"
 Checkpoint 2 (After Policy Setup):
 "✅ Policy configured!
 
-Perfect! Your policy follows Michigan law exactly. Now let's get your 
+Perfect! Your policy follows Michigan law exactly. Now let's get your
 employees enrolled so they can start tracking sick time."
 
 CTA: "Add Employees →"
@@ -178,8 +185,8 @@ CTA: "Add Employees →"
 Checkpoint 3 (Setup Complete):
 "🎉 You're 100% compliant!
 
-Congratulations, ${name}! You've completed setup. Your employees can now 
-enroll, track their balances, and request time off. You can sleep easy 
+Congratulations, ${name}! You've completed setup. Your employees can now
+enroll, track their balances, and request time off. You can sleep easy
 tonight knowing everything is handled correctly."
 
 CTA: "View My Dashboard →"
@@ -258,7 +265,7 @@ Trust Badge Display:
 ✅ Zero-knowledge architecture"
 
 During Upload:
-"Encrypting your document..." 
+"Encrypting your document..."
 → "Uploading securely..."
 → "✅ Saved securely"
 
@@ -272,13 +279,13 @@ After Upload:
 Employee Portal Access:
 "🔒 Your data is private
 
-Only you can see your sick time balance. Your employer sees aggregated 
+Only you can see your sick time balance. Your employer sees aggregated
 totals only — never individual balances or usage details."
 
 Employer Dashboard:
 "🔐 Complete data isolation
 
-Your employee data is encrypted and isolated. No other employer can access 
+Your employee data is encrypted and isolated. No other employer can access
 your information, and we never share data with third parties."
 ```
 
@@ -293,7 +300,7 @@ Calculation Display:
 Audit Trail:
 "Every action is logged for compliance.
 
-All changes are timestamped, user-identified, and immutably stored. Your 
+All changes are timestamped, user-identified, and immutably stored. Your
 complete audit trail is always available."
 
 Legal Verification Badge:
@@ -345,13 +352,13 @@ We'll handle it automatically, but here's what to expect: [explanation]"
 Policy Change Notification:
 "📢 Michigan ESTA law update
 
-A new requirement takes effect ${date}. We've already updated your policy 
+A new requirement takes effect ${date}. We've already updated your policy
 to stay compliant. No action needed."
 
 Anomaly Detection:
 "🔍 Unusual pattern detected
 
-Employee ${name} has accrued more hours than expected. This might be an 
+Employee ${name} has accrued more hours than expected. This might be an
 error in hours tracking. Review details →"
 ```
 
@@ -371,7 +378,7 @@ This report includes:
 Report Ready:
 "✅ Report generated
 
-Your audit-ready report is complete and legally defensible. Download it 
+Your audit-ready report is complete and legally defensible. Download it
 now or access anytime from your dashboard."
 
 CTA: "Download Report (PDF) →"
@@ -411,7 +418,7 @@ You've got this!"
 Accrual Cap Exceeded:
 "This would exceed the ${cap}-hour accrual cap
 
-${name} currently has ${current} hours. Adding ${adding} more would go 
+${name} currently has ${current} hours. Adding ${adding} more would go
 over the ${cap}-hour maximum allowed by Michigan law.
 
 What you can do:
@@ -437,7 +444,7 @@ You can:
 Network Connection Error:
 "Connection issue — we'll retry automatically
 
-We're having trouble reaching our servers. This usually fixes itself in a 
+We're having trouble reaching our servers. This usually fixes itself in a
 few seconds. We'll keep trying in the background.
 
 If this persists: Check your internet connection"
@@ -445,7 +452,7 @@ If this persists: Check your internet connection"
 Server Error:
 "Something went wrong on our end
 
-We've been notified and are looking into it. Your data is safe, and you 
+We've been notified and are looking into it. Your data is safe, and you
 can try again in a moment.
 
 Error ID: ${errorId} (for support reference)"
@@ -453,7 +460,7 @@ Error ID: ${errorId} (for support reference)"
 Session Timeout:
 "Your session expired for security
 
-You were signed out after ${minutes} minutes of inactivity. Sign in again 
+You were signed out after ${minutes} minutes of inactivity. Sign in again
 to continue where you left off."
 
 CTA: "Sign In Again →"
@@ -472,7 +479,7 @@ CTA: "Sign In Again →"
 Account Created:
 "🎉 Welcome aboard, ${name}!
 
-Your account is created and secured. Let's get you set up so you can 
+Your account is created and secured. Let's get you set up so you can
 start tracking sick time with confidence."
 
 CTA: "Start Setup →"
@@ -480,7 +487,7 @@ CTA: "Start Setup →"
 Setup Completed:
 "🎉 You're 100% compliant — well done!
 
-You've completed setup and configured everything correctly. Your business 
+You've completed setup and configured everything correctly. Your business
 is now protected, and your employees have instant access to their balances.
 
 You can sleep easy tonight."
@@ -490,7 +497,7 @@ CTA: "View Dashboard →"
 First Employee Enrolled:
 "🎉 Your first employee is enrolled!
 
-${employeeName} can now view their sick time balance and request time off. 
+${employeeName} can now view their sick time balance and request time off.
 Great work!"
 
 CTA: "Add Another Employee →" | "View Dashboard →"
@@ -502,19 +509,19 @@ CTA: "Add Another Employee →" | "View Dashboard →"
 Employee Imported Successfully:
 "✅ Successfully imported ${count} employees
 
-All ${count} employees are now enrolled and can access their balances. 
+All ${count} employees are now enrolled and can access their balances.
 Accrual tracking starts immediately."
 
 Document Uploaded:
 "✅ Document saved securely
 
-${documentName} is encrypted and stored. It's now part of your compliance 
+${documentName} is encrypted and stored. It's now part of your compliance
 documentation."
 
 Compliance Maintained:
 "📊 You've maintained 97%+ compliance for 3 months straight!
 
-Outstanding work, ${name}. Your business is running like a well-oiled 
+Outstanding work, ${name}. Your business is running like a well-oiled
 compliance machine."
 ```
 
@@ -555,7 +562,7 @@ Footer:
 Time Saved Notification:
 "💡 Did you know?
 
-ESTA Tracker has saved you an estimated ${hours} hours of manual tracking 
+ESTA Tracker has saved you an estimated ${hours} hours of manual tracking
 this month. That's time you can spend growing your business.
 
 Thank you for trusting us with your compliance."
@@ -563,7 +570,7 @@ Thank you for trusting us with your compliance."
 Accuracy Highlight:
 "✅ Zero errors in ${months} months
 
-Your sick time calculations have been 100% accurate since ${startDate}. 
+Your sick time calculations have been 100% accurate since ${startDate}.
 That's ${totalCalculations} calculations without a single mistake.
 
 This is the power of automation."
@@ -575,7 +582,7 @@ This is the power of automation."
 Referral Invitation:
 "Love ESTA Tracker? Help other Michigan businesses!
 
-If ESTA Tracker has made your life easier, consider sharing it with other 
+If ESTA Tracker has made your life easier, consider sharing it with other
 business owners who might be struggling with sick time compliance.
 
 Refer a business →"
@@ -583,7 +590,7 @@ Refer a business →"
 Testimonial Request:
 "We'd love to hear your story!
 
-Your experience helps other business owners understand how ESTA Tracker 
+Your experience helps other business owners understand how ESTA Tracker
 can transform compliance from stressful to simple.
 
 Share your story → (2 minutes)"
@@ -591,7 +598,7 @@ Share your story → (2 minutes)"
 Feature Request Invitation:
 "Have an idea? We're listening!
 
-Your feedback directly shapes ESTA Tracker. Tell us what would make your 
+Your feedback directly shapes ESTA Tracker. Tell us what would make your
 experience even better.
 
 Submit feedback →"
@@ -603,14 +610,14 @@ Submit feedback →"
 
 **Use this matrix to select the right pattern for your scenario**:
 
-| User State | Emotion | Primary Pattern Category | Secondary Pattern |
-|------------|---------|-------------------------|-------------------|
-| First visit | Uncertain | Welcome & First Impressions | Security & Trust |
-| During setup | Focused | Onboarding & Setup | Progress & Encouragement |
-| Error occurred | Frustrated | Error Recovery | Security & Trust |
-| Task completed | Relieved | Success & Celebration | Compliance Confidence |
-| Reviewing data | Evaluating | Compliance Confidence | Security & Trust |
-| Long-term user | Confident | Long-Term Engagement | Success & Celebration |
+| User State     | Emotion    | Primary Pattern Category    | Secondary Pattern        |
+| -------------- | ---------- | --------------------------- | ------------------------ |
+| First visit    | Uncertain  | Welcome & First Impressions | Security & Trust         |
+| During setup   | Focused    | Onboarding & Setup          | Progress & Encouragement |
+| Error occurred | Frustrated | Error Recovery              | Security & Trust         |
+| Task completed | Relieved   | Success & Celebration       | Compliance Confidence    |
+| Reviewing data | Evaluating | Compliance Confidence       | Security & Trust         |
+| Long-term user | Confident  | Long-Term Engagement        | Success & Celebration    |
 
 ---
 

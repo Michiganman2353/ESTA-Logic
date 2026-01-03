@@ -42,12 +42,13 @@ ESTA Tracker transforms the overwhelming task of compliance into a guided experi
 A warm, reassuring landing page that immediately acknowledges your concerns.
 
 **What You Feel:**  
-*"Finally, someone understands that this is confusing. I'm not alone."*
+_"Finally, someone understands that this is confusing. I'm not alone."_
 
 **The Message:**
-> *"We know Michigan's sick time law feels overwhelming. That's exactly why we built this. In the next 15 minutes, we'll walk you through everything — one simple question at a time. You've got this, and we're here to help."*
 
-**Trust Signal:** 🛡️ *"Bank-level security • Michigan ESTA law verified • 1,200+ Michigan businesses trust us"*
+> _"We know Michigan's sick time law feels overwhelming. That's exactly why we built this. In the next 15 minutes, we'll walk you through everything — one simple question at a time. You've got this, and we're here to help."_
+
+**Trust Signal:** 🛡️ _"Bank-level security • Michigan ESTA law verified • 1,200+ Michigan businesses trust us"_
 
 ---
 
@@ -57,22 +58,22 @@ A warm, reassuring landing page that immediately acknowledges your concerns.
 Clean, focused questions. One at a time. Progress bar showing you're making real headway.
 
 **What You Experience:**
-- **Question 1:** *"How many employees work for you?"*
-  - You answer: *"8 employees"*
-  - System responds: ✅ *"Perfect! You're a small employer. Michigan law gives you simpler rules — we'll set everything up automatically."*
-  
-- **Question 2:** *"What's your business name?"*
-  - You enter: *"Sarah's Bakery"*
-  - System responds: ✅ *"Great! We'll personalize everything for Sarah's Bakery."*
 
-- **Question 3:** *"When did you start business in Michigan?"*
-  - You select: *"January 2020"*
-  - System responds: ✅ *"Got it. We'll calculate everything from your compliance start date."*
+- **Question 1:** _"How many employees work for you?"_
+  - You answer: _"8 employees"_
+  - System responds: ✅ _"Perfect! You're a small employer. Michigan law gives you simpler rules — we'll set everything up automatically."_
+- **Question 2:** _"What's your business name?"_
+  - You enter: _"Sarah's Bakery"_
+  - System responds: ✅ _"Great! We'll personalize everything for Sarah's Bakery."_
+
+- **Question 3:** _"When did you start business in Michigan?"_
+  - You select: _"January 2020"_
+  - System responds: ✅ _"Got it. We'll calculate everything from your compliance start date."_
 
 **What You Feel:**  
-*"This is actually easy. I'm 60% done already? I thought this would take hours!"*
+_"This is actually easy. I'm 60% done already? I thought this would take hours!"_
 
-**Auto-Save Message:** 💾 *"Your progress is saved. Take a break anytime — we'll be here when you get back."*
+**Auto-Save Message:** 💾 _"Your progress is saved. Take a break anytime — we'll be here when you get back."_
 
 ---
 
@@ -82,24 +83,26 @@ Clean, focused questions. One at a time. Progress bar showing you're making real
 Your personalized employer dashboard with a unique 4-digit enrollment code prominently displayed.
 
 **What You Do:**
+
 1. Share your code with employees (text, email, or in-person)
 2. Employees enter the code on their phones
 3. Instantly linked — no IT department needed
 
 **What Happens Behind the Scenes:**
+
 - ✅ Employee records created automatically
 - ✅ Correct accrual rates applied based on your business size
 - ✅ Secure data isolation ensures complete privacy
 - ✅ Real-time sync across all devices
 
 **What You Feel:**  
-*"I just onboarded 8 employees in 3 minutes. That's it? Really?"*
+_"I just onboarded 8 employees in 3 minutes. That's it? Really?"_
 
 **Employee Experience:**  
 Your employee Marcus opens the portal and immediately sees:  
-📱 *"Welcome, Marcus! Your current sick time balance: **15.5 hours available**"*
+📱 _"Welcome, Marcus! Your current sick time balance: **15.5 hours available**"_
 
-**Marcus feels:** *"Whoa, I can actually see my balance? This is way better than asking my boss every time."*
+**Marcus feels:** _"Whoa, I can actually see my balance? This is way better than asking my boss every time."_
 
 ---
 
@@ -127,19 +130,19 @@ A prominent, easy-to-understand compliance dashboard with visual indicators.
 ```
 
 **What This Score Means:**
+
 - **98% = You're essentially bulletproof**  
-  *"If an inspector showed up tomorrow, you'd pass with flying colors."*
-  
+  _"If an inspector showed up tomorrow, you'd pass with flying colors."_
 - **Transparent Calculation:**  
-  *"Here's exactly what we checked:"*
+  _"Here's exactly what we checked:"_
   - ✅ All employees have correct accrual rates
-  - ✅ Usage caps properly enforced  
+  - ✅ Usage caps properly enforced
   - ✅ Historical records complete and accurate
   - ✅ Documentation audit-ready
   - ⚠️ Reminder: Update your annual carryover policy by March 15
 
 **What You Feel:**  
-*"I have a number. I can show this number to anyone. I know exactly where I stand. This is peace of mind."*
+_"I have a number. I can show this number to anyone. I know exactly where I stand. This is peace of mind."_
 
 ---
 
@@ -151,32 +154,35 @@ A clean, organized view of your entire compliance status. No clutter. No confusi
 **The Dashboard Layout:**
 
 **Today's Snapshot**
-- 📊 **Total Employees:** 8 active  
-- ⏰ **Accrual This Month:** 24.5 hours across all employees  
-- 📝 **Pending PTO Requests:** 2 (requires your approval)  
+
+- 📊 **Total Employees:** 8 active
+- ⏰ **Accrual This Month:** 24.5 hours across all employees
+- 📝 **Pending PTO Requests:** 2 (requires your approval)
 - 🎯 **Compliance Status:** ✅ Excellent (98%)
 
 **Quick Actions**
-- ➕ Add new employee  
-- 📄 Generate audit report  
-- 👁️ View employee balances  
+
+- ➕ Add new employee
+- 📄 Generate audit report
+- 👁️ View employee balances
 - ⚙️ Update business settings
 
 **Proactive Alerts**
-- 🔔 *"Maria is approaching her 40-hour cap (currently at 38.5 hours)"*  
-  **What this means:** *She can't accrue more until she uses some time. We'll handle the cap automatically — just FYI.*
-  
-- 🔔 *"John requested PTO for Dec 28-29 (12 hours)"*  
+
+- 🔔 _"Maria is approaching her 40-hour cap (currently at 38.5 hours)"_  
+  **What this means:** _She can't accrue more until she uses some time. We'll handle the cap automatically — just FYI._
+- 🔔 _"John requested PTO for Dec 28-29 (12 hours)"_  
   **Action needed:** Approve or deny in one click
 
 **Recent Activity**
-- Dec 20: Marcus requested 4 hours PTO ✅ Approved  
-- Dec 19: System auto-calculated weekly accruals  
-- Dec 18: Jennifer used 8 hours sick time ✅ Deducted  
+
+- Dec 20: Marcus requested 4 hours PTO ✅ Approved
+- Dec 19: System auto-calculated weekly accruals
+- Dec 18: Jennifer used 8 hours sick time ✅ Deducted
 - Dec 17: New employee (David) enrolled successfully
 
 **What You Feel:**  
-*"I understand everything happening in my business. I'm in control. This is actually kind of empowering."*
+_"I understand everything happening in my business. I'm in control. This is actually kind of empowering."_
 
 ---
 
@@ -185,21 +191,25 @@ A clean, organized view of your entire compliance status. No clutter. No confusi
 Throughout your experience, ESTA Tracker continuously reinforces that you're safe, compliant, and doing things right.
 
 **Security Reassurance:**
-- 🔒 Every document upload: *"Your file is encrypted before it leaves your device. Bank-level security."*
-- 🛡️ Every calculation: *"This follows Michigan ESTA law Section 3(a) exactly."*
-- ✅ Every action: *"Saved successfully. All records are audit-ready."*
+
+- 🔒 Every document upload: _"Your file is encrypted before it leaves your device. Bank-level security."_
+- 🛡️ Every calculation: _"This follows Michigan ESTA law Section 3(a) exactly."_
+- ✅ Every action: _"Saved successfully. All records are audit-ready."_
 
 **Progress Encouragement:**
-- 🎉 Setup complete: *"Congratulations! You're 100% compliant. You can sleep easy tonight."*
-- 📈 First month: *"You've tracked 180 hours across 8 employees with zero errors. You're a pro!"*
-- 📊 Quarterly review: *"You've maintained 97%+ compliance for 3 months straight. Outstanding work!"*
+
+- 🎉 Setup complete: _"Congratulations! You're 100% compliant. You can sleep easy tonight."_
+- 📈 First month: _"You've tracked 180 hours across 8 employees with zero errors. You're a pro!"_
+- 📊 Quarterly review: _"You've maintained 97%+ compliance for 3 months straight. Outstanding work!"_
 
 **Proactive Guidance:**
-- 💡 Before problems occur: *"Heads up: Annual carryover is in 30 days. We'll handle it automatically, but here's what to expect..."*
-- 🔍 When you explore features: *"Want to see how we calculated this? Click here for the complete breakdown."*
-- 🤝 When you're uncertain: *"Not sure what to do? Here are your options..."*
+
+- 💡 Before problems occur: _"Heads up: Annual carryover is in 30 days. We'll handle it automatically, but here's what to expect..."_
+- 🔍 When you explore features: _"Want to see how we calculated this? Click here for the complete breakdown."_
+- 🤝 When you're uncertain: _"Not sure what to do? Here are your options..."_
 
 **What These Messages Do:**
+
 - **Reduce anxiety** — You never wonder if you did something wrong
 - **Build competence** — You learn while you use the system
 - **Create advocates** — You feel confident recommending ESTA Tracker to peers
@@ -209,35 +219,35 @@ Throughout your experience, ESTA Tracker continuously reinforces that you're saf
 ### The Emotional Transformation
 
 **Before ESTA Tracker:**  
-😰 *Fear* → 😟 *Confusion* → 😞 *Overwhelm* → 😖 *Frustration*
+😰 _Fear_ → 😟 _Confusion_ → 😞 _Overwhelm_ → 😖 _Frustration_
 
 **With ESTA Tracker:**  
-🤝 *Welcome* → 😌 *Guided* → ✅ *Accomplished* → 💪 *Confident* → 💚 *Advocate*
+🤝 _Welcome_ → 😌 _Guided_ → ✅ _Accomplished_ → 💪 _Confident_ → 💚 _Advocate_
 
 ---
 
 ### What Makes This Different from Other Compliance Tools
 
-| Traditional Compliance Software | ESTA Tracker Experience |
-|--------------------------------|-------------------------|
-| ❌ Throws features at you | ✅ Guides you step-by-step |
+| Traditional Compliance Software      | ESTA Tracker Experience                 |
+| ------------------------------------ | --------------------------------------- |
+| ❌ Throws features at you            | ✅ Guides you step-by-step              |
 | ❌ Assumes you understand compliance | ✅ Explains everything in plain English |
-| ❌ Silent when things work | ✅ Actively reassures you |
-| ❌ Technical jargon everywhere | ✅ Speaks like a helpful colleague |
-| ❌ You're on your own | ✅ You have a partner |
-| ❌ Fear-based (avoid penalties!) | ✅ Confidence-based (you've got this!) |
+| ❌ Silent when things work           | ✅ Actively reassures you               |
+| ❌ Technical jargon everywhere       | ✅ Speaks like a helpful colleague      |
+| ❌ You're on your own                | ✅ You have a partner                   |
+| ❌ Fear-based (avoid penalties!)     | ✅ Confidence-based (you've got this!)  |
 
 ---
 
 ### Real User Testimonials (Emotional Impact)
 
-> *"I was terrified of Michigan's sick time law. ESTA Tracker made me feel like I had an expert sitting next to me, explaining everything. I set up my entire business in 12 minutes and actually felt **good** about compliance for the first time ever."*  
+> _"I was terrified of Michigan's sick time law. ESTA Tracker made me feel like I had an expert sitting next to me, explaining everything. I set up my entire business in 12 minutes and actually felt **good** about compliance for the first time ever."_  
 > **— Sarah, Small Bakery Owner, Grand Rapids**
 
-> *"As an employee, I finally feel like I'm not in the dark. I can see my balance anytime, request time off from my phone, and actually **trust** the numbers. It's empowering."*  
+> _"As an employee, I finally feel like I'm not in the dark. I can see my balance anytime, request time off from my phone, and actually **trust** the numbers. It's empowering."_  
 > **— Marcus, Manufacturing Employee, Detroit**
 
-> *"I manage 12 restaurant locations. ESTA Tracker saved my sanity. What used to take me 8 hours a week now takes 20 minutes. And I'm **more confident** in our compliance than I ever was manually tracking everything."*  
+> _"I manage 12 restaurant locations. ESTA Tracker saved my sanity. What used to take me 8 hours a week now takes 20 minutes. And I'm **more confident** in our compliance than I ever was manually tracking everything."_  
 > **— Jennifer, Multi-Location HR Manager, Ann Arbor**
 
 ---
@@ -245,12 +255,13 @@ Throughout your experience, ESTA Tracker continuously reinforces that you're saf
 ### The Promise We Make
 
 **Every time you interact with ESTA Tracker, you will:**
-- ✅ Know exactly where you are  
-- ✅ Understand exactly what to do next  
-- ✅ Feel confident you're doing it right  
-- ✅ Trust that your data is secure  
-- ✅ Receive help exactly when you need it  
-- ✅ Never feel abandoned or confused  
+
+- ✅ Know exactly where you are
+- ✅ Understand exactly what to do next
+- ✅ Feel confident you're doing it right
+- ✅ Trust that your data is secure
+- ✅ Receive help exactly when you need it
+- ✅ Never feel abandoned or confused
 
 **This isn't just compliance software. It's confidence in digital form.**
 

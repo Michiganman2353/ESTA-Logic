@@ -1,6 +1,6 @@
 /**
  * EmployeeCountStep - Employee count collection with compliance tier determination
- * 
+ *
  * Purpose: Collect employee count and explain which ESTA tier applies
  * Tone: Educational, reassuring, clear about implications
  */
@@ -16,17 +16,17 @@ export interface EmployeeCountData {
 export interface EmployeeCountStepProps {
   /** Initial data if returning to this step */
   initialData?: Partial<EmployeeCountData>;
-  
+
   /** Callback when user proceeds */
   onNext: (data: EmployeeCountData) => void;
-  
+
   /** Callback to go back */
   onBack: () => void;
 }
 
 /**
  * Employee Count Step Component
- * 
+ *
  * Implements guided employee count collection with:
  * - Clear explanation of why this matters
  * - Real-time tier preview
@@ -36,27 +36,27 @@ export interface EmployeeCountStepProps {
 export const EmployeeCountStep: React.FC<EmployeeCountStepProps> = ({
   initialData = {},
   onNext,
-  onBack
+  onBack,
 }) => {
   const [formData, setFormData] = useState<EmployeeCountData>({
     employeeCount: initialData.employeeCount || 0,
     fullTimeCount: initialData.fullTimeCount,
-    partTimeCount: initialData.partTimeCount
+    partTimeCount: initialData.partTimeCount,
   });
 
   const [showBreakdown, setShowBreakdown] = useState(false);
 
   const handleChange = (field: keyof EmployeeCountData, value: string) => {
     const numValue = parseInt(value) || 0;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: numValue
+      [field]: numValue,
     }));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (formData.employeeCount < 1) {
       return;
     }
@@ -109,9 +109,10 @@ export const EmployeeCountStep: React.FC<EmployeeCountStepProps> = ({
             className="breakdown-toggle"
             onClick={() => setShowBreakdown(!showBreakdown)}
           >
-            {showBreakdown ? '−' : '+'} Add full-time / part-time breakdown (optional)
+            {showBreakdown ? '−' : '+'} Add full-time / part-time breakdown
+            (optional)
           </button>
-          
+
           {showBreakdown && (
             <div className="breakdown-fields">
               <div className="form-field breakdown-field">
@@ -124,11 +125,13 @@ export const EmployeeCountStep: React.FC<EmployeeCountStepProps> = ({
                   min="0"
                   className="field-input"
                   value={formData.fullTimeCount || ''}
-                  onChange={(e) => handleChange('fullTimeCount', e.target.value)}
+                  onChange={(e) =>
+                    handleChange('fullTimeCount', e.target.value)
+                  }
                   placeholder="0"
                 />
               </div>
-              
+
               <div className="form-field breakdown-field">
                 <label htmlFor="partTimeCount" className="field-label">
                   Part-Time Employees
@@ -139,7 +142,9 @@ export const EmployeeCountStep: React.FC<EmployeeCountStepProps> = ({
                   min="0"
                   className="field-input"
                   value={formData.partTimeCount || ''}
-                  onChange={(e) => handleChange('partTimeCount', e.target.value)}
+                  onChange={(e) =>
+                    handleChange('partTimeCount', e.target.value)
+                  }
                   placeholder="0"
                 />
               </div>
@@ -150,21 +155,22 @@ export const EmployeeCountStep: React.FC<EmployeeCountStepProps> = ({
         {/* Live Tier Preview */}
         {formData.employeeCount > 0 && (
           <div className={`tier-preview ${tier}`}>
-            <div className="tier-icon">
-              {isSmallEmployer ? '🏢' : '🏗️'}
-            </div>
+            <div className="tier-icon">{isSmallEmployer ? '🏢' : '🏗️'}</div>
             <div className="tier-content">
               <div className="tier-category">
                 {isSmallEmployer ? 'Small Employer' : 'Large Employer'}
               </div>
               <div className="tier-description">
-                With {formData.employeeCount} employee{formData.employeeCount !== 1 ? 's' : ''}, 
-                you fall under Michigan's {isSmallEmployer ? 'small' : 'large'} employer rules.
+                With {formData.employeeCount} employee
+                {formData.employeeCount !== 1 ? 's' : ''}, you fall under
+                Michigan's {isSmallEmployer ? 'small' : 'large'} employer rules.
               </div>
               <div className="tier-details">
                 <div className="tier-detail-item">
                   <span className="detail-label">Accrual Rate:</span>
-                  <span className="detail-value">1 hour per 30 hours worked</span>
+                  <span className="detail-value">
+                    1 hour per 30 hours worked
+                  </span>
                 </div>
                 <div className="tier-detail-item">
                   <span className="detail-label">Annual Cap:</span>
@@ -189,25 +195,24 @@ export const EmployeeCountStep: React.FC<EmployeeCountStepProps> = ({
             </div>
             <ul className="guidance-list">
               <li>
-                <strong>Small employers (&lt;10 employees):</strong> 40-hour annual accrual cap
+                <strong>Small employers (&lt;10 employees):</strong> 40-hour
+                annual accrual cap
               </li>
               <li>
-                <strong>Large employers (≥10 employees):</strong> 72-hour annual accrual cap
+                <strong>Large employers (≥10 employees):</strong> 72-hour annual
+                accrual cap
               </li>
             </ul>
             <div className="guidance-note">
-              We automatically configure the correct rules for you based on your employee count.
+              We automatically configure the correct rules for you based on your
+              employee count.
             </div>
           </div>
         </div>
 
         {/* Navigation */}
         <div className="step-navigation">
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={onBack}
-          >
+          <button type="button" className="btn-secondary" onClick={onBack}>
             ← Back
           </button>
           <button
@@ -225,7 +230,8 @@ export const EmployeeCountStep: React.FC<EmployeeCountStepProps> = ({
         <div className="reassurance-message">
           <span className="reassurance-icon">⚙️</span>
           <span className="reassurance-text">
-            Based on your employee count, we'll automatically set up the right compliance policy.
+            Based on your employee count, we'll automatically set up the right
+            compliance policy.
           </span>
         </div>
       </div>
@@ -235,20 +241,20 @@ export const EmployeeCountStep: React.FC<EmployeeCountStepProps> = ({
 
 /**
  * Example CSS (to be implemented in actual stylesheet):
- * 
+ *
  * .employee-count-step {
  *   max-width: 700px;
  *   margin: 0 auto;
  *   padding: 32px 24px;
  * }
- * 
+ *
  * .primary-field .large-input {
  *   font-size: 1.5rem;
  *   padding: 16px;
  *   text-align: center;
  *   font-weight: 500;
  * }
- * 
+ *
  * .tier-preview {
  *   display: flex;
  *   gap: 20px;
@@ -258,41 +264,41 @@ export const EmployeeCountStep: React.FC<EmployeeCountStepProps> = ({
  *   border: 2px solid;
  *   background: white;
  * }
- * 
+ *
  * .tier-preview.small {
  *   border-color: #3b82f6;
  *   background: #eff6ff;
  * }
- * 
+ *
  * .tier-preview.large {
  *   border-color: #8b5cf6;
  *   background: #f5f3ff;
  * }
- * 
+ *
  * .tier-icon {
  *   font-size: 3rem;
  *   line-height: 1;
  * }
- * 
+ *
  * .tier-category {
  *   font-size: 1.25rem;
  *   font-weight: 600;
  *   color: #1a1a1a;
  *   margin-bottom: 8px;
  * }
- * 
+ *
  * .tier-description {
  *   font-size: 1rem;
  *   color: #4a4a4a;
  *   margin-bottom: 16px;
  * }
- * 
+ *
  * .tier-details {
  *   display: flex;
  *   flex-direction: column;
  *   gap: 8px;
  * }
- * 
+ *
  * .tier-detail-item {
  *   display: flex;
  *   justify-content: space-between;
@@ -301,16 +307,16 @@ export const EmployeeCountStep: React.FC<EmployeeCountStepProps> = ({
  *   border-radius: 6px;
  *   font-size: 0.875rem;
  * }
- * 
+ *
  * .detail-label {
  *   color: #6a6a6a;
  * }
- * 
+ *
  * .detail-value {
  *   font-weight: 500;
  *   color: #1a1a1a;
  * }
- * 
+ *
  * .breakdown-toggle {
  *   background: none;
  *   border: none;
@@ -320,24 +326,24 @@ export const EmployeeCountStep: React.FC<EmployeeCountStepProps> = ({
  *   padding: 8px 0;
  *   text-align: left;
  * }
- * 
+ *
  * .breakdown-fields {
  *   display: grid;
  *   grid-template-columns: 1fr 1fr;
  *   gap: 16px;
  *   margin-top: 16px;
  * }
- * 
+ *
  * .guidance-list {
  *   margin: 12px 0;
  *   padding-left: 20px;
  * }
- * 
+ *
  * .guidance-list li {
  *   margin-bottom: 8px;
  *   color: #4a4a4a;
  * }
- * 
+ *
  * .guidance-note {
  *   margin-top: 12px;
  *   padding: 12px;

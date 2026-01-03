@@ -27,20 +27,17 @@ The **UX Response Schema** (formally the "UX Experience Contract Layer") is ESTA
   - Complete real-world examples
   - Best practices
   - Testing guidelines
-  
 - ✅ **Quick Reference**: `docs/api/DECISION_EXPLANATION_QUICKREF.md` (8KB)
   - One-page developer cheat sheet
   - Quick implementation patterns
   - Common formulas
   - Testing checklist
-  
 - ✅ **Integration Guide**: `docs/api/INTEGRATION_EXAMPLES.md` (18KB)
   - Backend integration (Express, Firebase, Vercel)
   - Frontend integration (React, TypeScript)
   - Complete React components
   - API client implementation
   - Error handling patterns
-  
 - ✅ **API Index**: `docs/api/README.md` (10KB)
   - Overview and navigation
   - Quick start guide
@@ -82,6 +79,7 @@ Every UX-facing API response MUST include:
 ### 1. Frontend Never Interprets Backend Logic
 
 **Before:**
+
 ```typescript
 // ❌ Frontend must guess what this means
 if (result.violations.includes('CAP_EXCEEDED')) {
@@ -90,6 +88,7 @@ if (result.violations.includes('CAP_EXCEEDED')) {
 ```
 
 **After:**
+
 ```typescript
 // ✅ Backend provides complete narrative
 <Alert>{response.explanation}</Alert>
@@ -121,27 +120,27 @@ if (result.violations.includes('CAP_EXCEEDED')) {
 
 ## 📊 Decision Status Values
 
-| Status | Icon | Meaning | Use When |
-|--------|------|---------|----------|
-| `APPROVED` | ✅ | Success | User action accepted |
-| `DENIED` | ❌ | Rejection | User action rejected |
-| `NEEDS_INFORMATION` | ℹ️ | Missing data | More info required |
-| `PENDING_REVIEW` | ⏳ | Awaiting | Manual approval needed |
-| `COMPLETED` | ✔️ | Done | Operation finished |
-| `WARNING` | ⚠️ | Caution | Success with caveats |
-| `INFO` | 📊 | Information | Just informing |
+| Status              | Icon | Meaning      | Use When               |
+| ------------------- | ---- | ------------ | ---------------------- |
+| `APPROVED`          | ✅   | Success      | User action accepted   |
+| `DENIED`            | ❌   | Rejection    | User action rejected   |
+| `NEEDS_INFORMATION` | ℹ️   | Missing data | More info required     |
+| `PENDING_REVIEW`    | ⏳   | Awaiting     | Manual approval needed |
+| `COMPLETED`         | ✔️   | Done         | Operation finished     |
+| `WARNING`           | ⚠️   | Caution      | Success with caveats   |
+| `INFO`              | 📊   | Information  | Just informing         |
 
 ---
 
 ## 🎨 Risk Level Values
 
-| Level | Icon | Confidence | Action | Example |
-|-------|------|-----------|--------|---------|
-| `NONE` | ✅ | 95-100 | None | Normal accrual |
-| `LOW` | 🟡 | 85-94 | Optional | Approaching max |
-| `MEDIUM` | 🟠 | 70-84 | Soon | Missing docs |
-| `HIGH` | 🔴 | 50-69 | This week | Violation |
-| `CRITICAL` | 🚨 | 0-49 | Immediate | Legal deadline |
+| Level      | Icon | Confidence | Action    | Example         |
+| ---------- | ---- | ---------- | --------- | --------------- |
+| `NONE`     | ✅   | 95-100     | None      | Normal accrual  |
+| `LOW`      | 🟡   | 85-94      | Optional  | Approaching max |
+| `MEDIUM`   | 🟠   | 70-84      | Soon      | Missing docs    |
+| `HIGH`     | 🔴   | 50-69      | This week | Violation       |
+| `CRITICAL` | 🚨   | 0-49       | Immediate | Legal deadline  |
 
 ---
 
@@ -225,7 +224,7 @@ import { useAccrualExperience } from '@/hooks/useAccrualExperience';
 
 function AccrualDisplay({ userId }) {
   const { data } = useAccrualExperience(userId);
-  
+
   return (
     <div>
       <h2>{data.explanation}</h2>

@@ -1,6 +1,6 @@
 /**
  * Employer Management API Contracts
- * 
+ *
  * Defines the contract for employer management endpoints:
  * - GET /api/v1/employer/employees
  * - PATCH /api/v1/employer/settings
@@ -64,11 +64,15 @@ export const UpdateEmployerSettingsRequestSchema = z.object({
   enableAntiRetaliationAlerts: z.boolean().optional(),
 });
 
-export type UpdateEmployerSettingsRequest = z.infer<typeof UpdateEmployerSettingsRequestSchema>;
+export type UpdateEmployerSettingsRequest = z.infer<
+  typeof UpdateEmployerSettingsRequestSchema
+>;
 
 export const UpdateEmployerSettingsResponseSchema = z.object({
   success: z.boolean(),
   settings: EmployerSettingsDtoSchema,
 });
 
-export type UpdateEmployerSettingsResponse = z.infer<typeof UpdateEmployerSettingsResponseSchema>;
+export type UpdateEmployerSettingsResponse = z.infer<
+  typeof UpdateEmployerSettingsResponseSchema
+>;

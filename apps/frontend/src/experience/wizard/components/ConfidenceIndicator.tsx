@@ -1,6 +1,6 @@
 /**
  * ConfidenceIndicator Component
- * 
+ *
  * Displays user's confidence/completion quality score
  * Provides psychological reassurance during the guided flow
  */
@@ -21,8 +21,7 @@ export default function ConfidenceIndicator({
   className = '',
 }: ConfidenceIndicatorProps) {
   // Determine confidence level
-  const confidenceLevel =
-    score >= 85 ? 'high' : score >= 65 ? 'medium' : 'low';
+  const confidenceLevel = score >= 85 ? 'high' : score >= 65 ? 'medium' : 'low';
 
   const confidenceColors = {
     high: {
@@ -53,9 +52,9 @@ export default function ConfidenceIndicator({
 
   // Tips based on score
   const tips = {
-    high: 'You\'re doing great! All information is complete and accurate.',
+    high: "You're doing great! All information is complete and accurate.",
     medium: 'Good progress. Review any flagged items for best results.',
-    low: 'Let\'s complete a few more details to ensure full compliance.',
+    low: "Let's complete a few more details to ensure full compliance.",
   };
 
   if (variant === 'minimal') {

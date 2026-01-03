@@ -1,6 +1,6 @@
 /**
  * Audit Log API Contracts
- * 
+ *
  * Defines the contract for audit log endpoints:
  * - GET /api/v1/audit/logs
  * - GET /api/v1/audit/export
@@ -64,7 +64,9 @@ export const ExportAuditLogsRequestSchema = z.object({
   endDate: z.string().datetime().optional(),
 });
 
-export type ExportAuditLogsRequest = z.infer<typeof ExportAuditLogsRequestSchema>;
+export type ExportAuditLogsRequest = z.infer<
+  typeof ExportAuditLogsRequestSchema
+>;
 
 export const ExportAuditLogsResponseSchema = z.object({
   success: z.boolean(),
@@ -72,4 +74,6 @@ export const ExportAuditLogsResponseSchema = z.object({
   expiresAt: z.string().datetime(),
 });
 
-export type ExportAuditLogsResponse = z.infer<typeof ExportAuditLogsResponseSchema>;
+export type ExportAuditLogsResponse = z.infer<
+  typeof ExportAuditLogsResponseSchema
+>;

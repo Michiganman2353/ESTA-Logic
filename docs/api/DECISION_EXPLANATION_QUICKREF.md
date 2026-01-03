@@ -13,7 +13,11 @@ Every user-facing API response MUST include:
   "humanMeaning": "What this means for you",
   "riskLevel": "NONE",
   "confidenceScore": 95,
-  "reassuranceMessage": { "message": "You're all set", "tone": "positive", "emphasize": true },
+  "reassuranceMessage": {
+    "message": "You're all set",
+    "tone": "positive",
+    "emphasize": true
+  },
   "nextSteps": [{ "title": "What to do next", "priority": "low" }],
   "legalReferences": [{ "citation": "Michigan ESTA 2025", "summary": "..." }]
 }
@@ -23,27 +27,27 @@ Every user-facing API response MUST include:
 
 ## Decision Status Cheat Sheet
 
-| Status | Icon | When to Use | Example |
-|--------|------|-------------|---------|
-| `APPROVED` | ✅ | Action accepted | "PTO request approved" |
-| `DENIED` | ❌ | Action rejected | "Insufficient balance" |
-| `NEEDS_INFORMATION` | ℹ️ | Missing data | "Medical note required" |
-| `PENDING_REVIEW` | ⏳ | Awaiting approval | "Manager review needed" |
-| `COMPLETED` | ✔️ | Operation done | "Accrual calculated" |
-| `WARNING` | ⚠️ | Success + caveat | "Balance nearing max" |
-| `INFO` | 📊 | Just informing | "Balance inquiry" |
+| Status              | Icon | When to Use       | Example                 |
+| ------------------- | ---- | ----------------- | ----------------------- |
+| `APPROVED`          | ✅   | Action accepted   | "PTO request approved"  |
+| `DENIED`            | ❌   | Action rejected   | "Insufficient balance"  |
+| `NEEDS_INFORMATION` | ℹ️   | Missing data      | "Medical note required" |
+| `PENDING_REVIEW`    | ⏳   | Awaiting approval | "Manager review needed" |
+| `COMPLETED`         | ✔️   | Operation done    | "Accrual calculated"    |
+| `WARNING`           | ⚠️   | Success + caveat  | "Balance nearing max"   |
+| `INFO`              | 📊   | Just informing    | "Balance inquiry"       |
 
 ---
 
 ## Risk Level Cheat Sheet
 
-| Risk | Icon | Confidence | Action | Example |
-|------|------|-----------|--------|---------|
-| `NONE` | ✅ | 95-100 | None needed | Normal accrual |
-| `LOW` | 🟡 | 85-94 | Optional review | Approaching max |
-| `MEDIUM` | 🟠 | 70-84 | Review soon | Missing docs |
-| `HIGH` | 🔴 | 50-69 | Action this week | Violation found |
-| `CRITICAL` | 🚨 | 0-49 | Immediate action | Legal deadline |
+| Risk       | Icon | Confidence | Action           | Example         |
+| ---------- | ---- | ---------- | ---------------- | --------------- |
+| `NONE`     | ✅   | 95-100     | None needed      | Normal accrual  |
+| `LOW`      | 🟡   | 85-94      | Optional review  | Approaching max |
+| `MEDIUM`   | 🟠   | 70-84      | Review soon      | Missing docs    |
+| `HIGH`     | 🔴   | 50-69      | Action this week | Violation found |
+| `CRITICAL` | 🚨   | 0-49       | Immediate action | Legal deadline  |
 
 ---
 
@@ -65,17 +69,21 @@ const response: ExperienceResponse = {
     tone: 'positive',
     emphasize: true,
   },
-  nextSteps: [{
-    category: 'INFORMATION',
-    title: 'Review your balance',
-    description: 'View your complete history.',
-    priority: 'low',
-  }],
-  legalReferences: [{
-    citation: 'Michigan ESTA 2025, Section 3(a)',
-    summary: 'Employees accrue 1 hour per 30 hours worked',
-    relevanceExplanation: 'This defines your accrual rate.',
-  }],
+  nextSteps: [
+    {
+      category: 'INFORMATION',
+      title: 'Review your balance',
+      description: 'View your complete history.',
+      priority: 'low',
+    },
+  ],
+  legalReferences: [
+    {
+      citation: 'Michigan ESTA 2025, Section 3(a)',
+      summary: 'Employees accrue 1 hour per 30 hours worked',
+      relevanceExplanation: 'This defines your accrual rate.',
+    },
+  ],
   timestamp: new Date().toISOString(),
   sourceEngine: 'accrual-engine',
   responseId: generateId(),
@@ -109,26 +117,31 @@ res.json({
 ## Writing Guidelines
 
 ### ✅ Good Explanation
+
 - "You earned 2.5 hours of sick time this pay period based on your 75 hours worked."
 - **Why it's good**: Specific, clear, conversational
 
 ### ❌ Bad Explanation
+
 - "Operation successful"
 - **Why it's bad**: Vague, no information
 
 ---
 
 ### ✅ Good Human Meaning
+
 - "Your balance is now 15.5 hours — enough for almost 2 full days."
 - **Why it's good**: Actionable context, humanizes numbers
 
 ### ❌ Bad Human Meaning
+
 - "Balance updated"
 - **Why it's bad**: Just restates technical fact
 
 ---
 
 ### ✅ Good Reassurance
+
 ```json
 {
   "message": "Your sick time is accruing correctly and automatically.",
@@ -137,9 +150,11 @@ res.json({
   "emphasize": true
 }
 ```
+
 - **Why it's good**: Builds trust, provides context
 
 ### ❌ Bad Reassurance
+
 ```json
 {
   "message": "OK",
@@ -147,6 +162,7 @@ res.json({
   "emphasize": false
 }
 ```
+
 - **Why it's bad**: No reassurance value
 
 ---
@@ -156,12 +172,12 @@ res.json({
 ```typescript
 function calculateConfidence(factors: Factors): number {
   let confidence = 100;
-  
+
   if (factors.hasEstimatedData) confidence -= 5;
   if (factors.requiresManualReview) confidence -= 10;
   if (factors.usesHeuristics) confidence -= 15;
   if (factors.hasIncompleteData) confidence -= 20;
-  
+
   return Math.max(0, Math.min(100, confidence));
 }
 ```
@@ -186,6 +202,7 @@ const nextSteps = [
 ## Common Patterns
 
 ### Pattern: Accrual Calculation
+
 ```typescript
 {
   decision: 'COMPLETED',
@@ -197,6 +214,7 @@ const nextSteps = [
 ```
 
 ### Pattern: Compliance Violation
+
 ```typescript
 {
   decision: 'DENIED',
@@ -212,10 +230,11 @@ const nextSteps = [
 ```
 
 ### Pattern: PTO Request
+
 ```typescript
 {
   decision: isApproved ? 'APPROVED' : 'DENIED',
-  explanation: isApproved 
+  explanation: isApproved
     ? 'Your PTO request was approved...'
     : 'Your request exceeds available balance...',
   humanMeaning: isApproved
@@ -244,6 +263,7 @@ const nextSteps = [
 ## Common Mistakes
 
 ### ❌ Don't
+
 - Return raw technical data to users
 - Use jargon or legal codes
 - Omit reassurance messages
@@ -251,6 +271,7 @@ const nextSteps = [
 - Forget legal references
 
 ### ✅ Do
+
 - Always provide human narrative
 - Use plain English (8th grade level)
 - Include reassurance

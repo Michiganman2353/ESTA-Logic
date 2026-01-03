@@ -15,6 +15,7 @@ This document defines ESTA Tracker's voice and tone — the personality that com
 **Our voice never changes. It's who we are.**
 
 ESTA Tracker's voice is:
+
 - **Reassuring** — "You're doing this right"
 - **Clear** — Plain language, no jargon
 - **Empowering** — "You have control"
@@ -25,13 +26,13 @@ ESTA Tracker's voice is:
 
 **Our tone adapts to the user's emotional state and context.**
 
-| Context | Tone | Example |
-|---------|------|---------|
-| **Welcome/Onboarding** | Warm, reassuring | "You're in the right place. Let's get started." |
-| **Success** | Celebratory, proud | "🎉 You're 100% compliant — well done!" |
-| **Error** | Empathetic, solution-focused | "Let's fix that together." |
-| **Security** | Confident, protective | "Bank-level encryption. Your data is safe." |
-| **Complex Task** | Patient, guiding | "This looks complicated, but we'll break it down step-by-step." |
+| Context                | Tone                         | Example                                                         |
+| ---------------------- | ---------------------------- | --------------------------------------------------------------- |
+| **Welcome/Onboarding** | Warm, reassuring             | "You're in the right place. Let's get started."                 |
+| **Success**            | Celebratory, proud           | "🎉 You're 100% compliant — well done!"                         |
+| **Error**              | Empathetic, solution-focused | "Let's fix that together."                                      |
+| **Security**           | Confident, protective        | "Bank-level encryption. Your data is safe."                     |
+| **Complex Task**       | Patient, guiding             | "This looks complicated, but we'll break it down step-by-step." |
 
 ---
 
@@ -42,12 +43,14 @@ ESTA Tracker's voice is:
 **Philosophy**: Compliance is stressful. Our job is to reduce anxiety, not amplify it.
 
 ✅ **DO**:
+
 - Acknowledge concerns
 - Provide clear next steps
 - Use confident language
 - Offer constant reassurance
 
 ❌ **DON'T**:
+
 - Use fear-based messaging
 - Emphasize penalties or risks
 - Create urgency unnecessarily
@@ -55,24 +58,26 @@ ESTA Tracker's voice is:
 
 **Examples**:
 
-| ❌ Anxiety-Inducing | ✅ Reassuring |
-|---------------------|---------------|
-| "URGENT: You must comply immediately" | "Let's make sure you're all set up" |
-| "Failure to comply may result in fines" | "We'll keep you compliant automatically" |
-| "Warning: Incomplete setup" | "You're almost done — just a few more steps" |
-| "Your account is at risk" | "Let's secure your account together" |
+| ❌ Anxiety-Inducing                     | ✅ Reassuring                                |
+| --------------------------------------- | -------------------------------------------- |
+| "URGENT: You must comply immediately"   | "Let's make sure you're all set up"          |
+| "Failure to comply may result in fines" | "We'll keep you compliant automatically"     |
+| "Warning: Incomplete setup"             | "You're almost done — just a few more steps" |
+| "Your account is at risk"               | "Let's secure your account together"         |
 
 ### 2. Clear (Not Complicated)
 
 **Philosophy**: Legal complexity should stay in the background. Users should understand every interaction.
 
 ✅ **DO**:
+
 - Use 8th-grade reading level
 - Define terms when necessary
 - Break complex ideas into steps
 - Use active voice
 
 ❌ **DON'T**:
+
 - Use legal jargon
 - Reference statute numbers
 - Assume user knowledge
@@ -80,24 +85,26 @@ ESTA Tracker's voice is:
 
 **Examples**:
 
-| ❌ Complicated | ✅ Clear |
-|----------------|----------|
+| ❌ Complicated                                 | ✅ Clear                                          |
+| ---------------------------------------------- | ------------------------------------------------- |
 | "Configure accrual parameters per MCL 408.963" | "Set up how sick time adds up for your employees" |
-| "Authenticate via OAuth provider" | "Sign in to continue" |
-| "Insufficient privileges for resource access" | "You don't have permission to view this" |
-| "Your request has been queued for processing" | "We're working on that — it'll be ready soon" |
+| "Authenticate via OAuth provider"              | "Sign in to continue"                             |
+| "Insufficient privileges for resource access"  | "You don't have permission to view this"          |
+| "Your request has been queued for processing"  | "We're working on that — it'll be ready soon"     |
 
 ### 3. Empowering (Not Patronizing)
 
 **Philosophy**: Users are capable. We're here to guide, not dictate.
 
 ✅ **DO**:
+
 - Give users control
 - Explain options clearly
 - Celebrate user accomplishments
 - Respect user intelligence
 
 ❌ **DON'T**:
+
 - Talk down to users
 - Over-explain simple concepts
 - Force single paths
@@ -105,24 +112,26 @@ ESTA Tracker's voice is:
 
 **Examples**:
 
-| ❌ Patronizing | ✅ Empowering |
-|----------------|---------------|
-| "Don't worry, we'll do everything for you" | "You're in control. We're here to help." |
-| "This is how you MUST do it" | "Here are your options — choose what works best" |
-| "Let us handle the complicated stuff" | "We've simplified this so you can focus on your business" |
-| "Just click Continue" | "Ready? Let's move forward" |
+| ❌ Patronizing                             | ✅ Empowering                                             |
+| ------------------------------------------ | --------------------------------------------------------- |
+| "Don't worry, we'll do everything for you" | "You're in control. We're here to help."                  |
+| "This is how you MUST do it"               | "Here are your options — choose what works best"          |
+| "Let us handle the complicated stuff"      | "We've simplified this so you can focus on your business" |
+| "Just click Continue"                      | "Ready? Let's move forward"                               |
 
 ### 4. Trustworthy (Not Vague)
 
 **Philosophy**: Trust is earned through transparency and consistency.
 
 ✅ **DO**:
+
 - Be specific and transparent
 - Cite sources when relevant
 - Admit when we don't know
 - Keep promises
 
 ❌ **DON'T**:
+
 - Make vague claims
 - Overpromise
 - Hide complexity dishonestly
@@ -130,24 +139,26 @@ ESTA Tracker's voice is:
 
 **Examples**:
 
-| ❌ Vague | ✅ Trustworthy |
-|----------|----------------|
-| "Industry-leading security" | "AES-256 encryption with Google Cloud KMS" |
-| "Experts agree this is compliant" | "Verified against Michigan ESTA law MCL 408.963" |
-| "Your data is totally safe" | "Your data is encrypted before leaving your device" |
-| "We'll handle everything" | "We calculate accrual, track usage, and generate audit reports" |
+| ❌ Vague                          | ✅ Trustworthy                                                  |
+| --------------------------------- | --------------------------------------------------------------- |
+| "Industry-leading security"       | "AES-256 encryption with Google Cloud KMS"                      |
+| "Experts agree this is compliant" | "Verified against Michigan ESTA law MCL 408.963"                |
+| "Your data is totally safe"       | "Your data is encrypted before leaving your device"             |
+| "We'll handle everything"         | "We calculate accrual, track usage, and generate audit reports" |
 
 ### 5. Partnership-Oriented (Not Transactional)
 
 **Philosophy**: We're on the same team. This is a relationship, not a transaction.
 
 ✅ **DO**:
+
 - Use "we" and "let's"
 - Frame as collaboration
 - Acknowledge shared goals
 - Build long-term relationship
 
 ❌ **DON'T**:
+
 - Use cold, formal language
 - Frame as vendor-customer
 - Focus only on features
@@ -155,12 +166,12 @@ ESTA Tracker's voice is:
 
 **Examples**:
 
-| ❌ Transactional | ✅ Partnership |
-|------------------|----------------|
-| "Submit your information" | "Let's get you set up" |
-| "Complete the following steps" | "Here's what we'll do together" |
+| ❌ Transactional                       | ✅ Partnership                            |
+| -------------------------------------- | ----------------------------------------- |
+| "Submit your information"              | "Let's get you set up"                    |
+| "Complete the following steps"         | "Here's what we'll do together"           |
 | "Your subscription has been activated" | "Welcome! We're excited to work with you" |
-| "Contact support for assistance" | "We're here if you need anything" |
+| "Contact support for assistance"       | "We're here if you need anything"         |
 
 ---
 
@@ -172,12 +183,14 @@ ESTA Tracker's voice is:
 **Tone**: Warm, reassuring, guiding
 
 **Goals**:
+
 - Reduce initial anxiety
 - Build confidence quickly
 - Set clear expectations
 - Make first step obvious
 
 **Copy Patterns**:
+
 ```
 ✅ "You're in the right place. We'll guide you through everything step-by-step."
 ✅ "Let's get you set up. This will take about 15 minutes."
@@ -191,12 +204,14 @@ ESTA Tracker's voice is:
 **Tone**: Patient, encouraging, clear
 
 **Goals**:
+
 - Maintain momentum
 - Reduce cognitive load
 - Celebrate progress
 - Prevent abandonment
 
 **Copy Patterns**:
+
 ```
 ✅ "You're doing great! Just a few more questions."
 ✅ "Step 3 of 5 — more than halfway there!"
@@ -210,12 +225,14 @@ ESTA Tracker's voice is:
 **Tone**: Celebratory, validating, forward-looking
 
 **Goals**:
+
 - Acknowledge accomplishment
 - Build confidence
 - Encourage continued engagement
 - Set up next steps
 
 **Copy Patterns**:
+
 ```
 ✅ "🎉 You're 100% compliant — well done!"
 ✅ "Setup complete! You can sleep easy tonight."
@@ -229,12 +246,14 @@ ESTA Tracker's voice is:
 **Tone**: Empathetic, solution-focused, calm
 
 **Goals**:
+
 - Acknowledge the problem
 - Reduce frustration
 - Provide clear fix
 - Maintain trust
 
 **Copy Patterns**:
+
 ```
 ✅ "We noticed a small issue with your email. Let's fix that together."
 ✅ "That password isn't quite strong enough. Try adding a number or symbol."
@@ -248,12 +267,14 @@ ESTA Tracker's voice is:
 **Tone**: Confident, transparent, protective
 
 **Goals**:
+
 - Build trust immediately
 - Provide specific evidence
 - Demonstrate expertise
 - Reassure continuously
 
 **Copy Patterns**:
+
 ```
 ✅ "Your data is encrypted before it leaves your device."
 ✅ "Bank-level security • AES-256 encryption • Google Cloud KMS"
@@ -267,12 +288,14 @@ ESTA Tracker's voice is:
 **Tone**: Patient, simplifying, step-by-step
 
 **Goals**:
+
 - Break down complexity
 - Prevent overwhelm
 - Guide progressively
 - Build understanding
 
 **Copy Patterns**:
+
 ```
 ✅ "This looks complicated, but we'll break it down step-by-step."
 ✅ "In simple terms: [plain language explanation]"
@@ -286,12 +309,14 @@ ESTA Tracker's voice is:
 **Tone**: Inviting, helpful, action-oriented
 
 **Goals**:
+
 - Guide first action
 - Show value immediately
 - Reduce empty-state anxiety
 - Make next step obvious
 
 **Copy Patterns**:
+
 ```
 ✅ "Let's add your first employee to get started."
 ✅ "Your dashboard will fill up once you complete setup."
@@ -308,11 +333,13 @@ ESTA Tracker's voice is:
 **Target**: 8th-grade reading level (Flesch-Kincaid)
 
 **Tools**:
+
 - [Hemingway Editor](http://www.hemingwayapp.com/)
 - [Grammarly](https://www.grammarly.com/)
 - [WebAIM Readability](https://wave.webaim.org/)
 
 **Guidelines**:
+
 - Short sentences (avg 15-20 words)
 - Simple words over complex
 - Active voice over passive
@@ -321,12 +348,14 @@ ESTA Tracker's voice is:
 ### Formatting for Clarity
 
 ✅ **DO**:
+
 - Use bullet points for lists
 - Bold key information
 - Break up long paragraphs
 - Use headings for hierarchy
 
 **Example**:
+
 ```
 ✅ Good:
 Your sick time policy:
@@ -341,11 +370,13 @@ Your policy includes accrual at 1 hour per 30 worked with a maximum of 40 hours 
 ### Pronouns & Perspective
 
 **Use "you" and "we"**:
+
 - "You" = the user
 - "We" = ESTA Tracker (the team, the system)
 - "Let's" = collaborative action
 
 **Examples**:
+
 ```
 ✅ "You're all set up"
 ✅ "We've calculated your accrual"
@@ -358,12 +389,12 @@ Your policy includes accrual at 1 hour per 30 worked with a maximum of 40 hours 
 
 **Make CTAs specific and action-oriented**:
 
-| Context | ❌ Generic | ✅ Specific |
-|---------|-----------|-------------|
-| Onboarding | "Next" | "Continue Setup →" |
-| Completion | "Done" | "View My Dashboard" |
-| Adding Data | "Submit" | "Add Employee" |
-| Help | "Learn More" | "Show Me How" |
+| Context     | ❌ Generic   | ✅ Specific         |
+| ----------- | ------------ | ------------------- |
+| Onboarding  | "Next"       | "Continue Setup →"  |
+| Completion  | "Done"       | "View My Dashboard" |
+| Adding Data | "Submit"     | "Add Employee"      |
+| Help        | "Learn More" | "Show Me How"       |
 
 ### Microcopy & Labels
 
@@ -387,12 +418,14 @@ Your policy includes accrual at 1 hour per 30 worked with a maximum of 40 hours 
 ### Fear-Based Language
 
 ❌ **Don't**:
+
 - "Warning: Non-compliance penalties"
 - "You must do this immediately"
 - "Failure to complete will result in..."
 - "Your account is at risk"
 
 ✅ **Instead**:
+
 - "Let's make sure you're compliant"
 - "Complete this when you're ready"
 - "Finishing this helps you stay protected"
@@ -401,12 +434,14 @@ Your policy includes accrual at 1 hour per 30 worked with a maximum of 40 hours 
 ### Jargon & Acronyms
 
 ❌ **Don't**:
+
 - "FTE", "ESTA", "MCL" (without explanation)
 - "OAuth authentication"
 - "Regulatory compliance parameters"
 - "RBAC permissions"
 
 ✅ **Instead**:
+
 - "Full-time equivalent employees" (or "full-time employees")
 - "Sign in"
 - "Legal requirements"
@@ -415,11 +450,13 @@ Your policy includes accrual at 1 hour per 30 worked with a maximum of 40 hours 
 ### Passive Voice
 
 ❌ **Don't**:
+
 - "Your data has been encrypted"
 - "The calculation was completed"
 - "Approval is required"
 
 ✅ **Instead**:
+
 - "We encrypted your data"
 - "We've calculated your accrual"
 - "Your manager needs to approve this"
@@ -427,12 +464,14 @@ Your policy includes accrual at 1 hour per 30 worked with a maximum of 40 hours 
 ### Vague Promises
 
 ❌ **Don't**:
+
 - "Best-in-class solution"
 - "Fully optimized"
 - "Guaranteed results"
 - "Revolutionary platform"
 
 ✅ **Instead**:
+
 - "Automated sick time tracking"
 - "Faster setup (15 minutes average)"
 - "98% of users reach full compliance"

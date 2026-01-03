@@ -1,6 +1,6 @@
 /**
  * Welcome Page - Entry point for ESTA-Logic guided experience
- * 
+ *
  * Purpose: Emotional grounding and journey initialization
  * First impression that sets the tone for the entire experience
  */
@@ -13,17 +13,17 @@ import { guidedSessionStore } from '../../state/guided-session-store';
 export interface WelcomePageProps {
   /** User ID if authenticated */
   userId?: string;
-  
+
   /** User type (employer or employee) */
   userType?: 'employer' | 'employee';
-  
+
   /** Callback when user starts journey */
   onStart?: (journeyId: string) => void;
 }
 
 /**
  * Welcome Page Component
- * 
+ *
  * Implements the entry experience:
  * - Check for existing sessions (resume capability)
  * - Display welcome message
@@ -33,7 +33,7 @@ export interface WelcomePageProps {
 export const WelcomePage: React.FC<WelcomePageProps> = ({
   userId,
   userType = 'employer',
-  onStart
+  onStart,
 }) => {
   const [existingSession, setExistingSession] = useState<any>(null);
   const [isReturning, setIsReturning] = useState(false);
@@ -56,9 +56,8 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({
   }, [userId]);
 
   const handleStart = async () => {
-    const journeyId = userType === 'employer' 
-      ? 'employer-onboarding' 
-      : 'employee-onboarding';
+    const journeyId =
+      userType === 'employer' ? 'employer-onboarding' : 'employee-onboarding';
 
     try {
       // Start the journey
@@ -79,12 +78,12 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({
           stepData: {},
           startedAt: new Date(),
           lastUpdatedAt: new Date(),
-          status: 'in-progress'
+          status: 'in-progress',
         },
         {
           deviceType: getDeviceType(),
           browser: getBrowserType(),
-          startedFrom: 'welcome-page'
+          startedFrom: 'welcome-page',
         }
       );
 
@@ -103,7 +102,7 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({
     if (existingSession) {
       // Resume existing journey
       console.log('Resuming session:', existingSession.id);
-      
+
       if (onStart) {
         onStart(existingSession.journeyId);
       }
@@ -143,8 +142,8 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({
                   <div className="stat-item">
                     <span className="stat-label">Journey:</span>
                     <span className="stat-value">
-                      {existingSession.journeyId === 'employer-onboarding' 
-                        ? 'Employer Setup' 
+                      {existingSession.journeyId === 'employer-onboarding'
+                        ? 'Employer Setup'
                         : 'Employee Setup'}
                     </span>
                   </div>
@@ -160,16 +159,10 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({
 
             {/* Action Buttons */}
             <div className="action-buttons">
-              <button
-                className="btn-primary large"
-                onClick={handleResume}
-              >
+              <button className="btn-primary large" onClick={handleResume}>
                 Continue Where I Left Off →
               </button>
-              <button
-                className="btn-secondary"
-                onClick={handleStart}
-              >
+              <button className="btn-secondary" onClick={handleStart}>
                 Start Fresh
               </button>
             </div>
@@ -181,7 +174,7 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({
             onContinue={handleStart}
             progress={{
               estimatedTime: 180, // 3 minutes
-              totalSteps: 6
+              totalSteps: 6,
             }}
           />
         )}
@@ -200,12 +193,16 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({
  */
 const getDeviceType = (): string => {
   if (typeof window === 'undefined') return 'unknown';
-  
+
   const ua = navigator.userAgent;
   if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
     return 'tablet';
   }
-  if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+  if (
+    /Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(
+      ua
+    )
+  ) {
     return 'mobile';
   }
   return 'desktop';
@@ -213,7 +210,7 @@ const getDeviceType = (): string => {
 
 const getBrowserType = (): string => {
   if (typeof window === 'undefined') return 'unknown';
-  
+
   const ua = navigator.userAgent;
   if (ua.includes('Chrome')) return 'chrome';
   if (ua.includes('Firefox')) return 'firefox';
@@ -224,7 +221,7 @@ const getBrowserType = (): string => {
 
 /**
  * Example CSS (to be implemented in actual stylesheet):
- * 
+ *
  * .welcome-page {
  *   min-height: 100vh;
  *   display: flex;
@@ -234,7 +231,7 @@ const getBrowserType = (): string => {
  *   position: relative;
  *   overflow: hidden;
  * }
- * 
+ *
  * .welcome-container {
  *   max-width: 800px;
  *   width: 100%;
@@ -245,11 +242,11 @@ const getBrowserType = (): string => {
  *   position: relative;
  *   z-index: 10;
  * }
- * 
+ *
  * .returning-user-welcome {
  *   padding: 48px;
  * }
- * 
+ *
  * .progress-summary {
  *   display: flex;
  *   gap: 20px;
@@ -258,58 +255,58 @@ const getBrowserType = (): string => {
  *   border-radius: 12px;
  *   margin: 32px 0;
  * }
- * 
+ *
  * .summary-icon {
  *   font-size: 3rem;
  * }
- * 
+ *
  * .summary-stats {
  *   display: flex;
  *   flex-direction: column;
  *   gap: 8px;
  *   margin-top: 12px;
  * }
- * 
+ *
  * .stat-item {
  *   display: flex;
  *   gap: 8px;
  *   font-size: 0.875rem;
  * }
- * 
+ *
  * .stat-label {
  *   color: #6a6a6a;
  * }
- * 
+ *
  * .stat-value {
  *   font-weight: 500;
  *   color: #1a1a1a;
  * }
- * 
+ *
  * .action-buttons {
  *   display: flex;
  *   flex-direction: column;
  *   gap: 12px;
  * }
- * 
+ *
  * .btn-primary.large {
  *   padding: 16px 32px;
  *   font-size: 1.125rem;
  * }
- * 
+ *
  * .welcome-background {
  *   position: absolute;
  *   inset: 0;
  *   opacity: 0.1;
  * }
- * 
+ *
  * .bg-pattern {
  *   width: 100%;
  *   height: 100%;
- *   background-image: 
- *     repeating-linear-gradient(45deg, 
- *       transparent, 
- *       transparent 35px, 
- *       rgba(255,255,255,.1) 35px, 
+ *   background-image:
+ *     repeating-linear-gradient(45deg,
+ *       transparent,
+ *       transparent 35px,
+ *       rgba(255,255,255,.1) 35px,
  *       rgba(255,255,255,.1) 70px);
  * }
  */

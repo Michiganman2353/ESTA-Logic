@@ -1,6 +1,7 @@
 # Experience Narrative: Complete Customer Journey
 
 ## Overview
+
 This storyboard documents the **emotional and functional journey** users experience with ESTA Tracker, from first encounter through becoming confident advocates. Unlike other storyboards that focus on specific features, this narrative shows how the entire experience flows together to build trust, reduce anxiety, and create confidence.
 
 **Version**: 1.0.0  
@@ -36,6 +37,7 @@ Step 6: Trust Messages    → "Constant reassurance"
 ## Step 1: Welcome — You're in Safe Hands
 
 ### Emotional State
+
 **Before**: 😰 Anxiety, overwhelm, fear of legal consequences  
 **After**: 🤔 Curious, hopeful, willing to try
 
@@ -74,16 +76,19 @@ Step 6: Trust Messages    → "Constant reassurance"
 ### Design Specifications
 
 **Typography**
+
 - Hero headline: `text-5xl` (48px), `font-bold`, `text-navy-900`
 - Subheadline: `text-xl` (20px), `font-normal`, `text-gray-700`, `max-w-2xl`
 - Trust signals: `text-base` (16px), `font-medium`, `text-gray-600`
 
 **Colors**
+
 - Background: `bg-gradient-to-br from-sky-50 to-royal-50`
 - Primary CTA: `bg-trust-blue-600 hover:bg-trust-blue-700`
 - Trust indicators: `text-gov-trust-green-600`
 
 **Spacing**
+
 - Container padding: `py-16 px-8`
 - Element spacing: `space-y-8`
 - CTA button: `px-8 py-4 text-lg`
@@ -91,11 +96,13 @@ Step 6: Trust Messages    → "Constant reassurance"
 ### Emotional Copy Elements
 
 **Headline Variations** (A/B tested)
+
 - Option A: "Transform Compliance from Confusing to Confident"
 - Option B: "Your Trusted Partner in Michigan Employment Compliance" ✓ (Winner)
 - Option C: "ESTA Compliance Made Simple"
 
 **Reassurance Messaging**
+
 - Acknowledge the problem: "We know this feels overwhelming"
 - Offer the solution: "We'll walk you through everything"
 - Set expectations: "15 minutes" (specific, achievable)
@@ -103,6 +110,7 @@ Step 6: Trust Messages    → "Constant reassurance"
 - Promise support: "We're here to help"
 
 ### Success Metrics
+
 - **Click-through rate**: >60% of visitors click "Get Started"
 - **Time on page**: >30 seconds (indicates message resonance)
 - **Bounce rate**: <30%
@@ -113,6 +121,7 @@ Step 6: Trust Messages    → "Constant reassurance"
 ## Step 2: Employer Setup — We Ask, You Answer, We Handle the Rest
 
 ### Emotional State
+
 **Before**: 🤔 Uncertain about complexity  
 **After**: 😌 Confident, making progress
 
@@ -178,24 +187,28 @@ Step 6: Trust Messages    → "Constant reassurance"
 ### Design Patterns
 
 **Progress Indicator**
+
 - Always visible at top
 - Filled circles: `bg-trust-blue-600`
 - Empty circles: `bg-gray-300`
 - Current step label: "Step 2 of 5"
 
 **Form Fields**
+
 - Single field per screen (focused attention)
 - Large input: `text-2xl py-4 px-6 rounded-lg`
 - Immediate validation on blur
 - Green checkmark appears when valid
 
 **Help Text**
+
 - Light bulb icon: `text-royal-500`
 - Expandable accordion on mobile
 - Always visible on desktop
 - Plain language explanations
 
 **Auto-Save Indicator**
+
 - Appears bottom-left after 2 seconds
 - Fades in: `transition-opacity duration-500`
 - Icon + text: "💾 Auto-saved"
@@ -204,18 +217,21 @@ Step 6: Trust Messages    → "Constant reassurance"
 ### Emotional Design Elements
 
 **Response Messages** (after user input)
+
 - "✅ Perfect!" (positive reinforcement)
 - "Great!" (enthusiastic)
 - "Got it." (confirmation)
 - "Excellent choice!" (validation)
 
 **Explanatory Context**
-- Always explain *why* we need information
+
+- Always explain _why_ we need information
 - Show the benefit to the user
 - Use concrete examples when possible
 - Avoid legal jargon
 
 ### Success Metrics
+
 - **Completion rate**: >90% from Step 1 to Step 5
 - **Time per step**: <30 seconds average
 - **Back button usage**: <15% (indicates clarity)
@@ -227,6 +243,7 @@ Step 6: Trust Messages    → "Constant reassurance"
 ## Step 3: Employee Linking — Simple Codes, Zero Complexity
 
 ### Emotional State
+
 **Before**: 😟 Worried about technical complexity  
 **After**: 😃 Surprised by simplicity
 
@@ -328,18 +345,21 @@ Step 6: Trust Messages    → "Constant reassurance"
 ### Design Specifications
 
 **Enrollment Code Display**
+
 - Large, prominent: `text-6xl font-bold text-trust-blue-600`
 - Card elevation: `shadow-xl`
 - Background: `bg-gradient-to-br from-sky-50 to-white`
 - Quick action buttons: Text, Email, Print
 
 **Code Input (Employee Side)**
+
 - 4 separate input boxes for each digit
 - Auto-advances to next box on input
 - Large touch targets: `w-16 h-20 text-3xl`
 - Instant validation on 4th digit
 
 **Success Confirmation**
+
 - Celebration animation (confetti or checkmark)
 - Immediate display of balance
 - Human-readable context ("almost 2 full workdays")
@@ -347,16 +367,19 @@ Step 6: Trust Messages    → "Constant reassurance"
 ### Emotional Copy Elements
 
 **Employer Messaging**
+
 - "🎉 Setup Complete!" (celebration)
 - "No IT setup • No complicated permissions" (remove fear)
 - "Instantly linked!" (emphasize ease)
 
 **Employee Messaging**
+
 - "Welcome, Marcus! 👋" (personal, friendly)
 - "You're all set" (reassurance)
 - "almost 2 full workdays" (make abstract concrete)
 
 ### Success Metrics
+
 - **Code sharing rate**: >80% of employers share code within 24 hours
 - **Employee enrollment time**: <60 seconds average
 - **Enrollment completion**: >95% who start, finish
@@ -367,6 +390,7 @@ Step 6: Trust Messages    → "Constant reassurance"
 ## Step 4: Compliance Score — Your Confidence at a Glance
 
 ### Emotional State
+
 **Before**: ❓ Uncertain about compliance status  
 **After**: 💪 Confident, empowered by transparency
 
@@ -467,17 +491,20 @@ Step 6: Trust Messages    → "Constant reassurance"
 ### Design Specifications
 
 **Score Display**
+
 - Giant number: `text-8xl font-bold text-trust-blue-600`
 - Progress bar: Gradient fill `from-gov-trust-green-400 to-gov-trust-green-600`
 - Card: Elevated `shadow-2xl`, white background
 
 **Score Ranges & Colors**
+
 - 95-100%: Excellent (Green `text-gov-trust-green-600`)
 - 85-94%: Good (Blue `text-trust-blue-600`)
 - 70-84%: Needs Attention (Yellow `text-yellow-600`)
 - <70%: Action Required (Red `text-red-600`)
 
 **Checklist Items**
+
 - Green checkmark: `text-gov-trust-green-600 text-2xl`
 - Warning triangle: `text-yellow-600 text-2xl`
 - Explanatory text: `text-gray-700 text-base`
@@ -485,21 +512,25 @@ Step 6: Trust Messages    → "Constant reassurance"
 ### Emotional Copy Elements
 
 **Score Interpretation**
+
 - Make it concrete: "If an inspector showed up tomorrow..."
 - Use reassuring language: "You're doing great!"
 - Celebrate success: "Perfect," "Excellent," "Outstanding"
 
 **Action Items**
+
 - Non-threatening: "Action Needed" not "ERROR"
 - Set clear expectations: "due March 15"
 - Reassure: "We'll remind you"
 
 **Transparency**
+
 - Show the math: "40/40 points"
 - Explain every category
 - Link to legal references (optional)
 
 ### Success Metrics
+
 - **Score understanding**: >90% can explain what score means
 - **Action completion**: >85% complete required actions within 7 days
 - **Anxiety reduction**: Users report feeling "confident" not "worried"
@@ -510,6 +541,7 @@ Step 6: Trust Messages    → "Constant reassurance"
 ## Step 5: Confidence Dashboard — Everything You Need, Nothing You Don't
 
 ### Emotional State
+
 **Before**: 😐 Uncertainty about daily operations  
 **After**: 😌 Calm confidence, sense of control
 
@@ -569,29 +601,34 @@ Step 6: Trust Messages    → "Constant reassurance"
 ### Design Specifications
 
 **Layout Grid**
+
 - Two-column cards on desktop: `grid grid-cols-2 gap-6`
 - Single column on mobile: `grid grid-cols-1`
 - Card spacing: `p-6 rounded-xl shadow-md`
 
 **Status Cards** (Top)
+
 - Large metric: `text-4xl font-bold`
 - Label: `text-sm text-gray-600`
 - Icon: `text-3xl`
 - Background gradient for emphasis
 
 **Alert Cards**
+
 - Priority levels:
   - Urgent: Red border-left `border-l-4 border-red-500`
   - Important: Yellow border-left `border-l-4 border-yellow-500`
   - Info: Blue border-left `border-l-4 border-blue-500`
 
 **Action Buttons**
+
 - Primary: `bg-trust-blue-600 hover:bg-trust-blue-700`
 - Secondary: `bg-gray-200 hover:bg-gray-300`
 - Destructive: `bg-red-600 hover:bg-red-700`
 - Ghost: `text-trust-blue-600 hover:bg-trust-blue-50`
 
 **Activity Feed**
+
 - Chronological list
 - Icon + text + timestamp
 - Subtle dividers: `border-b border-gray-200`
@@ -600,16 +637,19 @@ Step 6: Trust Messages    → "Constant reassurance"
 ### Information Hierarchy
 
 **Priority 1: Items Requiring Action**
+
 - PTO approvals
 - Compliance warnings
 - Policy updates needed
 
 **Priority 2: Proactive Information**
+
 - Approaching caps
 - Upcoming deadlines
 - System recommendations
 
 **Priority 3: Status Overview**
+
 - Current metrics
 - Recent activity
 - Quick actions
@@ -617,16 +657,19 @@ Step 6: Trust Messages    → "Constant reassurance"
 ### Emotional Copy Elements
 
 **Reassurance**
+
 - "We'll handle the cap automatically — just FYI" (no panic needed)
 - "You approved" (acknowledges user control)
 - "✅" checkmarks everywhere (visual confirmation)
 
 **Clarity**
+
 - Specific numbers: "38.5 hours" not "approaching limit"
 - Clear actions: [Approve] [Deny] not "Take action"
 - Human language: "Maria is approaching her cap" not "Employee E0023 exceeds threshold"
 
 ### Success Metrics
+
 - **Daily active usage**: >70% of employers check dashboard daily
 - **Action completion rate**: >90% of pending items resolved within 24 hours
 - **Support tickets**: <5% of users need help navigating dashboard
@@ -637,6 +680,7 @@ Step 6: Trust Messages    → "Constant reassurance"
 ## Step 6: Trust Messages — Constant Reassurance
 
 ### Emotional State
+
 **Throughout Journey**: Build cumulative confidence through consistent reinforcement
 
 ### Trust Message Patterns
@@ -771,24 +815,28 @@ Step 6: Trust Messages    → "Constant reassurance"
 ### Design Specifications
 
 **Trust Indicators**
+
 - Lock icon: `text-gov-trust-green-600 text-xl`
 - Shield icon: `text-trust-blue-600 text-xl`
 - Checkmark: `text-gov-trust-green-600 text-2xl`
 - Legal reference links: `text-trust-blue-600 underline`
 
 **Message Timing**
+
 - Security messages: Always present during sensitive actions
 - Calculation transparency: On-demand (expandable)
 - Progress milestones: Automatic at 1 week, 1 month, 3 months
 - Proactive guidance: 30 days before deadlines
 
 **Tone Adjustments**
+
 - Security: Professional, factual, reassuring
 - Calculations: Transparent, detailed, verifiable
 - Milestones: Celebratory, encouraging, specific
 - Guidance: Helpful, non-urgent, empowering
 
 ### Success Metrics
+
 - **Trust rating**: Users rate trust in system >9/10
 - **Support inquiries**: "Is this secure?" questions <2%
 - **Calculation challenges**: Disputes <0.1%
@@ -802,24 +850,28 @@ Step 6: Trust Messages    → "Constant reassurance"
 ### Transformation Success Indicators
 
 **Completion Funnel**
+
 - Welcome page → Start setup: >60%
 - Start setup → Complete setup: >90%
 - Complete setup → First employee enrolled: >85%
 - First employee → Active daily use: >70%
 
 **Emotional Journey**
+
 - Pre-use anxiety (survey): 8/10 average
 - Post-setup confidence (survey): 9/10 average
 - Recommendation likelihood (NPS): >50
 - "Trusted partner" sentiment: >85%
 
 **Business Impact**
+
 - Time saved vs. manual: >80% reduction
 - Compliance confidence: >95% feel "fully compliant"
 - Error reduction: >99% vs. manual tracking
 - Legal incident rate: <0.1%
 
 **Advocacy Indicators**
+
 - Referral rate: >30% refer another business
 - Testimonial volunteers: >20%
 - Repeat engagement: >70% daily active users
@@ -830,17 +882,20 @@ Step 6: Trust Messages    → "Constant reassurance"
 ## Implementation Notes for Engineers
 
 ### Progressive Enhancement
+
 1. **Core experience works without JavaScript** (forms, basic navigation)
 2. **Enhanced interactions require JS** (auto-save, live validation)
 3. **Advanced features optional** (animations, real-time sync)
 
 ### Performance Budgets
+
 - Initial page load: <2 seconds
 - Navigation transitions: <200ms
 - Form validation: Instant (<50ms)
 - Auto-save debounce: 2 seconds
 
 ### Accessibility Requirements
+
 - WCAG 2.1 Level AA compliance
 - Keyboard navigation throughout
 - Screen reader tested
@@ -848,7 +903,9 @@ Step 6: Trust Messages    → "Constant reassurance"
 - Reduced motion preferences honored
 
 ### Analytics Events
+
 Track these events for each step:
+
 - `journey_step_viewed`
 - `journey_step_completed`
 - `trust_message_displayed`
@@ -856,6 +913,7 @@ Track these events for each step:
 - `action_completed`
 
 ### Error Handling
+
 - Never show technical errors to users
 - Always provide next steps
 - Offer support contact for persistent issues

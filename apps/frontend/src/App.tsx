@@ -265,74 +265,78 @@ function App() {
         <FocusAnchor id="main-content" label="Main content" />
 
         <Suspense fallback={<PageLoaderFallback />}>
-        <Routes>
-          {/* Public routes - accessible without authentication */}
-          <Route
-            path="/"
-            element={!user ? <Landing /> : <Navigate to="/dashboard" />}
-          />
-          <Route
-            path="/login"
-            element={
-              !user ? <Login onLogin={setUser} /> : <Navigate to="/dashboard" />
-            }
-          />
-          <Route
-            path="/register"
-            element={!user ? <Register /> : <Navigate to="/dashboard" />}
-          />
-          <Route
-            path="/register/employee"
-            element={
-              !user ? (
-                <RegisterEmployee onRegister={setUser} />
-              ) : (
-                <Navigate to="/dashboard" />
-              )
-            }
-          />
-          <Route
-            path="/register/manager"
-            element={
-              !user ? (
-                <RegisterManager onRegister={setUser} />
-              ) : (
-                <Navigate to="/dashboard" />
-              )
-            }
-          />
-          <Route path="/pricing" element={<Pricing />} />
+          <Routes>
+            {/* Public routes - accessible without authentication */}
+            <Route
+              path="/"
+              element={!user ? <Landing /> : <Navigate to="/dashboard" />}
+            />
+            <Route
+              path="/login"
+              element={
+                !user ? (
+                  <Login onLogin={setUser} />
+                ) : (
+                  <Navigate to="/dashboard" />
+                )
+              }
+            />
+            <Route
+              path="/register"
+              element={!user ? <Register /> : <Navigate to="/dashboard" />}
+            />
+            <Route
+              path="/register/employee"
+              element={
+                !user ? (
+                  <RegisterEmployee onRegister={setUser} />
+                ) : (
+                  <Navigate to="/dashboard" />
+                )
+              }
+            />
+            <Route
+              path="/register/manager"
+              element={
+                !user ? (
+                  <RegisterManager onRegister={setUser} />
+                ) : (
+                  <Navigate to="/dashboard" />
+                )
+              }
+            />
+            <Route path="/pricing" element={<Pricing />} />
 
-          {/* Guided Flow - TurboTax-Style Wizard */}
-          <Route path="/guided-flow" element={<GuidedFlow />} />
+            {/* Guided Flow - TurboTax-Style Wizard */}
+            <Route path="/guided-flow" element={<GuidedFlow />} />
 
-          {/* UI Showcase (Development/Design) */}
-          <Route path="/ui-showcase" element={<UIShowcase />} />
+            {/* UI Showcase (Development/Design) */}
+            <Route path="/ui-showcase" element={<UIShowcase />} />
 
-          {/* Performance Dashboard (Development/Monitoring) */}
-          <Route path="/performance" element={<PerformanceDashboard />} />
+            {/* Performance Dashboard (Development/Monitoring) */}
+            <Route path="/performance" element={<PerformanceDashboard />} />
 
-          {/* Protected routes - require authentication */}
-          {user ? (
-            <>
-              <Route path="/dashboard" element={<Dashboard user={user} />} />
-              <Route
-                path="/employee"
-                element={<EmployeeDashboard user={user} />}
-              />
-              <Route
-                path="/employer"
-                element={<EmployerDashboard user={user} />}
-              />
-              <Route path="/audit" element={<AuditLog user={user} />} />
-              <Route path="/settings" element={<Settings user={user} />} />
-            </>
-          ) : (
-            <Route path="*" element={<Navigate to="/" />} />
-          )}
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
+            {/* Protected routes - require authentication */}
+            {user ? (
+              <>
+                <Route path="/dashboard" element={<Dashboard user={user} />} />
+                <Route
+                  path="/employee"
+                  element={<EmployeeDashboard user={user} />}
+                />
+                <Route
+                  path="/employer"
+                  element={<EmployerDashboard user={user} />}
+                />
+                <Route path="/audit" element={<AuditLog user={user} />} />
+                <Route path="/settings" element={<Settings user={user} />} />
+              </>
+            ) : (
+              <Route path="*" element={<Navigate to="/" />} />
+            )}
+          </Routes>
+        </Suspense>
+      </BrowserRouter>
     </SecurityProvider>
   );
 }

@@ -20,6 +20,7 @@ It should feel like a **guided conversation**.
 It should be calm. Trustworthy. Predictable. Clear.
 
 Users should never wonder:
+
 - "Did I do this right?"
 - "Am I compliant?"
 - "What did I miss?"
@@ -40,6 +41,7 @@ We are:
 ✅ **Preserving technical excellence while making it disappear behind the experience**
 
 The platform will become:
+
 - More structured
 - More reassuring
 - More human
@@ -84,18 +86,23 @@ into:
 Going forward, ESTA-Logic will be designed around the following UX pillars:
 
 ### 1. Guided Flows
+
 Users progress through structured steps, not chaotic menus.
 
 ### 2. Plain Language & Reassurance
+
 Compliance explanations will read like human guidance, not engineering notes.
 
 ### 3. Do-This-Next Clarity
+
 Users should always know what is expected of them, what is already handled, and what remains.
 
 ### 4. Zero Cognitive Friction
+
 Remove unnecessary decisions, reduce technical exposure, and prevent overwhelm.
 
 ### 5. Trust By Design
+
 Security, verification, audit trails, and compliance accuracy will exist — but remain invisible unless needed.
 
 ---

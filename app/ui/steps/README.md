@@ -1,8 +1,9 @@
-/**
- * Step Components README
- * 
- * Guide for creating and using step components in guided journeys
- */
+/\*\*
+
+- Step Components README
+-
+- Guide for creating and using step components in guided journeys
+  \*/
 
 # Step Components
 
@@ -13,6 +14,7 @@ Step components are the building blocks of guided journeys in ESTA-Logic. Each s
 **"One question, one screen, one decision at a time."**
 
 Step components follow the TurboTax-inspired guided experience model:
+
 - Present one clear task per step
 - Provide contextual guidance and help
 - Validate inputs supportively
@@ -22,9 +24,11 @@ Step components follow the TurboTax-inspired guided experience model:
 ## Available Step Components
 
 ### WelcomeStep
+
 **Purpose:** Emotional grounding and journey initialization  
 **When to use:** First step of any journey  
 **Key features:**
+
 - Warm, reassuring welcome message
 - Clear expectations (time, steps)
 - Trust indicators
@@ -39,9 +43,11 @@ Step components follow the TurboTax-inspired guided experience model:
 ```
 
 ### CompanyInfoStep
+
 **Purpose:** Collect company information  
 **When to use:** Early in employer onboarding  
 **Key features:**
+
 - Clear field labels with contextual help
 - Supportive validation messages
 - Optional fields clearly marked
@@ -57,9 +63,11 @@ Step components follow the TurboTax-inspired guided experience model:
 ```
 
 ### EmployeeCountStep
+
 **Purpose:** Collect employee count and show tier implications  
 **When to use:** After company info, before policy setup  
 **Key features:**
+
 - Real-time tier preview
 - Clear explanation of ESTA tiers
 - Legal context in plain language
@@ -120,7 +128,7 @@ export const YourStep: React.FC<YourStepProps> = ({
       {/* Form */}
       <form onSubmit={handleSubmit} className="step-form">
         {/* Fields */}
-        
+
         {/* Guidance */}
         <div className="guidance-box">
           <div className="guidance-icon">💡</div>
@@ -160,6 +168,7 @@ export const YourStep: React.FC<YourStepProps> = ({
 ### Best Practices
 
 #### Content
+
 - **Title:** Action-oriented, clear (e.g., "Tell us about your company")
 - **Description:** Brief explanation of what and why
 - **Fields:** One primary focus per step
@@ -167,12 +176,14 @@ export const YourStep: React.FC<YourStepProps> = ({
 - **Validation:** Supportive, never critical
 
 #### Tone
+
 - Use conversational language
 - Avoid legal jargon (or explain it)
 - Focus on helping, not commanding
 - Provide reassurance throughout
 
 #### Structure
+
 - Clear visual hierarchy
 - Ample whitespace
 - Grouped related fields
@@ -180,12 +191,14 @@ export const YourStep: React.FC<YourStepProps> = ({
 - Visible progress indication
 
 #### Validation
+
 - Validate on blur or submit
 - Show supportive error messages
 - Explain what's needed and why
 - Never make user feel at fault
 
 #### Accessibility
+
 - Proper label/input associations
 - ARIA labels for screen readers
 - Keyboard navigation support
@@ -240,6 +253,7 @@ Steps are defined in journey configurations:
 ## Styling Guidelines
 
 ### Colors
+
 - Primary action: `#2563eb` (Blue)
 - Secondary action: White with border
 - Success: `#10b981` (Green)
@@ -247,18 +261,21 @@ Steps are defined in journey configurations:
 - Guidance: `#f0f9ff` background
 
 ### Typography
+
 - Title: 1.875rem, weight 600
 - Description: 1rem, color #6a6a6a
 - Field labels: 0.875rem, weight 500
 - Help text: 0.875rem, color #6a6a6a
 
 ### Spacing
+
 - Step header: 32px bottom margin
 - Form fields: 24px bottom margin
 - Navigation: 32px top margin
 - Footer: 16px top padding
 
 ### Interactive Elements
+
 - Buttons: 12px vertical, 32px horizontal padding
 - Inputs: 12px padding, 6px border-radius
 - Hover states: 0.2s transition
@@ -279,7 +296,7 @@ describe('YourStep', () => {
         onBack={jest.fn()}
       />
     );
-    
+
     expect(screen.getByLabelText('Field')).toHaveValue('value');
   });
 
@@ -291,7 +308,7 @@ describe('YourStep', () => {
         onBack={jest.fn()}
       />
     );
-    
+
     fireEvent.click(screen.getByText('Continue →'));
     expect(onNext).not.toHaveBeenCalled();
   });
@@ -304,12 +321,12 @@ describe('YourStep', () => {
         onBack={jest.fn()}
       />
     );
-    
+
     fireEvent.change(screen.getByLabelText('Field'), {
       target: { value: 'test' }
     });
     fireEvent.click(screen.getByText('Continue →'));
-    
+
     expect(onNext).toHaveBeenCalledWith({ field: 'test' });
   });
 });
@@ -318,6 +335,7 @@ describe('YourStep', () => {
 ## Questions?
 
 See:
+
 - [GuidedFlowEngine Documentation](../../core/navigation/GuidedFlowEngine.ts)
 - [UX Blueprint](../../../docs/UX-Blueprint.md)
 - [Design Tone Guide](../../../docs/Design-Tone-Guide.md)

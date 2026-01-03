@@ -1,6 +1,6 @@
 /**
  * Sick Time Request API Contracts
- * 
+ *
  * Defines the contract for sick time request endpoints:
  * - POST /api/v1/requests
  * - GET /api/v1/requests

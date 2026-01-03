@@ -1,6 +1,6 @@
 /**
  * GuidedStepLayout - Consistent layout for all guided journey steps
- * 
+ *
  * Purpose: Provide consistent structure, progress indication, and reassurance
  * Philosophy: User always knows where they are and what's next
  */
@@ -10,32 +10,32 @@ import React, { ReactNode } from 'react';
 export interface GuidedStepLayoutProps {
   /** Current step number (1-indexed) */
   currentStep: number;
-  
+
   /** Total number of steps */
   totalSteps: number;
-  
+
   /** Step content */
   children: ReactNode;
-  
+
   /** Journey name for context */
   journeyName?: string;
-  
+
   /** Show progress bar */
   showProgress?: boolean;
-  
+
   /** Custom progress message */
   progressMessage?: string;
-  
+
   /** Show help button */
   showHelp?: boolean;
-  
+
   /** Help button callback */
   onHelp?: () => void;
 }
 
 /**
  * Guided Step Layout Component
- * 
+ *
  * Provides:
  * - Consistent header with progress
  * - Main content area
@@ -50,7 +50,7 @@ export const GuidedStepLayout: React.FC<GuidedStepLayoutProps> = ({
   showProgress = true,
   progressMessage,
   showHelp = true,
-  onHelp
+  onHelp,
 }) => {
   const percentComplete = Math.round((currentStep / totalSteps) * 100);
   const stepsRemaining = totalSteps - currentStep;
@@ -60,7 +60,7 @@ export const GuidedStepLayout: React.FC<GuidedStepLayoutProps> = ({
       {/* Top Progress Bar */}
       {showProgress && (
         <div className="progress-bar-container">
-          <div 
+          <div
             className="progress-bar-fill"
             style={{ width: `${percentComplete}%` }}
             role="progressbar"
@@ -80,7 +80,7 @@ export const GuidedStepLayout: React.FC<GuidedStepLayoutProps> = ({
               Step {currentStep} of {totalSteps}
             </span>
           </div>
-          
+
           {showHelp && (
             <button
               className="help-button"
@@ -96,9 +96,7 @@ export const GuidedStepLayout: React.FC<GuidedStepLayoutProps> = ({
 
       {/* Main Content */}
       <main className="layout-main">
-        <div className="content-container">
-          {children}
-        </div>
+        <div className="content-container">{children}</div>
       </main>
 
       {/* Reassurance Footer */}
@@ -116,7 +114,7 @@ export const GuidedStepLayout: React.FC<GuidedStepLayoutProps> = ({
                   <span className="reassurance-icon">🎯</span>
                   <span className="reassurance-text">
                     {stepsRemaining === 1
-                      ? "Almost there! Just 1 more step."
+                      ? 'Almost there! Just 1 more step.'
                       : `${stepsRemaining} steps remaining. You're doing great.`}
                   </span>
                 </>
@@ -138,14 +136,14 @@ export const GuidedStepLayout: React.FC<GuidedStepLayoutProps> = ({
 
 /**
  * Example CSS (to be implemented in actual stylesheet):
- * 
+ *
  * .guided-step-layout {
  *   min-height: 100vh;
  *   display: flex;
  *   flex-direction: column;
  *   background: #fafafa;
  * }
- * 
+ *
  * .progress-bar-container {
  *   position: fixed;
  *   top: 0;
@@ -155,13 +153,13 @@ export const GuidedStepLayout: React.FC<GuidedStepLayoutProps> = ({
  *   background: #e5e7eb;
  *   z-index: 1000;
  * }
- * 
+ *
  * .progress-bar-fill {
  *   height: 100%;
  *   background: linear-gradient(90deg, #2563eb, #3b82f6);
  *   transition: width 0.3s ease;
  * }
- * 
+ *
  * .layout-header {
  *   background: white;
  *   border-bottom: 1px solid #e5e7eb;
@@ -170,7 +168,7 @@ export const GuidedStepLayout: React.FC<GuidedStepLayoutProps> = ({
  *   top: 0;
  *   z-index: 100;
  * }
- * 
+ *
  * .header-content {
  *   max-width: 1200px;
  *   margin: 0 auto;
@@ -178,19 +176,19 @@ export const GuidedStepLayout: React.FC<GuidedStepLayoutProps> = ({
  *   justify-content: space-between;
  *   align-items: center;
  * }
- * 
+ *
  * .journey-context {
  *   display: flex;
  *   align-items: center;
  *   gap: 16px;
  * }
- * 
+ *
  * .journey-name {
  *   font-weight: 600;
  *   font-size: 1.125rem;
  *   color: #1a1a1a;
  * }
- * 
+ *
  * .step-indicator {
  *   font-size: 0.875rem;
  *   color: #6a6a6a;
@@ -198,7 +196,7 @@ export const GuidedStepLayout: React.FC<GuidedStepLayoutProps> = ({
  *   background: #f3f4f6;
  *   border-radius: 12px;
  * }
- * 
+ *
  * .help-button {
  *   display: flex;
  *   align-items: center;
@@ -212,34 +210,34 @@ export const GuidedStepLayout: React.FC<GuidedStepLayoutProps> = ({
  *   color: #4a4a4a;
  *   transition: all 0.2s ease;
  * }
- * 
+ *
  * .help-button:hover {
  *   background: #f9fafb;
  *   border-color: #9ca3af;
  * }
- * 
+ *
  * .layout-main {
  *   flex: 1;
  *   padding: 48px 24px;
  * }
- * 
+ *
  * .content-container {
  *   max-width: 1200px;
  *   margin: 0 auto;
  * }
- * 
+ *
  * .layout-footer {
  *   background: white;
  *   border-top: 1px solid #e5e7eb;
  *   padding: 16px 24px;
  * }
- * 
+ *
  * .footer-content {
  *   max-width: 1200px;
  *   margin: 0 auto;
  *   text-align: center;
  * }
- * 
+ *
  * .default-reassurance,
  * .custom-message {
  *   display: inline-flex;
@@ -248,7 +246,7 @@ export const GuidedStepLayout: React.FC<GuidedStepLayoutProps> = ({
  *   font-size: 0.875rem;
  *   color: #6a6a6a;
  * }
- * 
+ *
  * .reassurance-icon,
  * .message-icon {
  *   font-size: 1rem;

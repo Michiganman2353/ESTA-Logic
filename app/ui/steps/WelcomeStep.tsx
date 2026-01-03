@@ -1,6 +1,6 @@
 /**
  * WelcomeStep - First step in employer onboarding journey
- * 
+ *
  * Purpose: Ground the user emotionally, establish trust, set expectations
  * Tone: Warm, reassuring, professional
  */
@@ -10,10 +10,10 @@ import React from 'react';
 export interface WelcomeStepProps {
   /** User type: employer or employee */
   userType?: 'employer' | 'employee';
-  
+
   /** Callback when user is ready to proceed */
   onContinue: () => void;
-  
+
   /** Progress information */
   progress?: {
     estimatedTime: number; // in seconds
@@ -23,7 +23,7 @@ export interface WelcomeStepProps {
 
 /**
  * Welcome Step Component
- * 
+ *
  * Implements the guided welcome experience:
  * - Emotional grounding
  * - Clear expectations
@@ -33,50 +33,51 @@ export interface WelcomeStepProps {
 export const WelcomeStep: React.FC<WelcomeStepProps> = ({
   userType = 'employer',
   onContinue,
-  progress
+  progress,
 }) => {
   const messages = {
     employer: {
       headline: "Let's take the stress out of compliance.",
-      supporting: "We'll walk you through Michigan ESTA requirements step-by-step, just like TurboTax. No legal expertise required.",
-      cta: "Start Guided Setup"
+      supporting:
+        "We'll walk you through Michigan ESTA requirements step-by-step, just like TurboTax. No legal expertise required.",
+      cta: 'Start Guided Setup',
     },
     employee: {
       headline: "Welcome! Let's get you connected.",
-      supporting: "Your employer uses ESTA-Logic to track your earned sick time. This will only take a minute to set up.",
-      cta: "Get Started"
-    }
+      supporting:
+        'Your employer uses ESTA-Logic to track your earned sick time. This will only take a minute to set up.',
+      cta: 'Get Started',
+    },
   };
 
   const content = messages[userType];
-  const estimatedMinutes = progress ? Math.ceil(progress.estimatedTime / 60) : 3;
+  const estimatedMinutes = progress
+    ? Math.ceil(progress.estimatedTime / 60)
+    : 3;
 
   return (
     <div className="welcome-step">
       {/* Main Content Container */}
       <div className="welcome-content">
         {/* Headline */}
-        <h1 className="welcome-headline">
-          {content.headline}
-        </h1>
+        <h1 className="welcome-headline">{content.headline}</h1>
 
         {/* Supporting Text */}
-        <p className="welcome-supporting">
-          {content.supporting}
-        </p>
+        <p className="welcome-supporting">{content.supporting}</p>
 
         {/* Progress Indicator */}
         {progress && (
           <div className="welcome-progress-info">
             <span className="progress-icon">⏱️</span>
             <span className="progress-text">
-              Takes about {estimatedMinutes} minutes • {progress.totalSteps} simple steps
+              Takes about {estimatedMinutes} minutes • {progress.totalSteps}{' '}
+              simple steps
             </span>
           </div>
         )}
 
         {/* Primary CTA */}
-        <button 
+        <button
           className="welcome-cta primary"
           onClick={onContinue}
           aria-label={content.cta}
@@ -104,8 +105,8 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
       {/* Subtle Legal Reassurance */}
       <div className="welcome-legal-note">
         <p>
-          ESTA-Logic automates Michigan Earned Sick Time Act compliance.
-          All calculations follow current state regulations.
+          ESTA-Logic automates Michigan Earned Sick Time Act compliance. All
+          calculations follow current state regulations.
         </p>
       </div>
     </div>
@@ -114,14 +115,14 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
 
 /**
  * Example CSS (to be implemented in actual stylesheet):
- * 
+ *
  * .welcome-step {
  *   max-width: 640px;
  *   margin: 0 auto;
  *   padding: 64px 24px;
  *   text-align: center;
  * }
- * 
+ *
  * .welcome-headline {
  *   font-size: 2.5rem;
  *   font-weight: 600;
@@ -129,14 +130,14 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
  *   margin-bottom: 24px;
  *   line-height: 1.2;
  * }
- * 
+ *
  * .welcome-supporting {
  *   font-size: 1.25rem;
  *   color: #4a4a4a;
  *   margin-bottom: 32px;
  *   line-height: 1.6;
  * }
- * 
+ *
  * .welcome-progress-info {
  *   display: flex;
  *   align-items: center;
@@ -145,7 +146,7 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
  *   margin-bottom: 32px;
  *   color: #6a6a6a;
  * }
- * 
+ *
  * .welcome-cta {
  *   padding: 16px 48px;
  *   font-size: 1.125rem;
@@ -157,11 +158,11 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
  *   cursor: pointer;
  *   transition: background 0.2s ease;
  * }
- * 
+ *
  * .welcome-cta:hover {
  *   background: #1d4ed8;
  * }
- * 
+ *
  * .welcome-trust-indicators {
  *   display: flex;
  *   justify-content: center;
@@ -170,7 +171,7 @@ export const WelcomeStep: React.FC<WelcomeStepProps> = ({
  *   padding-top: 32px;
  *   border-top: 1px solid #e5e5e5;
  * }
- * 
+ *
  * .trust-indicator {
  *   display: flex;
  *   align-items: center;

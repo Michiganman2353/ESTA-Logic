@@ -9,12 +9,14 @@ This directory contains practical examples demonstrating how to use the API cont
 **File:** `../api/v1/auth/login-example.ts`
 
 Demonstrates the correct pattern for backend API endpoints:
+
 - Validate incoming requests using Zod schemas
 - Map internal domain types to DTOs
 - Validate outgoing responses
 - Handle validation errors appropriately
 
 **Key Points:**
+
 - Request validation at entry point
 - Internal types don't leak to API boundary
 - Response validation before sending
@@ -25,12 +27,14 @@ Demonstrates the correct pattern for backend API endpoints:
 **File:** `api-client-with-contracts.ts`
 
 Demonstrates the correct pattern for frontend API communication:
+
 - Use contract types for requests/responses
 - No dependency on backend implementation
 - Type-safe API methods
 - Proper error handling
 
 **Key Points:**
+
 - Import only types (not schemas) from contracts
 - Full type safety with autocomplete
 - No backend coupling
@@ -41,22 +45,25 @@ Demonstrates the correct pattern for frontend API communication:
 ### Backend Pattern
 
 ```typescript
-import { LoginRequestSchema, LoginResponseSchema } from '@esta/api-contracts/v1';
+import {
+  LoginRequestSchema,
+  LoginResponseSchema,
+} from '@esta/api-contracts/v1';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // 1. Validate request
   const request = LoginRequestSchema.parse(req.body);
-  
+
   // 2. Execute business logic
   const result = await authenticateUser(request);
-  
+
   // 3. Map to DTO and validate response
   const response = LoginResponseSchema.parse({
     success: true,
     token: result.token,
     user: mapUserToDto(result.user),
   });
-  
+
   // 4. Send validated response
   res.json(response);
 }
@@ -111,6 +118,7 @@ class ApiClient {
 ### Backend Tests
 
 Test that endpoints:
+
 - Reject invalid requests with clear error messages
 - Return responses matching contract schema
 - Handle edge cases properly
@@ -118,6 +126,7 @@ Test that endpoints:
 ### Frontend Tests
 
 Test that API client:
+
 - Sends correct request format
 - Handles response types correctly
 - Handles errors appropriately
@@ -125,6 +134,7 @@ Test that API client:
 ### Architecture Tests
 
 Test that:
+
 - Frontend doesn't import from backend
 - Backend validates all requests
 - Responses match contract schemas
