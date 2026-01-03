@@ -909,6 +909,7 @@ The Enterprise Subscription System is the revenue backbone of ESTA Tracker, buil
 - **[Workspace Architecture](./docs/WORKSPACE_ARCHITECTURE.md)** — Monorepo structure
 - **[Engineering Ecosystem](./docs/ENGINEERING_ECOSYSTEM.md)** — Platform vision
 - **[Engineering Principles](./docs/ENGINEERING_PRINCIPLES.md)** — Development standards
+- **[Gleam Development Guide](./docs/GLEAM_DEVELOPMENT.md)** — Working with Gleam packages
 - **[Directory Tree](./DIRECTORY_TREE.md)** — Complete file structure
 
 ### 🎨 Design System

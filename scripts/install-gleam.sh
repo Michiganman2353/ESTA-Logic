@@ -12,7 +12,8 @@ echo "Installing Gleam ${GLEAM_VERSION}..."
 GITHUB_RELEASE="https://github.com/gleam-lang/gleam/releases/download/v${GLEAM_VERSION}/gleam-v${GLEAM_VERSION}-x86_64-unknown-linux-musl.tar.gz"
 
 curl -fsSL "${GITHUB_RELEASE}" -o "${TMP_TAR}"
-sudo tar -C "${INSTALL_DIR}" -xzf "${TMP_TAR}"
+# Extract directly to /usr/local/bin since the tarball contains just the 'gleam' binary
+sudo tar -C "${INSTALL_DIR}/bin" -xzf "${TMP_TAR}"
 
 echo "Gleam installed to ${INSTALL_DIR}/bin"
 ${INSTALL_DIR}/bin/gleam --version || (echo "gleam not found at ${INSTALL_DIR}/bin/gleam" && exit 2)
