@@ -144,7 +144,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: npm-audit-report
+          name: ci-npm-audit-report-node-${{ matrix.node-version }}
           path: /tmp/npm-audit-report.json
           if-no-files-found: ignore
           retention-days: 14

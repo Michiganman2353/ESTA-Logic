@@ -56,7 +56,7 @@ jobs:
       - name: Upload npm audit
         uses: actions/upload-artifact@v4
         with:
-          name: npm-audit-report
+          name: security-npm-audit-report
           path: audit.json
       - name: Fail on critical vulnerabilities
         if: steps.npm-audit.outputs.has_critical == 'true'
