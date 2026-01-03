@@ -1,9 +1,17 @@
 export default {
   testEnvironment: 'node',
   transform: {},
-  moduleFileExtensions: ['js', 'json'],
+  moduleNameMapper: {},
   testMatch: ['**/__tests__/**/*.spec.js'],
-  collectCoverageFrom: ['*.js', '!jest.config.js', '!validateAll.js'],
+  collectCoverageFrom: [
+    '**/*.js',
+    '!**/__tests__/**',
+    '!**/node_modules/**',
+    '!**/coverage/**',
+    '!jest.config.mjs',
+    '!validateAll.js',
+    '!index.js'
+  ],
   coverageThreshold: {
     global: {
       branches: 80,
