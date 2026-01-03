@@ -15,12 +15,19 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["node ../../scripts/check-envs.js", "tsc", "vite build"],
+        "commands": ["tsc", "vite build"],
         "cwd": "apps/frontend",
         "parallel": false
       },
       "outputs": ["{projectRoot}/dist"],
       "dependsOn": ["^build"]
+    },
+    "env-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node ../../scripts/check-envs.js",
+        "cwd": "apps/frontend"
+      }
     },
     "preview": {
       "executor": "nx:run-commands",
