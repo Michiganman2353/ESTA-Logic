@@ -32,6 +32,13 @@ src/**/*.d.ts
 src/**/*.js.map
 src/**/*.d.ts.map
 
+# Prevent TypeScript output in api directory
+api/**/*.js
+api/**/*.d.ts
+api/**/*.js.map
+api/**/*.d.ts.map
+!api/edge-config.js
+
 # Turborepo (removed - kept for cleanup reference)
 .turbo/
 
