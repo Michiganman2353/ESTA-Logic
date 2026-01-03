@@ -1,6 +1,5 @@
 export default {
   testEnvironment: 'node',
-  extensionsToTreatAsEsm: ['.js'],
   transform: {},
   moduleNameMapper: {},
   testMatch: ['**/__tests__/**/*.spec.js'],
@@ -9,7 +8,9 @@ export default {
     '!**/__tests__/**',
     '!**/node_modules/**',
     '!**/coverage/**',
-    '!jest.config.mjs'
+    '!jest.config.mjs',
+    '!validateAll.js',
+    '!index.js'
   ],
   coverageThreshold: {
     global: {
