@@ -7,6 +7,28 @@
  * don't rely on external services or ephemeral tokens.
  */
 
+// CRITICAL FIX: Must be FIRST before any imports
+// Fix for React DOM in jsdom environment - React DOM checks navigator.userAgent during module initialization
+if (typeof global !== 'undefined') {
+  // Ensure navigator exists and has userAgent
+  const nav = global.navigator || {};
+  if (!nav.userAgent) {
+    Object.defineProperty(nav, 'userAgent', {
+      value:
+        'Mozilla/5.0 (linux) AppleWebKit/537.36 (KHTML, like Gecko) jsdom/25.0.1',
+      configurable: true,
+      writable: true,
+    });
+  }
+  if (!global.navigator) {
+    Object.defineProperty(global, 'navigator', {
+      value: nav,
+      configurable: true,
+      writable: true,
+    });
+  }
+}
+
 import { vi } from 'vitest';
 import jwt from 'jsonwebtoken';
 
