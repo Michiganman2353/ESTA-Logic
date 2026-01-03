@@ -1,6 +1,6 @@
 /**
  * Architecture Boundary Tests
- * 
+ *
  * Validates that interface boundaries are respected throughout the codebase
  */
 
@@ -47,7 +47,8 @@ function findTypeScriptFiles(dir: string, files: string[] = []): string[] {
  */
 function extractImports(filePath: string): string[] {
   const content = fs.readFileSync(filePath, 'utf-8');
-  const importRegex = /import\s+(?:(?:[\w*\s{},]*)\s+from\s+)?['"]([^'"]+)['"]/g;
+  const importRegex =
+    /import\s+(?:(?:[\w*\s{},]*)\s+from\s+)?['"]([^'"]+)['"]/g;
   const imports: string[] = [];
   let match;
 
@@ -61,7 +62,7 @@ function extractImports(filePath: string): string[] {
 describe('Interface Boundary Enforcement', () => {
   it('frontend should not import from backend API implementation', () => {
     const frontendDir = path.join(repoRoot, 'apps/frontend/src');
-    
+
     if (!fs.existsSync(frontendDir)) {
       // Skip if frontend doesn't exist
       return;
@@ -99,10 +100,7 @@ describe('Interface Boundary Enforcement', () => {
   });
 
   it('frontend should use API contracts for API types', () => {
-    const frontendApiFile = path.join(
-      repoRoot,
-      'apps/frontend/src/lib/api.ts'
-    );
+    const frontendApiFile = path.join(repoRoot, 'apps/frontend/src/lib/api.ts');
 
     if (!fs.existsSync(frontendApiFile)) {
       // Skip if file doesn't exist

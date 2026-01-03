@@ -1,9 +1,9 @@
 /**
  * ESTA Tracker Design Tokens - Borders
- * 
+ *
  * Border radius and width tokens for consistent edge styling.
  * Ensures cohesive visual language across components.
- * 
+ *
  * @see docs/design/DESIGN_TOKENS.md for usage guidelines
  */
 
@@ -13,14 +13,14 @@
  */
 export const borderRadius = {
   none: '0',
-  xs: '0.125rem',    // 2px - Very subtle
-  sm: '0.25rem',     // 4px - Subtle
-  md: '0.375rem',    // 6px - Default
-  lg: '0.5rem',      // 8px - Moderate
-  xl: '0.75rem',     // 12px - Prominent
-  '2xl': '1rem',     // 16px - Very rounded
-  '3xl': '1.5rem',   // 24px - Extra rounded
-  full: '9999px',    // Fully rounded (pills, circles)
+  xs: '0.125rem', // 2px - Very subtle
+  sm: '0.25rem', // 4px - Subtle
+  md: '0.375rem', // 6px - Default
+  lg: '0.5rem', // 8px - Moderate
+  xl: '0.75rem', // 12px - Prominent
+  '2xl': '1rem', // 16px - Very rounded
+  '3xl': '1.5rem', // 24px - Extra rounded
+  full: '9999px', // Fully rounded (pills, circles)
 } as const;
 
 /**
@@ -30,47 +30,47 @@ export const borderRadius = {
 export const componentBorderRadius = {
   // Buttons
   button: {
-    default: borderRadius.lg,    // 8px
+    default: borderRadius.lg, // 8px
     pill: borderRadius.full,
     square: borderRadius.none,
   },
-  
+
   // Input fields
   input: {
-    default: borderRadius.lg,    // 8px
-    compact: borderRadius.md,    // 6px
+    default: borderRadius.lg, // 8px
+    compact: borderRadius.md, // 6px
   },
-  
+
   // Cards
   card: {
-    default: '1.125rem',         // 18px - Custom card radius
-    compact: borderRadius.xl,    // 12px
+    default: '1.125rem', // 18px - Custom card radius
+    compact: borderRadius.xl, // 12px
     relaxed: borderRadius['2xl'], // 16px
   },
-  
+
   // Badges
   badge: {
-    default: borderRadius.md,    // 6px
+    default: borderRadius.md, // 6px
     pill: borderRadius.full,
   },
-  
+
   // Avatars
   avatar: {
-    square: borderRadius.md,     // 6px
-    rounded: borderRadius.xl,    // 12px
+    square: borderRadius.md, // 6px
+    rounded: borderRadius.xl, // 12px
     circle: borderRadius.full,
   },
-  
+
   // Modals
   modal: {
     default: borderRadius['2xl'], // 16px
-    large: borderRadius['3xl'],   // 24px
+    large: borderRadius['3xl'], // 24px
   },
-  
+
   // Images
   image: {
-    default: borderRadius.lg,     // 8px
-    thumbnail: borderRadius.md,   // 6px
+    default: borderRadius.lg, // 8px
+    thumbnail: borderRadius.md, // 6px
   },
 } as const;
 
@@ -92,30 +92,30 @@ export const borderWidth = {
  */
 export const componentBorderWidth = {
   // Default borders
-  default: borderWidth[1],       // 1px
-  
+  default: borderWidth[1], // 1px
+
   // Input borders
   input: {
-    default: borderWidth[1],     // 1px
-    focus: borderWidth[2],       // 2px
+    default: borderWidth[1], // 1px
+    focus: borderWidth[2], // 2px
   },
-  
+
   // Dividers
   divider: {
-    thin: borderWidth[1],        // 1px
-    thick: borderWidth[2],       // 2px
+    thin: borderWidth[1], // 1px
+    thick: borderWidth[2], // 2px
   },
-  
+
   // Outline styles
   outline: {
-    default: borderWidth[2],     // 2px
-    thick: borderWidth[4],       // 4px
+    default: borderWidth[2], // 2px
+    thick: borderWidth[4], // 4px
   },
-  
+
   // Focus rings
   focus: {
-    default: borderWidth[2],     // 2px
-    prominent: borderWidth[4],   // 4px
+    default: borderWidth[2], // 2px
+    prominent: borderWidth[4], // 4px
   },
 } as const;
 
@@ -137,27 +137,27 @@ export const borderStyles = {
 export const borderPresets = {
   // Default border
   default: `${borderWidth[1]} ${borderStyles.solid} #E5E7EB`,
-  
+
   // Input borders
   input: {
     default: `${borderWidth[1]} ${borderStyles.solid} #D1D5DB`,
     focus: `${borderWidth[2]} ${borderStyles.solid} #1E63FF`,
     error: `${borderWidth[2]} ${borderStyles.solid} #D32F2F`,
   },
-  
+
   // Card borders
   card: {
     default: `${borderWidth[1]} ${borderStyles.solid} #E5E7EB`,
     hover: `${borderWidth[1]} ${borderStyles.solid} #1E63FF`,
   },
-  
+
   // Dividers
   divider: {
     light: `${borderWidth[1]} ${borderStyles.solid} #F3F4F6`,
     default: `${borderWidth[1]} ${borderStyles.solid} #E5E7EB`,
     dark: `${borderWidth[1]} ${borderStyles.solid} #D1D5DB`,
   },
-  
+
   // Focus rings
   focus: {
     primary: `${borderWidth[2]} ${borderStyles.solid} #1E63FF`,
@@ -182,7 +182,7 @@ export const outlineStyles = {
       outlineOffset: '2px',
     },
   },
-  
+
   // Accessibility outlines
   a11y: {
     default: {

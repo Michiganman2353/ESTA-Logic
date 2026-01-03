@@ -1,10 +1,10 @@
 /**
  * GuidedFlowEngine - Core Journey Orchestration System
- * 
+ *
  * This is the heart of the ESTA-Logic experience-first architecture.
  * It manages user journeys, determines next steps, provides contextual guidance,
  * and ensures users always feel supported and guided through compliance.
- * 
+ *
  * Philosophy: "The system should guide the user, not the other way around."
  */
 
@@ -15,22 +15,22 @@ export interface Step {
   id: string;
   title: string;
   description: string;
-  
+
   /** Component to render for this step */
   component: string; // Component name/path
-  
+
   /** Validation rules for this step */
   validation: ValidationRule[];
-  
+
   /** Contextual guidance and help */
   guidance: GuidanceContent;
-  
+
   /** Determines next step (can be dynamic based on data) */
   nextStep: string | ((data: any) => string);
-  
+
   /** Can user skip this step? */
   canSkip: boolean;
-  
+
   /** Estimated time to complete (seconds) */
   estimatedTime: number;
 }
@@ -51,16 +51,16 @@ export interface ValidationRule {
 export interface GuidanceContent {
   /** Main explanation of what to do */
   message: string;
-  
+
   /** Optional help text */
   helpText?: string;
-  
+
   /** Legal/compliance context */
   legalContext?: string;
-  
+
   /** Examples to show */
   examples?: string[];
-  
+
   /** Link to learn more */
   learnMoreUrl?: string;
 }
@@ -72,16 +72,16 @@ export interface Journey {
   id: string;
   name: string;
   description: string;
-  
+
   /** All steps in this journey */
   steps: Step[];
-  
+
   /** Branching logic for conditional paths */
   branchingLogic: BranchingRule[];
-  
+
   /** Conditions to enter this journey */
   entryConditions: Condition[];
-  
+
   /** Conditions to complete this journey */
   exitConditions: Condition[];
 }
@@ -109,28 +109,28 @@ export interface Condition {
 export interface FlowState {
   /** Which journey is active */
   journeyId: string;
-  
+
   /** Which user is on this journey */
   userId: string;
-  
+
   /** Current step ID */
   currentStepId: string;
-  
+
   /** Steps completed so far */
   completedSteps: string[];
-  
+
   /** Data collected from each step */
   stepData: Record<string, any>;
-  
+
   /** When journey started */
   startedAt: Date;
-  
+
   /** Last update timestamp */
   lastUpdatedAt: Date;
-  
+
   /** Estimated completion time */
   estimatedCompletion?: Date;
-  
+
   /** Journey status */
   status: 'in-progress' | 'paused' | 'completed';
 }
@@ -148,7 +148,7 @@ export interface ProgressInfo {
 
 /**
  * GuidedFlowEngine - Main orchestration class
- * 
+ *
  * Manages the lifecycle of guided journeys, determines next steps,
  * validates user input, and provides contextual guidance.
  */
@@ -178,7 +178,7 @@ export class GuidedFlowEngine {
     }
 
     // Check entry conditions
-    const canEnter = journey.entryConditions.every(condition => 
+    const canEnter = journey.entryConditions.every((condition) =>
       condition.check({ userId })
     );
 
@@ -195,7 +195,7 @@ export class GuidedFlowEngine {
       stepData: {},
       startedAt: new Date(),
       lastUpdatedAt: new Date(),
-      status: 'in-progress'
+      status: 'in-progress',
     };
 
     // Save state (would persist to database in real implementation)
@@ -217,7 +217,9 @@ export class GuidedFlowEngine {
       throw new Error('Journey not found');
     }
 
-    const currentStep = journey.steps.find(s => s.id === this.currentState!.currentStepId);
+    const currentStep = journey.steps.find(
+      (s) => s.id === this.currentState!.currentStepId
+    );
     if (!currentStep) {
       throw new Error('Current step not found');
     }
@@ -233,11 +235,12 @@ export class GuidedFlowEngine {
     this.currentState.completedSteps.push(currentStep.id);
 
     // Determine next step
-    const nextStepId = typeof currentStep.nextStep === 'function'
-      ? currentStep.nextStep(this.currentState.stepData)
-      : currentStep.nextStep;
+    const nextStepId =
+      typeof currentStep.nextStep === 'function'
+        ? currentStep.nextStep(this.currentState.stepData)
+        : currentStep.nextStep;
 
-    const nextStep = journey.steps.find(s => s.id === nextStepId);
+    const nextStep = journey.steps.find((s) => s.id === nextStepId);
     if (!nextStep) {
       // Journey complete
       this.currentState.status = 'completed';
@@ -272,11 +275,12 @@ export class GuidedFlowEngine {
     }
 
     // Get previous step
-    const previousStepId = this.currentState.completedSteps[
-      this.currentState.completedSteps.length - 1
-    ];
+    const previousStepId =
+      this.currentState.completedSteps[
+        this.currentState.completedSteps.length - 1
+      ];
 
-    const previousStep = journey.steps.find(s => s.id === previousStepId);
+    const previousStep = journey.steps.find((s) => s.id === previousStepId);
     if (!previousStep) {
       throw new Error('Previous step not found');
     }
@@ -320,7 +324,7 @@ export class GuidedFlowEngine {
       totalSteps,
       percentComplete,
       estimatedTimeRemaining,
-      completedSteps: [...this.currentState.completedSteps]
+      completedSteps: [...this.currentState.completedSteps],
     };
   }
 
@@ -337,7 +341,9 @@ export class GuidedFlowEngine {
       throw new Error('Journey not found');
     }
 
-    const currentStep = journey.steps.find(s => s.id === this.currentState!.currentStepId);
+    const currentStep = journey.steps.find(
+      (s) => s.id === this.currentState!.currentStepId
+    );
     if (!currentStep) {
       throw new Error('Current step not found');
     }
@@ -426,20 +432,21 @@ export const employerOnboardingJourney: Journey = {
   id: 'employer-onboarding',
   name: 'Employer Setup',
   description: 'Get your company set up for ESTA compliance',
-  
+
   steps: [
     {
       id: 'welcome',
       title: 'Welcome to ESTA-Logic',
-      description: 'Let\'s get you set up for Michigan ESTA compliance',
+      description: "Let's get you set up for Michigan ESTA compliance",
       component: 'WelcomeStep',
       validation: [],
       guidance: {
-        message: "You're in the right place. We'll walk you through setup one step at a time.",
+        message:
+          "You're in the right place. We'll walk you through setup one step at a time.",
       },
       nextStep: 'company-info',
       canSkip: false,
-      estimatedTime: 30
+      estimatedTime: 30,
     },
     {
       id: 'company-info',
@@ -450,21 +457,21 @@ export const employerOnboardingJourney: Journey = {
         {
           field: 'companyName',
           type: 'required',
-          message: 'Company name is required'
+          message: 'Company name is required',
         },
         {
           field: 'industry',
           type: 'required',
-          message: 'Please select your industry'
-        }
+          message: 'Please select your industry',
+        },
       ],
       guidance: {
-        message: "This helps us customize your compliance requirements.",
-        helpText: "We only collect what's needed for compliance."
+        message: 'This helps us customize your compliance requirements.',
+        helpText: "We only collect what's needed for compliance.",
       },
       nextStep: 'employee-count',
       canSkip: false,
-      estimatedTime: 60
+      estimatedTime: 60,
     },
     {
       id: 'employee-count',
@@ -475,21 +482,22 @@ export const employerOnboardingJourney: Journey = {
         {
           field: 'employeeCount',
           type: 'required',
-          message: 'Employee count is required'
+          message: 'Employee count is required',
         },
         {
           field: 'employeeCount',
           type: 'number',
-          message: 'Must be a valid number'
-        }
+          message: 'Must be a valid number',
+        },
       ],
       guidance: {
-        message: "This determines your ESTA compliance tier.",
-        legalContext: "Different rules apply for employers with <10 vs ≥10 employees.",
+        message: 'This determines your ESTA compliance tier.',
+        legalContext:
+          'Different rules apply for employers with <10 vs ≥10 employees.',
         examples: [
-          "Small employer (< 10): 40 hour accrual cap",
-          "Large employer (≥ 10): 72 hour accrual cap"
-        ]
+          'Small employer (< 10): 40 hour accrual cap',
+          'Large employer (≥ 10): 72 hour accrual cap',
+        ],
       },
       nextStep: (data) => {
         return data['employee-count']?.employeeCount < 10
@@ -497,13 +505,13 @@ export const employerOnboardingJourney: Journey = {
           : 'large-employer-policy';
       },
       canSkip: false,
-      estimatedTime: 45
-    }
+      estimatedTime: 45,
+    },
   ],
-  
+
   branchingLogic: [],
   entryConditions: [],
-  exitConditions: []
+  exitConditions: [],
 };
 
 // Register the example journey

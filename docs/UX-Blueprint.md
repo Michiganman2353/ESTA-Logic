@@ -24,9 +24,11 @@ Users should always feel:
 **Page objective:** Remove fear, establish trust
 
 **User hears:**
+
 > "You're in the right place. We will walk you through compliance one clear step at a time."
 
 **Key elements:**
+
 - Warm, reassuring welcome message
 - Clear explanation of what to expect
 - Visual indicators of progress
@@ -48,6 +50,7 @@ Simple structured intake:
 **Approach:** No legal wording overload
 
 **Key elements:**
+
 - One question at a time
 - Plain language explanations
 - Optional help text (not required to proceed)
@@ -61,16 +64,19 @@ Simple structured intake:
 **System does the thinking — user does not.**
 
 **User sees:**
+
 > "You fall under Category X compliance requirements.  
 > Here's what that means in plain language."
 
 **Provides:**
+
 - Summary of requirements
 - Risk clarity
 - Confidence reassurance
 - What happens next
 
 **Key elements:**
+
 - Clear categorization
 - Visual representation of their compliance path
 - Simple explanation of applicable rules
@@ -81,17 +87,20 @@ Simple structured intake:
 ### Step 4 — Setup Guidance
 
 **Like TurboTax:**
+
 - One step at a time
 - Progress bar
 - No complexity exposure
 
 **Actions:**
+
 1. Configure policy
 2. Add employees
 3. Establish accrual rules
 4. Confirm legal guardrails
 
 **Key elements:**
+
 - Sequential flow (not all at once)
 - Each step is independent
 - Clear "Next" and "Back" buttons
@@ -109,6 +118,7 @@ User dashboard becomes:
 > "Here's what is already handled."
 
 **Key elements:**
+
 - Status at a glance
 - Action items prioritized
 - Automatic calculations visible
@@ -128,6 +138,7 @@ Document handling feels like **banking security**:
 - "We've locked this safely away"
 
 **Key elements:**
+
 - Simple upload interface
 - Visual confirmation of upload
 - Security indicators (encryption, secure storage)
@@ -139,6 +150,7 @@ Document handling feels like **banking security**:
 ### Step 7 — Proof & Audit Integrity
 
 Users can show:
+
 - Records
 - Logs
 - Compliance proof
@@ -146,6 +158,7 @@ Users can show:
 **Without stress.**
 
 **Key elements:**
+
 - One-click report generation
 - PDF exports with official branding
 - Date-stamped, verifiable records
@@ -157,30 +170,35 @@ Users can show:
 ## UX Pillars
 
 ### 1. Never Overwhelm
+
 - Show one thing at a time
 - Hide complexity until needed
 - Use progressive disclosure
 - Break tasks into digestible steps
 
 ### 2. Never Expose Internal Complexity
+
 - Hide technical architecture
 - Abstract system processes
 - Show outcomes, not mechanisms
 - Use natural language, not code language
 
 ### 3. Always Explain Why
+
 - Provide context for every action
 - Explain legal requirements in plain language
 - Show the benefit of each step
 - Make compliance reasoning transparent
 
 ### 4. Always Reassure
+
 - Use positive, confidence-building language
 - Show security indicators
 - Confirm successful actions
 - Provide help at every step
 
 ### 5. Always Guide Forward
+
 - Clear "What's Next" messaging
 - Progress indicators throughout
 - Never leave user wondering what to do
@@ -193,6 +211,7 @@ Users can show:
 ### Visual Design
 
 **Calm & Professional**
+
 - Clean, uncluttered layouts
 - Generous white space
 - Consistent typography
@@ -200,6 +219,7 @@ Users can show:
 - Trust-building visual elements
 
 **Mobile-First**
+
 - Touch-friendly targets
 - Responsive layouts
 - Optimized for smartphone use
@@ -208,12 +228,14 @@ Users can show:
 ### Interaction Design
 
 **Predictable Navigation**
+
 - Consistent button placement
 - Clear primary actions
 - Easy to go back
 - Progress saved automatically
 
 **Intelligent Defaults**
+
 - Pre-filled when possible
 - Smart suggestions
 - Learn from user behavior
@@ -222,12 +244,14 @@ Users can show:
 ### Content Design
 
 **Plain Language**
+
 - 8th-grade reading level
 - Short sentences
 - Active voice
 - No legalese unless necessary
 
 **Supportive Tone**
+
 - Warm but professional
 - Encouraging
 - Never condescending
@@ -237,26 +261,28 @@ Users can show:
 
 ## Key Differentiators from Traditional Compliance Software
 
-| Traditional Approach | ESTA-Logic Approach |
-|---------------------|---------------------|
+| Traditional Approach        | ESTA-Logic Approach             |
+| --------------------------- | ------------------------------- |
 | "Here are all the features" | "Let me guide you through this" |
-| Technical documentation | Conversational explanations |
-| User operates the system | System guides the user |
-| Compliance as a checklist | Compliance as a journey |
-| Overwhelming options | Curated, sequential steps |
-| "Figure it out yourself" | "We'll do this together" |
+| Technical documentation     | Conversational explanations     |
+| User operates the system    | System guides the user          |
+| Compliance as a checklist   | Compliance as a journey         |
+| Overwhelming options        | Curated, sequential steps       |
+| "Figure it out yourself"    | "We'll do this together"        |
 
 ---
 
 ## Success Metrics
 
 ### User Experience
+
 - ✅ Time to first value < 10 minutes
 - ✅ User confidence score > 8/10
 - ✅ Task completion rate > 95%
 - ✅ Support ticket volume reduced by 50%
 
 ### Business Impact
+
 - ✅ Free-to-paid conversion improved
 - ✅ User retention increased
 - ✅ Net Promoter Score > 50

@@ -1,6 +1,7 @@
 # ESTA Tracker Storyboards
 
 ## Overview
+
 Visual storyboards documenting ESTA Tracker's user flows and interface design. These storyboards serve as a bridge between design and engineering, ensuring consistent implementation of the user experience vision.
 
 ---
@@ -10,6 +11,7 @@ Visual storyboards documenting ESTA Tracker's user flows and interface design. T
 ### 🎭 Complete Experience Narrative
 
 **[00. Experience Narrative: Complete Customer Journey](./00-experience-narrative.md)**
+
 - **THE FOUNDATIONAL DOCUMENT** — Start here to understand the emotional journey
 - Shows the complete user transformation from fear to advocacy
 - Six-step flow: Welcome → Setup → Linking → Score → Dashboard → Trust
@@ -58,6 +60,7 @@ Visual storyboards documenting ESTA Tracker's user flows and interface design. T
 ## 🎨 Design Principles
 
 ### TurboTax-Inspired UX
+
 These storyboards follow the TurboTax model of guided, confidence-building experiences:
 
 ✅ **Progressive Disclosure** - Show one step at a time  
@@ -68,6 +71,7 @@ These storyboards follow the TurboTax model of guided, confidence-building exper
 ✅ **Non-Linear Navigation** - Allow users to go back and change answers
 
 ### Visual Hierarchy
+
 ```
 Primary Actions (Continue, Submit)  →  Trust Blue (#1E4BD8)
 Secondary Actions (Back, Cancel)    →  Gray/Ghost Buttons
@@ -77,6 +81,7 @@ Information States                  →  Accent Blue (#3B82F6)
 ```
 
 ### Layout Patterns
+
 - **Single-column forms** for focused completion
 - **Progressive stepper** always visible at top
 - **Sticky navigation** for CTAs on mobile
@@ -88,6 +93,7 @@ Information States                  →  Accent Blue (#3B82F6)
 ## 📐 Common Components
 
 ### Navigation Pattern
+
 ```
 ┌────────────────────────────────────────────────┐
 │ Progress: ●─●─●─○─○  (Step 3 of 5)            │
@@ -97,6 +103,7 @@ Information States                  →  Accent Blue (#3B82F6)
 ```
 
 ### Help Text Pattern
+
 ```
 ┌────────────────────────────────────┐
 │ Field Label *                      │
@@ -108,6 +115,7 @@ Information States                  →  Accent Blue (#3B82F6)
 ```
 
 ### Validation Pattern
+
 ```
 ✅ Success State
 ┌────────────────────────────────────┐
@@ -131,30 +139,35 @@ Information States                  →  Accent Blue (#3B82F6)
 All storyboards use the centralized design token system:
 
 ### Colors
+
 - See `apps/frontend/src/design-tokens/colors.ts`
 - Primary: Navy Deep, Royal Blue, Sky Blue
 - Semantic: Trust Blue, Gov Trust Green, Compliance Error
 - Full color scales for navy, royal, sky, and gray
 
 ### Typography
+
 - See `apps/frontend/src/design-tokens/typography.ts`
 - Font family: Inter (system fallback)
 - Scale: xs (12px) → 6xl (60px)
 - Weights: Regular (400), Medium (500), Semibold (600), Bold (700)
 
 ### Spacing
+
 - See `apps/frontend/src/design-tokens/spacing.ts`
 - 8px base grid system
 - Component-specific spacing presets
 - Layout spacing for margins and containers
 
 ### Shadows
+
 - See `apps/frontend/src/design-tokens/shadows.ts`
 - Elevation levels: xs, sm, md, lg, xl, 2xl
 - Colored shadows for brand elements
 - Glow effects for interactive states
 
 ### Borders
+
 - See `apps/frontend/src/design-tokens/borders.ts`
 - Radius: 8px for inputs/buttons, 18px for cards
 - Width: 1px default, 2px focus states
@@ -165,9 +178,11 @@ All storyboards use the centralized design token system:
 ## 📱 Responsive Behavior
 
 ### Mobile First
+
 All flows are designed mobile-first, then enhanced for larger screens:
 
 **Mobile (< 768px)**
+
 - Single column layout
 - Sticky bottom navigation
 - Full-width cards
@@ -175,12 +190,14 @@ All flows are designed mobile-first, then enhanced for larger screens:
 - Collapsible help text
 
 **Tablet (768px - 1024px)**
+
 - Two-column layouts where appropriate
 - Side-by-side form fields
 - Expanded help text visible
 - Hover states enabled
 
 **Desktop (> 1024px)**
+
 - Maximum content width: 1024px (centered)
 - Multi-column forms for efficiency
 - Persistent help text
@@ -193,24 +210,28 @@ All flows are designed mobile-first, then enhanced for larger screens:
 All storyboards comply with **WCAG 2.1 Level AA**:
 
 ### Color & Contrast
+
 - Text contrast ≥ 4.5:1 (normal text)
 - Text contrast ≥ 3:1 (large text, 18px+)
 - UI component contrast ≥ 3:1
 - Color is never the only indicator
 
 ### Keyboard Navigation
+
 - All interactive elements keyboard accessible
 - Visible focus indicators (2px blue outline)
 - Logical tab order
 - Skip links for screen readers
 
 ### Screen Readers
+
 - Semantic HTML (headings, landmarks, lists)
 - ARIA labels where needed
 - Form field associations
 - Status announcements for dynamic content
 
 ### Motion & Animation
+
 - Respect `prefers-reduced-motion`
 - Never rely on animation alone to convey information
 - Provide alternatives for time-based media
@@ -220,6 +241,7 @@ All storyboards comply with **WCAG 2.1 Level AA**:
 ## 🧪 Usability Testing
 
 ### Testing Protocol
+
 Each storyboard should be validated through:
 
 1. **Heuristic Evaluation**
@@ -242,6 +264,7 @@ Each storyboard should be validated through:
 ## 🔄 Iteration Process
 
 ### Storyboard Updates
+
 1. **Design Change Request** - Document proposed changes
 2. **Review** - Design team + engineering alignment
 3. **Update Storyboard** - Revise markdown documentation
@@ -250,6 +273,7 @@ Each storyboard should be validated through:
 6. **Validate** - QA against storyboard specifications
 
 ### Version Control
+
 - Storyboards are version-controlled in Git
 - Major changes increment version in document header
 - Change log maintained for significant updates
@@ -259,6 +283,7 @@ Each storyboard should be validated through:
 ## 📊 Metrics & Analytics
 
 ### Flow-Level Metrics
+
 Track these metrics for each flow:
 
 - **Completion Rate**: % of users who finish the flow
@@ -268,6 +293,7 @@ Track these metrics for each flow:
 - **Help Usage**: How often help text is accessed
 
 ### Component-Level Metrics
+
 - **Button Click Rate**: Primary vs secondary actions
 - **Field Interaction**: Which fields require multiple attempts
 - **Navigation Patterns**: Back button usage, save & exit frequency
@@ -277,6 +303,7 @@ Track these metrics for each flow:
 ## 🛠️ Implementation Guidelines
 
 ### For Engineers
+
 1. **Reference Storyboards First** - Before implementing any UI, read the storyboard
 2. **Use Design Tokens** - Never hard-code colors, spacing, or typography
 3. **Follow Patterns** - Reuse established component patterns
@@ -284,12 +311,14 @@ Track these metrics for each flow:
 5. **Track Analytics** - Implement specified analytics events
 
 ### For Designers
+
 1. **Update Storyboards** - Before implementing design changes
 2. **Maintain Token System** - Keep design tokens in sync with Figma
 3. **Document Decisions** - Explain rationale for design choices
 4. **Test with Users** - Validate before finalizing storyboards
 
 ### For Product Managers
+
 1. **Validate Flows** - Ensure flows meet user needs and business goals
 2. **Review Metrics** - Monitor analytics to identify improvement opportunities
 3. **Prioritize Iterations** - Use data to guide enhancement roadmap
@@ -309,6 +338,7 @@ Track these metrics for each flow:
 ## 📝 Contributing
 
 ### Adding New Storyboards
+
 When documenting a new user flow:
 
 1. **Use the Template** - Copy structure from existing storyboards
@@ -321,6 +351,7 @@ When documenting a new user flow:
 8. **Provide Technical Notes** - Implementation guidance for engineers
 
 ### Storyboard Review Checklist
+
 - [ ] Flow diagram is clear and complete
 - [ ] Design specifications reference design tokens
 - [ ] Interaction patterns are documented
@@ -335,6 +366,7 @@ When documenting a new user flow:
 ## 📞 Questions & Feedback
 
 For questions about storyboards or to suggest improvements:
+
 - **GitHub Issues**: Tag with `design` or `ux` label
 - **GitHub Discussions**: UX/UI category
 - **Design Team**: Contact via project communication channels

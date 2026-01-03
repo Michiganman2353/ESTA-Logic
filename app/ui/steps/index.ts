@@ -1,6 +1,6 @@
 /**
  * Step Components Index
- * 
+ *
  * Centralized exports for all step components used in guided journeys
  */
 
@@ -11,4 +11,7 @@ export { CompanyInfoStep } from './CompanyInfoStep';
 export type { CompanyInfoStepProps, CompanyInfoData } from './CompanyInfoStep';
 
 export { EmployeeCountStep } from './EmployeeCountStep';
-export type { EmployeeCountStepProps, EmployeeCountData } from './EmployeeCountStep';
+export type {
+  EmployeeCountStepProps,
+  EmployeeCountData,
+} from './EmployeeCountStep';

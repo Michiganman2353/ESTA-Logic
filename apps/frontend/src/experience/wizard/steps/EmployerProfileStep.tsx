@@ -31,7 +31,9 @@ export default function EmployerProfileStep() {
   return (
     <EnhancedWizardStep
       title="Tell Us About Your Business"
-      subtitle={ToneEngine.reassuring('This helps us determine which ESTA requirements apply to you.')}
+      subtitle={ToneEngine.reassuring(
+        'This helps us determine which ESTA requirements apply to you.'
+      )}
       showTrustBadges={true}
       showSecuritySignals={false}
       showLegalAssurance={false}
@@ -138,8 +140,8 @@ export default function EmployerProfileStep() {
                 </h3>
                 <p className="text-sm text-blue-800">
                   Your employer type determines specific ESTA requirements and
-                  benefits. We'll automatically configure the correct policies and
-                  accrual rates for your organization.
+                  benefits. We'll automatically configure the correct policies
+                  and accrual rates for your organization.
                 </p>
               </div>
             </div>

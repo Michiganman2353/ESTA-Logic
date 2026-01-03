@@ -1,6 +1,6 @@
 /**
  * SecurityStatusBanner Component Tests
- * 
+ *
  * Tests the security status banner displays correct security states
  * and provides expandable details when needed.
  */

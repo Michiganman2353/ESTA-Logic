@@ -40,6 +40,7 @@ app/
 **Purpose:** Orchestrate user journeys step-by-step
 
 **Key Features:**
+
 - Journey definition and registration
 - Step-by-step navigation
 - Branching logic for conditional paths
@@ -48,6 +49,7 @@ app/
 - Contextual guidance
 
 **Example:**
+
 ```typescript
 import { guidedFlowEngine } from './core/navigation/GuidedFlowEngine';
 
@@ -67,6 +69,7 @@ console.log(`${progress.percentComplete}% complete`);
 **Purpose:** Security that builds confidence, not friction
 
 **Key Features:**
+
 - Visible trust indicators
 - User-friendly security status
 - Audit trail creation
@@ -74,6 +77,7 @@ console.log(`${progress.percentComplete}% complete`);
 - Confidence messaging
 
 **Example:**
+
 ```typescript
 import { TrustLayer } from './core/security/trust-layer';
 
@@ -81,11 +85,11 @@ import { TrustLayer } from './core/security/trust-layer';
 const indicators = TrustLayer.getOperationTrustIndicators({
   encrypted: true,
   saved: true,
-  verified: true
+  verified: true,
 });
 
 // Display to user
-indicators.forEach(indicator => {
+indicators.forEach((indicator) => {
   console.log(indicator.message); // "🔒 Your data is encrypted and secure"
 });
 ```
@@ -95,6 +99,7 @@ indicators.forEach(indicator => {
 **Purpose:** Never lose user progress, always enable resume
 
 **Key Features:**
+
 - Auto-save every 2 seconds
 - Local storage backup
 - Remote persistence (Firestore)
@@ -102,6 +107,7 @@ indicators.forEach(indicator => {
 - Progress tracking
 
 **Example:**
+
 ```typescript
 import { guidedSessionStore } from './state/guided-session-store';
 
@@ -113,11 +119,9 @@ const session = guidedSessionStore.createSession(
 );
 
 // Update progress
-guidedSessionStore.updateProgress(
-  session.id,
-  'company-info',
-  { companyName: 'Acme' }
-);
+guidedSessionStore.updateProgress(session.id, 'company-info', {
+  companyName: 'Acme',
+});
 
 // Auto-saved every 2 seconds!
 ```
@@ -127,6 +131,7 @@ guidedSessionStore.updateProgress(
 **Purpose:** Every interaction should make users feel more confident
 
 **Key Features:**
+
 - Context-aware messaging
 - Validation messages that support, not criticize
 - Progress encouragement
@@ -134,6 +139,7 @@ guidedSessionStore.updateProgress(
 - Error recovery guidance
 
 **Example:**
+
 ```typescript
 import { ConfidenceMessages } from './ui/reassurance/confidence-messages';
 
@@ -153,23 +159,29 @@ const validation = ConfidenceMessages.validation.required('Company Name');
 ## Design Principles
 
 ### 1. Guided, Not Exploratory
+
 Users progress through structured steps, not chaotic menus.
 
 ### 2. Confidence-Driven
+
 Every interaction builds trust and certainty.
 
 ### 3. Simple Surface, Powerful Core
+
 Technical excellence remains but hidden from users.
 
 ### 4. Progressive Disclosure
+
 Show only what's needed now, reveal complexity gradually.
 
 ### 5. Visible Security
+
 Security indicators build comfort, not create friction.
 
 ## Migration Path
 
 ### Phase 1: Foundation (✅ Complete)
+
 - ✅ Core architecture created
 - ✅ GuidedFlowEngine implemented
 - ✅ Trust Layer established
@@ -182,6 +194,7 @@ Security indicators build comfort, not create friction.
 - ✅ Comprehensive documentation (Design-Tone-Guide.md)
 
 ### Phase 2: UI Implementation (✅ In Progress)
+
 - ✅ Create step components (3 implemented)
 - ✅ Build layout templates (2 implemented)
 - ✅ Implement Welcome page
@@ -190,12 +203,14 @@ Security indicators build comfort, not create friction.
 - ⏳ Add remaining step components (policy, roster, verification)
 
 ### Phase 3: Integration
+
 - Connect to existing compliance engine
 - Integrate with Firebase
 - Migrate existing features
 - Build dashboards
 
 ### Phase 4: Polish
+
 - Animations and transitions
 - Mobile optimization
 - Accessibility
@@ -234,24 +249,24 @@ const myJourney: Journey = {
     {
       id: 'step-1',
       title: 'First Step',
-      description: 'Let\'s start',
+      description: "Let's start",
       component: 'Step1Component',
       validation: [
-        { field: 'name', type: 'required', message: 'Name is needed' }
+        { field: 'name', type: 'required', message: 'Name is needed' },
       ],
       guidance: {
         message: 'We need your name to personalize the experience',
-        helpText: 'Use your legal name'
+        helpText: 'Use your legal name',
       },
       nextStep: 'step-2',
       canSkip: false,
-      estimatedTime: 30
-    }
+      estimatedTime: 30,
+    },
     // ... more steps
   ],
   branchingLogic: [],
   entryConditions: [],
-  exitConditions: []
+  exitConditions: [],
 };
 
 // Register

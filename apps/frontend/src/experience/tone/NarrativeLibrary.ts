@@ -3,7 +3,7 @@
  * Pre-crafted narrative content for key experience moments
  */
 
-export type NarrativeKey = 
+export type NarrativeKey =
   | 'welcome'
   | 'completion'
   | 'reassurance'

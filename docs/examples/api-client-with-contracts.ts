@@ -1,9 +1,9 @@
 /**
  * Example Frontend API Client Using Contracts
- * 
+ *
  * This file demonstrates how the frontend API client should use API contracts
  * from @esta/api-contracts to enforce interface boundaries.
- * 
+ *
  * Key Principles:
  * 1. Import types (not schemas) from API contracts
  * 2. Use contract types for request/response data
@@ -43,7 +43,7 @@ export interface ApiError {
 
 /**
  * Type-safe API client with contract enforcement
- * 
+ *
  * This class demonstrates the correct pattern for frontend API communication:
  * - Uses contract types for all requests/responses
  * - No dependency on backend implementation
@@ -159,13 +159,10 @@ class ApiClientWithContracts {
    * Uses contract types: LoginRequest -> LoginResponse
    */
   async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await this.request<LoginResponse>(
-      '/api/v1/auth/login',
-      {
-        method: 'POST',
-        body: JSON.stringify(credentials),
-      }
-    );
+    const response = await this.request<LoginResponse>('/api/v1/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(credentials),
+    });
 
     // Store token from response
     if (response.token) {
@@ -281,9 +278,7 @@ class ApiClientWithContracts {
     const params = new URLSearchParams(
       filters as Record<string, string>
     ).toString();
-    return this.request<GetRequestsResponse>(
-      `/api/v1/requests?${params}`
-    );
+    return this.request<GetRequestsResponse>(`/api/v1/requests?${params}`);
   }
 }
 

@@ -9,11 +9,13 @@ Successfully implemented the dual-runtime enforcement strategy for the ESTA-Logi
 ### 1. Vercel Runtime Configuration (`vercel.json`)
 
 **Before:**
+
 ```json
 "runtime": "nodejs22.x"  // ❌ Not supported by Vercel
 ```
 
 **After:**
+
 ```json
 "runtime": "nodejs20.x"  // ✅ Vercel-supported runtime
 ```
@@ -23,6 +25,7 @@ Successfully implemented the dual-runtime enforcement strategy for the ESTA-Logi
 ### 2. Package.json Engines
 
 **Before:**
+
 ```json
 "engines": {
   "node": "22.x",
@@ -31,6 +34,7 @@ Successfully implemented the dual-runtime enforcement strategy for the ESTA-Logi
 ```
 
 **After:**
+
 ```json
 "engines": {
   "node": ">=20.0.0",
@@ -53,12 +57,13 @@ strategy:
 
 **Runtime Separation:**
 
-| Runtime | Purpose | Tasks |
-|---------|---------|-------|
+| Runtime       | Purpose               | Tasks                                    |
+| ------------- | --------------------- | ---------------------------------------- |
 | **Node 22.x** | Development Authority | Lint, Typecheck, Unit Tests, Smoke Tests |
-| **Node 20.x** | Production Authority | Build Validation, Vercel Runtime Parity |
+| **Node 20.x** | Production Authority  | Build Validation, Vercel Runtime Parity  |
 
 **Key Features:**
+
 - Node 22 runs all quality checks (lint, typecheck, tests)
 - Node 20 validates production build compatibility
 - Fail-fast strategy ensures immediate feedback
@@ -69,6 +74,7 @@ strategy:
 **New Script:** `scripts/validate-runtime.sh`
 
 **Capabilities:**
+
 - Detects unsupported `nodejs22.x` in vercel.json
 - Identifies unversioned runtime declarations
 - Validates edge functions use `runtime: 'edge'`
@@ -76,6 +82,7 @@ strategy:
 - Clear, actionable error messages
 
 **Usage:**
+
 ```bash
 npm run validate:runtime
 ```
@@ -85,6 +92,7 @@ npm run validate:runtime
 **Updated Script:** `scripts/validate-vercel-config.js`
 
 **New Features:**
+
 - Understands dual-runtime strategy
 - Accepts `.nvmrc` (22) > `vercel.json` (20) as valid
 - Validates `package.json` with `>=` version patterns
@@ -121,6 +129,7 @@ npm run validate:runtime
 ## Validation Results
 
 ✅ **All validations passing:**
+
 - Runtime validation: No unsupported runtimes detected
 - Vercel config validation: Dual-runtime strategy recognized and validated
 - JSON syntax: All configuration files valid
@@ -129,6 +138,7 @@ npm run validate:runtime
 ## CI Matrix Behavior
 
 ### Node 22.x Jobs
+
 ```bash
 ✓ Install dependencies
 ✓ Setup Gleam/Erlang
@@ -143,6 +153,7 @@ npm run validate:runtime
 ```
 
 ### Node 20.x Jobs
+
 ```bash
 ✓ Install dependencies
 ✓ Setup Gleam/Erlang

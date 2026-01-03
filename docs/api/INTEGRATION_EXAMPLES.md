@@ -19,7 +19,10 @@
 
 ```typescript
 // api/v1/accrual/calculate.experience.ts
-import { ExperienceResponse, ExperienceResponseSchema } from '@esta/shared-types';
+import {
+  ExperienceResponse,
+  ExperienceResponseSchema,
+} from '@esta/shared-types';
 import { AccrualEngine } from '@esta/accrual-engine';
 import { transformAccrualToExperience } from '@esta/shared-utils';
 
@@ -101,9 +104,8 @@ export const calculateAccrualWithExperience = functions.https.onCall(
     });
 
     // Transform to experience
-    const experience: ExperienceResponse = transformAccrualToExperience(
-      rawResult
-    );
+    const experience: ExperienceResponse =
+      transformAccrualToExperience(rawResult);
 
     // Return (automatically wrapped by Firebase)
     return experience;
@@ -119,10 +121,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { ExperienceResponseSchema } from '@esta/shared-types';
 import { transformAccrualToExperience } from '@esta/shared-utils';
 
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-) {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Enable CORS
   res.setHeader('Access-Control-Allow-Origin', '*');
 
@@ -282,7 +281,7 @@ export function ExperienceResponseDisplay({
         <Alert variant={getToneVariant(experience.reassuranceMessage.tone)}>
           <p className="font-medium">{experience.reassuranceMessage.message}</p>
           {experience.reassuranceMessage.context && (
-            <p className="text-sm mt-1">
+            <p className="mt-1 text-sm">
               {experience.reassuranceMessage.context}
             </p>
           )}
@@ -292,7 +291,7 @@ export function ExperienceResponseDisplay({
       {/* Next Steps */}
       {experience.nextSteps.length > 0 && (
         <Card className="p-4">
-          <h3 className="font-semibold mb-3">Next Steps</h3>
+          <h3 className="mb-3 font-semibold">Next Steps</h3>
           <NextStepsList steps={experience.nextSteps} />
         </Card>
       )}
@@ -305,7 +304,7 @@ export function ExperienceResponseDisplay({
       {/* Technical Details (Collapsible) */}
       {showTechnicalDetails && experience.technicalDetails && (
         <Collapsible title="Technical Details">
-          <pre className="text-xs bg-gray-100 p-4 rounded overflow-auto">
+          <pre className="overflow-auto rounded bg-gray-100 p-4 text-xs">
             {JSON.stringify(experience.technicalDetails, null, 2)}
           </pre>
         </Collapsible>
@@ -332,7 +331,7 @@ export function NextStepsList({ steps }: Props) {
       {steps.map((step, index) => (
         <li
           key={index}
-          className={`flex items-start gap-3 p-3 rounded-lg ${getPriorityClass(
+          className={`flex items-start gap-3 rounded-lg p-3 ${getPriorityClass(
             step.priority
           )}`}
         >
@@ -342,17 +341,17 @@ export function NextStepsList({ steps }: Props) {
               <h4 className="font-medium">{step.title}</h4>
               <PriorityBadge priority={step.priority} />
             </div>
-            <p className="text-sm text-gray-600 mt-1">{step.description}</p>
-            <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-600">{step.description}</p>
+            <div className="mt-2 flex items-center gap-4 text-sm text-gray-500">
               {step.estimatedMinutes && (
                 <span>⏱️ ~{step.estimatedMinutes} min</span>
               )}
               {step.helpLink && (
                 <a
                   href={step.helpLink}
-                  className="text-blue-600 hover:underline flex items-center gap-1"
+                  className="flex items-center gap-1 text-blue-600 hover:underline"
                 >
-                  Learn more <ArrowRight className="w-3 h-3" />
+                  Learn more <ArrowRight className="h-3 w-3" />
                 </a>
               )}
             </div>
@@ -365,10 +364,10 @@ export function NextStepsList({ steps }: Props) {
 
 function CategoryIcon({ category }: { category: string }) {
   const icons = {
-    ACTION_REQUIRED: <AlertCircle className="w-5 h-5 text-red-500" />,
-    INFORMATION: <Info className="w-5 h-5 text-blue-500" />,
-    RECOMMENDATION: <CheckCircle className="w-5 h-5 text-green-500" />,
-    WARNING: <AlertCircle className="w-5 h-5 text-yellow-500" />,
+    ACTION_REQUIRED: <AlertCircle className="h-5 w-5 text-red-500" />,
+    INFORMATION: <Info className="h-5 w-5 text-blue-500" />,
+    RECOMMENDATION: <CheckCircle className="h-5 w-5 text-green-500" />,
+    WARNING: <AlertCircle className="h-5 w-5 text-yellow-500" />,
   };
   return icons[category] || icons.INFORMATION;
 }
@@ -666,7 +665,8 @@ export function useAccrualExperienceWithCache(request: AccrualRequest) {
 ```typescript
 // WebSocket integration
 export function useRealTimeAccrualExperience(userId: string) {
-  const [experience, setExperience] = useState<AccrualExperienceResponse | null>(null);
+  const [experience, setExperience] =
+    useState<AccrualExperienceResponse | null>(null);
 
   useEffect(() => {
     const ws = new WebSocket(`${WS_URL}/accrual/${userId}`);

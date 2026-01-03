@@ -18,12 +18,12 @@ This document captures the **emotional journey**, **user narratives**, and **exp
 ✅ **"I'm protected"** — Trust in security and legal accuracy  
 ✅ **"I understand what's happening"** — Clarity without confusion  
 ✅ **"Someone is guiding me"** — Never feeling abandoned  
-✅ **"This is simple"** — Complexity handled invisibly  
+✅ **"This is simple"** — Complexity handled invisibly
 
 ❌ **Never overwhelmed**  
 ❌ **Never confused**  
 ❌ **Never uncertain**  
-❌ **Never exposed to unnecessary complexity**  
+❌ **Never exposed to unnecessary complexity**
 
 ---
 
@@ -33,15 +33,15 @@ Just as TurboTax transformed tax filing from intimidating to intuitive, **ESTA T
 
 ### The TurboTax Principles We Embody
 
-| TurboTax Approach | ESTA Tracker Application |
-|-------------------|--------------------------|
-| **Guided interview format** | Step-by-step compliance setup wizard |
+| TurboTax Approach               | ESTA Tracker Application                      |
+| ------------------------------- | --------------------------------------------- |
+| **Guided interview format**     | Step-by-step compliance setup wizard          |
 | **Plain language explanations** | Legal requirements in 8th-grade reading level |
-| **Automatic calculations** | Sick time accrual handled invisibly |
-| **Trust-building design** | Security indicators, verification badges |
-| **Progress tracking** | Visual completion status at every stage |
-| **"We've got this" tone** | Reassuring language throughout |
-| **Expert review available** | Optional compliance deep-dives |
+| **Automatic calculations**      | Sick time accrual handled invisibly           |
+| **Trust-building design**       | Security indicators, verification badges      |
+| **Progress tracking**           | Visual completion status at every stage       |
+| **"We've got this" tone**       | Reassuring language throughout                |
+| **Expert review available**     | Optional compliance deep-dives                |
 
 ---
 
@@ -50,37 +50,42 @@ Just as TurboTax transformed tax filing from intimidating to intuitive, **ESTA T
 ### Narrative 1: Sarah — The Overwhelmed Small Business Owner
 
 **Background:**  
-Sarah owns a small bakery in Grand Rapids with 8 employees. She heard about Michigan's new sick time law on the local news and felt immediate panic. *"I don't have an HR department. I don't understand legal documents. How am I supposed to do this?"*
+Sarah owns a small bakery in Grand Rapids with 8 employees. She heard about Michigan's new sick time law on the local news and felt immediate panic. _"I don't have an HR department. I don't understand legal documents. How am I supposed to do this?"_
 
 **The Emotional Arc with ESTA Tracker:**
 
 **Act 1 — Fear & Uncertainty (Before ESTA Tracker)**
+
 - 😰 Sarah reads the 47-page Michigan ESTA law document
 - 😓 She doesn't understand legal terminology
 - 😟 She's worried about fines and violations
 - 😞 She considers hiring an expensive consultant
 
 **Act 2 — Discovery & Hope (Landing Page)**
+
 - 🤔 Sarah finds ESTA Tracker through a business association
-- 👀 She reads: *"The TurboTax of Employment Compliance"*
-- 💡 The promise: *"We'll guide you through this, step-by-step"*
+- 👀 She reads: _"The TurboTax of Employment Compliance"_
+- 💡 The promise: _"We'll guide you through this, step-by-step"_
 - 🙂 She decides to try it — "Maybe this won't be so bad"
 
 **Act 3 — Guided Journey (Setup Experience)**
-- 😌 Welcome screen reassures: *"You're in the right place. We'll do this together."*
-- 😊 Simple question: *"How many employees work for you?"*
-- 😃 System responds: *"Perfect! You're a small employer. That means simpler rules."*
-- 🤓 Each step explains *why* in plain language
+
+- 😌 Welcome screen reassures: _"You're in the right place. We'll do this together."_
+- 😊 Simple question: _"How many employees work for you?"_
+- 😃 System responds: _"Perfect! You're a small employer. That means simpler rules."_
+- 🤓 Each step explains _why_ in plain language
 - 😎 Progress bar shows she's 60% done
 - ✨ Auto-save means she can take breaks
 
 **Act 4 — Confidence & Relief (First Success)**
+
 - ✅ Setup complete in 15 minutes
-- 🎉 Certificate displayed: *"You're 100% compliant — well done!"*
-- 😄 Dashboard shows: *"Everything is handled. You're all set."*
-- 🙏 Sarah thinks: *"That was... actually easy?"*
+- 🎉 Certificate displayed: _"You're 100% compliant — well done!"_
+- 😄 Dashboard shows: _"Everything is handled. You're all set."_
+- 🙏 Sarah thinks: _"That was... actually easy?"_
 
 **Act 5 — Ongoing Trust (Daily Use)**
+
 - 📊 Sarah checks balances in 10 seconds
 - 🔔 System alerts her when employees approach caps
 - 📝 Automatically generates audit reports
@@ -94,37 +99,42 @@ Sarah owns a small bakery in Grand Rapids with 8 employees. She heard about Mich
 ### Narrative 2: Marcus — The Skeptical Employee
 
 **Background:**  
-Marcus works at a manufacturing plant with 200+ employees. He's heard promises from employers before that didn't pan out. When his company adopts ESTA Tracker, his first thought is: *"Another system that won't actually work for me."*
+Marcus works at a manufacturing plant with 200+ employees. He's heard promises from employers before that didn't pan out. When his company adopts ESTA Tracker, his first thought is: _"Another system that won't actually work for me."_
 
 **The Emotional Arc with ESTA Tracker:**
 
 **Act 1 — Skepticism (Initial Contact)**
+
 - 🤨 Marcus receives enrollment code from HR
-- 😒 Internal monologue: *"Here we go again..."*
+- 😒 Internal monologue: _"Here we go again..."_
 - 🙄 Expects complicated process
 
 **Act 2 — Surprise (First Login)**
+
 - 📱 Opens mobile portal — clean, simple interface
-- 👁️ Sees his exact sick time balance immediately: *"15.5 hours available"*
-- 🤔 Thinks: *"Wait, that's actually clear?"*
+- 👁️ Sees his exact sick time balance immediately: _"15.5 hours available"_
+- 🤔 Thinks: _"Wait, that's actually clear?"_
 - 🔍 Clicks "How was this calculated?"
 - 💡 Gets plain-language breakdown with real hours worked
 
 **Act 3 — Validation (Trust Building)**
+
 - ✓ Marcus compares to his own records — it matches
 - 📈 Can see his accrual history month by month
-- 🔒 Security badge shows: *"Your data is encrypted and private"*
+- 🔒 Security badge shows: _"Your data is encrypted and private"_
 - 📝 Legal reference links to actual Michigan law
-- 🤝 Thinks: *"Okay, maybe this is legit"*
+- 🤝 Thinks: _"Okay, maybe this is legit"_
 
 **Act 4 — Empowerment (Taking Control)**
+
 - 📅 Marcus requests time off for a doctor's appointment
 - ⚡ Request submitted in 30 seconds from his phone
 - ✅ Manager approves within an hour
 - 📊 Balance automatically updates
-- 💪 Thinks: *"I actually have control here"*
+- 💪 Thinks: _"I actually have control here"_
 
 **Act 5 — Advocacy (Active User)**
+
 - 🗣️ Marcus tells coworkers to check their balances
 - ⭐ Appreciates transparency
 - 🛡️ Feels protected by automatic tracking
@@ -143,6 +153,7 @@ Jennifer manages HR for a restaurant chain with 12 locations across Michigan. Di
 **The Emotional Arc with ESTA Tracker:**
 
 **Act 1 — Overwhelm (Before ESTA Tracker)**
+
 - 😵 Managing 180 employees across spreadsheets
 - 📊 Different locations = different rules
 - ⏰ Spends 8+ hours per week on sick time tracking
@@ -150,12 +161,14 @@ Jennifer manages HR for a restaurant chain with 12 locations across Michigan. Di
 - 📑 Drowning in paperwork
 
 **Act 2 — Hope (Discovery)**
+
 - 💼 Attends HR conference, learns about ESTA Tracker
 - 📱 Demo shows multi-location support
-- 🎯 Feature highlighted: *"Automatic policy selection per location"*
-- 🤞 Thinks: *"If this works, it'll save my sanity"*
+- 🎯 Feature highlighted: _"Automatic policy selection per location"_
+- 🤞 Thinks: _"If this works, it'll save my sanity"_
 
 **Act 3 — Implementation (Guided Setup)**
+
 - 🏗️ Bulk employee import via CSV (180 employees in 5 minutes)
 - 🏪 Sets up 12 locations with different employee counts
 - 🤖 System automatically applies correct rules per location
@@ -163,6 +176,7 @@ Jennifer manages HR for a restaurant chain with 12 locations across Michigan. Di
 - 😲 Setup complete in 1 hour vs. estimated 2 weeks
 
 **Act 4 — Liberation (First Month)**
+
 - ⏱️ Weekly admin time drops from 8 hours to 20 minutes
 - 📊 One dashboard shows all 12 locations
 - 🚨 Automatic alerts for compliance issues
@@ -170,6 +184,7 @@ Jennifer manages HR for a restaurant chain with 12 locations across Michigan. Di
 - 😌 No more manual calculations
 
 **Act 5 — Strategic Partner (Long-term)**
+
 - 📈 Uses analytics to optimize scheduling
 - 💡 Proactive compliance instead of reactive
 - 👥 More time for employee relations
@@ -188,6 +203,7 @@ Jennifer manages HR for a restaurant chain with 12 locations across Michigan. Di
 Users must feel safe before they feel capable.
 
 **Design Applications:**
+
 - Security indicators visible throughout
 - Encryption badges on document upload
 - Legal accuracy statements on calculations
@@ -195,10 +211,11 @@ Users must feel safe before they feel capable.
 - Clear privacy policy and data handling
 
 **Language Examples:**
-- ✅ *"Your data is encrypted with bank-level security"*
-- ✅ *"This calculation follows Michigan ESTA law exactly"*
-- ✅ *"Your privacy is legally protected"*
-- ❌ *"Upload your documents"* (without security context)
+
+- ✅ _"Your data is encrypted with bank-level security"_
+- ✅ _"This calculation follows Michigan ESTA law exactly"_
+- ✅ _"Your privacy is legally protected"_
+- ❌ _"Upload your documents"_ (without security context)
 
 ---
 
@@ -207,6 +224,7 @@ Users must feel safe before they feel capable.
 Confusion creates stress. Simplicity creates confidence.
 
 **Design Applications:**
+
 - One question at a time in guided flows
 - Progress indicators on every multi-step process
 - Plain language with 8th-grade reading level
@@ -214,9 +232,10 @@ Confusion creates stress. Simplicity creates confidence.
 - Visual feedback for every action
 
 **Language Examples:**
-- ✅ *"You have 15.5 hours available"* (simple, direct)
-- ✅ *"Here's what happens next"* (removes uncertainty)
-- ❌ *"Aggregate PTO accrual per regulatory framework"* (jargon)
+
+- ✅ _"You have 15.5 hours available"_ (simple, direct)
+- ✅ _"Here's what happens next"_ (removes uncertainty)
+- ❌ _"Aggregate PTO accrual per regulatory framework"_ (jargon)
 
 ---
 
@@ -225,6 +244,7 @@ Confusion creates stress. Simplicity creates confidence.
 Users who feel supported complete journeys. Users who feel alone abandon them.
 
 **Design Applications:**
+
 - Contextual help at every decision point
 - "What's next" messaging throughout
 - Clear primary action buttons
@@ -232,9 +252,10 @@ Users who feel supported complete journeys. Users who feel alone abandon them.
 - Save-and-resume functionality
 
 **Language Examples:**
-- ✅ *"Let's set up your first employee together"*
-- ✅ *"Need help? Here's what this means..."*
-- ✅ *"You're doing great — almost done!"*
+
+- ✅ _"Let's set up your first employee together"_
+- ✅ _"Need help? Here's what this means..."_
+- ✅ _"You're doing great — almost done!"_
 - ❌ Silent forms with no encouragement
 
 ---
@@ -244,6 +265,7 @@ Users who feel supported complete journeys. Users who feel alone abandon them.
 Hidden processes create suspicion. Visible processes create confidence.
 
 **Design Applications:**
+
 - Show calculation breakdowns on demand
 - Audit trails accessible to users
 - Legal references linked and explained
@@ -251,9 +273,10 @@ Hidden processes create suspicion. Visible processes create confidence.
 - "How we got this number" explanations
 
 **Language Examples:**
-- ✅ *"Here's exactly how we calculated this: ..."*
-- ✅ *"This decision is based on Michigan law Section 3(a)"*
-- ✅ *"We're 98% confident in this calculation because..."*
+
+- ✅ _"Here's exactly how we calculated this: ..."_
+- ✅ _"This decision is based on Michigan law Section 3(a)"_
+- ✅ _"We're 98% confident in this calculation because..."_
 - ❌ Just showing numbers without explanation
 
 ---
@@ -263,6 +286,7 @@ Hidden processes create suspicion. Visible processes create confidence.
 Users need more than absence of errors — they need confirmation of correctness.
 
 **Design Applications:**
+
 - Green checkmarks for completed items
 - "You're compliant" messaging
 - Success confirmations after actions
@@ -270,9 +294,10 @@ Users need more than absence of errors — they need confirmation of correctness
 - Proactive "all clear" notifications
 
 **Language Examples:**
-- ✅ *"✓ You're fully compliant — great work!"*
-- ✅ *"✓ All calculations verified and accurate"*
-- ✅ *"✓ Your records are secure and audit-ready"*
+
+- ✅ _"✓ You're fully compliant — great work!"_
+- ✅ _"✓ All calculations verified and accurate"_
+- ✅ _"✓ Your records are secure and audit-ready"_
 - ❌ Silent success (user wonders if it worked)
 
 ---
@@ -308,18 +333,21 @@ Every interaction with ESTA Tracker follows this contract:
 ### Voice Characteristics
 
 **Professional, Not Corporate**
+
 - Warm and approachable
 - Confident without arrogance
 - Helpful without condescension
 - Clear without being simplistic
 
 **Reassuring, Not Patronizing**
-- Acknowledge stress: *"We know compliance can feel overwhelming"*
-- Offer support: *"We're here to make this simple"*
-- Build confidence: *"You've got this — we'll help"*
-- Celebrate success: *"Well done! You're all set"*
+
+- Acknowledge stress: _"We know compliance can feel overwhelming"_
+- Offer support: _"We're here to make this simple"_
+- Build confidence: _"You've got this — we'll help"_
+- Celebrate success: _"Well done! You're all set"_
 
 **Clear, Not Clinical**
+
 - Use active voice
 - Short sentences (under 20 words)
 - Concrete examples
@@ -327,13 +355,13 @@ Every interaction with ESTA Tracker follows this contract:
 
 ### Example Language Transformations
 
-| ❌ Technical/Legal | ✅ User-Friendly |
-|-------------------|------------------|
+| ❌ Technical/Legal                                              | ✅ User-Friendly                                     |
+| --------------------------------------------------------------- | ---------------------------------------------------- |
 | "Aggregate accrual calculation based on statutory requirements" | "We calculated your sick time based on Michigan law" |
-| "Submit documentation for verification purposes" | "Upload your document — we'll keep it safe" |
-| "Compliance status: AFFIRMATIVE" | "✓ You're compliant — great work!" |
-| "Regulatory framework adherence verified" | "All requirements met — you're all set!" |
-| "Execute transaction" | "Save changes" |
+| "Submit documentation for verification purposes"                | "Upload your document — we'll keep it safe"          |
+| "Compliance status: AFFIRMATIVE"                                | "✓ You're compliant — great work!"                   |
+| "Regulatory framework adherence verified"                       | "All requirements met — you're all set!"             |
+| "Execute transaction"                                           | "Save changes"                                       |
 
 ---
 
@@ -342,18 +370,21 @@ Every interaction with ESTA Tracker follows this contract:
 ### Calm & Professional Aesthetic
 
 **Color Psychology:**
+
 - **Primary Blue** — Trust, stability, professionalism
 - **Green Accents** — Success, compliance, reassurance
 - **Warm Grays** — Calm, neutral, non-threatening
 - **Red (Sparingly)** — Only for critical alerts, never for normal state
 
 **Typography:**
+
 - Sans-serif for accessibility
 - Generous line height for readability
 - Clear hierarchy with size and weight
 - Never more than 3 font sizes per screen
 
 **Spacing & Layout:**
+
 - Generous white space reduces cognitive load
 - One primary focus per screen
 - Progressive disclosure of complexity
@@ -362,18 +393,21 @@ Every interaction with ESTA Tracker follows this contract:
 ### Trust-Building Visual Elements
 
 **Security Indicators:**
+
 - 🔒 Lock icons on sensitive data
 - ✓ Verification badges on calculations
 - 🛡️ Encryption indicators on uploads
 - 📜 Certification badges on reports
 
 **Progress & Status:**
+
 - Progress bars for multi-step flows
 - Completion percentages
 - Green checkmarks for completed items
 - Timeline visualizations for history
 
 **Guidance Elements:**
+
 - Tooltips for context-sensitive help
 - Expandable sections for optional details
 - Highlight primary actions
@@ -401,13 +435,13 @@ Every interaction with ESTA Tracker follows this contract:
 
 ### Experience Quality Benchmarks
 
-| Metric | Target | World-Class |
-|--------|--------|-------------|
-| Setup completion | 90% | 98% |
-| Time to first value | < 10 min | < 5 min |
-| Mobile usability | 85% | 95% |
-| Clarity rating | 8/10 | 9.5/10 |
-| Feature satisfaction | 80% | 92% |
+| Metric               | Target   | World-Class |
+| -------------------- | -------- | ----------- |
+| Setup completion     | 90%      | 98%         |
+| Time to first value  | < 10 min | < 5 min     |
+| Mobile usability     | 85%      | 95%         |
+| Clarity rating       | 8/10     | 9.5/10      |
+| Feature satisfaction | 80%      | 92%         |
 
 ---
 
@@ -420,6 +454,7 @@ Every interaction with ESTA Tracker follows this contract:
 #### 1. **Knowledge Resilience**
 
 Users become educated through use:
+
 - Plain language explanations build understanding
 - Legal references teach Michigan ESTA law
 - Contextual help develops expertise over time
@@ -428,6 +463,7 @@ Users become educated through use:
 #### 2. **Operational Resilience**
 
 Systems handle complexity so users don't have to:
+
 - Automatic calculations eliminate manual errors
 - Audit trails protect against challenges
 - Backup and recovery ensure data safety
@@ -436,6 +472,7 @@ Systems handle complexity so users don't have to:
 #### 3. **Emotional Resilience**
 
 Design reduces stress and builds confidence:
+
 - Reassurance messaging counteracts anxiety
 - Visual success indicators build positive momentum
 - Clear guidance prevents feeling stuck
@@ -444,6 +481,7 @@ Design reduces stress and builds confidence:
 #### 4. **Legal Resilience**
 
 Compliance is guaranteed, not hoped for:
+
 - Calculations follow Michigan law exactly
 - Audit-ready reports always available
 - Immutable records prevent disputes
@@ -477,14 +515,14 @@ Each successful interaction strengthens the user's confidence, making them more 
 
 While [ARCHITECTURE.md](./ARCHITECTURE.md) defines our **technical correctness**, this document defines our **experiential integrity**.
 
-| Architectural Guarantee | UX Experience |
-|------------------------|---------------|
-| **Deterministic calculations** | Users trust results are always correct |
-| **Capability-based security** | Users feel safe with granular permissions |
-| **Audit logging** | Users can prove compliance with confidence |
-| **WASM sandboxing** | Users benefit from security without knowing it exists |
-| **IPC messaging** | Users experience seamless integration |
-| **Experience Response Contract** | Users get human explanations, not raw data |
+| Architectural Guarantee          | UX Experience                                         |
+| -------------------------------- | ----------------------------------------------------- |
+| **Deterministic calculations**   | Users trust results are always correct                |
+| **Capability-based security**    | Users feel safe with granular permissions             |
+| **Audit logging**                | Users can prove compliance with confidence            |
+| **WASM sandboxing**              | Users benefit from security without knowing it exists |
+| **IPC messaging**                | Users experience seamless integration                 |
+| **Experience Response Contract** | Users get human explanations, not raw data            |
 
 ### The Experience Response Layer
 
@@ -530,16 +568,19 @@ As ESTA Tracker expands to other states with paid sick time laws, the **user exp
 ## Related Documentation
 
 ### For Deeper Experience Details
+
 - **[UX Blueprint](./docs/UX-Blueprint.md)** — Detailed TurboTax-inspired design patterns
 - **[Experience-First Architecture](./docs/Experience-First-Architecture.md)** — How UX drives technical decisions
 - **[Design Tone Guide](./docs/Design-Tone-Guide.md)** — Voice, tone, and language standards
 
 ### For Technical Implementation
+
 - **[Architecture Overview](./ARCHITECTURE.md)** — System design and technical vision
 - **[UX Experience Contract](./docs/UX_EXPERIENCE_CONTRACT.md)** — Experience response interface
 - **[Engineering Principles](./docs/ENGINEERING_PRINCIPLES.md)** — Development standards
 
 ### For Product Strategy
+
 - **[Roadmap](./docs/ROADMAP.md)** — Strategic phases and timeline
 - **[Experience Vision](./docs/Experience-Vision.md)** — Product direction announcement
 
@@ -550,14 +591,16 @@ As ESTA Tracker expands to other states with paid sick time laws, the **user exp
 ESTA Tracker succeeds through the **balance of two equal visions**:
 
 ### Architecture Vision
+
 ✅ Deterministic correctness  
 ✅ Security and capability control  
-✅ Scalable, maintainable, auditable  
+✅ Scalable, maintainable, auditable
 
 ### User Experience Vision
+
 ✅ Emotional trust and confidence  
 ✅ Clarity and simplicity  
-✅ Guidance and reassurance  
+✅ Guidance and reassurance
 
 **Together, these visions create a platform that is both technically excellent and humanly compassionate.**
 

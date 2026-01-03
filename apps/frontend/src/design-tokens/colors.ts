@@ -1,9 +1,9 @@
 /**
  * ESTA Tracker Design Tokens - Colors
- * 
+ *
  * Centralized color palette for consistent design across the application.
  * These tokens provide semantic naming and ensure design-engineering alignment.
- * 
+ *
  * @see docs/design/DESIGN_TOKENS.md for usage guidelines
  */
 
@@ -30,15 +30,15 @@ export const semanticColors = {
   // Trust & Confidence
   trustBlue: '#1E4BD8',
   accentBlue: '#3B82F6',
-  
+
   // Success & Compliance
   govTrustGreen: '#00B289',
   successGreen: '#10B981',
-  
+
   // Errors & Warnings
   complianceError: '#D32F2F',
   warningAmber: '#F59E0B',
-  
+
   // Information
   infoBlue: '#3B82F6',
 } as const;
@@ -124,7 +124,7 @@ export const surfaces = {
   background: '#F7FAFE',
   surface: '#FFFFFF',
   surfaceElevated: '#FAFBFC',
-  
+
   // Overlays
   overlay: 'rgba(0, 0, 0, 0.5)',
   overlayLight: 'rgba(0, 0, 0, 0.3)',

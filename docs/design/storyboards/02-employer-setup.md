@@ -1,6 +1,7 @@
 # Employer Profile Setup Flow
 
 ## Overview
+
 After completing the Welcome & Eligibility Wizard, employers create their profile and configure their organization's presence in ESTA Tracker. This flow establishes the employer's identity, branding, and basic organizational settings.
 
 ---
@@ -167,6 +168,7 @@ After completing the Welcome & Eligibility Wizard, employers create their profil
 ## Design Specifications
 
 ### Colors
+
 - **Primary CTA**: `trust-blue` (#1E4BD8)
 - **Secondary CTA**: `accent-blue` (#3B82F6)
 - **Success State**: `gov-trust-green` (#00B289)
@@ -175,6 +177,7 @@ After completing the Welcome & Eligibility Wizard, employers create their profil
 - **Code Display Background**: Light blue gradient (#F0F4FF to #DBEAFE)
 
 ### Typography
+
 - **Section Headers**: 24px Semibold
 - **Form Labels**: 14px Medium
 - **Input Text**: 16px Regular
@@ -182,23 +185,23 @@ After completing the Welcome & Eligibility Wizard, employers create their profil
 - **Code Display**: 32px Bold (monospace)
 
 ### Spacing
+
 - **Form Field Gap**: 24px between fields
 - **Section Padding**: 24px on desktop, 16px on mobile
 - **Input Padding**: 12px vertical, 16px horizontal
 - **Button Spacing**: 16px gap between primary and secondary
 
 ### Components
-- **Input Fields**: 
+
+- **Input Fields**:
   - Height: 48px minimum
   - Border: 1px solid #D1D5DB
   - Border radius: 8px
   - Focus state: 2px border in trust-blue with shadow
-  
 - **Select Dropdowns**:
   - Match input field styling
   - Dropdown icon on right side
   - Options displayed in overlay with shadow
-  
 - **Logo Upload**:
   - Drag-and-drop zone: 300px × 200px
   - Dashed border in default state
@@ -215,15 +218,17 @@ After completing the Welcome & Eligibility Wizard, employers create their profil
 ## Interaction Patterns
 
 ### Form Validation
+
 - **Real-time Validation**: On blur for each field
-- **Required Field Indicators**: Red asterisk (*)
-- **Error States**: 
+- **Required Field Indicators**: Red asterisk (\*)
+- **Error States**:
   - Red border on field
   - Icon indicator
   - Error message below field
   - Never block submission without clear guidance
 
 ### Logo Upload
+
 - **Supported Formats**: PNG, JPG, SVG
 - **Max File Size**: 2MB
 - **Auto-resize**: Images automatically optimized
@@ -231,12 +236,14 @@ After completing the Welcome & Eligibility Wizard, employers create their profil
 - **Remove**: X button to clear uploaded logo
 
 ### Enrollment Code
+
 - **Auto-generated**: Based on company name (first 4 letters, uppercase)
 - **Collision Handling**: Append number if duplicate (ACME, ACM2, ACM3)
 - **Copy Function**: One-click copy with "Copied!" toast
 - **Regenerate**: Option to change code (with warning about existing employees)
 
 ### Skip Options
+
 - Branding step can be skipped entirely
 - Phone number is optional
 - Industry selection has "Other" and "Prefer not to say" options
@@ -246,14 +253,17 @@ After completing the Welcome & Eligibility Wizard, employers create their profil
 ## Copy Tone
 
 ### Encouraging & Optional
+
 - ✅ "Customize your workspace to make it feel like home"
 - ❌ "You must complete company branding"
 
 ### Clear Purpose
+
 - ✅ "Your address helps ensure compliance with local Michigan regulations"
 - ❌ "Address is required for legal purposes"
 
 ### Privacy Assurance
+
 - ✅ "This information is used for account management and compliance notifications only"
 - ❌ "We store your personal information securely"
 
@@ -262,12 +272,14 @@ After completing the Welcome & Eligibility Wizard, employers create their profil
 ## Success Metrics
 
 ### Profile Completion
+
 - ✅ **Required Field Completion**: 100% of required fields completed
 - ✅ **Optional Field Completion**: >60% add phone number, >40% upload logo
 - ✅ **Time to Complete**: Average 2-3 minutes
 - ✅ **Error Rate**: <3% validation errors
 
 ### User Satisfaction
+
 - Code sharing success: >95% of employers successfully share enrollment code
 - Customization adoption: Track branding vs. default usage
 
@@ -276,17 +288,20 @@ After completing the Welcome & Eligibility Wizard, employers create their profil
 ## Accessibility Requirements
 
 ### Form Accessibility
+
 - All form fields have visible labels
 - Required fields indicated with asterisk and aria-required
 - Error messages associated with aria-describedby
 - Color is not the only indicator of errors (icon + text)
 
 ### Logo Upload Accessibility
+
 - Keyboard accessible upload trigger
 - Screen reader announces upload success/failure
 - Alt text prompt for uploaded logo
 
 ### Keyboard Navigation
+
 - Tab order follows visual flow
 - Enter key submits form
 - Escape key clears focused field
@@ -297,17 +312,19 @@ After completing the Welcome & Eligibility Wizard, employers create their profil
 ## Technical Implementation Notes
 
 ### Data Persistence
+
 ```typescript
 // Save profile data incrementally
 const saveProfileStep = async (step: number, data: ProfileData) => {
   await updateDoc(doc(db, 'employers', employerId), {
     [`profile.step${step}`]: data,
-    [`profile.lastUpdated`]: serverTimestamp()
+    [`profile.lastUpdated`]: serverTimestamp(),
   });
 };
 ```
 
 ### Logo Processing
+
 ```typescript
 // Client-side image optimization before upload
 const optimizeLogo = async (file: File): Promise<Blob> => {
@@ -317,13 +334,12 @@ const optimizeLogo = async (file: File): Promise<Blob> => {
   canvas.height = 512;
   const ctx = canvas.getContext('2d')!;
   ctx.drawImage(img, 0, 0, 512, 512);
-  return await new Promise(resolve => 
-    canvas.toBlob(resolve!, 'image/png')
-  );
+  return await new Promise((resolve) => canvas.toBlob(resolve!, 'image/png'));
 };
 ```
 
 ### Enrollment Code Generation
+
 ```typescript
 // Generate unique 4-letter code
 const generateEnrollmentCode = (companyName: string): string => {
@@ -332,7 +348,7 @@ const generateEnrollmentCode = (companyName: string): string => {
     .slice(0, 4)
     .toUpperCase()
     .padEnd(4, 'X');
-  
+
   // Check for collisions in Firestore
   // Append number if needed
   return ensureUnique(base);
@@ -340,11 +356,12 @@ const generateEnrollmentCode = (companyName: string): string => {
 ```
 
 ### Analytics Events
+
 ```typescript
 trackEvent('profile_step_completed', {
   step: 'company_info',
   has_logo: !!logoUrl,
   has_phone: !!phone,
-  industry: selectedIndustry
+  industry: selectedIndustry,
 });
 ```

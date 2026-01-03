@@ -1,13 +1,16 @@
 /**
  * Guided Session Store - State Management for Guided Journeys
- * 
+ *
  * Manages the state of active guided journeys, including progress tracking,
  * auto-save functionality, and resume capability.
- * 
+ *
  * Philosophy: "Never lose user progress. Always enable resume."
  */
 
-import type { FlowState, ProgressInfo } from '../core/navigation/GuidedFlowEngine';
+import type {
+  FlowState,
+  ProgressInfo,
+} from '../core/navigation/GuidedFlowEngine';
 
 /**
  * Session data stored for a guided journey
@@ -15,22 +18,22 @@ import type { FlowState, ProgressInfo } from '../core/navigation/GuidedFlowEngin
 export interface GuidedSession {
   /** Unique session ID */
   id: string;
-  
+
   /** User ID */
   userId: string;
-  
+
   /** Journey ID */
   journeyId: string;
-  
+
   /** Current flow state */
   state: FlowState;
-  
+
   /** Last save timestamp */
   lastSaved: Date;
-  
+
   /** Auto-save enabled */
   autoSave: boolean;
-  
+
   /** Session metadata */
   metadata: {
     deviceType?: string;
@@ -45,10 +48,10 @@ export interface GuidedSession {
 export interface SessionStoreConfig {
   /** Auto-save interval in milliseconds (default: 2000) */
   autoSaveInterval?: number;
-  
+
   /** Enable local storage backup (default: true) */
   localStorageBackup?: boolean;
-  
+
   /** Enable remote persistence (default: true) */
   remotePersistence?: boolean;
 }
@@ -67,7 +70,7 @@ export class GuidedSessionStore {
     this.config = {
       autoSaveInterval: config.autoSaveInterval ?? 2000,
       localStorageBackup: config.localStorageBackup ?? true,
-      remotePersistence: config.remotePersistence ?? true
+      remotePersistence: config.remotePersistence ?? true,
     };
     this.autoSaveTimer = null;
     this.pendingSaves = new Set();
@@ -99,7 +102,7 @@ export class GuidedSessionStore {
       state: initialState,
       lastSaved: new Date(),
       autoSave: true,
-      metadata: metadata || {}
+      metadata: metadata || {},
     };
 
     this.sessions.set(sessionId, session);
@@ -139,7 +142,7 @@ export class GuidedSessionStore {
     session.state = {
       ...session.state,
       ...updates,
-      lastUpdatedAt: new Date()
+      lastUpdatedAt: new Date(),
     };
 
     this.pendingSaves.add(sessionId);
@@ -260,7 +263,7 @@ export class GuidedSessionStore {
       totalSteps: total,
       percentComplete: Math.round((completed / total) * 100),
       estimatedTimeRemaining: (total - completed) * 60, // Rough estimate
-      completedSteps: [...session.state.completedSteps]
+      completedSteps: [...session.state.completedSteps],
     };
   }
 
@@ -296,7 +299,7 @@ export class GuidedSessionStore {
     }
 
     const sessionIds = Array.from(this.pendingSaves);
-    
+
     for (const sessionId of sessionIds) {
       await this.saveSession(sessionId);
     }
@@ -416,7 +419,7 @@ export class GuidedSessionStore {
    */
   destroy(): void {
     this.stopAutoSave();
-    
+
     // Final save of all pending
     this.autoSaveAll();
 
@@ -432,7 +435,7 @@ export const guidedSessionStore = new GuidedSessionStore();
 
 /**
  * Example usage:
- * 
+ *
  * ```typescript
  * // Create a new session
  * const session = guidedSessionStore.createSession(
@@ -441,7 +444,7 @@ export const guidedSessionStore = new GuidedSessionStore();
  *   initialFlowState,
  *   { deviceType: 'desktop', browser: 'chrome' }
  * );
- * 
+ *
  * // Update progress
  * guidedSessionStore.updateProgress(
  *   session.id,
@@ -449,15 +452,15 @@ export const guidedSessionStore = new GuidedSessionStore();
  *   { companyName: 'Acme Corp', industry: 'Technology' },
  *   true
  * );
- * 
+ *
  * // Get progress
  * const progress = guidedSessionStore.getProgress(session.id);
  * console.log(`${progress.percentComplete}% complete`);
- * 
+ *
  * // Pause and resume
  * guidedSessionStore.pauseSession(session.id);
  * guidedSessionStore.resumeSession(session.id);
- * 
+ *
  * // Complete
  * guidedSessionStore.completeSession(session.id);
  * ```

@@ -43,7 +43,8 @@ export class RiskInterpreter {
     return {
       level: 'critical',
       title: 'No Sick Time Policy Detected',
-      description: 'Your organization does not have a documented sick time policy.',
+      description:
+        'Your organization does not have a documented sick time policy.',
       plainEnglish:
         'Michigan law requires all employers to have a written sick time policy. Without one, you could face penalties and legal challenges.',
       actions: [
@@ -59,9 +60,11 @@ export class RiskInterpreter {
   /**
    * Get risk level for incorrect accrual
    */
-  private static getIncorrectAccrualRisk(details?: Record<string, unknown>): RiskAssessment {
+  private static getIncorrectAccrualRisk(
+    details?: Record<string, unknown>
+  ): RiskAssessment {
     const currentRate = details?.currentRate as string | undefined;
-    
+
     return {
       level: 'high',
       title: 'Accrual Rate May Be Incorrect',
@@ -109,7 +112,8 @@ export class RiskInterpreter {
     return {
       level: 'medium',
       title: 'Employees Cannot Access Their Balances',
-      description: 'Employees do not have a way to view their sick time balances.',
+      description:
+        'Employees do not have a way to view their sick time balances.',
       plainEnglish:
         'Michigan law requires that employees can access their sick time information. Not providing this access could lead to complaints and penalties.',
       actions: [
@@ -132,7 +136,10 @@ export class RiskInterpreter {
       description: 'A potential compliance issue has been identified.',
       plainEnglish:
         'This is a minor issue that should be addressed to maintain full compliance.',
-      actions: ['Review the specific concern', 'Take corrective action if needed'],
+      actions: [
+        'Review the specific concern',
+        'Take corrective action if needed',
+      ],
     };
   }
 

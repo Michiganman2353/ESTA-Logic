@@ -1,6 +1,6 @@
 /**
  * API Contracts Schema Validation Tests
- * 
+ *
  * Ensures all contract schemas correctly validate expected data
  */
 

@@ -1,6 +1,6 @@
 /**
  * ProgressIndicator - Visual progress tracking component
- * 
+ *
  * Purpose: Show user progress through journey in a clear, encouraging way
  * Provides both visual and textual progress feedback
  */
@@ -10,32 +10,32 @@ import React from 'react';
 export interface ProgressIndicatorProps {
   /** Current step (1-indexed) */
   currentStep: number;
-  
+
   /** Total steps */
   totalSteps: number;
-  
+
   /** Completed step IDs */
   completedSteps?: string[];
-  
+
   /** Show percentage */
   showPercentage?: boolean;
-  
+
   /** Show step numbers */
   showStepNumbers?: boolean;
-  
+
   /** Variant style */
   variant?: 'bar' | 'dots' | 'steps' | 'minimal';
-  
+
   /** Size */
   size?: 'small' | 'medium' | 'large';
-  
+
   /** Show encouragement message */
   showEncouragement?: boolean;
 }
 
 /**
  * Progress Indicator Component
- * 
+ *
  * Displays journey progress in various formats:
  * - Bar: Simple progress bar with percentage
  * - Dots: Step dots showing completion
@@ -50,7 +50,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
   showStepNumbers = true,
   variant = 'bar',
   size = 'medium',
-  showEncouragement = true
+  showEncouragement = true,
 }) => {
   const percentComplete = Math.round((currentStep / totalSteps) * 100);
   const stepsRemaining = totalSteps - currentStep;
@@ -63,9 +63,9 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
     } else if (percentComplete < 75) {
       return "You're halfway there! Looking good.";
     } else if (percentComplete < 100) {
-      return "Almost there! Just a few more steps.";
+      return 'Almost there! Just a few more steps.';
     } else {
-      return "All done! Great work.";
+      return 'All done! Great work.';
     }
   };
 
@@ -115,7 +115,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
             const stepNumber = i + 1;
             const isCompleted = stepNumber < currentStep;
             const isCurrent = stepNumber === currentStep;
-            
+
             return (
               <div
                 key={stepNumber}
@@ -134,9 +134,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
           })}
         </div>
         {showPercentage && (
-          <div className="dots-label">
-            {percentComplete}% complete
-          </div>
+          <div className="dots-label">{percentComplete}% complete</div>
         )}
       </div>
     );
@@ -151,7 +149,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
             const stepNumber = i + 1;
             const isCompleted = stepNumber < currentStep;
             const isCurrent = stepNumber === currentStep;
-            
+
             return (
               <div
                 key={stepNumber}
@@ -196,11 +194,11 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
 
 /**
  * Example CSS (to be implemented in actual stylesheet):
- * 
+ *
  * .progress-indicator {
  *   width: 100%;
  * }
- * 
+ *
  * // Bar variant
  * .progress-indicator.bar .progress-label {
  *   display: flex;
@@ -209,7 +207,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
  *   font-size: 0.875rem;
  *   color: #6a6a6a;
  * }
- * 
+ *
  * .progress-bar {
  *   width: 100%;
  *   height: 8px;
@@ -217,13 +215,13 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
  *   border-radius: 4px;
  *   overflow: hidden;
  * }
- * 
+ *
  * .progress-fill {
  *   height: 100%;
  *   background: linear-gradient(90deg, #2563eb, #3b82f6);
  *   transition: width 0.3s ease;
  * }
- * 
+ *
  * .encouragement-message {
  *   display: flex;
  *   align-items: center;
@@ -232,7 +230,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
  *   font-size: 0.875rem;
  *   color: #4a4a4a;
  * }
- * 
+ *
  * // Dots variant
  * .dots-container {
  *   display: flex;
@@ -240,7 +238,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
  *   gap: 12px;
  *   margin-bottom: 8px;
  * }
- * 
+ *
  * .progress-dot {
  *   width: 32px;
  *   height: 32px;
@@ -252,35 +250,35 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
  *   font-weight: 600;
  *   transition: all 0.2s ease;
  * }
- * 
+ *
  * .progress-dot.completed {
  *   background: #10b981;
  *   color: white;
  * }
- * 
+ *
  * .progress-dot.current {
  *   background: #2563eb;
  *   color: white;
  *   box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
  * }
- * 
+ *
  * .progress-dot.upcoming {
  *   background: #e5e7eb;
  *   color: #9ca3af;
  * }
- * 
+ *
  * // Steps variant
  * .steps-list {
  *   display: flex;
  *   align-items: center;
  * }
- * 
+ *
  * .step-item {
  *   display: flex;
  *   align-items: center;
  *   flex: 1;
  * }
- * 
+ *
  * .step-marker {
  *   width: 32px;
  *   height: 32px;
@@ -291,43 +289,43 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
  *   font-weight: 600;
  *   font-size: 0.875rem;
  * }
- * 
+ *
  * .step-item.completed .step-marker {
  *   background: #10b981;
  *   color: white;
  * }
- * 
+ *
  * .step-item.current .step-marker {
  *   background: #2563eb;
  *   color: white;
  * }
- * 
+ *
  * .step-item.upcoming .step-marker {
  *   background: #e5e7eb;
  *   color: #9ca3af;
  * }
- * 
+ *
  * .step-connector {
  *   flex: 1;
  *   height: 2px;
  *   background: #e5e7eb;
  *   margin: 0 8px;
  * }
- * 
+ *
  * .step-item:last-child .step-connector {
  *   display: none;
  * }
- * 
+ *
  * .step-item.completed .step-connector {
  *   background: #10b981;
  * }
- * 
+ *
  * // Minimal variant
  * .progress-indicator.minimal {
  *   font-size: 0.875rem;
  *   color: #6a6a6a;
  * }
- * 
+ *
  * .remaining-text {
  *   color: #9ca3af;
  * }

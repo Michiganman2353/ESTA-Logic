@@ -29,23 +29,28 @@ test.describe('Navigation', () => {
     }
 
     // Wait for any redirects or page loads to complete
-    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+    await page
+      .waitForLoadState('networkidle', { timeout: 10000 })
+      .catch(() => {});
 
     // Should redirect to login or home page, or stay on dashboard if authenticated
-    const waitResult = await page.waitForURL(/\/(login|dashboard|$)/, { timeout: 10000 }).catch(() => null);
+    const waitResult = await page
+      .waitForURL(/\/(login|dashboard|$)/, { timeout: 10000 })
+      .catch(() => null);
 
     // Either redirected to login or stayed on dashboard (if already authenticated) or home
     const currentUrl = page.url();
-    const isValidState = currentUrl.includes('/login') || 
-                        currentUrl.includes('/dashboard') || 
-                        currentUrl === 'http://localhost:5173/' ||
-                        currentUrl === 'http://localhost:5173';
-    
+    const isValidState =
+      currentUrl.includes('/login') ||
+      currentUrl.includes('/dashboard') ||
+      currentUrl === 'http://localhost:5173/' ||
+      currentUrl === 'http://localhost:5173';
+
     // Log for debugging
     if (!isValidState) {
       console.log('Unexpected URL state:', currentUrl);
     }
-    
+
     expect(isValidState).toBeTruthy();
   });
 

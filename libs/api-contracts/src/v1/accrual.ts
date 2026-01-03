@@ -1,6 +1,6 @@
 /**
  * Accrual & Balance API Contracts
- * 
+ *
  * Defines the contract for accrual and balance endpoints:
  * - GET /api/v1/accrual/balance/:userId
  * - GET /api/v1/accrual/work-logs/:userId
@@ -83,9 +83,15 @@ export type GetWorkLogsResponse = z.infer<typeof GetWorkLogsResponseSchema>;
 
 export const LogWorkHoursRequestSchema = z.object({
   userId: z.string(),
-  hours: z.number().positive().max(24, 'Cannot work more than 24 hours in a day'),
+  hours: z
+    .number()
+    .positive()
+    .max(24, 'Cannot work more than 24 hours in a day'),
   date: z.string().datetime(),
-  source: z.enum(['manual', 'quickbooks', 'adp', 'paychex']).optional().default('manual'),
+  source: z
+    .enum(['manual', 'quickbooks', 'adp', 'paychex'])
+    .optional()
+    .default('manual'),
 });
 
 export type LogWorkHoursRequest = z.infer<typeof LogWorkHoursRequestSchema>;

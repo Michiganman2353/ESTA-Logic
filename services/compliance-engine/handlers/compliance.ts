@@ -21,9 +21,7 @@ import type {
   ComplianceWarning,
 } from '../../../kernel/abi/messages';
 
-import type {
-  ComplianceExperienceResponse,
-} from '../../../libs/shared-types/src/ux-experience-contract.js';
+import type { ComplianceExperienceResponse } from '../../../libs/shared-types/src/ux-experience-contract.js';
 
 import { transformComplianceToExperience } from '../../../libs/shared-utils/src/experience-transformers.js';
 

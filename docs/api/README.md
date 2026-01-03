@@ -107,7 +107,7 @@ import { ExperienceResponseDisplay } from '@/components/ExperienceResponseDispla
 
 function AccrualPage() {
   const { data } = useAccrualExperience(userId);
-  
+
   return <ExperienceResponseDisplay experience={data} />;
 }
 ```
@@ -119,6 +119,7 @@ function AccrualPage() {
 ### 🎯 Frontend Never Interprets Backend Logic
 
 **Before:**
+
 ```typescript
 // ❌ Frontend guesses what violations mean
 if (violations.includes('CAP_EXCEEDED')) {
@@ -127,6 +128,7 @@ if (violations.includes('CAP_EXCEEDED')) {
 ```
 
 **After:**
+
 ```typescript
 // ✅ Backend provides complete narrative
 <Alert>{data.explanation}</Alert>
@@ -211,27 +213,27 @@ interface ExperienceResponse<TTechnical = unknown> {
 
 ## Decision Status Values
 
-| Status | When to Use |
-|--------|-------------|
-| `APPROVED` ✅ | User's action is accepted |
-| `DENIED` ❌ | User's action is rejected |
-| `NEEDS_INFORMATION` ℹ️ | Missing required data |
-| `PENDING_REVIEW` ⏳ | Awaiting approval |
-| `COMPLETED` ✔️ | Operation finished |
-| `WARNING` ⚠️ | Success with caveats |
-| `INFO` 📊 | Informational only |
+| Status                 | When to Use               |
+| ---------------------- | ------------------------- |
+| `APPROVED` ✅          | User's action is accepted |
+| `DENIED` ❌            | User's action is rejected |
+| `NEEDS_INFORMATION` ℹ️ | Missing required data     |
+| `PENDING_REVIEW` ⏳    | Awaiting approval         |
+| `COMPLETED` ✔️         | Operation finished        |
+| `WARNING` ⚠️           | Success with caveats      |
+| `INFO` 📊              | Informational only        |
 
 ---
 
 ## Risk Level Values
 
-| Risk | User Action | Example |
-|------|-------------|---------|
-| `NONE` ✅ | No action needed | Normal accrual |
-| `LOW` 🟡 | Optional review | Approaching max |
-| `MEDIUM` 🟠 | Review soon | Missing docs |
-| `HIGH` 🔴 | Action this week | Violation found |
-| `CRITICAL` 🚨 | Immediate action | Legal deadline |
+| Risk          | User Action      | Example         |
+| ------------- | ---------------- | --------------- |
+| `NONE` ✅     | No action needed | Normal accrual  |
+| `LOW` 🟡      | Optional review  | Approaching max |
+| `MEDIUM` 🟠   | Review soon      | Missing docs    |
+| `HIGH` 🔴     | Action this week | Violation found |
+| `CRITICAL` 🚨 | Immediate action | Legal deadline  |
 
 ---
 

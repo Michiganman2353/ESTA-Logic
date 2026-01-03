@@ -9,18 +9,22 @@ ESTA-Logic has undergone a strategic reset from a technology-first platform to a
 ## Philosophy Shift
 
 ### Before (Technology-First)
+
 ```
 User → Menu → Feature → Technical Complexity
 ```
+
 - Users navigate menus to find features
 - All functionality exposed equally
 - Technical details visible
 - User figures out their own path
 
 ### After (Experience-First)
+
 ```
 User → Guided Journey → Step → Confidence
 ```
+
 - System guides users through journeys
 - Features accessed through guided context
 - Technical details hidden
@@ -28,36 +32,43 @@ User → Guided Journey → Step → Confidence
 
 ## Directory Structure Mapping
 
-| Old Location | New Location | Purpose |
-|--------------|--------------|---------|
-| `apps/frontend/src/components/` | `app/ui/components/` | UI components (redesigned) |
-| `apps/frontend/src/pages/` | `app/pages/` | Page templates (journey-based) |
-| `apps/frontend/src/hooks/` | `app/state/` | State management (with auto-save) |
-| `apps/backend/src/routes/` | `app/core/navigation/` | Journey orchestration |
-| `apps/backend/src/services/` | `app/core/compliance/` | Business logic |
-| `libs/accrual-engine/` | `app/core/compliance/` | Compliance calculations |
+| Old Location                    | New Location           | Purpose                           |
+| ------------------------------- | ---------------------- | --------------------------------- |
+| `apps/frontend/src/components/` | `app/ui/components/`   | UI components (redesigned)        |
+| `apps/frontend/src/pages/`      | `app/pages/`           | Page templates (journey-based)    |
+| `apps/frontend/src/hooks/`      | `app/state/`           | State management (with auto-save) |
+| `apps/backend/src/routes/`      | `app/core/navigation/` | Journey orchestration             |
+| `apps/backend/src/services/`    | `app/core/compliance/` | Business logic                    |
+| `libs/accrual-engine/`          | `app/core/compliance/` | Compliance calculations           |
 
 ## Migration Phases
 
 ### Phase 1: Documentation ✅ (Complete)
+
 Strategic direction documents created, old tech docs archived.
 
 ### Phase 2: Core Architecture ✅ (Complete)
+
 New `app/` structure with core modules implemented.
 
 ### Phase 3: UI Components (Current)
+
 Migrate and redesign UI components for guided journeys.
 
 ### Phase 4: Journey Implementation
+
 Convert features into guided step-by-step journeys.
 
 ### Phase 5: Data Layer Integration
+
 Connect to Firebase, migrate state management.
 
 ### Phase 6: Feature Parity
+
 Ensure all existing features work in new structure.
 
 ### Phase 7: Deprecation
+
 Remove old structure, complete transition.
 
 ## Step-by-Step: Migrating a Feature
@@ -65,6 +76,7 @@ Remove old structure, complete transition.
 ### Example: Employer Onboarding
 
 #### Old Structure (Technology-First)
+
 ```typescript
 // apps/frontend/src/pages/EmployerSetup.tsx
 export function EmployerSetup() {
@@ -81,6 +93,7 @@ export function EmployerSetup() {
 ```
 
 **Problems:**
+
 - All forms shown at once (overwhelming)
 - No guidance or explanation
 - User must know what to do
@@ -90,6 +103,7 @@ export function EmployerSetup() {
 #### New Structure (Experience-First)
 
 **Step 1: Define the Journey**
+
 ```typescript
 // app/core/navigation/journeys/employer-onboarding.ts
 import { Journey } from '../GuidedFlowEngine';
@@ -102,15 +116,16 @@ export const employerOnboardingJourney: Journey = {
     {
       id: 'welcome',
       title: 'Welcome to ESTA-Logic',
-      description: 'Let\'s get you set up',
+      description: "Let's get you set up",
       component: 'WelcomeStep',
       validation: [],
       guidance: {
-        message: "You're in the right place. We'll walk you through setup one step at a time."
+        message:
+          "You're in the right place. We'll walk you through setup one step at a time.",
       },
       nextStep: 'company-info',
       canSkip: false,
-      estimatedTime: 30
+      estimatedTime: 30,
     },
     {
       id: 'company-info',
@@ -118,25 +133,30 @@ export const employerOnboardingJourney: Journey = {
       description: 'Basic information',
       component: 'CompanyInfoStep',
       validation: [
-        { field: 'companyName', type: 'required', message: 'Company name is required' }
+        {
+          field: 'companyName',
+          type: 'required',
+          message: 'Company name is required',
+        },
       ],
       guidance: {
-        message: "This helps us customize your compliance requirements.",
-        helpText: "We only collect what's needed."
+        message: 'This helps us customize your compliance requirements.',
+        helpText: "We only collect what's needed.",
       },
       nextStep: 'employee-count',
       canSkip: false,
-      estimatedTime: 60
-    }
+      estimatedTime: 60,
+    },
     // ... more steps
   ],
   branchingLogic: [],
   entryConditions: [],
-  exitConditions: []
+  exitConditions: [],
 };
 ```
 
 **Step 2: Create Step Components**
+
 ```typescript
 // app/ui/steps/CompanyInfoStep.tsx
 import { ConfidenceMessages } from '../../ui/reassurance/confidence-messages';
@@ -151,16 +171,16 @@ export function CompanyInfoStep({ onNext, onBack }) {
       progress={{ current: 2, total: 5 }}
       guidance={guidance}
     >
-      <CompanyInfoForm 
+      <CompanyInfoForm
         data={data}
         onChange={setData}
       />
-      
+
       <StepNavigation>
         <BackButton onClick={onBack} />
         <NextButton onClick={() => onNext(data)} />
       </StepNavigation>
-      
+
       <TrustIndicators>
         <TrustIndicator type="encrypted" />
         <TrustIndicator type="saved" />
@@ -171,6 +191,7 @@ export function CompanyInfoStep({ onNext, onBack }) {
 ```
 
 **Step 3: Create Page Container**
+
 ```typescript
 // app/pages/Guided-Setup/EmployerOnboarding.tsx
 import { guidedFlowEngine } from '../../core/navigation/GuidedFlowEngine';
@@ -184,7 +205,7 @@ export function EmployerOnboardingPage() {
     // Start or resume journey
     const startJourney = async () => {
       const existing = guidedSessionStore.getActiveSession(userId);
-      
+
       if (existing) {
         // Resume
         const step = await guidedFlowEngine.loadProgress(userId);
@@ -209,7 +230,7 @@ export function EmployerOnboardingPage() {
   const handleNext = async (stepData) => {
     // Update session
     guidedSessionStore.updateProgress(session.id, currentStep.id, stepData);
-    
+
     // Move to next step
     const nextStep = await guidedFlowEngine.next(stepData);
     setCurrentStep(nextStep);
@@ -226,7 +247,7 @@ export function EmployerOnboardingPage() {
   return (
     <GuidedJourneyContainer>
       <ProgressBar {...guidedFlowEngine.getProgress()} />
-      <StepComponent 
+      <StepComponent
         onNext={handleNext}
         onBack={handleBack}
       />
@@ -240,6 +261,7 @@ export function EmployerOnboardingPage() {
 ### State Management
 
 #### Old Way
+
 ```typescript
 // Manual state management
 const [companyName, setCompanyName] = useState('');
@@ -248,11 +270,12 @@ const [employeeCount, setEmployeeCount] = useState(0);
 ```
 
 #### New Way
+
 ```typescript
 // Automatic with guided session store
 guidedSessionStore.updateProgress(sessionId, stepId, {
   companyName: 'Acme',
-  employeeCount: 10
+  employeeCount: 10,
 });
 // Auto-saved every 2 seconds!
 ```
@@ -260,6 +283,7 @@ guidedSessionStore.updateProgress(sessionId, stepId, {
 ### Validation
 
 #### Old Way
+
 ```typescript
 // Manual validation in form
 if (!companyName) {
@@ -269,6 +293,7 @@ if (!companyName) {
 ```
 
 #### New Way
+
 ```typescript
 // Declarative validation in journey definition
 {
@@ -282,15 +307,17 @@ if (!companyName) {
 ### User Guidance
 
 #### Old Way
+
 ```typescript
 // Static help text
-<FormField 
+<FormField
   label="Company Name"
   helperText="Enter your company name"
 />
 ```
 
 #### New Way
+
 ```typescript
 // Context-aware guidance
 const guidance = ConfidenceMessages.getMessage('guidance.companyInfo');
@@ -304,6 +331,7 @@ const guidance = ConfidenceMessages.getMessage('guidance.companyInfo');
 ### Security Display
 
 #### Old Way
+
 ```typescript
 // Security hidden
 <FileUpload onUpload={handleUpload} />
@@ -311,6 +339,7 @@ const guidance = ConfidenceMessages.getMessage('guidance.companyInfo');
 ```
 
 #### New Way
+
 ```typescript
 // Security visible and reassuring
 <FileUpload onUpload={handleUpload}>
@@ -371,8 +400,8 @@ For each feature to migrate:
   // ...
   nextStep: (data) => {
     const count = data['employee-count']?.employeeCount;
-    return count < 10 
-      ? 'small-employer-policy' 
+    return count < 10
+      ? 'small-employer-policy'
       : 'large-employer-policy';
   }
 }
@@ -381,6 +410,7 @@ For each feature to migrate:
 ### Pattern 2: Multi-Step Forms
 
 Instead of one large form, break into:
+
 1. Basic info (30 seconds)
 2. Details (1 minute)
 3. Review (30 seconds)
@@ -411,26 +441,26 @@ Each step auto-saves, shows progress, provides guidance.
 describe('Employer Onboarding Journey', () => {
   it('guides user through all steps', async () => {
     await guidedFlowEngine.start('employer-onboarding', userId);
-    
+
     // Step 1: Welcome
     expect(currentStep.id).toBe('welcome');
-    
+
     // Step 2: Company info
     await guidedFlowEngine.next({});
     expect(currentStep.id).toBe('company-info');
-    
+
     // ... test each step
   });
 
   it('saves progress automatically', async () => {
     const session = guidedSessionStore.createSession(/*...*/);
-    
+
     // Update data
     guidedSessionStore.updateProgress(session.id, 'step-1', { data });
-    
+
     // Wait for auto-save
     await wait(2500);
-    
+
     // Verify saved
     const saved = guidedSessionStore.getSession(session.id);
     expect(saved.state.stepData['step-1']).toEqual({ data });

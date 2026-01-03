@@ -1,9 +1,9 @@
 /**
  * Trust Layer - Security with Psychological Reassurance
- * 
+ *
  * This module implements security measures that are visible and reassuring to users.
  * Instead of hiding security, we make it transparent to build confidence.
- * 
+ *
  * Philosophy: "Security that builds comfort, not friction."
  */
 
@@ -64,15 +64,15 @@ export class TrustLayer {
   static getEncryptionIndicator(encrypted: boolean = true): TrustIndicator {
     return {
       type: 'encrypted',
-      message: encrypted 
+      message: encrypted
         ? '🔒 Your data is encrypted and secure'
         : '⚠️ Data is not encrypted',
-      details: encrypted 
+      details: encrypted
         ? 'We use bank-level AES-256 encryption to protect your information'
         : 'This data should be encrypted for security',
       icon: encrypted ? '🔒' : '⚠️',
       variant: encrypted ? 'success' : 'warning',
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -82,15 +82,15 @@ export class TrustLayer {
   static getSavedIndicator(saved: boolean = true): TrustIndicator {
     return {
       type: 'saved',
-      message: saved 
+      message: saved
         ? '✓ Safely saved and backed up'
         : '⚠️ Changes not yet saved',
-      details: saved 
+      details: saved
         ? 'Your progress is automatically saved and securely backed up'
         : 'Please save your changes to continue',
       icon: saved ? '✓' : '⚠️',
       variant: saved ? 'success' : 'warning',
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -100,15 +100,13 @@ export class TrustLayer {
   static getVerifiedIndicator(verified: boolean = true): TrustIndicator {
     return {
       type: 'verified',
-      message: verified 
-        ? '✓ Verified and validated'
-        : 'Pending verification',
-      details: verified 
+      message: verified ? '✓ Verified and validated' : 'Pending verification',
+      details: verified
         ? 'This information has been checked and verified'
         : 'Verification in progress',
       icon: verified ? '✓' : '⏳',
       variant: verified ? 'success' : 'info',
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -118,15 +116,13 @@ export class TrustLayer {
   static getAuditIndicator(audited: boolean = true): TrustIndicator {
     return {
       type: 'audited',
-      message: audited 
-        ? '📋 Audit trail maintained'
-        : 'Audit trail pending',
-      details: audited 
+      message: audited ? '📋 Audit trail maintained' : 'Audit trail pending',
+      details: audited
         ? 'All changes are logged for compliance and transparency'
         : 'Audit logging will be activated shortly',
       icon: audited ? '📋' : '⏳',
       variant: audited ? 'success' : 'info',
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -136,15 +132,15 @@ export class TrustLayer {
   static getProtectionIndicator(protected: boolean = true): TrustIndicator {
     return {
       type: 'protected',
-      message: protected 
+      message: protected
         ? '🛡️ Access controlled and monitored'
         : '⚠️ Access control needed',
-      details: protected 
+      details: protected
         ? 'Access to this resource is restricted and monitored for security'
         : 'This resource needs access control',
       icon: protected ? '🛡️' : '⚠️',
       variant: protected ? 'success' : 'warning',
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 
@@ -164,7 +160,7 @@ export class TrustLayer {
       encrypted = true,
       audited = true,
       restricted = true,
-      allowedRoles = []
+      allowedRoles = [],
     } = options;
 
     return {
@@ -172,16 +168,16 @@ export class TrustLayer {
       encryption: {
         enabled: encrypted,
         algorithm: encrypted ? 'AES-256-GCM' : undefined,
-        keyId: encrypted ? `key-${resourceId}` : undefined
+        keyId: encrypted ? `key-${resourceId}` : undefined,
       },
       audit: {
         enabled: audited,
-        logId: audited ? `audit-${resourceId}` : undefined
+        logId: audited ? `audit-${resourceId}` : undefined,
       },
       access: {
         restricted,
-        allowedRoles
-      }
+        allowedRoles,
+      },
     };
   }
 
@@ -202,7 +198,7 @@ export class TrustLayer {
       resource,
       timestamp: new Date(),
       success,
-      details
+      details,
     };
   }
 
@@ -254,24 +250,22 @@ export class TrustLayer {
 
     return {
       allowed,
-      reason: allowed 
-        ? undefined 
-        : `Access restricted to: ${allowedRoles.join(', ')}`
+      reason: allowed
+        ? undefined
+        : `Access restricted to: ${allowedRoles.join(', ')}`,
     };
   }
 
   /**
    * Get trust indicators for a complete operation
    */
-  static getOperationTrustIndicators(
-    operation: {
-      encrypted?: boolean;
-      saved?: boolean;
-      verified?: boolean;
-      audited?: boolean;
-      protected?: boolean;
-    }
-  ): TrustIndicator[] {
+  static getOperationTrustIndicators(operation: {
+    encrypted?: boolean;
+    saved?: boolean;
+    verified?: boolean;
+    audited?: boolean;
+    protected?: boolean;
+  }): TrustIndicator[] {
     const indicators: TrustIndicator[] = [];
 
     if (operation.encrypted !== undefined) {
@@ -334,7 +328,7 @@ export function formatTrustIndicator(indicator: TrustIndicator): string {
 
 /**
  * Example usage in a component:
- * 
+ *
  * ```typescript
  * const securityStatus = TrustLayer.getSecurityStatus('document-123', {
  *   encrypted: true,
@@ -342,13 +336,13 @@ export function formatTrustIndicator(indicator: TrustIndicator): string {
  *   restricted: true,
  *   allowedRoles: ['employer', 'admin']
  * });
- * 
+ *
  * const indicators = TrustLayer.getOperationTrustIndicators({
  *   encrypted: true,
  *   saved: true,
  *   verified: true
  * });
- * 
+ *
  * // Display in UI
  * indicators.forEach(indicator => {
  *   console.log(formatTrustIndicator(indicator));

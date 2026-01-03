@@ -23,7 +23,10 @@ export class DecisionEngine {
   /**
    * Explain a decision with reasoning
    */
-  static explain(reason: string, context?: Record<string, unknown>): DecisionExplanation {
+  static explain(
+    reason: string,
+    context?: Record<string, unknown>
+  ): DecisionExplanation {
     return {
       recommendation: this.getRecommendation(reason, context),
       why: reason,
@@ -35,9 +38,12 @@ export class DecisionEngine {
   /**
    * Get recommendation text based on reason
    */
-  private static getRecommendation(reason: string, context?: Record<string, unknown>): string {
+  private static getRecommendation(
+    reason: string,
+    context?: Record<string, unknown>
+  ): string {
     const employeeCount = context?.employeeCount as number | undefined;
-    
+
     if (reason.includes('size') && employeeCount) {
       if (employeeCount > 50) {
         return 'Based on your organization size and legal requirements, we recommend the comprehensive tracking system.';
@@ -45,7 +51,7 @@ export class DecisionEngine {
         return 'Based on your organization size, we recommend the standard tracking system.';
       }
     }
-    
+
     return 'Based on your organization size and legal requirements, we recommend this approach for optimal compliance.';
   }
 
@@ -73,23 +79,23 @@ export class DecisionEngine {
     context?: Record<string, unknown>
   ): string[] {
     const factors: string[] = [];
-    
+
     if (context?.employeeCount) {
       factors.push(`Organization size: ${context.employeeCount} employees`);
     }
-    
+
     if (context?.industry) {
       factors.push(`Industry: ${context.industry}`);
     }
-    
+
     if (reason.includes('legal')) {
       factors.push('Michigan ESTA legal requirements');
     }
-    
+
     if (reason.includes('best')) {
       factors.push('Industry best practices');
     }
-    
+
     return factors;
   }
 
@@ -102,7 +108,7 @@ export class DecisionEngine {
   ): DecisionExplanation {
     const threshold = 50;
     const isLargeEmployer = employeeCount > threshold;
-    
+
     return {
       recommendation: isLargeEmployer
         ? 'We recommend implementing the comprehensive sick time policy with advanced tracking.'
@@ -126,8 +132,11 @@ export class DecisionEngine {
    * Explain accrual rate recommendation
    */
   static explainAccrualRate(employeeCount: number): DecisionExplanation {
-    const rate = employeeCount > 50 ? '1 hour per 30 hours worked' : '1 hour per 35 hours worked';
-    
+    const rate =
+      employeeCount > 50
+        ? '1 hour per 30 hours worked'
+        : '1 hour per 35 hours worked';
+
     return {
       recommendation: `Recommended accrual rate: ${rate}`,
       why: 'This rate ensures compliance with Michigan ESTA requirements based on your organization size.',

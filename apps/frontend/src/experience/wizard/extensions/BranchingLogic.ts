@@ -37,7 +37,7 @@ export class BranchingLogic {
     userData: Record<string, unknown>
   ): string | null {
     const branch = this.branches.get(currentStep);
-    
+
     if (!branch) {
       return null; // No branching for this step
     }

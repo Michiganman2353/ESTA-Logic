@@ -108,17 +108,20 @@ This document serves as the central reference for all ESTA Tracker design files 
 ### Future Workflow (When Figma Files Available)
 
 **Figma → Code**:
+
 - Design tokens exported from Figma Variables
 - Components designed in Figma first
 - Developers implement from Figma specs
 - Automated token sync pipeline
 
 **Code → Figma**:
+
 - Component state changes reflected in Figma
 - Token updates propagated to Figma Variables
 - Living documentation in Figma
 
 **Sync Tools**:
+
 - [Figma API](https://www.figma.com/developers/api) for automation
 - [Style Dictionary](https://amzn.github.io/style-dictionary/) for token transformation
 - CI/CD integration for automated sync
@@ -148,6 +151,7 @@ This document serves as the central reference for all ESTA Tracker design files 
    - Submit for design review
 
 **Design Review Process**:
+
 - Share Figma link in PR or design discussion
 - Ensure design uses established tokens
 - Validate accessibility (contrast, text size, keyboard nav)
@@ -183,14 +187,14 @@ This document serves as the central reference for all ESTA Tracker design files 
 
 ### Current State (Code-Based Design)
 
-| Asset Type | Current Location | Future Figma Location |
-|------------|------------------|----------------------|
-| **Design Tokens** | `apps/frontend/src/design-tokens/` | Figma Variables (planned) |
+| Asset Type          | Current Location                   | Future Figma Location             |
+| ------------------- | ---------------------------------- | --------------------------------- |
+| **Design Tokens**   | `apps/frontend/src/design-tokens/` | Figma Variables (planned)         |
 | **Component Specs** | `docs/design/COMPONENT_LIBRARY.md` | Figma Component Library (planned) |
-| **User Flows** | `docs/design/storyboards/` | Figma Storyboards (planned) |
-| **Icons** | `apps/frontend/public/icons/` | Figma Icon Library (planned) |
-| **Logo/Brand** | `apps/frontend/public/images/` | Figma Brand Assets (planned) |
-| **Screenshots** | Not yet captured | Figma prototypes (planned) |
+| **User Flows**      | `docs/design/storyboards/`         | Figma Storyboards (planned)       |
+| **Icons**           | `apps/frontend/public/icons/`      | Figma Icon Library (planned)      |
+| **Logo/Brand**      | `apps/frontend/public/images/`     | Figma Brand Assets (planned)      |
+| **Screenshots**     | Not yet captured                   | Figma prototypes (planned)        |
 
 ---
 
@@ -250,13 +254,16 @@ When a new Figma design file is created:
 1. **Create the file** in the ESTA Tracker Figma workspace
 2. **Set permissions** to allow team access
 3. **Add link to this document**:
+
    ```markdown
    **[File Name]**
+
    - **Status**: 🚧 In Development | ✅ Complete
    - **Figma Link**: [View in Figma](https://figma.com/file/...)
    - **Description**: Brief description
    - **Related Code**: Path to implementation
    ```
+
 4. **Submit PR** updating this document
 5. **Notify team** in design channel
 
@@ -309,6 +316,7 @@ If you need a design file that doesn't exist yet:
 **Maintained By**: ESTA Tracker Design Team
 
 **Status Legend**:
+
 - 🚧 In Development — Work in progress
 - ✅ Complete — Ready to use
 - 📅 Planned — On roadmap

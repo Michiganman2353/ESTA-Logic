@@ -1,6 +1,6 @@
 /**
  * EnhancedWizardStep Component
- * 
+ *
  * Wrapper component that adds TurboTax-style UX enhancements to wizard steps:
  * - Trust badges and security signals
  * - Decision explanations with confidence scores
@@ -42,7 +42,9 @@ export default function EnhancedWizardStep({
 }: EnhancedWizardStepProps) {
   return (
     <PageTransition>
-      <div className={`enhanced-wizard-step mx-auto max-w-4xl px-4 py-8 ${className}`}>
+      <div
+        className={`enhanced-wizard-step mx-auto max-w-4xl px-4 py-8 ${className}`}
+      >
         {/* Progress Indicator */}
         {stepNumber !== undefined && totalSteps !== undefined && (
           <div className="mb-6">
@@ -50,7 +52,9 @@ export default function EnhancedWizardStep({
               <span>
                 Step {stepNumber} of {totalSteps}
               </span>
-              <span>{Math.round((stepNumber / totalSteps) * 100)}% Complete</span>
+              <span>
+                {Math.round((stepNumber / totalSteps) * 100)}% Complete
+              </span>
             </div>
             <div className="mt-2 h-2 overflow-hidden rounded-full bg-gray-200">
               <div
@@ -121,8 +125,8 @@ export default function EnhancedWizardStep({
             </svg>
             <div className="flex-1">
               <p className="text-sm text-blue-900">
-                <strong>Your progress is automatically saved.</strong> You can leave and
-                return anytime without losing your work.
+                <strong>Your progress is automatically saved.</strong> You can
+                leave and return anytime without losing your work.
               </p>
             </div>
           </div>

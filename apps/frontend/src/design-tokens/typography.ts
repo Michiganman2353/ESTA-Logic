@@ -1,9 +1,9 @@
 /**
  * ESTA Tracker Design Tokens - Typography
- * 
+ *
  * Centralized typography system for consistent text styling.
  * Defines font families, sizes, weights, and line heights.
- * 
+ *
  * @see docs/design/DESIGN_TOKENS.md for usage guidelines
  */
 
@@ -14,10 +14,10 @@
 export const fontFamilies = {
   // Primary sans-serif stack for UI
   sans: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-  
+
   // Monospace stack for code
   mono: '"JetBrains Mono", "Fira Code", Consolas, Monaco, "Courier New", monospace',
-  
+
   // Serif stack for special use cases
   serif: 'Georgia, Cambria, "Times New Roman", Times, serif',
 } as const;
@@ -28,21 +28,21 @@ export const fontFamilies = {
  */
 export const fontSizes = {
   // Display & Hero Text
-  '6xl': '3.75rem',    // 60px - Hero headings
-  '5xl': '3rem',       // 48px - Major headings
-  '4xl': '2.25rem',    // 36px - Page titles
-  '3xl': '1.875rem',   // 30px - Section headings
-  
+  '6xl': '3.75rem', // 60px - Hero headings
+  '5xl': '3rem', // 48px - Major headings
+  '4xl': '2.25rem', // 36px - Page titles
+  '3xl': '1.875rem', // 30px - Section headings
+
   // Headings
-  '2xl': '1.5rem',     // 24px - H2
-  'xl': '1.25rem',     // 20px - H3
-  'lg': '1.125rem',    // 18px - H4
-  
+  '2xl': '1.5rem', // 24px - H2
+  xl: '1.25rem', // 20px - H3
+  lg: '1.125rem', // 18px - H4
+
   // Body Text
-  'base': '1rem',      // 16px - Body default
-  'sm': '0.875rem',    // 14px - Small text, labels
-  'xs': '0.75rem',     // 12px - Captions, meta
-  'xxs': '0.625rem',   // 10px - Tiny text (rare)
+  base: '1rem', // 16px - Body default
+  sm: '0.875rem', // 14px - Small text, labels
+  xs: '0.75rem', // 12px - Captions, meta
+  xxs: '0.625rem', // 10px - Tiny text (rare)
 } as const;
 
 /**
@@ -73,16 +73,16 @@ export const lineHeights = {
   normal: 1.5,
   relaxed: 1.625,
   loose: 2,
-  
+
   // Fixed (for precise control)
-  '3': '0.75rem',      // 12px
-  '4': '1rem',         // 16px
-  '5': '1.25rem',      // 20px
-  '6': '1.5rem',       // 24px
-  '7': '1.75rem',      // 28px
-  '8': '2rem',         // 32px
-  '9': '2.25rem',      // 36px
-  '10': '2.5rem',      // 40px
+  '3': '0.75rem', // 12px
+  '4': '1rem', // 16px
+  '5': '1.25rem', // 20px
+  '6': '1.5rem', // 24px
+  '7': '1.75rem', // 28px
+  '8': '2rem', // 32px
+  '9': '2.25rem', // 36px
+  '10': '2.5rem', // 40px
 } as const;
 
 /**
@@ -122,7 +122,7 @@ export const textStyles = {
     lineHeight: lineHeights.snug,
     letterSpacing: letterSpacing.tight,
   },
-  
+
   // Heading styles
   h1: {
     fontSize: fontSizes['4xl'],
@@ -148,7 +148,7 @@ export const textStyles = {
     lineHeight: lineHeights.normal,
     letterSpacing: letterSpacing.normal,
   },
-  
+
   // Body styles
   bodyLarge: {
     fontSize: fontSizes.lg,
@@ -168,7 +168,7 @@ export const textStyles = {
     lineHeight: lineHeights.normal,
     letterSpacing: letterSpacing.normal,
   },
-  
+
   // Specialized styles
   label: {
     fontSize: fontSizes.sm,

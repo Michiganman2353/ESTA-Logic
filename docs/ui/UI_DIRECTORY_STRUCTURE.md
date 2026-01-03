@@ -55,12 +55,14 @@ components/DesignSystem/
 ```
 
 **Key Features**:
+
 - Built on design tokens (colors, spacing, typography)
 - Fully accessible (WCAG 2.1 AA compliant)
 - Comprehensive prop interfaces
 - Complete test coverage
 
 **Example Usage**:
+
 ```tsx
 import { Button, Card } from '@/components/DesignSystem';
 
@@ -68,7 +70,7 @@ import { Button, Card } from '@/components/DesignSystem';
   <Button variant="primary" size="lg">
     Continue →
   </Button>
-</Card>
+</Card>;
 ```
 
 ### UI Components
@@ -135,6 +137,7 @@ pages/
 ```
 
 **Routing Pattern**:
+
 - Each page maps to a route in the application
 - Pages compose components from `components/` and `experience/`
 - Pages manage route-level state and data fetching
@@ -212,6 +215,7 @@ experience/
 ```
 
 **Philosophy**:
+
 - **Wizard**: Step-by-step guided experiences (TurboTax model)
 - **Intelligence**: Smart assistance and personalization
 - **Tone**: Emotional, reassuring, confidence-building copy
@@ -266,6 +270,7 @@ features/document-capture/
 ```
 
 **Features**:
+
 - Edge detection & perspective correction
 - Client-side AES-GCM encryption
 - Native mobile camera integration (Capacitor)
@@ -294,15 +299,16 @@ design-tokens/
 
 **Token Categories**:
 
-| File | Purpose | Examples |
-|------|---------|----------|
-| `colors.ts` | Brand colors, semantic colors, scales | Trust Blue, Compliance Green, Navy Deep |
-| `typography.ts` | Font system | Inter font family, 12px–60px scale |
-| `spacing.ts` | Layout spacing | 8px base grid, component presets |
-| `shadows.ts` | Depth & elevation | Card shadows, button elevation |
-| `borders.ts` | Border styling | 8px buttons, 18px cards |
+| File            | Purpose                               | Examples                                |
+| --------------- | ------------------------------------- | --------------------------------------- |
+| `colors.ts`     | Brand colors, semantic colors, scales | Trust Blue, Compliance Green, Navy Deep |
+| `typography.ts` | Font system                           | Inter font family, 12px–60px scale      |
+| `spacing.ts`    | Layout spacing                        | 8px base grid, component presets        |
+| `shadows.ts`    | Depth & elevation                     | Card shadows, button elevation          |
+| `borders.ts`    | Border styling                        | 8px buttons, 18px cards                 |
 
 **Usage Example**:
+
 ```tsx
 import { colors, spacing, typography } from '@/design-tokens';
 
@@ -314,6 +320,7 @@ const styles = {
 ```
 
 **Design Token Benefits**:
+
 - ✅ Consistency across entire application
 - ✅ Easy theme changes (update once, apply everywhere)
 - ✅ Design-engineering synchronization
@@ -611,7 +618,7 @@ types/
 
 // ✅ Design token usage
 import { colors, spacing } from '@/design-tokens';
-<button style={{ 
+<button style={{
   color: colors.semanticColors.trustBlue,
   padding: `${spacing[3]} ${spacing[6]}`
 }}>
@@ -661,16 +668,18 @@ import { colors, spacing } from '@/design-tokens';
    - Experience module? → `experience/`
 
 2. **Use Design Tokens**:
+
    ```tsx
    import { colors, spacing, typography } from '@/design-tokens';
    ```
 
 3. **Write Tests**:
+
    ```tsx
    // Component.test.tsx
    import { render, screen } from '@testing-library/react';
    import { Component } from './Component';
-   
+
    test('renders correctly', () => {
      render(<Component />);
      expect(screen.getByText('Hello')).toBeInTheDocument();
@@ -686,6 +695,7 @@ import { colors, spacing } from '@/design-tokens';
 ### Working with the Wizard
 
 1. **Create New Step**:
+
    ```tsx
    // experience/wizard/steps/MyNewStep.tsx
    export const MyNewStep = () => {
@@ -702,10 +712,11 @@ import { colors, spacing } from '@/design-tokens';
    ```
 
 2. **Register Step**:
+
    ```tsx
    // experience/wizard/core/stepRegistry.ts
    import { MyNewStep } from '../steps/MyNewStep';
-   
+
    export const steps = [
      // ... other steps
      { id: 'my-new-step', component: MyNewStep },
@@ -715,11 +726,13 @@ import { colors, spacing } from '@/design-tokens';
 ### Styling Components
 
 **Tailwind CSS** (primary):
+
 ```tsx
 <div className="rounded-lg bg-blue-600 px-6 py-3 text-white">
 ```
 
 **Design Tokens** (for precise control):
+
 ```tsx
 import { colors, spacing } from '@/design-tokens';
 
@@ -730,6 +743,7 @@ const styles = {
 ```
 
 **CSS Modules** (for complex styles):
+
 ```css
 /* Component.module.css */
 .container {
@@ -758,18 +772,18 @@ const styles = {
 
 ### Quick Reference Table
 
-| Component Type | Location | Example |
-|----------------|----------|---------|
-| **Design System** | `components/DesignSystem/` | Button, Card, Tooltip |
-| **Forms** | `components/` | FormField, PasswordField, Input |
-| **Data Display** | `components/` | AccrualChart, Calendar, DashboardWidgets |
-| **Navigation** | `components/` | Navigation, Stepper |
-| **Wizards** | `experience/wizard/` | WizardEngine, step components |
-| **Trust Signals** | `experience/trust/` | SecuritySignals, EncryptionIndicator |
-| **Emotional UX** | `experience/tone/` | EmotionalUXWriter, NarrativeLibrary |
-| **Pages** | `pages/` | Landing, Dashboard, Settings |
-| **Business Logic** | `lib/` | rulesEngine, accrualCalculations |
-| **Services** | `services/` | firebase, auditService |
+| Component Type     | Location                   | Example                                  |
+| ------------------ | -------------------------- | ---------------------------------------- |
+| **Design System**  | `components/DesignSystem/` | Button, Card, Tooltip                    |
+| **Forms**          | `components/`              | FormField, PasswordField, Input          |
+| **Data Display**   | `components/`              | AccrualChart, Calendar, DashboardWidgets |
+| **Navigation**     | `components/`              | Navigation, Stepper                      |
+| **Wizards**        | `experience/wizard/`       | WizardEngine, step components            |
+| **Trust Signals**  | `experience/trust/`        | SecuritySignals, EncryptionIndicator     |
+| **Emotional UX**   | `experience/tone/`         | EmotionalUXWriter, NarrativeLibrary      |
+| **Pages**          | `pages/`                   | Landing, Dashboard, Settings             |
+| **Business Logic** | `lib/`                     | rulesEngine, accrualCalculations         |
+| **Services**       | `services/`                | firebase, auditService                   |
 
 ---
 

@@ -1,9 +1,9 @@
 name: ESTA Tracker CI/CD
 
-# Dual-Runtime Enforcement Strategy:
-# - Node 22.x: Development authority (lint, typecheck, unit tests)
-# - Node 20.x: Production authority (build validation, Vercel runtime parity)
-# This ensures modern development velocity while guaranteeing deployment compatibility.
+# Dual-Runtime Strategy:
+# - Node 22.x: Authoritative runtime for development AND deployment
+# - Node 20.x: Compatibility validation only (ensures backward compatibility)
+# This ensures deterministic production behavior while maintaining compatibility assurance.
 
 on:
   push:

@@ -7,6 +7,7 @@
 ---
 
 > **🎯 Strategic Direction Alignment:** This engineering ecosystem vision now serves our higher purpose — transforming ESTA-Logic into a TurboTax-style guided compliance experience. While technical excellence remains paramount, **every architectural decision must serve the user experience first.** See:
+>
 > - [Experience Vision](./Experience-Vision.md) — Product direction
 > - [Experience-First Architecture](./Experience-First-Architecture.md) — UX-driven architecture
 > - [Strategic Roadmap](./ROADMAP.md) — Implementation phases
