@@ -107,7 +107,11 @@
     "undici": "^6.21.0",
     "@vercel/node": {
       "path-to-regexp": "6.3.0"
-    }
+    },
+    "glob": "^10.0.0",
+    "inflight": "npm:@alcalzone/inflight@^1.0.0",
+    "svgo": "^3.0.0",
+    "stable": "npm:@exodus/stable@^1.0.0"
   },
   "engines": {
     "node": "22.x",
