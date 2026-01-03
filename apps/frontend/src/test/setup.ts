@@ -5,8 +5,7 @@
 // Must run BEFORE importing @testing-library/jest-dom or any React code
 // React DOM checks navigator.userAgent during module initialization
 if (typeof globalThis.navigator === 'undefined') {
-  // @ts-ignore - globalThis.navigator doesn't exist yet
-  globalThis.navigator = {};
+  globalThis.navigator = {} as Navigator;
 }
 if (!globalThis.navigator.userAgent) {
   Object.defineProperty(globalThis.navigator, 'userAgent', {

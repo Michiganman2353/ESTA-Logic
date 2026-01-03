@@ -5,8 +5,9 @@
 
 export async function setup() {
   // Ensure navigator.userAgent exists before React DOM loads
+  // Note: This runs in Node.js context, not in the test environment
+  // so it won't fix the React DOM issue, but kept for completeness
   if (typeof globalThis.navigator === 'undefined') {
-    // @ts-ignore - Creating navigator if it doesn't exist
     globalThis.navigator = {} as Navigator;
   }
 
