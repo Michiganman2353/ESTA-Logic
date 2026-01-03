@@ -24,6 +24,14 @@ if [ ! -d "$PROJECT_DIR" ]; then
   exit 1
 fi
 
+# Check if gleam is installed
+if ! command -v gleam &> /dev/null; then
+  echo "⚠️  Gleam compiler not found - skipping Gleam tests"
+  echo "Note: Gleam tests will run in CI where the compiler is installed"
+  echo "To run locally, install Gleam: https://gleam.run/getting-started/installing/"
+  exit 0
+fi
+
 # Change to project directory
 cd "$PROJECT_DIR"
 
