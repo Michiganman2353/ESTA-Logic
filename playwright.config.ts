@@ -11,8 +11,6 @@ import { defineConfig, devices } from '@playwright/test';
  */
 export default defineConfig({
   testDir: './e2e',
-  /* Global setup for authenticated tests */
-  globalSetup: './e2e/global-setup.ts',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -34,8 +32,8 @@ export default defineConfig({
     /* Increase default navigation timeout */
     navigationTimeout: 30000,
   },
-  /* Global timeout for each test - increased for CI stability */
-  timeout: process.env.CI ? 90000 : 60000,
+  /* Global timeout for each test */
+  timeout: 60000,
 
   /* Configure projects for major browsers */
   projects: [
@@ -81,7 +79,7 @@ export default defineConfig({
     command: 'npm run dev:frontend',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
-    timeout: 240 * 1000, // Increased timeout for CI stability
+    timeout: 120 * 1000,
     stdout: 'pipe',
     stderr: 'pipe',
   },

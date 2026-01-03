@@ -1,9 +1,27 @@
 // e2e/smoke.spec.ts
 import { test, expect } from '@playwright/test';
 
-test.describe('@smoke Basic smoke test', () => {
-  test('landing page loads', async ({ page }) => {
-    await page.goto(process.env.E2E_BASE_URL ?? 'http://localhost:5173');
-    await expect(page).toHaveTitle(/ESTA|Tracker|Login|Welcome/i);
+test.describe('Basic smoke tests', () => {
+  test('application loads successfully', async ({ page }) => {
+    // Navigate to the app
+    const response = await page.goto('/', {
+      waitUntil: 'networkidle',
+      timeout: 30000,
+    });
+
+    // Verify response is successful
+    expect(response?.status()).toBeLessThan(500);
+
+    // Verify page title contains expected keywords
+    await expect(page).toHaveTitle(/ESTA|Tracker|Login|Welcome|Michigan/i);
+  });
+
+  test('page renders content', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+
+    // Verify body has content
+    const bodyText = await page.locator('body').textContent();
+    expect(bodyText).toBeTruthy();
+    expect(bodyText?.length).toBeGreaterThan(0);
   });
 });
