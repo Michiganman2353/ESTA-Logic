@@ -5,13 +5,12 @@
   "projectType": "library",
   "targets": {
     "build": {
-      "executor": "@nx/js:tsc",
-      "outputs": ["{options.outputPath}"],
+      "executor": "nx:run-commands",
       "options": {
-        "outputPath": "libs/api-contracts/dist",
-        "tsConfig": "libs/api-contracts/tsconfig.json",
-        "main": "libs/api-contracts/src/index.ts"
-      }
+        "command": "tsc -p tsconfig.json",
+        "cwd": "libs/api-contracts"
+      },
+      "outputs": ["{projectRoot}/dist"]
     },
     "typecheck": {
       "executor": "nx:run-commands",
