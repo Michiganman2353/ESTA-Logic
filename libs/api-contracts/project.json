@@ -7,7 +7,7 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsc",
+        "command": "tsc -p tsconfig.json",
         "cwd": "libs/api-contracts"
       },
       "outputs": ["{projectRoot}/dist"]
