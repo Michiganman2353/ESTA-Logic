@@ -380,7 +380,7 @@ jobs:
       - name: Run Blueprint Unit Tests
         run: |
           cd libs/blueprints
-          node --experimental-vm-modules ../../node_modules/jest/bin/jest.js --coverage
+          npx jest --coverage
 
       - name: Upload Blueprint Test Coverage
         uses: actions/upload-artifact@v4

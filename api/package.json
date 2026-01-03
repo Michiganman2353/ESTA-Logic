@@ -10,6 +10,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@esta/api-contracts": "file:../libs/api-contracts",
     "@esta/firebase": "file:../libs/esta-firebase",
     "@esta-tracker/shared-utils": "file:../libs/shared-utils",
     "@vercel/node": "^5.5.8",
