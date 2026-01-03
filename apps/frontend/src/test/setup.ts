@@ -1,6 +1,21 @@
 // Vitest setup file
 // Tests are configured in vitest.config.ts
 
+// CRITICAL: Fix for React 18 + happy-dom/jsdom compatibility
+// Must run BEFORE importing @testing-library/jest-dom or any React code
+// React DOM checks navigator.userAgent during module initialization
+if (typeof globalThis.navigator === 'undefined') {
+  // @ts-ignore - globalThis.navigator doesn't exist yet
+  globalThis.navigator = {};
+}
+if (!globalThis.navigator.userAgent) {
+  Object.defineProperty(globalThis.navigator, 'userAgent', {
+    value: 'Mozilla/5.0 (compatible; Vitest/1.0)',
+    configurable: true,
+    writable: true,
+  });
+}
+
 import '@testing-library/jest-dom';
 
 /**

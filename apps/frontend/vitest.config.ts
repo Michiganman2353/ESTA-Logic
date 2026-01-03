@@ -11,7 +11,15 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: 'jsdom',
+    environment: 'happy-dom',
+    globalSetup: './vitest.global-setup.ts',
+    // Pool options to ensure environment is fully initialized before importing
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
     setupFiles: ['./src/test/setup.ts', '../../tests/setupTests.ts'],
     coverage: {
       provider: 'v8',
