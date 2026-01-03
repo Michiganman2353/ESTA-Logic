@@ -1,7 +1,7 @@
 name: ESTA Tracker CI/CD
 
 # Dual-Runtime Strategy:
-# - Node 22.x: Authoritative runtime for development AND deployment
+# - Node 24.x: Authoritative runtime for development AND deployment
 # - Node 20.x: Compatibility validation only (ensures backward compatibility)
 # This ensures deterministic production behavior while maintaining compatibility assurance.
 
@@ -41,7 +41,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 24.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
@@ -89,7 +89,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        node-version: [22.x, 20.x]
+        node-version: [24.x, 20.x]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -228,23 +228,23 @@ jobs:
         run: npx nx --version
 
       - name: Lint (Affected)
-        if: matrix.node-version == '22.x'
+        if: matrix.node-version == '24.x'
         run: npx nx affected --target=lint --parallel=${{ env.NX_PARALLEL }}
 
       - name: Type Check (Affected)
-        if: matrix.node-version == '22.x'
+        if: matrix.node-version == '24.x'
         run: npx nx affected --target=typecheck --parallel=${{ env.NX_PARALLEL }}
 
       - name: Build Shared Types (for smoke test)
-        if: matrix.node-version == '22.x'
+        if: matrix.node-version == '24.x'
         run: npx nx build shared-types
 
       - name: Smoke Test - Employer Code Generation
-        if: matrix.node-version == '22.x'
+        if: matrix.node-version == '24.x'
         run: node scripts/smoke-test-employer-code.mjs
 
       - name: Run Unit Tests with Coverage
-        if: matrix.node-version == '22.x'
+        if: matrix.node-version == '24.x'
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
@@ -257,7 +257,7 @@ jobs:
           echo "✅ Tests completed"
 
       - name: Check Environment Variables
-        if: matrix.node-version == '22.x'
+        if: matrix.node-version == '24.x'
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
@@ -286,7 +286,7 @@ jobs:
           echo "This build validates Vercel serverless runtime compatibility (nodejs20.x)"
 
       - name: Upload build artifact
-        if: matrix.node-version == '22.x'
+        if: matrix.node-version == '24.x'
         uses: actions/upload-artifact@v4
         with:
           name: dist
@@ -294,7 +294,7 @@ jobs:
           if-no-files-found: ignore
 
       - name: Upload coverage reports
-        if: matrix.node-version == '22.x'
+        if: matrix.node-version == '24.x'
         uses: actions/upload-artifact@v4
         with:
           name: coverage-reports
@@ -316,7 +316,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 24.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
@@ -357,13 +357,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 24.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
       - name: Verify Node major version
         run: |
-          REQUIRED=22
+          REQUIRED=24
           ACTUAL=$(node -v | sed 's/v//; s/\..*//')
           if [ "$ACTUAL" != "$REQUIRED" ]; then
             echo "Node major version mismatch. Required ${REQUIRED}.x, got $(node -v)"
@@ -402,7 +402,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 24.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
@@ -452,7 +452,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 24.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
@@ -654,7 +654,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: 24.x
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
