@@ -13,7 +13,7 @@ test.describe('Basic smoke tests', () => {
     expect(response?.status()).toBeLessThan(500);
 
     // Verify page title contains expected keywords
-    await expect(page).toHaveTitle(/ESTA|Tracker|Login|Welcome|Michigan/i);
+    await expect(page).toHaveTitle(/ESTA|Tracker|Login|Welcome/i);
   });
 
   test('page renders content', async ({ page }) => {
