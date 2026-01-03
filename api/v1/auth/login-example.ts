@@ -1,9 +1,9 @@
 /**
  * Example API Endpoint Using Contracts
- * 
+ *
  * This file demonstrates how backend endpoints should use API contracts
  * from @esta/api-contracts to enforce interface boundaries.
- * 
+ *
  * Key Principles:
  * 1. Validate incoming requests using contract schemas
  * 2. Map internal domain types to DTOs at the boundary
@@ -21,8 +21,8 @@ import {
   UserDtoSchema,
   type UserDto,
 } from '@esta/api-contracts/v1';
-import { getFirebaseAuth, getFirebaseDb } from '../../../lib/firebase';
-import { setCorsHeaders, handlePreflight } from '../../../lib/cors';
+import { getFirebaseAuth, getFirebaseDb } from '../../lib/firebase';
+import { setCorsHeaders, handlePreflight } from '../../lib/cors';
 
 /**
  * Internal User Domain Type
@@ -85,10 +85,7 @@ function handleValidationError(error: ZodError, res: VercelResponse) {
  *
  * This endpoint demonstrates the correct pattern for using API contracts
  */
-export default async function handler(
-  req: VercelRequest,
-  res: VercelResponse
-): Promise<void> {
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Set CORS headers
   const origin = req.headers.origin || '';
   setCorsHeaders(res, origin);
