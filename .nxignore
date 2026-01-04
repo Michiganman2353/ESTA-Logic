@@ -1,0 +1,27 @@
+# Nx Ignore - directories to exclude from Nx workspace scanning
+
+# Archive directory (experimental/deprecated code)
+archive/
+
+# Node modules
+node_modules/
+
+# Build artifacts
+dist/
+build/
+.next/
+out/
+
+# Nx cache
+.nx/
+
+# Test output
+coverage/
+test-results/
+playwright-report/
+test-output/
+
+# Temporary files
+tmp/
+temp/
+.cache/
