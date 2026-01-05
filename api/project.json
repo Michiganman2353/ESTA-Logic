@@ -12,7 +12,7 @@
         "cwd": "api"
       },
       "outputs": ["{projectRoot}/dist"],
-      "dependsOn": ["esta-firebase:build"]
+      "dependsOn": ["esta-firebase:build", "api-contracts:build"]
     },
     "test": {
       "executor": "nx:run-commands",
