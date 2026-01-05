@@ -17,6 +17,7 @@
     "build": "npx nx run-many --target=build --all",
     "test": "npx nx run-many --target=test --all",
     "demo": "npx ts-node --project demo/tsconfig.json demo/kernel-demo.ts",
+    "demo:pilot-session": "npx ts-node --project demo/tsconfig.json demo/pilot-session-demo.ts",
     "gleam:build": "bash scripts/build-gleam-wasm.sh",
     "wasm:build": "nx run accrual-engine:wasm-build",
     "wasm:test": "nx run accrual-engine:wasm-test",
