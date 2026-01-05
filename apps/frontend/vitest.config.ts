@@ -12,6 +12,13 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    environmentOptions: {
+      jsdom: {
+        // Standard userAgent for testing (synchronized with tests/setupTests.ts TEST_USER_AGENT)
+        userAgent:
+          'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36',
+      },
+    },
     setupFiles: ['./src/test/setup.ts', '../../tests/setupTests.ts'],
     coverage: {
       provider: 'v8',

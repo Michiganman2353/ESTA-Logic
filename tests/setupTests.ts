@@ -10,6 +10,18 @@
 import { vi } from 'vitest';
 import jwt from 'jsonwebtoken';
 
+// ===== Shared Test Constants =====
+/**
+ * Standard userAgent for testing
+ * Note: This constant is duplicated in test setup files because
+ * TypeScript config files cannot easily import from .ts files.
+ * Keep this value synchronized with:
+ * - apps/frontend/src/test/setup.ts
+ * - apps/frontend/vitest.config.ts
+ */
+export const TEST_USER_AGENT =
+  'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36';
+
 // ===== JWT Mocking =====
 // Provide a deterministic secret for tests
 export const TEST_JWT_SECRET = 'test-secret-for-ci';
@@ -95,7 +107,21 @@ vi.mock('firebase/auth', () => {
 
 // ===== Navigator Media Devices Mocking =====
 // Mock navigator.mediaDevices.getUserMedia for camera access tests
-// Only add if not already defined (avoid overriding test-specific mocks)
+// Also ensure navigator.userAgent is set for React DOM compatibility
+
+// Set userAgent first if missing (React DOM requires this)
+if (
+  typeof globalThis.navigator !== 'undefined' &&
+  !globalThis.navigator.userAgent
+) {
+  Object.defineProperty(globalThis.navigator, 'userAgent', {
+    value: TEST_USER_AGENT,
+    configurable: true,
+    writable: true,
+  });
+}
+
+// Only add mediaDevices if not already defined (avoid overriding test-specific mocks)
 if (
   typeof globalThis.navigator === 'undefined' ||
   !globalThis.navigator.mediaDevices
@@ -103,6 +129,7 @@ if (
   Object.defineProperty(globalThis, 'navigator', {
     value: {
       ...globalThis.navigator,
+      userAgent: globalThis.navigator?.userAgent || TEST_USER_AGENT,
       mediaDevices: {
         getUserMedia: vi.fn(async (constraints: any) => {
           // Return a minimal fake MediaStream

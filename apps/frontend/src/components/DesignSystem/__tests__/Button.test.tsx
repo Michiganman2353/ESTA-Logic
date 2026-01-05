@@ -15,7 +15,7 @@ describe('Button', () => {
   it('should render with primary variant by default', () => {
     render(<Button>Primary</Button>);
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('bg-primary-600');
+    expect(button).toHaveClass('from-royal-500', 'to-royal-600');
   });
 
   it('should render with secondary variant', () => {

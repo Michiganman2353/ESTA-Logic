@@ -16,10 +16,13 @@ global.URL.revokeObjectURL = vi.fn();
 
 // Mock crypto.subtle
 const mockEncrypt = vi.fn();
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-(global.crypto.subtle as any) = {
-  encrypt: mockEncrypt,
-};
+Object.defineProperty(global.crypto, 'subtle', {
+  value: {
+    encrypt: mockEncrypt,
+  },
+  configurable: true,
+  writable: true,
+});
 
 // Mock crypto.getRandomValues
 global.crypto.getRandomValues = vi.fn((arr: Uint8Array) => {
