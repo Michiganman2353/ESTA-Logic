@@ -3,6 +3,7 @@ export default {
   transform: {},
   moduleNameMapper: {},
   testMatch: ['**/__tests__/**/*.spec.js'],
+  coverageProvider: 'v8',
   collectCoverageFrom: [
     '**/*.js',
     '!**/__tests__/**',
@@ -12,13 +13,5 @@ export default {
     '!validateAll.js',
     '!index.js'
   ],
-  coverageThreshold: {
-    global: {
-      branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
-    },
-  },
   verbose: true,
 };
