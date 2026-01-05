@@ -1,0 +1,59 @@
+{
+  "moduleId": "pilot-agent-session",
+  "version": "1.0.0",
+  "capabilities": {
+    "required": [
+      {
+        "resourceType": "channel",
+        "resourcePattern": "session.*",
+        "rights": ["read", "write"],
+        "reason": "Receive session requests and emit orchestration results"
+      },
+      {
+        "resourceType": "channel",
+        "resourcePattern": "accrual.*",
+        "rights": ["read", "write"],
+        "reason": "Communicate with accrual engine for calculations"
+      },
+      {
+        "resourceType": "channel",
+        "resourcePattern": "compliance.*",
+        "rights": ["read", "write"],
+        "reason": "Communicate with compliance engine for validation"
+      },
+      {
+        "resourceType": "audit_log",
+        "resourcePattern": "session.*",
+        "rights": ["write"],
+        "reason": "Log all session orchestration steps for audit trail"
+      }
+    ],
+    "optional": []
+  },
+  "syscalls": {
+    "allowed": ["sys.time.now", "sys.audit.log"],
+    "denied": ["sys.fs.*", "sys.net.*", "sys.db.*", "sys.crypto.*"]
+  },
+  "channels": {
+    "publish": ["session.*", "accrual.*", "compliance.*", "audit.session"],
+    "subscribe": ["session.*", "accrual.*", "compliance.*"]
+  },
+  "resourceLimits": {
+    "maxMemoryBytes": 16777216,
+    "maxExecutionTimeMs": 2000,
+    "maxQueueDepth": 50,
+    "maxConcurrentRequests": 10,
+    "cpuQuotaMs": 100
+  },
+  "isolation": {
+    "noDatabaseAccess": true,
+    "noUIAccess": true,
+    "noDirectHostCalls": true,
+    "deterministic": true
+  },
+  "compliance": {
+    "regulation": "Michigan ESTA 2025",
+    "auditRequired": true,
+    "versioned": true
+  }
+}
