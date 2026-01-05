@@ -15,7 +15,7 @@
  * - Security without obscurity
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures';
 
 test.describe("Marcus's Journey: Skeptical Employee to Believer", () => {
   test.describe('Act 1: Skepticism (Initial Contact)', () => {

@@ -16,7 +16,7 @@
  * This IS about testing the emotional experience and UX flow.
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures';
 
 test.describe('TurboTax-Style Guided Flow Experience', () => {
   test.describe('Guided Interview Format', () => {

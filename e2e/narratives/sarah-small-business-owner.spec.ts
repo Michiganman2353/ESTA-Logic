@@ -15,7 +15,7 @@
  * - Trust-building at every step
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures';
 
 test.describe("Sarah's Journey: Small Business Owner Compliance Story", () => {
   test.describe('Act 2: Discovery & Hope (Landing Page)', () => {
