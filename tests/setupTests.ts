@@ -11,7 +11,14 @@ import { vi } from 'vitest';
 import jwt from 'jsonwebtoken';
 
 // ===== Shared Test Constants =====
-// Standard userAgent for testing (exported from tests/constants.ts)
+/**
+ * Standard userAgent for testing
+ * Note: This constant is duplicated in test setup files because
+ * TypeScript config files cannot easily import from .ts files.
+ * Keep this value synchronized with:
+ * - apps/frontend/src/test/setup.ts
+ * - apps/frontend/vitest.config.ts
+ */
 export const TEST_USER_AGENT =
   'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36';
 
