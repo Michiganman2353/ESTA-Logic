@@ -10,6 +10,11 @@
 import { vi } from 'vitest';
 import jwt from 'jsonwebtoken';
 
+// ===== Shared Test Constants =====
+// Standard userAgent for testing (exported from tests/constants.ts)
+export const TEST_USER_AGENT =
+  'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36';
+
 // ===== JWT Mocking =====
 // Provide a deterministic secret for tests
 export const TEST_JWT_SECRET = 'test-secret-for-ci';
@@ -103,8 +108,7 @@ if (
   !globalThis.navigator.userAgent
 ) {
   Object.defineProperty(globalThis.navigator, 'userAgent', {
-    value:
-      'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36',
+    value: TEST_USER_AGENT,
     configurable: true,
     writable: true,
   });
@@ -118,9 +122,7 @@ if (
   Object.defineProperty(globalThis, 'navigator', {
     value: {
       ...globalThis.navigator,
-      userAgent:
-        globalThis.navigator?.userAgent ||
-        'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36',
+      userAgent: globalThis.navigator?.userAgent || TEST_USER_AGENT,
       mediaDevices: {
         getUserMedia: vi.fn(async (constraints: any) => {
           // Return a minimal fake MediaStream

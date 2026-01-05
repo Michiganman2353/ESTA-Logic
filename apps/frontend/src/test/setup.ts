@@ -3,12 +3,15 @@
 
 import '@testing-library/jest-dom';
 
+// Standard userAgent for testing (see tests/constants.ts)
+const TEST_USER_AGENT =
+  'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36';
+
 // Fix for React DOM userAgent issue in jsdom
 // React DOM checks navigator.userAgent which is undefined in some jsdom configurations
 if (typeof navigator !== 'undefined' && !navigator.userAgent) {
   Object.defineProperty(navigator, 'userAgent', {
-    value:
-      'Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36',
+    value: TEST_USER_AGENT,
     configurable: true,
     writable: true,
   });
