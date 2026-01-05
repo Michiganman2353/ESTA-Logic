@@ -113,6 +113,13 @@ function App() {
     initWebVitalsTracking();
   }, []);
 
+  // Mark app as ready for E2E tests once rendered
+  useEffect(() => {
+    if (!loading && !error) {
+      document.body.setAttribute('data-app-ready', 'true');
+    }
+  }, [loading, error]);
+
   // Log authentication state changes for debugging
   useEffect(() => {
     console.log('=== Auth State Change ===');
