@@ -83,7 +83,10 @@ describe('UploadSuccessMessage', () => {
 
     render(<UploadSuccessMessage onDismiss={mockDismiss} />);
 
-    const continueButton = screen.getByRole('button', { name: /continue/i });
+    // Button has aria-label "Dismiss success message" and text "Continue"
+    const continueButton = screen.getByRole('button', {
+      name: 'Dismiss success message',
+    });
     fireEvent.click(continueButton);
 
     expect(mockDismiss).toHaveBeenCalledTimes(1);

@@ -65,15 +65,14 @@ describe('Login Page', () => {
     it('should render login form', () => {
       renderLogin();
 
-      expect(screen.getByText('Michigan ESTA Tracker')).toBeInTheDocument();
+      expect(screen.getByText('Welcome Back')).toBeInTheDocument();
       expect(
-        screen.getByText('Earned Sick Time Act Compliance')
+        screen.getByText('Sign in to your ESTA Tracker account')
       ).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Email address')).toBeInTheDocument();
       expect(screen.getByPlaceholderText('Password')).toBeInTheDocument();
-      expect(
-        screen.getByRole('button', { name: /sign in/i })
-      ).toBeInTheDocument();
+      // Use getByText instead of getByRole to avoid multiple button issue
+      expect(screen.getByText('Sign in')).toBeInTheDocument();
     });
 
     it('should render register link', () => {
@@ -160,7 +159,7 @@ describe('Login Page', () => {
 
       const emailInput = screen.getByPlaceholderText('Email address');
       const passwordInput = screen.getByPlaceholderText('Password');
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      const submitButton = screen.getByRole('button', { name: 'Sign in' });
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
@@ -194,7 +193,7 @@ describe('Login Page', () => {
 
       const emailInput = screen.getByPlaceholderText('Email address');
       const passwordInput = screen.getByPlaceholderText('Password');
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      const submitButton = screen.getByRole('button', { name: 'Sign in' });
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
@@ -217,7 +216,7 @@ describe('Login Page', () => {
 
       const emailInput = screen.getByPlaceholderText('Email address');
       const passwordInput = screen.getByPlaceholderText('Password');
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      const submitButton = screen.getByRole('button', { name: 'Sign in' });
 
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } });
@@ -241,7 +240,7 @@ describe('Login Page', () => {
       const passwordInput = screen.getByPlaceholderText('Password');
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      fireEvent.click(screen.getByRole('button', { name: 'Sign in' }));
 
       await waitFor(() => {
         expect(
@@ -259,7 +258,7 @@ describe('Login Page', () => {
       const passwordInput = screen.getByPlaceholderText('Password');
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } });
-      fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      fireEvent.click(screen.getByRole('button', { name: 'Sign in' }));
 
       await waitFor(() => {
         expect(
@@ -277,7 +276,7 @@ describe('Login Page', () => {
       const passwordInput = screen.getByPlaceholderText('Password');
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      fireEvent.click(screen.getByRole('button', { name: 'Sign in' }));
 
       await waitFor(() => {
         expect(
@@ -298,7 +297,7 @@ describe('Login Page', () => {
       const passwordInput = screen.getByPlaceholderText('Password');
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      fireEvent.click(screen.getByRole('button', { name: 'Sign in' }));
 
       await waitFor(() => {
         expect(screen.getByText('Bad request')).toBeInTheDocument();
@@ -314,7 +313,7 @@ describe('Login Page', () => {
       const passwordInput = screen.getByPlaceholderText('Password');
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
       fireEvent.change(passwordInput, { target: { value: 'password123' } });
-      fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
+      fireEvent.click(screen.getByRole('button', { name: 'Sign in' }));
 
       await waitFor(() => {
         expect(
@@ -332,7 +331,7 @@ describe('Login Page', () => {
 
       const emailInput = screen.getByPlaceholderText('Email address');
       const passwordInput = screen.getByPlaceholderText('Password');
-      const submitButton = screen.getByRole('button', { name: /sign in/i });
+      const submitButton = screen.getByRole('button', { name: 'Sign in' });
 
       // First submission with error
       fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
@@ -366,7 +365,7 @@ describe('Login Page', () => {
       renderLogin();
 
       const form = screen
-        .getByRole('button', { name: /sign in/i })
+        .getByRole('button', { name: 'Sign in' })
         .closest('form');
       expect(form).toBeInTheDocument();
     });
