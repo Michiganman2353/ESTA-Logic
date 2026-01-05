@@ -3,16 +3,16 @@
   "version": "1.0.0",
   "description": "API contract schemas and types for ESTA Tracker",
   "type": "module",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
     },
     "./v1": {
-      "types": "./dist/v1/index.d.ts",
-      "import": "./dist/v1/index.js"
+      "types": "./dist/src/v1/index.d.ts",
+      "import": "./dist/src/v1/index.js"
     }
   },
   "scripts": {
