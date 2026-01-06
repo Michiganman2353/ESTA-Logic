@@ -68,9 +68,11 @@ function getEnvVar(key: string): string | undefined {
 }
 
 /**
- * Validate required Firebase environment variables
+ * Get Firebase configuration from environment variables
+ * Returns null if required variables are missing (e.g., in test environments)
  */
-function validateFirebaseConfig(): void {
+function getFirebaseConfig(): FirebaseOptions | null {
+  // Check if required vars exist
   const requiredEnvVars = [
     'API_KEY',
     'AUTH_DOMAIN',
@@ -86,17 +88,11 @@ function validateFirebaseConfig(): void {
   });
 
   if (missingVars.length > 0) {
-    throw new Error(
-      `Missing required Firebase environment variables: ${missingVars.map((k) => `VITE_FIREBASE_${k}`).join(', ')}`
+    console.warn(
+      `Firebase not configured - missing environment variables: ${missingVars.map((k) => `VITE_FIREBASE_${k}`).join(', ')}`
     );
+    return null;
   }
-}
-
-/**
- * Get Firebase configuration from environment variables
- */
-function getFirebaseConfig(): FirebaseOptions {
-  validateFirebaseConfig();
 
   const config: FirebaseOptions = {
     apiKey: getEnvVar('VITE_FIREBASE_API_KEY')!,
@@ -119,10 +115,11 @@ function getFirebaseConfig(): FirebaseOptions {
 /**
  * Initialize Firebase App (client-side)
  * Safe to call multiple times - will return existing instance
+ * Returns null if Firebase is not configured (e.g., in test environments)
  *
- * @returns Firebase App instance
+ * @returns Firebase App instance or null if not configured
  */
-export function initializeFirebase(): FirebaseApp {
+export function initializeFirebase(): FirebaseApp | null {
   if (app) {
     return app;
   }
@@ -137,6 +134,13 @@ export function initializeFirebase(): FirebaseApp {
 
   try {
     const firebaseConfig = getFirebaseConfig();
+
+    // If config is null (missing env vars), skip initialization
+    if (!firebaseConfig) {
+      console.warn('⚠️ Firebase not initialized - missing configuration');
+      return null;
+    }
+
     app = initializeApp(firebaseConfig);
     console.log('✅ Firebase initialized successfully');
     console.log(`   Project ID: ${firebaseConfig.projectId}`);
@@ -173,10 +177,11 @@ export function initializeFirebase(): FirebaseApp {
 /**
  * Get Firebase App instance
  * Initializes if not already initialized
+ * Returns null if Firebase is not configured
  *
- * @returns Firebase App instance
+ * @returns Firebase App instance or null
  */
-export function getApp(): FirebaseApp {
+export function getApp(): FirebaseApp | null {
   if (!app) {
     return initializeFirebase();
   }
@@ -186,12 +191,16 @@ export function getApp(): FirebaseApp {
 /**
  * Get Firebase Auth instance
  * Automatically initializes Firebase if needed
+ * Returns null if Firebase is not configured
  *
- * @returns Auth instance
+ * @returns Auth instance or null
  */
-export function getFirebaseAuth(): Auth {
+export function getFirebaseAuth(): Auth | null {
   if (!auth) {
     const firebaseApp = getApp();
+    if (!firebaseApp) {
+      return null;
+    }
     auth = getAuth(firebaseApp);
   }
   return auth;
@@ -200,12 +209,16 @@ export function getFirebaseAuth(): Auth {
 /**
  * Get Firestore instance
  * Automatically initializes Firebase if needed
+ * Returns null if Firebase is not configured
  *
- * @returns Firestore instance
+ * @returns Firestore instance or null
  */
-export function getFirebaseFirestore(): Firestore {
+export function getFirebaseFirestore(): Firestore | null {
   if (!db) {
     const firebaseApp = getApp();
+    if (!firebaseApp) {
+      return null;
+    }
     db = getFirestore(firebaseApp);
   }
   return db;
@@ -214,12 +227,16 @@ export function getFirebaseFirestore(): Firestore {
 /**
  * Get Firebase Storage instance
  * Automatically initializes Firebase if needed
+ * Returns null if Firebase is not configured
  *
- * @returns Storage instance
+ * @returns Storage instance or null
  */
-export function getFirebaseStorage(): FirebaseStorage {
+export function getFirebaseStorage(): FirebaseStorage | null {
   if (!storage) {
     const firebaseApp = getApp();
+    if (!firebaseApp) {
+      return null;
+    }
     storage = getStorage(firebaseApp);
   }
   return storage;

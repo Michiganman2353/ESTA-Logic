@@ -15,7 +15,7 @@
  * - Analytics enable strategic decisions
  */
 
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures';
 
 test.describe("Jennifer's Journey: Multi-Location Manager Transformation", () => {
   test.describe('Act 1: Overwhelm (Before ESTA Tracker)', () => {

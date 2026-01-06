@@ -22,7 +22,10 @@ export default function Landing() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden px-4 pb-16 pt-24 sm:px-6 lg:px-8">
+      <section
+        className="relative overflow-hidden px-4 pb-16 pt-24 sm:px-6 lg:px-8"
+        data-testid="hero-section"
+      >
         {/* Animated Background Orbs */}
         <div className="pointer-events-none absolute left-0 top-0 h-full w-full overflow-hidden">
           <div className="bg-royal-400/20 animate-float absolute right-10 top-20 h-72 w-72 rounded-full blur-3xl"></div>

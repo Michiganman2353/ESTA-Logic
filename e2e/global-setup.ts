@@ -30,6 +30,13 @@ async function globalSetup(config: FullConfig) {
     await page.goto('http://localhost:5173/login', { timeout: 30000 });
     console.log('Navigated to login page');
 
+    // Wait for React app to be ready
+    await page
+      .waitForSelector('body[data-app-ready="true"]', { timeout: 15000 })
+      .catch(() => {
+        console.log('App ready timeout - continuing anyway');
+      });
+
     // Wait for login form to be ready
     const emailField = page.locator(
       '[data-testid="email"], input[type="email"], input[name="email"]'

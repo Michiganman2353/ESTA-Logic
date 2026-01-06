@@ -65,6 +65,7 @@ const Pricing = lazy(() => import('@/pages/Pricing'));
 const UIShowcase = lazy(() => import('@/pages/UIShowcase'));
 const GuidedFlow = lazy(() => import('@/pages/GuidedFlow'));
 const PerformanceDashboard = lazy(() => import('@/pages/PerformanceDashboard'));
+const TestDocumentScanner = lazy(() => import('@/pages/TestDocumentScanner'));
 
 /**
  * Focus management component for route changes
@@ -111,6 +112,13 @@ function App() {
   useEffect(() => {
     initWebVitalsTracking();
   }, []);
+
+  // Mark app as ready for E2E tests once rendered
+  useEffect(() => {
+    if (!loading && !error) {
+      document.body.setAttribute('data-app-ready', 'true');
+    }
+  }, [loading, error]);
 
   // Log authentication state changes for debugging
   useEffect(() => {
@@ -315,6 +323,12 @@ function App() {
 
             {/* Performance Dashboard (Development/Monitoring) */}
             <Route path="/performance" element={<PerformanceDashboard />} />
+
+            {/* Test pages for E2E testing */}
+            <Route
+              path="/test/document-scanner"
+              element={<TestDocumentScanner />}
+            />
 
             {/* Protected routes - require authentication */}
             {user ? (
