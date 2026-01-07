@@ -1,63 +1,9 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "buildCommand": "npm run build:frontend",
-  "outputDirectory": "apps/frontend/dist",
-  "installCommand": "npm ci --prefer-offline",
-  "devCommand": "npm run dev:frontend",
-  "framework": null,
-  "cleanUrls": true,
-  "trailingSlash": false,
   "functions": {
-    "api/background/*.ts": {
-      "maxDuration": 300,
-      "runtime": "nodejs20.x"
-    },
-    "api/secure/*.ts": {
-      "maxDuration": 60,
-      "runtime": "nodejs20.x"
-    },
-    "api/v1/**/*.ts": {
-      "maxDuration": 30,
-      "runtime": "nodejs20.x"
-    },
-    "api/*.js": {
-      "maxDuration": 30,
-      "runtime": "nodejs20.x"
-    },
-    "api/*.ts": {
-      "maxDuration": 30,
-      "runtime": "nodejs20.x"
+    "api/**/*.ts": {
+      "runtime": "nodejs20.x",
+      "maxDuration": 60
     }
-  },
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/((?!assets/).*)", "destination": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        },
-        {
-          "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(), geolocation=()"
-        },
-        {
-          "key": "Strict-Transport-Security",
-          "value": "max-age=31536000; includeSubDomains; preload"
-        },
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.googletagmanager.com https://firebase.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com https://securetoken.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://firebase.googleapis.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com wss://*.firebaseio.com;"
-        }
-      ]
-    }
-  ]
+  }
 }
