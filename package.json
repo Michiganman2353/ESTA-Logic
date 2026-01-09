@@ -56,7 +56,7 @@
     "setup:kms": "node scripts/setup-kms.js",
     "validate:deployment": "bash scripts/validate-deployment.sh",
     "validate:runtime": "bash scripts/validate-runtime.sh",
-    "validate:vercel": "node scripts/validate-vercel-config.js",
+    "validate:vercel": "node scripts/validate-vercel-runtime.js",
     "validate:tsconfig": "node scripts/validate-tsconfig-paths.js",
     "validate:workspace": "nx graph --file=/tmp/nx-graph.json && echo 'Workspace graph validated'",
     "ci:validate": "npm run lint && npm run typecheck && npm run test && npm run build && npm run validate:deployment && npm run validate:vercel",
@@ -115,7 +115,7 @@
     "stable": "npm:@exodus/stable@^1.0.0"
   },
   "engines": {
-    "node": "22.x",
+    "node": ">=24",
     "npm": ">=10.0.0"
   },
   "packageManager": "npm@10.2.3"
