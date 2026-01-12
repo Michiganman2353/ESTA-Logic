@@ -10,3 +10,7 @@
 export * from './scheduler';
 export * from './ipc-router';
 export * from './capability-engine';
+export * from './proof-system';
+export * from './time-capsule';
+export * from './drift-engine';
+export * from './predictive-engine';
