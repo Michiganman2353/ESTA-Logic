@@ -1,6 +1,6 @@
 /**
  * Explicit Context Pattern Example
- * 
+ *
  * Demonstrates how all environmental concerns are passed as explicit parameters,
  * eliminating implicit dependencies that would break deployment invariance.
  */
@@ -16,33 +16,34 @@ function calculateAccrualImplicit(input: ImplicitCalculation): number {
   // PROBLEM 1: Implicit time dependency
   const now = new Date(); // System clock varies across environments
   console.log(`Calculated at: ${now.toISOString()}`);
-  
+
   // PROBLEM 2: Environment variable dependency
   const debugMode = process?.env?.DEBUG === 'true'; // Varies by deployment
   if (debugMode) {
     console.log('Debug info...');
   }
-  
+
   // PROBLEM 3: Locale dependency
   const formatted = (input.hoursWorked * input.accrualRate).toLocaleString();
   // Output varies by system locale
-  
+
   // PROBLEM 4: Random behavior
-  if (Math.random() > 0.5) { // Nondeterministic
+  if (Math.random() > 0.5) {
+    // Nondeterministic
     console.log('Random branch taken');
   }
-  
+
   return input.hoursWorked * input.accrualRate;
 }
 
 // ✅ CORRECT PATTERN: Explicit Context
 
 interface ExecutionContext {
-  timestamp: string;        // Explicit time
-  lawVersion: string;       // Explicit law version
-  jurisdiction: string;     // Explicit jurisdiction
-  traceEnabled: boolean;    // Explicit debug flag
-  randomSeed?: number;      // Explicit seed (if randomness needed)
+  timestamp: string; // Explicit time
+  lawVersion: string; // Explicit law version
+  jurisdiction: string; // Explicit jurisdiction
+  traceEnabled: boolean; // Explicit debug flag
+  randomSeed?: number; // Explicit seed (if randomness needed)
 }
 
 interface ExplicitCalculation {
@@ -50,7 +51,7 @@ interface ExplicitCalculation {
   accrualRate: number;
 }
 
-interface CalculationResult {
+interface ExplicitCalculationResult {
   accrual: number;
   trace?: string[];
 }
@@ -58,29 +59,29 @@ interface CalculationResult {
 function calculateAccrualExplicit(
   input: ExplicitCalculation,
   context: ExecutionContext
-): CalculationResult {
+): ExplicitCalculationResult {
   const trace: string[] = [];
-  
+
   // Explicit time (passed as parameter)
   if (context.traceEnabled) {
     trace.push(`Calculated at: ${context.timestamp}`);
   }
-  
+
   // Explicit configuration (no environment variables)
   if (context.traceEnabled) {
     trace.push(`Debug enabled by explicit context`);
     trace.push(`Law Version: ${context.lawVersion}`);
     trace.push(`Jurisdiction: ${context.jurisdiction}`);
   }
-  
+
   // Deterministic formatting (no locale)
   const accrual = input.hoursWorked * input.accrualRate;
   const formattedAccrual = accrual.toFixed(2); // Explicit precision
-  
+
   if (context.traceEnabled) {
     trace.push(`Accrual: ${formattedAccrual} hours`);
   }
-  
+
   // Explicit randomness (with seed)
   if (context.randomSeed !== undefined) {
     // Use seeded PRNG instead of Math.random()
@@ -89,7 +90,7 @@ function calculateAccrualExplicit(
       trace.push('Deterministic branch taken (seed-based)');
     }
   }
-  
+
   return {
     accrual,
     trace: context.traceEnabled ? trace : undefined,
@@ -163,7 +164,9 @@ function demonstrateExplicitContext() {
     console.log(`   Accrual: ${result1.accrual} hours`);
     console.log();
     console.log('   Production context: No trace (efficient)');
-    console.log(`   Debug context: ${result2.trace?.length} trace entries (informative)`);
+    console.log(
+      `   Debug context: ${result2.trace?.length} trace entries (informative)`
+    );
   } else {
     console.log('❌ FAILURE: Accrual values differ');
   }

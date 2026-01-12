@@ -1,9 +1,9 @@
 /**
  * Time Travel Calculation Reproduction Example
- * 
+ *
  * Demonstrates that calculations from the past remain reproducible in the future
  * with guaranteed bit-for-bit identical results.
- * 
+ *
  * This is critical for legal compliance: auditors must be able to verify
  * historical calculations years after they were performed.
  */
@@ -16,7 +16,7 @@ interface HistoricalState {
   lawVersion: string;
 }
 
-interface CalculationResult {
+interface HistoricalCalculationResult {
   employeeId: string;
   accruedHours: number;
   calculatedAt: string;
@@ -27,9 +27,11 @@ interface CalculationResult {
 /**
  * Pure kernel calculation - deterministic across time
  */
-function calculateHistoricalAccrual(state: HistoricalState): CalculationResult {
+function calculateHistoricalAccrual(
+  state: HistoricalState
+): HistoricalCalculationResult {
   const accruedHours = state.hoursWorked * state.accrualRate;
-  
+
   return {
     employeeId: state.employeeId,
     accruedHours,
@@ -110,22 +112,34 @@ function demonstrateTimeTravelReproduction() {
 
   // Verify all results are identical
   const results = [result2024, result2025, result2030, result2050];
-  const resultStrings = results.map(r => JSON.stringify(r));
-  const allIdentical = resultStrings.every(str => str === resultStrings[0]);
+  const resultStrings = results.map((r) => JSON.stringify(r));
+  const allIdentical = resultStrings.every((str) => str === resultStrings[0]);
 
   if (allIdentical) {
-    console.log('✅ SUCCESS: All calculations across time produced IDENTICAL results');
+    console.log(
+      '✅ SUCCESS: All calculations across time produced IDENTICAL results'
+    );
     console.log();
     console.log('Verified Properties:');
-    console.log(`  - Accrued Hours: ${result2024.accruedHours} (consistent across all years)`);
-    console.log(`  - Proof Hash: ${result2024.proof} (identical across all years)`);
-    console.log(`  - Law Version: ${result2024.lawVersion} (preserved from 2024)`);
+    console.log(
+      `  - Accrued Hours: ${result2024.accruedHours} (consistent across all years)`
+    );
+    console.log(
+      `  - Proof Hash: ${result2024.proof} (identical across all years)`
+    );
+    console.log(
+      `  - Law Version: ${result2024.lawVersion} (preserved from 2024)`
+    );
     console.log();
     console.log('Time Travel Reproducibility: PROVEN ✓');
     console.log();
     console.log('Legal Implication:');
-    console.log('  An auditor in 2050 can reproduce the exact calculation from 2024');
-    console.log('  with mathematical certainty, using the same inputs and law version.');
+    console.log(
+      '  An auditor in 2050 can reproduce the exact calculation from 2024'
+    );
+    console.log(
+      '  with mathematical certainty, using the same inputs and law version.'
+    );
   } else {
     console.log('❌ FAILURE: Results differ across time');
   }
@@ -145,7 +159,7 @@ function demonstrateTimeTravelReproduction() {
   console.log();
   console.log('3. LAW VERSION PRESERVATION');
   console.log('   - Historical law versions remain executable');
-  console.log('   - New law versions don\'t invalidate old calculations');
+  console.log("   - New law versions don't invalidate old calculations");
   console.log();
   console.log('4. NO IMPLICIT TIME DEPENDENCY');
   console.log('   - System clock is irrelevant to calculations');
@@ -159,9 +173,13 @@ function demonstrateTimeTravelReproduction() {
   console.log('Year 2024: Employee files sick time usage record');
   console.log('Year 2026: State auditor requests verification');
   console.log('Year 2030: Employee disputes calculation in lawsuit');
-  console.log('Year 2050: Historical research study examines compliance patterns');
+  console.log(
+    'Year 2050: Historical research study examines compliance patterns'
+  );
   console.log();
-  console.log('In ALL cases, the kernel reproduces the EXACT same calculation.');
+  console.log(
+    'In ALL cases, the kernel reproduces the EXACT same calculation.'
+  );
   console.log('This is not a feature. This is a mathematical guarantee.');
   console.log();
   console.log('='.repeat(80));
