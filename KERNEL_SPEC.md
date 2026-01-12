@@ -355,6 +355,55 @@ The kernel is **not**:
 - ❌ A configuration system
 - ❌ A rules engine (it **is** the rules)
 
+**For positive reframing of these exclusions, see `STRUCTURAL_GUARANTEES.md`**
+
+---
+
+## Kernel Invariance & Extensibility
+
+The kernel is designed as a **frozen, immutable foundation** for domain-specific legal computation:
+
+### Deployment Invariance
+
+The kernel executes **identically** across all environments:
+- Browser (WebAssembly)
+- Node.js  
+- Serverless runtimes
+- Edge compute
+- Embedded systems
+
+**Requirement:** Identical inputs produce bit-for-bit identical outputs.
+
+See `DEPLOYMENT_INVARIANCE.md` for complete specification.
+
+### Instruction Set Architecture
+
+The kernel defines a **primitive instruction set** (ESTA-ISA) for legal computation:
+- 48 frozen primitive instructions
+- Domain-specific instruction extensions
+- Versioned and immutable
+
+See `INSTRUCTION_SET.md` for complete instruction catalog.
+
+### Domain Expansion
+
+New legal domains extend the kernel without modification:
+- Michigan ESTA (current)
+- California Paid Sick Leave (future)
+- Federal FMLA (future)
+- GDPR Data Rights (future)
+
+See `DOMAIN_EXPANSION_CONTRACT.md` for extension protocol.
+
+### Freeze Guarantee
+
+**Kernel v1.0 is permanently frozen:**
+- No breaking changes ever permitted
+- Historical calculations remain valid forever
+- New domains extend without breaking existing ones
+
+See `KERNEL_FREEZE_MANIFEST.md` for freeze declaration.
+
 ---
 
 ## Philosophical Foundation
@@ -363,10 +412,22 @@ The kernel is **not**:
 
 If it cannot be expressed in the kernel, it does not exist. If the kernel rejects it, it is impossible. If the kernel emits it, it is truth.
 
+**The kernel is not designed to be flexible. It is designed to be correct.**
+
+Flexibility exists above it. Truth exists within it.
+
 ---
 
 ## References
 
+### Core Specifications
+- **Deployment Invariance**: See `DEPLOYMENT_INVARIANCE.md`
+- **Structural Guarantees**: See `STRUCTURAL_GUARANTEES.md`
+- **Instruction Set**: See `INSTRUCTION_SET.md`
+- **Domain Expansion**: See `DOMAIN_EXPANSION_CONTRACT.md`
+- **Kernel Freeze Manifest**: See `KERNEL_FREEZE_MANIFEST.md`
+
+### Supporting Documentation
 - **Time Model**: See `TIME_MODEL.md`
 - **Constraints**: See `CONSTRAINTS.md`
 - **Proof Objects**: See `PROOF_OBJECTS.md`
@@ -376,4 +437,5 @@ If it cannot be expressed in the kernel, it does not exist. If the kernel reject
 
 **Last Updated:** 2026-01-12  
 **Authority:** ESTA-Logic Core Team  
-**Status:** Canonical Law
+**Status:** Canonical Law  
+**Kernel Version:** 1.0.0 (FROZEN)
