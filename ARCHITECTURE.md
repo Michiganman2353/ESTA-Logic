@@ -4,13 +4,32 @@
 
 ## Overview
 
-ESTA-Logic is a **WASM-native microkernel compliance OS** where:
+ESTA-Logic is a **domain operating system** built on a frozen, deterministic kernel where:
 
-- The **kernel orchestrates** all operations
+- The **kernel IS the operating system** - Ring 0 authority over all computation
+- **Deployment invariance** guarantees identical execution across all environments
 - **Sandboxed WASM modules** perform deterministic compliance computation
 - **Services communicate only via IPC** - no direct imports
 - **All host access is mediated** through syscalls
 - **Capabilities control all resource access**
+
+### From Application to Operating System
+
+ESTA-Logic is **not compliance software**. It is:
+
+- **The first instruction set** for legal computation (ESTA-ISA)
+- **The first filesystem** for domain-specific truth
+- **The first proof domain** for auditable correctness
+
+What you are building is a **domain operating system** capable of hosting any reality where correctness, provability, and trust are non-negotiable.
+
+**Once the kernel is frozen:**
+- Laws become instructions
+- Domains become modules
+- Products become shells
+
+**Nothing above it can corrupt it.**  
+**Nothing below it can replace it.**
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -92,16 +111,31 @@ Every resource access requires a capability token:
 }
 ```
 
-### 4. Deterministic Execution
+### 4. Deployment Invariance (Ring 0 Guarantee)
+
+The kernel achieves **absolute deployment invariance**:
+
+- Executes identically across all environments (Browser, Node.js, Edge, Serverless)
+- No implicit system time - all time is explicit
+- No locale awareness - all formatting is deterministic
+- No floating-point nondeterminism - controlled precision
+- No runtime-specific branching - environment-agnostic
+- No environmental introspection - all context is explicit
+
+**Result:** Identical inputs produce bit-for-bit identical outputs across all environments and time.
+
+**See:** `DEPLOYMENT_INVARIANCE.md` for complete specification.
+
+### 5. Deterministic Execution
 
 All WASM modules must be deterministic:
 
-- No direct time access (use `sys.time.now`)
-- No random number generation without seed
+- No direct time access (use explicit `context.timestamp`)
+- No random number generation without explicit seed
 - No external I/O (all via syscalls)
 - Same inputs always produce same outputs
 
-### 5. Host Access via Syscalls Only
+### 6. Host Access via Syscalls Only
 
 Modules never access host resources directly:
 
@@ -487,9 +521,106 @@ For existing code:
 4. Add capability declarations to manifests
 5. Add architecture tests to CI
 
+---
+
+## Kernel Freeze & Instruction Set Architecture
+
+### Ring 0 Foundation
+
+The ESTA-Kernel operates at **Ring 0** - the highest privilege level with absolute authority:
+
+- **Kernel Version:** 1.0.0 (FROZEN)
+- **Freeze Date:** 2026-01-12
+- **Status:** Permanent Freeze
+- **Breaking Changes:** Never Permitted
+
+### ESTA Instruction Set Architecture (ESTA-ISA v1.0)
+
+The kernel defines 48 primitive instructions for legal computation:
+
+| Category | Instructions | Purpose |
+|----------|-------------|---------|
+| **Arithmetic** | 12 ops | Basic mathematical operations |
+| **Temporal** | 8 ops | Time-based calculations |
+| **Validation** | 10 ops | Constraint checking |
+| **Transformation** | 6 ops | Type conversion |
+| **Aggregation** | 5 ops | Collection operations |
+| **Proof** | 7 ops | Evidence generation |
+
+**See:** `INSTRUCTION_SET.md` for complete instruction catalog.
+
+### Structural Guarantees
+
+The kernel's exclusions are transformed into positive, enforceable properties:
+
+1. **Execution Without Presence** - Not a web framework → Operates without network
+2. **State-Agnostic Truth** - Not a database ORM → Truth independent of storage
+3. **Human-Interface Neutrality** - Not a UI library → Semantic outputs only
+4. **Protocol Independence** - Not a REST API → Survives transport changes
+5. **Explicit Reality Modeling** - Not a configuration system → All inputs explicit
+6. **Rules as Physics** - Not a rules engine → Kernel IS the rules
+
+**See:** `STRUCTURAL_GUARANTEES.md` for complete specification.
+
+### Domain Expansion Contract
+
+New legal domains extend the kernel without modification:
+
+- **Current:** Michigan ESTA
+- **Future:** California PSL, New York Sick Leave, Federal FMLA, GDPR, etc.
+
+**Protocol:**
+- Each domain is isolated and self-contained
+- No cross-domain dependencies
+- Versioned and immutable
+- Complete statute mapping
+- 100% test coverage required
+
+**See:** `DOMAIN_EXPANSION_CONTRACT.md` for extension protocol.
+
+### Kernel Immutability Guarantees
+
+**We Promise:**
+
+1. **Historical Calculations Remain Valid** - Calculations from 2024 work identically in 2050
+2. **Cross-Environment Determinism** - Browser, Node, Edge, Serverless produce identical results
+3. **Audit Trail Permanence** - Proof objects remain valid forever
+4. **Domain Isolation** - Adding new domains doesn't affect existing ones
+
+**See:** `KERNEL_FREEZE_MANIFEST.md` for freeze declaration.
+
+---
+
+## Key Documentation
+
+### Kernel Foundation
+- **[Kernel Specification](./KERNEL_SPEC.md)** - Complete kernel specification
+- **[Deployment Invariance](./DEPLOYMENT_INVARIANCE.md)** - Cross-environment guarantees
+- **[Structural Guarantees](./STRUCTURAL_GUARANTEES.md)** - Positive system properties
+- **[Instruction Set](./INSTRUCTION_SET.md)** - ESTA-ISA primitive operations
+- **[Domain Expansion](./DOMAIN_EXPANSION_CONTRACT.md)** - Extension protocol
+- **[Kernel Freeze Manifest](./KERNEL_FREEZE_MANIFEST.md)** - Freeze declaration
+
+### Supporting Documentation
+- **[Time Model](./TIME_MODEL.md)** - Temporal computation model
+- **[Constraints](./CONSTRAINTS.md)** - Type-level invariants
+- **[Proof Objects](./PROOF_OBJECTS.md)** - Evidence structure
+- **[Predictive Engine](./PREDICTIVE_ENGINE.md)** - Forecasting capabilities
+
+### Examples
+- **[Kernel Invariance Examples](./examples/kernel-invariance/)** - Cross-environment demonstrations
+
+---
+
 ## References
 
 - `kernel/` - TypeScript kernel implementation
 - `estalogic_kernel/` - Gleam kernel specifications
 - `services/` - WASM service modules
 - `libs/kernel-boundary/` - TypeScript IPC types
+
+---
+
+**Last Updated:** 2026-01-12  
+**Architecture Version:** 3.0.0 (Domain Operating System)  
+**Kernel Version:** 1.0.0 (FROZEN)
