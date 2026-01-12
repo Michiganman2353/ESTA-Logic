@@ -16,9 +16,17 @@ import type { ISODate, SemanticVersion } from '../utils';
 export type CapsuleId = string & { readonly __brand: 'CapsuleId' };
 
 /**
- * Jurisdiction code
+ * Jurisdiction code (branded type for extensibility while maintaining type safety)
  */
-export type Jurisdiction = 'MI' | 'CA' | 'NY' | 'IL' | string;
+export type Jurisdiction = string & { readonly __brand: 'Jurisdiction' };
+
+// Common jurisdictions
+export const JURISDICTIONS = {
+  MI: 'MI' as Jurisdiction,
+  CA: 'CA' as Jurisdiction,
+  NY: 'NY' as Jurisdiction,
+  IL: 'IL' as Jurisdiction,
+} as const;
 
 /**
  * Law version with metadata
