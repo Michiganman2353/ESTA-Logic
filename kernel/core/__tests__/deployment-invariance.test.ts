@@ -41,11 +41,12 @@ function calculateAccrual(
   const potentialBalance = input.currentBalance + uncappedAccrual;
   const cappedBalance = Math.min(potentialBalance, input.employerMaxCap);
   const actualAccrual = cappedBalance - input.currentBalance;
+  const wasCapped = potentialBalance > input.employerMaxCap;
 
   return {
     newAccrual: actualAccrual,
     totalBalance: cappedBalance,
-    capped: potentialBalance > input.employerMaxCap,
+    capped: wasCapped,
   };
 }
 

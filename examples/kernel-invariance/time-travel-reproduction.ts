@@ -40,11 +40,13 @@ function calculateHistoricalAccrual(state: HistoricalState): CalculationResult {
 }
 
 function hashState(state: HistoricalState): string {
-  // Simplified hash for demonstration (real implementation would use crypto)
+  // Simplified hash for demonstration (real implementation would use crypto.createHash)
   const str = JSON.stringify(state);
-  return str.split('').reduce((acc, char) => {
-    return ((acc << 5) - acc + char.charCodeAt(0)) | 0;
-  }, 0).toString(16);
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0;
+  }
+  return hash.toString(16);
 }
 
 function demonstrateTimeTravelReproduction() {
