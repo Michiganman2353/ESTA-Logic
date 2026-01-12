@@ -368,7 +368,13 @@ export function createSeal(
   systemIdentity: SystemIdentity
 ): CryptographicSeal {
   // Create deterministic canonical representation
-  const canonical = JSON.stringify(proof, Object.keys(proof).sort());
+  // Sort keys to ensure consistent ordering
+  const sortedKeys = Object.keys(proof).sort();
+  const sortedProof: Record<string, unknown> = {};
+  for (const key of sortedKeys) {
+    sortedProof[key] = (proof as any)[key];
+  }
+  const canonical = JSON.stringify(sortedProof);
 
   // Generate nonce
   const nonce = randomBytes(16).toString('hex');
@@ -395,7 +401,13 @@ export function verifySeal(proof: ProofObject): boolean {
   const { seal, ...content } = proof;
 
   // Recreate canonical representation (without seal)
-  const canonical = JSON.stringify(content, Object.keys(content).sort());
+  // Sort keys to ensure consistent ordering
+  const sortedKeys = Object.keys(content).sort();
+  const sortedContent: Record<string, unknown> = {};
+  for (const key of sortedKeys) {
+    sortedContent[key] = (content as any)[key];
+  }
+  const canonical = JSON.stringify(sortedContent);
 
   // Recompute hash
   const recomputedHash = createHash('sha256')
