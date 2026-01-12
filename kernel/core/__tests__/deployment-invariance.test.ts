@@ -346,12 +346,11 @@ describe('Deployment Invariance', () => {
       );
 
       // All results must be identical
-      const first = results[0];
-      expect(first).toBeDefined();
+      const first = results[0]!; // Array always has 100 elements
       for (const result of results) {
-        expect(result.newAccrual).toBe(first!.newAccrual);
-        expect(result.totalBalance).toBe(first!.totalBalance);
-        expect(result.capped).toBe(first!.capped);
+        expect(result.newAccrual).toBe(first.newAccrual);
+        expect(result.totalBalance).toBe(first.totalBalance);
+        expect(result.capped).toBe(first.capped);
       }
     });
 
