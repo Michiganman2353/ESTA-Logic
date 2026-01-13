@@ -24,9 +24,13 @@ This document explains the status of npm deprecation warnings in the ESTA-Logic 
 
 ### 4. `express` outdated version
 
-- **Status**: RESOLVED
-- **Solution**: Updated express to version 5.2.1 in `apps/backend/package.json`
-- **Details**: Express 5 is now stable and brings improved error handling and performance
+- **Status**: UPDATED TO LATEST V4
+- **Solution**: Updated express to version 4.22.1 in `apps/backend/package.json`
+- **Details**:
+  - Express 5 is available but introduces breaking changes requiring significant code modifications
+  - Kept at Express 4.x (latest stable) to minimize changes per project requirements
+  - Updated from 4.18.2 to 4.22.1 to get latest security fixes and improvements within v4
+  - Note: The deprecation warning mentioned in the problem statement likely refers to older versions (pre-4.22.1)
 
 ## ⚠️ Remaining Warnings (Cannot be Easily Resolved)
 
@@ -70,7 +74,7 @@ The `vercel.json` file was reviewed and **does not contain** any deprecated sett
 
 **5 out of 7** deprecation warnings have been successfully addressed through:
 
-- Dependency updates (Express 5)
+- Dependency updates (Express updated to latest v4.22.1)
 - Package overrides (glob, inflight, stable)
 
 The remaining 2 warnings (`keygrip` and `node-domexception`) are:
