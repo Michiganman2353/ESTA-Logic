@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { RequestHandler } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
@@ -25,7 +25,7 @@ const PORT = process.env.PORT || 3001;
 app.use(helmet());
 
 // Rate limiting - Apply general rate limiter to all requests
-app.use(generalLimiter);
+app.use(generalLimiter as unknown as RequestHandler);
 
 // CORS configuration to support multiple origins
 const allowedOrigins = [
@@ -68,7 +68,7 @@ app.get('/health', (_req, res) => {
 
 // API Routes
 // Apply strict rate limiting to auth endpoints
-app.use('/api/v1/auth', authLimiter, authRouter);
+app.use('/api/v1/auth', authLimiter as unknown as RequestHandler, authRouter);
 app.use('/api/v1/accrual', accrualRouter);
 app.use('/api/v1/requests', requestsRouter);
 app.use('/api/v1/audit', auditRouter);

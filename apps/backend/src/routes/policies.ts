@@ -103,11 +103,12 @@ router.get(
   async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      if (!id) {
+      const policyId = Array.isArray(id) ? id[0] : id;
+      if (!policyId) {
         res.status(400).json({ error: 'Policy ID is required' });
         return;
       }
-      const policyDoc = await db.collection('policies').doc(id).get();
+      const policyDoc = await db.collection('policies').doc(policyId).get();
 
       if (!policyDoc.exists) {
         res.status(404).json({ error: 'Policy not found' });
