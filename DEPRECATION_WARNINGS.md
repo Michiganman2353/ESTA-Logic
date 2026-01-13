@@ -24,13 +24,15 @@ This document explains the status of npm deprecation warnings in the ESTA-Logic 
 
 ### 4. `express` outdated version
 
-- **Status**: UPDATED TO LATEST V4
-- **Solution**: Updated express to version 4.22.1 in `apps/backend/package.json`
+- **Status**: RESOLVED
+- **Solution**: Updated express to version 5.2.1 in `apps/backend/package.json`
 - **Details**:
-  - Express 5 is available but introduces breaking changes requiring significant code modifications
-  - Kept at Express 4.x (latest stable) to minimize changes per project requirements
-  - Updated from 4.18.2 to 4.22.1 to get latest security fixes and improvements within v4
-  - Note: The deprecation warning mentioned in the problem statement likely refers to older versions (pre-4.22.1)
+  - Express 5 is now stable and provides improved error handling and performance
+  - Updated from 4.18.2 to 5.2.1 (major version upgrade)
+  - Fixed TypeScript compatibility issues:
+    - Added type casts for rate limiter middleware to work with Express 5 types
+    - Updated route handlers to handle `req.params` being potentially arrays in Express 5
+  - Updated `@types/express` to 5.0.6 for proper type support
 
 ## ⚠️ Remaining Warnings (Cannot be Easily Resolved)
 
