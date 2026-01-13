@@ -113,7 +113,10 @@ riskRouter.post('/calculate', (req: Request, res: Response) => {
  */
 riskRouter.get('/summary/:tenantId', (req: Request, res: Response) => {
   try {
-    const { tenantId } = req.params;
+    const { tenantId: tenantIdParam } = req.params;
+    const tenantId = Array.isArray(tenantIdParam)
+      ? tenantIdParam[0]
+      : tenantIdParam;
 
     if (!tenantId) {
       res.status(400).json({
@@ -147,7 +150,10 @@ riskRouter.get('/summary/:tenantId', (req: Request, res: Response) => {
  */
 riskRouter.get('/history/:tenantId', (req: Request, res: Response) => {
   try {
-    const { tenantId } = req.params;
+    const { tenantId: tenantIdParam } = req.params;
+    const tenantId = Array.isArray(tenantIdParam)
+      ? tenantIdParam[0]
+      : tenantIdParam;
 
     if (!tenantId) {
       res.status(400).json({
@@ -190,7 +196,10 @@ riskRouter.get('/history/:tenantId', (req: Request, res: Response) => {
  */
 riskRouter.post('/cache/clear/:tenantId', (req: Request, res: Response) => {
   try {
-    const { tenantId } = req.params;
+    const { tenantId: tenantIdParam } = req.params;
+    const tenantId = Array.isArray(tenantIdParam)
+      ? tenantIdParam[0]
+      : tenantIdParam;
 
     if (!tenantId) {
       res.status(400).json({
@@ -228,7 +237,10 @@ riskRouter.post('/cache/clear/:tenantId', (req: Request, res: Response) => {
  */
 riskRouter.get('/alerts/:tenantId', (req: Request, res: Response) => {
   try {
-    const { tenantId } = req.params;
+    const { tenantId: tenantIdParam } = req.params;
+    const tenantId = Array.isArray(tenantIdParam)
+      ? tenantIdParam[0]
+      : tenantIdParam;
 
     if (!tenantId) {
       res.status(400).json({
@@ -266,7 +278,13 @@ riskRouter.post(
   '/alerts/:tenantId/:alertId/acknowledge',
   (req: Request, res: Response) => {
     try {
-      const { tenantId, alertId } = req.params;
+      const { tenantId: tenantIdParam, alertId: alertIdParam } = req.params;
+      const tenantId = Array.isArray(tenantIdParam)
+        ? tenantIdParam[0]
+        : tenantIdParam;
+      const alertId = Array.isArray(alertIdParam)
+        ? alertIdParam[0]
+        : alertIdParam;
 
       if (!tenantId || !alertId) {
         res.status(400).json({
@@ -312,7 +330,13 @@ riskRouter.post(
   '/alerts/:tenantId/:alertId/resolve',
   (req: Request, res: Response) => {
     try {
-      const { tenantId, alertId } = req.params;
+      const { tenantId: tenantIdParam, alertId: alertIdParam } = req.params;
+      const tenantId = Array.isArray(tenantIdParam)
+        ? tenantIdParam[0]
+        : tenantIdParam;
+      const alertId = Array.isArray(alertIdParam)
+        ? alertIdParam[0]
+        : alertIdParam;
 
       if (!tenantId || !alertId) {
         res.status(400).json({

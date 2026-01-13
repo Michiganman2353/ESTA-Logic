@@ -74,7 +74,7 @@ The `vercel.json` file was reviewed and **does not contain** any deprecated sett
 
 **5 out of 7** deprecation warnings have been successfully addressed through:
 
-- Dependency updates (Express updated to latest v4.22.1)
+- Dependency updates (Express updated to v5.2.1 with code fixes)
 - Package overrides (glob, inflight, stable)
 
 The remaining 2 warnings (`keygrip` and `node-domexception`) are:
