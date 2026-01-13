@@ -1,6 +1,6 @@
 /**
  * Cross-Environment Accrual Calculation Example
- * 
+ *
  * Demonstrates that the kernel produces identical results across all deployment environments.
  * This example simulates execution in different runtimes and proves bit-for-bit identical outputs.
  */
@@ -28,6 +28,7 @@ interface ExecutionContext {
   timestamp: string;
   lawVersion: string;
   jurisdiction: string;
+  traceEnabled: boolean;
 }
 
 /**
@@ -45,10 +46,10 @@ function calculateAccrual(
 
   const uncappedAccrual = input.hoursWorked * input.accrualRate;
   const potentialBalance = input.currentBalance + uncappedAccrual;
-  
+
   const cappedBalance = Math.min(potentialBalance, input.employerMaxCap);
   const actualAccrual = cappedBalance - input.currentBalance;
-  
+
   return {
     newAccrual: actualAccrual,
     totalBalance: cappedBalance,
@@ -64,7 +65,7 @@ function calculateAccrual(
 // Simulated environment execution wrappers
 class NodeEnvironment {
   name = 'Node.js';
-  
+
   execute(input: AccrualInput, context: ExecutionContext): AccrualOutput {
     // In Node, but no Node-specific behavior
     return calculateAccrual(input, context);
@@ -73,7 +74,7 @@ class NodeEnvironment {
 
 class BrowserEnvironment {
   name = 'Browser';
-  
+
   execute(input: AccrualInput, context: ExecutionContext): AccrualOutput {
     // In Browser, but no Browser-specific behavior
     return calculateAccrual(input, context);
@@ -82,7 +83,7 @@ class BrowserEnvironment {
 
 class EdgeEnvironment {
   name = 'Edge Runtime (Cloudflare/Vercel)';
-  
+
   execute(input: AccrualInput, context: ExecutionContext): AccrualOutput {
     // In Edge, but no Edge-specific behavior
     return calculateAccrual(input, context);
@@ -91,7 +92,7 @@ class EdgeEnvironment {
 
 class ServerlessEnvironment {
   name = 'Serverless (Lambda/Functions)';
-  
+
   execute(input: AccrualInput, context: ExecutionContext): AccrualOutput {
     // In Serverless, but no Serverless-specific behavior
     return calculateAccrual(input, context);
@@ -118,6 +119,7 @@ function demonstrateCrossEnvironmentInvariance() {
     timestamp: '2025-06-15T12:00:00.000Z',
     lawVersion: '1.0.0',
     jurisdiction: 'US-MI',
+    traceEnabled: false,
   };
 
   console.log('Input:');
@@ -142,7 +144,7 @@ function demonstrateCrossEnvironmentInvariance() {
   for (const env of environments) {
     const result = env.execute(input, context);
     results[env.name] = result;
-    
+
     console.log(`Environment: ${env.name}`);
     console.log('Result:');
     console.log(JSON.stringify(result, null, 2));
@@ -166,10 +168,16 @@ function demonstrateCrossEnvironmentInvariance() {
     console.log('✅ SUCCESS: All environments produced IDENTICAL results');
     console.log();
     console.log('Verification:');
-    console.log(`  - New Accrual: ${results[environments[0].name].newAccrual} hours`);
-    console.log(`  - Total Balance: ${results[environments[0].name].totalBalance} hours`);
+    console.log(
+      `  - New Accrual: ${results[environments[0].name].newAccrual} hours`
+    );
+    console.log(
+      `  - Total Balance: ${results[environments[0].name].totalBalance} hours`
+    );
     console.log(`  - Capped: ${results[environments[0].name].capped}`);
-    console.log(`  - Timestamp: ${results[environments[0].name].proof.timestamp}`);
+    console.log(
+      `  - Timestamp: ${results[environments[0].name].proof.timestamp}`
+    );
     console.log();
     console.log('Deployment Invariance: PROVEN ✓');
   } else {

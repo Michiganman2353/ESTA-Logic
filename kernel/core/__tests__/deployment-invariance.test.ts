@@ -1,16 +1,16 @@
 /**
  * Deployment Invariance Validation Tests
- * 
+ *
  * These tests validate the kernel's deployment invariance guarantees:
  * 1. Cross-environment determinism
  * 2. Temporal stability
  * 3. Explicit context requirements
  * 4. No environmental dependencies
- * 
+ *
  * See: /DEPLOYMENT_INVARIANCE.md for complete specification
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 // Test Types
 interface AccrualInput {
@@ -35,7 +35,7 @@ interface AccrualOutput {
 // Pure kernel function for testing
 function calculateAccrual(
   input: AccrualInput,
-  context: ExecutionContext
+  _context: ExecutionContext
 ): AccrualOutput {
   const uncappedAccrual = input.hoursWorked * input.accrualRate;
   const potentialBalance = input.currentBalance + uncappedAccrual;
@@ -68,10 +68,10 @@ describe('Deployment Invariance', () => {
 
       // Execute at different system times
       const result1 = calculateAccrual(input, context);
-      
+
       // Simulate time passage (but context.timestamp stays the same)
       const result2 = calculateAccrual(input, context);
-      
+
       // Results must be identical
       expect(result1).toEqual(result2);
       expect(JSON.stringify(result1)).toBe(JSON.stringify(result2));
@@ -150,7 +150,7 @@ describe('Deployment Invariance', () => {
         'lambda',
       ];
 
-      const results = environments.map((env) => {
+      const results = environments.map((_env) => {
         // In real implementation, this would execute in different runtimes
         // For testing, we verify the pure function behaves identically
         return calculateAccrual(input, context);
@@ -346,7 +346,7 @@ describe('Deployment Invariance', () => {
       );
 
       // All results must be identical
-      const first = results[0];
+      const first = results[0]!; // Array always has 100 elements
       for (const result of results) {
         expect(result.newAccrual).toBe(first.newAccrual);
         expect(result.totalBalance).toBe(first.totalBalance);
@@ -388,10 +388,9 @@ describe('Deployment Invariance', () => {
 
       // Attempt to call without context should fail at type level
       // (This test verifies the API design requires explicit context)
-      
+
       // TypeScript will catch this at compile time:
-      // @ts-expect-error - Missing required context parameter
-      // calculateAccrual(input);
+      // calculateAccrual(input); // Error: Missing required context parameter
 
       // Must provide explicit context
       const context: ExecutionContext = {
@@ -418,7 +417,8 @@ describe('Deployment Invariance', () => {
         jurisdiction: 'US-MI',
       };
 
-      const result = calculateAccrual(input, context);
+      // Calculate to ensure function works with explicit context
+      calculateAccrual(input, context);
 
       // All variability is captured in explicit parameters
       expect(input).toBeDefined();
