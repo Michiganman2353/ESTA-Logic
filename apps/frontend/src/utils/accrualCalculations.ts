@@ -1,35 +1,14 @@
 /**
- * Accrual Calculation Utilities - KERNEL FACADE
+ * Accrual calculation utilities.
  *
- * ============================================================================
- * MICROKERNEL ARCHITECTURE COMPLIANCE NOTICE
- * ============================================================================
- *
- * This module is a FACADE that delegates all compliance calculations to the
- * kernel. The frontend is an UNTRUSTED CLIENT and must never perform domain
- * logic directly.
- *
- * All accrual calculations are performed by:
- * 1. WASM modules (libs/accrual-engine-wasm) for deterministic computation
- * 2. Kernel orchestration (engine/esta-kernel) for lifecycle management
- * 3. Accrual engine library (libs/accrual-engine) as the authoritative source
- *
- * This file provides UI-friendly wrappers that invoke the kernel service.
- * It does NOT contain business logic - only formatting and kernel invocation.
- *
- * Reference: docs/ENGINEERING_PRINCIPLES.md
- * ============================================================================
+ * This module is the frontend-facing application service for ESTA calculations.
+ * It calls the authoritative pure compliance engine directly. There is no
+ * kernel boot process, IPC layer, WASM bridge, plugin runtime, or network hop.
  */
 
-import { kernelClient } from '@/services/kernel';
+import { calculateAccrual } from '@esta-tracker/accrual-engine';
 
-/**
- * Formatting utility - pure presentation logic (allowed in frontend)
- *
- * @param hours - Number of hours
- * @param showDecimals - Whether to show decimal places
- * @returns Formatted string (e.g., "8 hours", "8.5 hours")
- */
+/** Format an hour value for display. */
 export function formatHours(
   hours: number,
   showDecimals: boolean = true
@@ -41,110 +20,85 @@ export function formatHours(
 }
 
 /**
- * Request accrual calculation from the kernel.
+ * Calculate accrued time through the authoritative compliance engine.
  *
- * This is a kernel invocation - the frontend does NOT compute accruals.
- * The kernel delegates to the WASM accrual module for deterministic calculation.
- *
- * @param minutesWorked - Minutes worked in the period
- * @param employerSize - Size of employer ('small' | 'large')
- * @returns Promise resolving to accrued minutes from kernel
+ * The existing public async contract is retained so callers do not need to
+ * change during the migration. Calculations themselves are synchronous and
+ * deterministic.
  */
 export async function requestAccrualCalculation(
   minutesWorked: number,
   employerSize: 'small' | 'large'
 ): Promise<{ accruedMinutes: number; success: boolean; error?: string }> {
-  try {
-    const response = await kernelClient.calculateAccrual(
-      minutesWorked,
-      employerSize
-    );
-
-    if (response.success && response.data) {
-      return {
-        accruedMinutes: response.data.accrued_minutes,
-        success: true,
-      };
-    }
-
+  if (!Number.isFinite(minutesWorked) || minutesWorked < 0) {
     return {
       accruedMinutes: 0,
       success: false,
-      error: response.error ?? 'Unknown error',
+      error: 'Minutes worked must be a non-negative finite number',
+    };
+  }
+
+  try {
+    const hoursWorked = minutesToHours(minutesWorked);
+    const result = calculateAccrual(hoursWorked, employerSize, 0);
+
+    return {
+      accruedMinutes: hoursToMinutes(result.accrued),
+      success: true,
     };
   } catch (error) {
     return {
       accruedMinutes: 0,
       success: false,
       error:
-        error instanceof Error ? error.message : 'Kernel invocation failed',
+        error instanceof Error ? error.message : 'Accrual calculation failed',
     };
   }
 }
 
 /**
- * Request balance validation from the kernel.
+ * Validate an employee balance without a runtime orchestration layer.
  *
- * This is a kernel invocation - the frontend does NOT validate balances.
- *
- * @param employeeId - Employee identifier
- * @param accruedMinutes - Total accrued minutes
- * @param usedMinutes - Total used minutes
- * @returns Promise resolving to validation result from kernel
+ * Accrued and used values are already normalized to minutes by the caller.
+ * A balance is valid when both values are finite/non-negative and usage does
+ * not exceed accrued time.
  */
 export async function requestBalanceValidation(
   employeeId: string,
   accruedMinutes: number,
   usedMinutes: number
 ): Promise<{ valid: boolean; balance: number; errors: string[] }> {
-  try {
-    const response = await kernelClient.validateAccrual(
-      employeeId,
-      accruedMinutes,
-      usedMinutes
-    );
+  const errors: string[] = [];
 
-    if (response.success && response.data) {
-      return {
-        valid: response.data.valid,
-        balance: response.data.balance,
-        errors: response.data.validation_errors ?? [],
-      };
-    }
-
-    return {
-      valid: false,
-      balance: 0,
-      errors: [response.error ?? 'Validation failed'],
-    };
-  } catch (error) {
-    return {
-      valid: false,
-      balance: 0,
-      errors: [
-        error instanceof Error ? error.message : 'Kernel invocation failed',
-      ],
-    };
+  if (!employeeId.trim()) {
+    errors.push('Employee identifier is required');
   }
+  if (!Number.isFinite(accruedMinutes) || accruedMinutes < 0) {
+    errors.push('Accrued minutes must be a non-negative finite number');
+  }
+  if (!Number.isFinite(usedMinutes) || usedMinutes < 0) {
+    errors.push('Used minutes must be a non-negative finite number');
+  }
+
+  const balance = Math.max(0, accruedMinutes - usedMinutes);
+
+  if (errors.length === 0 && usedMinutes > accruedMinutes) {
+    errors.push('Used time exceeds accrued time');
+  }
+
+  return {
+    valid: errors.length === 0,
+    balance,
+    errors,
+  };
 }
 
-/**
- * Convert hours to minutes for kernel communication.
- * The kernel operates on minutes for precision.
- *
- * @param hours - Hours value
- * @returns Minutes value
- */
+/** Convert hours to whole minutes for storage and display boundaries. */
 export function hoursToMinutes(hours: number): number {
   return Math.round(hours * 60);
 }
 
-/**
- * Convert minutes to hours for UI display.
- *
- * @param minutes - Minutes value
- * @returns Hours value
- */
+/** Convert stored minutes to hours. */
 export function minutesToHours(minutes: number): number {
   return minutes / 60;
 }
