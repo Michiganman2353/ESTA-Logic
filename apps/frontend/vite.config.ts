@@ -101,6 +101,10 @@ export default defineConfig(({ mode }) => {
               'firebase/firestore',
               'firebase/storage',
             ],
+            // Split crypto and security libraries
+            'crypto-vendor': ['crypto-js', 'twofish-ts'],
+            // Split state management and utilities
+            'utils-vendor': ['zustand', 'rxjs', 'clsx'],
           },
           // Optimize asset file names for better caching
           assetFileNames: (assetInfo) => {
