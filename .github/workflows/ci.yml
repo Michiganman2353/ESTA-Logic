@@ -43,10 +43,6 @@ jobs:
     name: Test & Build
     runs-on: ubuntu-latest
     needs: lockfile-verify
-    strategy:
-      fail-fast: true
-      matrix:
-        node-version: [22.x, 20.x]
     steps:
       - uses: actions/checkout@v4
         with:
@@ -54,7 +50,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22.x
           cache: npm
           cache-dependency-path: package-lock.json
       - name: Setup Gleam and Erlang
@@ -73,22 +69,16 @@ jobs:
       - name: Validate workspace
         run: npx nx graph --file=/tmp/nx-graph.json
       - name: Lint
-        if: matrix.node-version == '22.x'
         run: npx nx affected --target=lint --parallel=${{ env.NX_PARALLEL }}
       - name: Type check
-        if: matrix.node-version == '22.x'
         run: npx nx affected --target=typecheck --parallel=${{ env.NX_PARALLEL }}
       - name: Check product claims
-        if: matrix.node-version == '22.x'
         run: npm run check:claims
       - name: Build shared types
-        if: matrix.node-version == '22.x'
         run: npx nx build shared-types
       - name: Smoke test employer code generation
-        if: matrix.node-version == '22.x'
         run: node scripts/smoke-test-employer-code.mjs
       - name: Run unit tests
-        if: matrix.node-version == '22.x'
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
           VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
