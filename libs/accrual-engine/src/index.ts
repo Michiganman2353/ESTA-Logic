@@ -1,16 +1,17 @@
 /**
- * ESTA Tracker Accrual Engine
+ * ESTA-Logic Compliance Engine
  *
- * Core business logic for Michigan ESTA sick time accrual calculations
- * This package will be replaced/enhanced with WebAssembly (Rust) in Phase Two
+ * This package is the authoritative home for Michigan ESTA calculations.
+ * It is intentionally implemented as a small, deterministic TypeScript
+ * library with no UI, Firebase, network, kernel, plugin, agent, or runtime
+ * dependencies.
  *
- * Helix Integration: For immutable FP calculations, use:
- *   import { calculate } from '@esta-logic/helix';
- * The Helix package provides pure functional calculations compiled to WASM.
+ * Production callers should import compliance behavior directly from this
+ * package or through a thin application-service facade. Alternative WASM,
+ * microkernel, Helix, and agent implementations are experimental and must not
+ * become required production execution paths.
  *
- * Compliance Engine v2: For deterministic, ruleset-driven calculations:
- *   import { calculateAccrualV2, validateCarryoverV2 } from '@esta-tracker/accrual-engine';
- * The v2 engine uses a JSON ruleset for statutory compliance verification.
+ * Architecture: docs/architecture/RELIABLE_ENGINE_ARCHITECTURE.md
  */
 
 export * from './calculator.js';
