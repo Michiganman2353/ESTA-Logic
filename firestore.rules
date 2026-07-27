@@ -1,366 +1,238 @@
 rules_version = '2';
-// =========================================================================
-// FIRESTORE SECURITY RULES - PERSISTENCE ADAPTER LAYER
-// =========================================================================
-//
-// MICROKERNEL ARCHITECTURE COMPLIANCE:
-// This file defines access control rules for the Firestore persistence adapter.
-// 
-// KEY PRINCIPLES:
-// 1. Persistence adapters ONLY enforce access control
-// 2. Business logic is NEVER embedded in security rules
-// 3. All compliance validation is performed by the kernel BEFORE persistence
-// 4. These rules are the LAST line of defense, not the FIRST
-//
-// The kernel (engine/esta-kernel) validates all requests before they reach
-// this adapter. ESTA compliance rules, accrual calculations, and hour limits
-// are enforced by WASM modules (libs/accrual-engine-wasm), NOT by Firestore.
-//
-// Reference: docs/ENGINEERING_PRINCIPLES.md
-// =========================================================================
+
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // =====================================================
-    // SECURITY HELPER FUNCTIONS
-    // =====================================================
-    
-    // Basic authentication check
     function isAuthenticated() {
       return request.auth != null;
     }
-    
-    // Check if the requester owns the document
+
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
-    
-    // Get user data from Firestore (cached per request)
+
     function getUserData() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
     }
-    
-    // Check if user has specific role
+
     function isRole(role) {
       return isAuthenticated() && getUserData().role == role;
     }
-    
-    // Check tenant membership
+
     function belongsToTenant(tenantId) {
       return isAuthenticated() && getUserData().tenantId == tenantId;
     }
-    
-    // Check if user is employer or admin
+
     function isEmployer() {
-      return isAuthenticated() && (getUserData().role == 'employer' || getUserData().role == 'admin');
+      return isAuthenticated() &&
+        (getUserData().role == 'employer' || getUserData().role == 'admin');
     }
-    
-    // Check if user is employee
+
     function isEmployee() {
       return isAuthenticated() && getUserData().role == 'employee';
     }
-    
-    // Check if employee belongs to specific employer
+
     function belongsToEmployer(employerId) {
       return isAuthenticated() && getUserData().employerId == employerId;
     }
-    
-    // =====================================================
-    // DATA VALIDATION HELPERS
-    // =====================================================
-    
-    // Validate timestamp is recent (within 5 minutes) - prevents replay attacks
-    function isRecentTimestamp(timestamp) {
-      return timestamp is timestamp && 
-        timestamp > request.time - duration.value(5, 'm') &&
-        timestamp < request.time + duration.value(1, 'm');
-    }
-    
-    // Validate string field constraints
+
     function isValidString(field, minLen, maxLen) {
       return field is string && field.size() >= minLen && field.size() <= maxLen;
     }
-    
-    // Validate email format (basic check)
-    function isValidEmail(email) {
-      return email is string && email.matches('^[^@]+@[^@]+\\.[^@]+$');
-    }
-    
-    // Validate required fields exist in document
-    // Returns true if all required fields are present in data
-    function hasRequiredFields(data, fields) {
-      return data.keys().toSet().hasAll(fields.toSet());
-    }
-    
-    // Validate data size limits to prevent abuse
+
     function isWithinSizeLimit() {
       return request.resource.data.keys().size() <= 100;
     }
-    
-    // =====================================================
-    // EMPLOYER PROFILES COLLECTION
-    // =====================================================
+
+    function validEmployerCodeRecord(code) {
+      return code.matches('^[1-9][0-9]{3}$') &&
+        request.resource.data.keys().hasOnly([
+          'employerId',
+          'displayName',
+          'size',
+          'employeeCount',
+          'createdAt',
+          'updatedAt'
+        ]) &&
+        request.resource.data.employerId == request.auth.uid &&
+        isValidString(request.resource.data.displayName, 2, 200) &&
+        request.resource.data.size in ['small', 'large'] &&
+        request.resource.data.employeeCount is int &&
+        request.resource.data.employeeCount >= 1 &&
+        request.resource.data.employeeCount <= 10000;
+    }
+
+    // Private employer profile keyed by the employer's Firebase UID.
     match /employerProfiles/{employerId} {
-      // Allow employer to create their own profile during registration
-      allow create: if isAuthenticated() && 
+      allow create: if isAuthenticated() &&
         request.auth.uid == employerId &&
         isWithinSizeLimit();
-      
-      // Employer can read/update their own profile
+
       allow read, update: if isAuthenticated() && request.auth.uid == employerId;
-      
-      // Employees can read their employer's profile (for branding)
       allow read: if isAuthenticated() && belongsToEmployer(employerId);
-      
-      // No one can delete employer profiles
       allow delete: if false;
-      
-      // Employee subcollection within employer profile
+
       match /employees/{employeeUid} {
-        // Employer can read all employees under their profile
         allow read: if isAuthenticated() && request.auth.uid == employerId;
-        
-        // Employee can read their own record
         allow read: if isAuthenticated() && request.auth.uid == employeeUid;
-        
-        // Employer can create/update employee records
-        allow create, update: if isAuthenticated() && 
+
+        allow create, update: if isAuthenticated() &&
           request.auth.uid == employerId &&
           isWithinSizeLimit();
-        
-        // No deletion of employee records
+
         allow delete: if false;
       }
     }
-    
-    // =====================================================
-    // USERS COLLECTION
-    // =====================================================
+
+    // Minimal employee-linking lookup. A code is not an authorization token.
+    // Public clients may fetch a known code, but they may not list the registry.
+    match /employerCodes/{code} {
+      allow get: if true;
+      allow list: if false;
+
+      allow create: if isAuthenticated() &&
+        validEmployerCodeRecord(code) &&
+        existsAfter(
+          /databases/$(database)/documents/employerProfiles/$(request.auth.uid)
+        );
+
+      allow update: if isAuthenticated() &&
+        resource.data.employerId == request.auth.uid &&
+        validEmployerCodeRecord(code);
+
+      allow delete: if isAuthenticated() &&
+        resource.data.employerId == request.auth.uid;
+    }
+
     match /users/{userId} {
-      // Allow authenticated users to create their own document during registration
-      allow create: if isAuthenticated() && 
+      allow create: if isAuthenticated() &&
         request.auth.uid == userId &&
         isWithinSizeLimit() &&
-        // Prevent users from setting privileged fields on creation
-        (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == false);
-      
-      // Users can read their own document
+        (!('isAdmin' in request.resource.data) ||
+          request.resource.data.isAdmin == false);
+
       allow read: if isOwner(userId);
-      
-      // Users can update their own document (limited fields)
-      // Prevent modification of security-sensitive fields
-      allow update: if isOwner(userId) && 
+
+      allow update: if isOwner(userId) &&
         isWithinSizeLimit() &&
         !request.resource.data.diff(resource.data).affectedKeys()
-          .hasAny(['role', 'tenantId', 'employerId', 'status', 'isAdmin', 'permissions']);
-      
-      // Employers can read users in their tenant
-      allow read: if isEmployer() && 
-        belongsToTenant(resource.data.tenantId);
-      
-      // Employers can read employees linked to them
-      allow read: if isEmployer() && 
+          .hasAny([
+            'role',
+            'tenantId',
+            'employerId',
+            'status',
+            'isAdmin',
+            'permissions'
+          ]);
+
+      allow read: if isEmployer() && belongsToTenant(resource.data.tenantId);
+      allow read: if isEmployer() &&
         request.auth.uid == resource.data.employerId;
-      
-      // No one can delete user documents
+
       allow delete: if false;
     }
-    
-    // =====================================================
-    // TENANTS COLLECTION
-    // =====================================================
+
     match /tenants/{tenantId} {
-      // Allow authenticated users to create tenant during registration
-      allow create: if isAuthenticated() && 
+      allow create: if isAuthenticated() &&
         request.resource.data.ownerId == request.auth.uid &&
         isWithinSizeLimit();
-      
-      // Tenant owner can read/update
-      allow read, update: if isAuthenticated() && 
+
+      allow read, update: if isAuthenticated() &&
         resource.data.ownerId == request.auth.uid;
-      
-      // Employees can read their tenant
+
       allow read: if isAuthenticated() && belongsToTenant(tenantId);
-      
-      // No one can delete tenants
       allow delete: if false;
     }
-    
-    // =====================================================
-    // WORK LOGS COLLECTION
-    // =====================================================
-    // 
-    // MICROKERNEL ARCHITECTURE NOTE:
-    // Business logic validation (e.g., hours constraints, accrual calculations)
-    // is enforced by the kernel, NOT by Firestore rules. These rules
-    // only enforce access control and basic data integrity.
-    //
-    // Upper bounds (e.g., max hours per day) are validated by the kernel
-    // before data reaches this persistence layer. Unreasonable values
-    // will be rejected by kernel validation.
-    // =====================================================
+
     match /workLogs/{logId} {
-      // Employers can read all logs in their tenant
-      allow read: if isEmployer() && 
+      allow read: if isEmployer() &&
         belongsToTenant(resource.data.employerId);
-      
-      // Employees can read their own logs
-      allow read: if isEmployee() && 
-        isOwner(resource.data.userId);
-      
-      // Only employers can create/update/delete logs
-      // NOTE: Hour validation (max hours per day, etc.) is performed by the 
-      // kernel before persistence. The kernel is the sole authority for
-      // ESTA compliance calculations. Unreasonable values are rejected there.
-      allow create, update: if isEmployer() && 
+
+      allow read: if isEmployee() && isOwner(resource.data.userId);
+
+      allow create, update: if isEmployer() &&
         belongsToTenant(request.resource.data.employerId) &&
         isWithinSizeLimit() &&
-        // Basic sanity check only - kernel validates business rules
-        (!('hoursWorked' in request.resource.data) || 
+        (!('hoursWorked' in request.resource.data) ||
           request.resource.data.hoursWorked >= 0);
-      
-      allow delete: if isEmployer() && 
+
+      allow delete: if isEmployer() &&
         belongsToTenant(resource.data.employerId);
     }
-    
-    // =====================================================
-    // SICK TIME REQUESTS COLLECTION
-    // =====================================================
-    // 
-    // MICROKERNEL ARCHITECTURE NOTE:
-    // Business logic validation (e.g., ESTA hour limits, accrual caps)
-    // is enforced by the kernel, NOT by Firestore rules. These rules
-    // only enforce access control and basic data integrity.
-    // 
-    // The kernel validates all requests before they reach persistence.
-    // ESTA-specific limits (e.g., 72-hour cap for large employers) are
-    // enforced by the kernel/WASM module, not here.
-    // =====================================================
+
     match /sickTimeRequests/{requestId} {
-      // Employers can read all requests in their tenant
-      allow read: if isEmployer() && 
+      allow read: if isEmployer() &&
         belongsToTenant(resource.data.employerId);
-      
-      // Employees can read their own requests
-      allow read: if isEmployee() && 
-        isOwner(resource.data.userId);
-      
-      // Employees can create requests for themselves
-      // NOTE: Business logic validation (ESTA hour limits, caps) is performed
-      // by the kernel before the request reaches persistence. The kernel
-      // is the sole authority for compliance validation.
-      allow create: if isEmployee() && 
+
+      allow read: if isEmployee() && isOwner(resource.data.userId);
+
+      allow create: if isEmployee() &&
         request.resource.data.userId == request.auth.uid &&
         belongsToTenant(request.resource.data.employerId) &&
         isWithinSizeLimit() &&
-        // Basic sanity check only - kernel validates ESTA compliance
-        ('hoursRequested' in request.resource.data && 
+        ('hoursRequested' in request.resource.data &&
           request.resource.data.hoursRequested > 0);
-      
-      // Only employers can update (approve/deny) requests
-      allow update: if isEmployer() && 
+
+      allow update: if isEmployer() &&
         belongsToTenant(resource.data.employerId);
-      
-      // No one can delete requests
+
       allow delete: if false;
     }
-    
-    // =====================================================
-    // AUDIT LOGS COLLECTION
-    // =====================================================
+
     match /auditLogs/{logId} {
-      // Allow authenticated users to create audit logs
-      // Rate-limited at application level
-      allow create: if isAuthenticated() &&
-        isWithinSizeLimit();
-      
-      // Employers can read logs for their tenant
-      allow read: if isEmployer() && 
+      allow create: if isAuthenticated() && isWithinSizeLimit();
+
+      allow read: if isEmployer() &&
         belongsToTenant(resource.data.employerId);
-      
-      // Employees can read logs related to themselves
-      allow read: if isEmployee() && 
-        isOwner(resource.data.userId);
-      
-      // Audit logs are immutable - no updates or deletes
+
+      allow read: if isEmployee() && isOwner(resource.data.userId);
       allow update, delete: if false;
     }
-    
-    // =====================================================
-    // RETALIATION REPORTS COLLECTION
-    // =====================================================
+
     match /retaliationReports/{reportId} {
-      // Only employers and admins can read reports
-      allow read: if isEmployer() && 
+      allow read: if isEmployer() &&
         belongsToTenant(resource.data.employerId);
-      
-      // Employees can create reports for their tenant
-      allow create: if isEmployee() && 
+
+      allow create: if isEmployee() &&
         belongsToTenant(request.resource.data.employerId) &&
         request.resource.data.reporterId == request.auth.uid &&
         isWithinSizeLimit();
-      
-      // Only employers can update reports
-      allow update: if isEmployer() && 
+
+      allow update: if isEmployer() &&
         belongsToTenant(resource.data.employerId);
-      
-      // No one can delete reports
+
       allow delete: if false;
     }
-    
-    // =====================================================
-    // DOCUMENTS/ATTACHMENTS METADATA COLLECTION
-    // =====================================================
+
     match /documents/{documentId} {
-      // Employers can read all documents in their tenant
-      allow read: if isEmployer() && 
-        belongsToTenant(resource.data.tenantId);
-      
-      // Employees can read their own documents
-      allow read: if isEmployee() && 
-        isOwner(resource.data.userId);
-      
-      // Employees can create documents for their own requests
-      allow create: if isAuthenticated() && 
+      allow read: if isEmployer() && belongsToTenant(resource.data.tenantId);
+      allow read: if isEmployee() && isOwner(resource.data.userId);
+
+      allow create: if isAuthenticated() &&
         request.resource.data.userId == request.auth.uid &&
         belongsToTenant(request.resource.data.tenantId) &&
         isWithinSizeLimit();
-      
-      // Documents can be updated by the owner if not marked immutable
-      allow update: if isAuthenticated() && 
+
+      allow update: if isAuthenticated() &&
         isOwner(resource.data.userId) &&
         (!('immutable' in resource.data) || resource.data.immutable == false);
-      
-      // Only employers can delete documents, and only if not immutable
-      allow delete: if isEmployer() && 
+
+      allow delete: if isEmployer() &&
         belongsToTenant(resource.data.tenantId) &&
         (!('immutable' in resource.data) || resource.data.immutable == false);
     }
-    
-    // =====================================================
-    // ACCRUAL CACHE COLLECTION (for high-performance queries)
-    // =====================================================
+
     match /accrualCache/{cacheId} {
-      // Only read by authenticated users for their employer
-      allow read: if isAuthenticated() && 
-        (belongsToEmployer(resource.data.employerId) || 
-         (isEmployer() && request.auth.uid == resource.data.employerId));
-      
-      // Only system/backend can write (via Admin SDK)
+      allow read: if isAuthenticated() &&
+        (belongsToEmployer(resource.data.employerId) ||
+          (isEmployer() && request.auth.uid == resource.data.employerId));
+
       allow create, update, delete: if false;
     }
-    
-    // =====================================================
-    // RATE LIMIT TRACKING (for velocity checks)
-    // =====================================================
+
     match /rateLimits/{clientId} {
-      // Only system/backend can read/write (via Admin SDK)
       allow read, write: if false;
     }
-    
-    // =====================================================
-    // DEFAULT: DENY ALL OTHER ACCESS
-    // =====================================================
+
     match /{document=**} {
       allow read, write: if false;
     }

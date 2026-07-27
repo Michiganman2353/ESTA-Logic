@@ -1,18 +1,15 @@
 /**
  * Employer Profile Management
  *
- * This module provides functions for managing employer profiles,
- * including code generation, validation, and employee linking.
+ * Employer profiles are private records keyed by the employer's Firebase UID.
+ * Employee-linking codes are reserved separately in employerCodes/{code} so
+ * registration never needs a collection-wide query.
  */
 
 import {
-  collection,
   doc,
   getDoc,
   setDoc,
-  query,
-  where,
-  getDocs,
   serverTimestamp,
   runTransaction,
 } from 'firebase/firestore';
@@ -28,89 +25,115 @@ import {
   isValidEmployerCode,
 } from '@esta/shared-types';
 
+const DEFAULT_MAX_CODE_ATTEMPTS = 20;
+
 /**
- * Generate a unique employer code with collision detection
+ * Minimal public company data returned during employee registration.
+ * The employer code is a lookup convenience, not an authorization credential.
+ */
+export interface EmployerCodeLookup {
+  employerId: string;
+  employerCode: string;
+  displayName: string;
+  size: 'small' | 'large';
+  employeeCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+class EmployerCodeCollisionError extends Error {
+  constructor(code: string) {
+    super(`Employer code ${code} is already reserved`);
+    this.name = 'EmployerCodeCollisionError';
+  }
+}
+
+function timestampToDate(value: unknown): Date {
+  if (
+    value &&
+    typeof value === 'object' &&
+    'toDate' in value &&
+    typeof (value as { toDate?: unknown }).toDate === 'function'
+  ) {
+    return (value as { toDate: () => Date }).toDate();
+  }
+
+  return new Date();
+}
+
+/**
+ * Generate an available employer code using point reads only.
  *
- * @param db Firestore instance
- * @param maxAttempts Maximum number of attempts to generate a unique code
- * @returns A unique 4-digit employer code
- * @throws Error if unable to generate unique code after maxAttempts
+ * The final uniqueness guarantee is provided by the transaction in
+ * createEmployerProfile; this preflight check merely reduces collisions.
  */
 export async function generateEmployerCode(
   db: Firestore,
-  maxAttempts: number = 10
+  maxAttempts: number = DEFAULT_MAX_CODE_ATTEMPTS
 ): Promise<string> {
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     const code = generateRandomEmployerCode();
+    const codeSnapshot = await getDoc(doc(db, 'employerCodes', code));
 
-    // Check if code already exists
-    const existingProfile = await getEmployerProfileByCode(db, code);
-
-    if (!existingProfile) {
+    if (!codeSnapshot.exists()) {
       return code;
     }
-
-    console.log(
-      `Employer code ${code} already exists, retrying... (attempt ${attempt + 1}/${maxAttempts})`
-    );
   }
 
   throw new Error(
-    `Failed to generate unique employer code after ${maxAttempts} attempts`
+    `Failed to generate an available employer code after ${maxAttempts} attempts`
   );
 }
 
 /**
- * Get employer profile by 4-digit code
+ * Look up the minimum company information needed to join an employer.
+ */
+export async function getEmployerCodeLookup(
+  db: Firestore,
+  code: string
+): Promise<EmployerCodeLookup | null> {
+  if (!isValidEmployerCode(code)) {
+    return null;
+  }
+
+  const codeSnapshot = await getDoc(doc(db, 'employerCodes', code));
+  if (!codeSnapshot.exists()) {
+    return null;
+  }
+
+  const data = codeSnapshot.data();
+  return {
+    employerId: data.employerId,
+    employerCode: code,
+    displayName: data.displayName,
+    size: data.size,
+    employeeCount: data.employeeCount,
+    createdAt: timestampToDate(data.createdAt),
+    updatedAt: timestampToDate(data.updatedAt),
+  };
+}
+
+/**
+ * Backwards-compatible profile lookup by employer code.
  *
- * @param db Firestore instance
- * @param code 4-digit employer code
- * @returns EmployerProfile if found, null otherwise
+ * This method resolves the code registry first and then reads the private
+ * profile. Callers that only need employee-registration data should use
+ * getEmployerCodeLookup instead.
  */
 export async function getEmployerProfileByCode(
   db: Firestore,
   code: string
 ): Promise<EmployerProfile | null> {
-  if (!isValidEmployerCode(code)) {
+  const lookup = await getEmployerCodeLookup(db, code);
+  if (!lookup) {
     return null;
   }
 
-  const profilesRef = collection(db, 'employerProfiles');
-  const q = query(profilesRef, where('employerCode', '==', code));
-  const querySnapshot = await getDocs(q);
-
-  if (querySnapshot.empty) {
-    return null;
-  }
-
-  const docSnap = querySnapshot.docs[0];
-  if (!docSnap) {
-    return null;
-  }
-
-  const data = docSnap.data();
-
-  return {
-    id: docSnap.id,
-    employerCode: data.employerCode,
-    displayName: data.displayName,
-    logoUrl: data.logoUrl,
-    brandColor: data.brandColor,
-    size: data.size,
-    employeeCount: data.employeeCount,
-    contactEmail: data.contactEmail,
-    contactPhone: data.contactPhone,
-    createdAt: data.createdAt?.toDate() || new Date(),
-    updatedAt: data.updatedAt?.toDate() || new Date(),
-  } as EmployerProfile;
+  return getEmployerProfileById(db, lookup.employerId);
 }
 
 /**
- * Get employer profile by ID
- *
- * @param db Firestore instance
- * @param employerId Employer profile ID
- * @returns EmployerProfile if found, null otherwise
+ * Get employer profile by ID.
  */
 export async function getEmployerProfileById(
   db: Firestore,
@@ -134,68 +157,91 @@ export async function getEmployerProfileById(
     employeeCount: data.employeeCount,
     contactEmail: data.contactEmail,
     contactPhone: data.contactPhone,
-    createdAt: data.createdAt?.toDate() || new Date(),
-    updatedAt: data.updatedAt?.toDate() || new Date(),
+    createdAt: timestampToDate(data.createdAt),
+    updatedAt: timestampToDate(data.updatedAt),
   } as EmployerProfile;
 }
 
 /**
- * Create a new employer profile
+ * Create a new employer profile and reserve its employee-linking code.
  *
- * @param db Firestore instance
- * @param uid User ID of the employer
- * @param input Employer profile creation data
- * @returns Created EmployerProfile
+ * The code reservation and private profile are written atomically. A collision
+ * causes a retry with a new code; no collection query is required.
  */
 export async function createEmployerProfile(
   db: Firestore,
   uid: string,
   input: CreateEmployerProfileInput
 ): Promise<EmployerProfile> {
-  // Generate unique employer code
-  const employerCode = await generateEmployerCode(db);
+  // Michigan ESTA treats 10 or fewer employees as a small business.
+  const size: 'small' | 'large' =
+    input.employeeCount <= 10 ? 'small' : 'large';
 
-  // Determine employer size
-  const size = input.employeeCount >= 10 ? 'large' : 'small';
+  for (let attempt = 0; attempt < DEFAULT_MAX_CODE_ATTEMPTS; attempt++) {
+    const employerCode = generateRandomEmployerCode();
+    const codeRef = doc(db, 'employerCodes', employerCode);
+    const profileRef = doc(db, 'employerProfiles', uid);
 
-  const profileData = {
-    employerCode,
-    displayName: input.displayName,
-    logoUrl: input.logoUrl ?? null,
-    brandColor: input.brandColor ?? null,
-    size,
-    employeeCount: input.employeeCount,
-    contactEmail: input.contactEmail,
-    contactPhone: input.contactPhone ?? null,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  };
+    try {
+      await runTransaction(db, async (transaction) => {
+        const existingCode = await transaction.get(codeRef);
+        if (existingCode.exists()) {
+          throw new EmployerCodeCollisionError(employerCode);
+        }
 
-  // Create employer profile document
-  const profileRef = doc(db, 'employerProfiles', uid);
-  await setDoc(profileRef, profileData);
+        const profileData = {
+          employerCode,
+          displayName: input.displayName,
+          logoUrl: input.logoUrl ?? null,
+          brandColor: input.brandColor ?? null,
+          size,
+          employeeCount: input.employeeCount,
+          contactEmail: input.contactEmail,
+          contactPhone: input.contactPhone ?? null,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        };
 
-  return {
-    id: uid,
-    employerCode,
-    displayName: input.displayName,
-    logoUrl: input.logoUrl,
-    brandColor: input.brandColor,
-    size,
-    employeeCount: input.employeeCount,
-    contactEmail: input.contactEmail,
-    contactPhone: input.contactPhone,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  };
+        // Public lookup record contains no employer email, phone, or user data.
+        transaction.set(codeRef, {
+          employerId: uid,
+          displayName: input.displayName,
+          size,
+          employeeCount: input.employeeCount,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+        transaction.set(profileRef, profileData);
+      });
+
+      return {
+        id: uid,
+        employerCode,
+        displayName: input.displayName,
+        logoUrl: input.logoUrl,
+        brandColor: input.brandColor,
+        size,
+        employeeCount: input.employeeCount,
+        contactEmail: input.contactEmail,
+        contactPhone: input.contactPhone,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+    } catch (error) {
+      if (error instanceof EmployerCodeCollisionError) {
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  throw new Error(
+    `Failed to reserve a unique employer code after ${DEFAULT_MAX_CODE_ATTEMPTS} attempts`
+  );
 }
 
 /**
- * Update employer profile branding
- *
- * @param db Firestore instance
- * @param employerId Employer profile ID
- * @param input Branding update data
+ * Update employer profile branding.
  */
 export async function updateEmployerBranding(
   db: Firestore,
@@ -221,12 +267,7 @@ export async function updateEmployerBranding(
 }
 
 /**
- * Link an employee to an employer
- *
- * @param db Firestore instance
- * @param employeeUid Employee user ID
- * @param employerId Employer profile ID
- * @param employeeData Employee information
+ * Link an employee to an employer.
  */
 export async function linkEmployeeToEmployer(
   db: Firestore,
@@ -238,16 +279,13 @@ export async function linkEmployeeToEmployer(
     role: 'employee' | 'manager';
   }
 ): Promise<void> {
-  // Use transaction to ensure atomicity
   await runTransaction(db, async (transaction) => {
-    // Update user document with employerId
     const userRef = doc(db, 'users', employeeUid);
     transaction.update(userRef, {
       employerId,
       updatedAt: serverTimestamp(),
     });
 
-    // Create employee record in employer's employees subcollection
     const employeeRef = doc(
       db,
       'employerProfiles',
@@ -267,12 +305,7 @@ export async function linkEmployeeToEmployer(
 }
 
 /**
- * Get employee record from employer profile
- *
- * @param db Firestore instance
- * @param employerId Employer profile ID
- * @param employeeUid Employee user ID
- * @returns EmployerEmployee if found, null otherwise
+ * Get employee record from employer profile.
  */
 export async function getEmployerEmployee(
   db: Firestore,
@@ -297,34 +330,70 @@ export async function getEmployerEmployee(
     uid: data.uid,
     email: data.email,
     displayName: data.displayName,
-    joinDate: data.joinDate?.toDate() || new Date(),
+    joinDate: timestampToDate(data.joinDate),
     role: data.role,
     status: data.status,
   } as EmployerEmployee;
 }
 
 /**
- * Regenerate employer code
- *
- * @param db Firestore instance
- * @param employerId Employer profile ID
- * @returns New employer code
+ * Regenerate an employer code atomically.
  */
 export async function regenerateEmployerCode(
   db: Firestore,
   employerId: string
 ): Promise<string> {
-  const newCode = await generateEmployerCode(db);
-
   const profileRef = doc(db, 'employerProfiles', employerId);
-  await setDoc(
-    profileRef,
-    {
-      employerCode: newCode,
-      updatedAt: serverTimestamp(),
-    },
-    { merge: true }
-  );
 
-  return newCode;
+  for (let attempt = 0; attempt < DEFAULT_MAX_CODE_ATTEMPTS; attempt++) {
+    const newCode = generateRandomEmployerCode();
+    const newCodeRef = doc(db, 'employerCodes', newCode);
+
+    try {
+      await runTransaction(db, async (transaction) => {
+        const [profileSnapshot, codeSnapshot] = await Promise.all([
+          transaction.get(profileRef),
+          transaction.get(newCodeRef),
+        ]);
+
+        if (!profileSnapshot.exists()) {
+          throw new Error('Employer profile not found');
+        }
+        if (codeSnapshot.exists()) {
+          throw new EmployerCodeCollisionError(newCode);
+        }
+
+        const profileData = profileSnapshot.data();
+        const previousCode = profileData.employerCode as string | undefined;
+
+        transaction.set(newCodeRef, {
+          employerId,
+          displayName: profileData.displayName,
+          size: profileData.size,
+          employeeCount: profileData.employeeCount,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+        });
+        transaction.update(profileRef, {
+          employerCode: newCode,
+          updatedAt: serverTimestamp(),
+        });
+
+        if (previousCode && previousCode !== newCode) {
+          transaction.delete(doc(db, 'employerCodes', previousCode));
+        }
+      });
+
+      return newCode;
+    } catch (error) {
+      if (error instanceof EmployerCodeCollisionError) {
+        continue;
+      }
+      throw error;
+    }
+  }
+
+  throw new Error(
+    `Failed to reserve a new employer code after ${DEFAULT_MAX_CODE_ATTEMPTS} attempts`
+  );
 }
