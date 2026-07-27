@@ -55,12 +55,14 @@ export default function Landing() {
                 <button
                   onClick={() => navigate('/guided-flow')}
                   className="btn btn-primary px-8 py-4 text-lg"
+                  data-testid="hero-calculation-lab"
                 >
                   Open Calculation Lab
                 </button>
                 <button
                   onClick={() => navigate('/register')}
                   className="btn btn-secondary px-8 py-4 text-lg"
+                  data-testid="hero-test-registration"
                 >
                   Test Account Registration
                 </button>
@@ -107,9 +109,9 @@ export default function Landing() {
             </div>
 
             <div className="rounded-2xl border border-amber-200 bg-amber-50 p-8 dark:border-amber-900 dark:bg-amber-950/30">
-              <h2 className="mb-4 text-2xl font-bold">Claims intentionally not made</h2>
+              <h2 className="mb-4 text-2xl font-bold">Claims intentionally limited</h2>
               <p className="mb-4 text-gray-700 dark:text-gray-200">
-                We do not claim SOC 2, GDPR, CCPA, bank-level encryption, HSM-backed keys, cryptographically immutable logs, or guaranteed legal compliance unless those controls are actually implemented and independently established.
+                We describe controls that exist in the application and avoid claiming external certifications, independently audited practices, absolute security, or guaranteed legal outcomes.
               </p>
               <p className="text-sm text-gray-600 dark:text-gray-300">
                 ESTA Tracker is a software aid, not legal advice. Employers remain responsible for their policies and fact-specific compliance decisions.
@@ -126,7 +128,11 @@ export default function Landing() {
                 Compare small-business and standard-employer scenarios before relying on account workflows.
               </p>
             </div>
-            <button onClick={() => navigate('/guided-flow')} className="rounded-lg bg-white px-6 py-3 font-semibold text-blue-800 hover:bg-blue-50">
+            <button
+              onClick={() => navigate('/guided-flow')}
+              className="rounded-lg bg-white px-6 py-3 font-semibold text-blue-800 hover:bg-blue-50"
+              data-testid="cta-calculation-lab"
+            >
               Launch Calculation Lab
             </button>
           </div>
