@@ -22,7 +22,7 @@ export default function AuditLog({ user }: AuditLogProps) {
               Review selected account and workflow events recorded by the application.
             </p>
           </div>
-          <TrustBadgeGroup badges={['security', 'compliance']} size="sm" />
+          <TrustBadgeGroup badges={['security', 'pilot']} size="sm" />
         </div>
 
         <div className="mb-6">
