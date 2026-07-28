@@ -13,16 +13,18 @@ const path = require('node:path');
 
 const ROOT = process.cwd();
 const TARGETS = [
+  'apps/frontend/index.html',
   'apps/frontend/src/pages',
   'apps/frontend/src/components',
   'apps/marketing/src',
   'content/marketing',
 ];
 
-const EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx', '.json', '.md']);
+const EXTENSIONS = new Set(['.html', '.ts', '.tsx', '.js', '.jsx', '.json', '.md']);
 
 const PROHIBITED = [
   { label: 'absolute legal compliance', pattern: /100%\s+(?:ESTA\s+)?compliant/gi },
+  { label: 'categorical compliance metadata', pattern: /(?:compliant\s+sick\s+time\s+management|michigan\s+sick\s+time\s+compliance)/gi },
   { label: 'guaranteed compliance', pattern: /guaranteed\s+compliance/gi },
   { label: 'state approval or certification', pattern: /(?:state|government)\s+(?:approved|certified)/gi },
   { label: 'audit-proof guarantee', pattern: /audit[- ]proof/gi },
@@ -37,21 +39,21 @@ const PROHIBITED = [
   { label: 'HSM deployment claim', pattern: /hardware\s+security\s+modules?\s*\(HSM\)/gi },
 ];
 
-function walk(directory) {
-  if (!fs.existsSync(directory)) return [];
+function collectFiles(target) {
+  if (!fs.existsSync(target)) return [];
+  const stat = fs.statSync(target);
+  if (stat.isFile()) return EXTENSIONS.has(path.extname(target)) ? [target] : [];
 
-  const entries = fs.readdirSync(directory, { withFileTypes: true });
-  return entries.flatMap((entry) => {
-    const fullPath = path.join(directory, entry.name);
-    if (entry.isDirectory()) return walk(fullPath);
-    return EXTENSIONS.has(path.extname(entry.name)) ? [fullPath] : [];
+  return fs.readdirSync(target, { withFileTypes: true }).flatMap((entry) => {
+    const fullPath = path.join(target, entry.name);
+    return entry.isDirectory() ? collectFiles(fullPath) : EXTENSIONS.has(path.extname(entry.name)) ? [fullPath] : [];
   });
 }
 
 const findings = [];
 
 for (const target of TARGETS) {
-  for (const filename of walk(path.join(ROOT, target))) {
+  for (const filename of collectFiles(path.join(ROOT, target))) {
     const text = fs.readFileSync(filename, 'utf8');
     const lines = text.split(/\r?\n/);
 
