@@ -143,11 +143,11 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: test -n "$VERCEL_TOKEN"
-      - name: Configure Vercel project
+      - name: Link Vercel project
         run: |
           mkdir -p .vercel
           printf '{"orgId":"%s","projectId":"%s"}\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID" > .vercel/project.json
-          vercel pull --yes --environment=preview --token='${{ secrets.VERCEL_TOKEN }}'
+          cat .vercel/project.json
       - name: Build and deploy preview
         id: deploy
         run: |
@@ -181,11 +181,11 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: test -n "$VERCEL_TOKEN"
-      - name: Configure Vercel project
+      - name: Link Vercel project
         run: |
           mkdir -p .vercel
           printf '{"orgId":"%s","projectId":"%s"}\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID" > .vercel/project.json
-          vercel pull --yes --environment=production --token='${{ secrets.VERCEL_TOKEN }}'
+          cat .vercel/project.json
       - name: Build and deploy production
         id: deploy
         run: |
