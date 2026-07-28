@@ -16,6 +16,8 @@ permissions:
 env:
   NODE_OPTIONS: '--max-old-space-size=4096'
   NX_DAEMON: 'false'
+  VERCEL_ORG_ID: 'team_IKgL6dN47vKTwgnMR5TLyVKs'
+  VERCEL_PROJECT_ID: 'prj_TGjrQisZaxQ1v26bRBm2cPhhkNTc'
 
 jobs:
   lockfile-verify:
@@ -137,19 +139,14 @@ jobs:
         run: npm ci
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
-      - name: Validate Vercel secrets
+      - name: Validate Vercel token
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-        run: |
-          test -n "$VERCEL_TOKEN"
-          test -n "$VERCEL_ORG_ID"
-          test -n "$VERCEL_PROJECT_ID"
+        run: test -n "$VERCEL_TOKEN"
       - name: Configure Vercel project
         run: |
           mkdir -p .vercel
-          echo '{"orgId":"${{ secrets.VERCEL_ORG_ID }}","projectId":"${{ secrets.VERCEL_PROJECT_ID }}"}' > .vercel/project.json
+          printf '{"orgId":"%s","projectId":"%s"}\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID" > .vercel/project.json
           vercel pull --yes --environment=preview --token='${{ secrets.VERCEL_TOKEN }}'
       - name: Build and deploy preview
         id: deploy
@@ -180,10 +177,14 @@ jobs:
         run: npm ci
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
+      - name: Validate Vercel token
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: test -n "$VERCEL_TOKEN"
       - name: Configure Vercel project
         run: |
           mkdir -p .vercel
-          echo '{"orgId":"${{ secrets.VERCEL_ORG_ID }}","projectId":"${{ secrets.VERCEL_PROJECT_ID }}"}' > .vercel/project.json
+          printf '{"orgId":"%s","projectId":"%s"}\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID" > .vercel/project.json
           vercel pull --yes --environment=production --token='${{ secrets.VERCEL_TOKEN }}'
       - name: Build and deploy production
         id: deploy
