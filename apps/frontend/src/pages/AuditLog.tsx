@@ -8,7 +8,6 @@ interface AuditLogProps {
 }
 
 export default function AuditLog({ user }: AuditLogProps) {
-  // User prop is passed for potential future use
   void user;
 
   return (
@@ -20,24 +19,20 @@ export default function AuditLog({ user }: AuditLogProps) {
               Audit Trail
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
-              3-year compliance audit trail - view all accruals, usage, and
-              actions
+              Review selected account and workflow events recorded by the application.
             </p>
           </div>
           <TrustBadgeGroup badges={['security', 'compliance']} size="sm" />
         </div>
 
-        {/* Security Status Banner */}
         <div className="mb-6">
           <SecurityStatusBanner variant="detailed" showDetails={true} />
         </div>
 
-        {/* Enhanced Compliance Security Panel */}
         <div className="mb-6">
           <ComplianceSecurityPanel />
         </div>
 
-        {/* Security Features Information */}
         <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-6 dark:border-blue-800 dark:bg-blue-900/20">
           <div className="flex items-start gap-4">
             <svg
@@ -45,6 +40,7 @@ export default function AuditLog({ user }: AuditLogProps) {
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -55,29 +51,12 @@ export default function AuditLog({ user }: AuditLogProps) {
             </svg>
             <div>
               <h3 className="mb-2 font-semibold text-blue-900 dark:text-blue-100">
-                Tamper-Proof Audit Records
+                Audit records currently implemented
               </h3>
               <ul className="space-y-1 text-sm text-blue-800 dark:text-blue-200">
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>
-                    All records are cryptographically signed and immutable
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>3-year retention as required by Michigan ESTA law</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>
-                    Complete audit trail with timestamps and user identities
-                  </span>
-                </li>
-                <li className="flex items-start">
-                  <span className="mr-2">•</span>
-                  <span>Instant export for state compliance audits</span>
-                </li>
+                <li>• Selected account and workflow events include timestamps and actor information.</li>
+                <li>• Firestore rules prevent client updates and deletes for audit-log records.</li>
+                <li>• Server-authoritative audit creation, retention enforcement, and export workflows remain under active hardening.</li>
               </ul>
             </div>
           </div>
