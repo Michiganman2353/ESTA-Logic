@@ -94,12 +94,13 @@ export default function GuidedFlow() {
             Public calculation laboratory
           </p>
           <h1 className="mb-4 text-3xl font-bold sm:text-4xl">
-            Explore Michigan earned sick-time calculations
+            Michigan Earned Sick Time Calculation Lab
           </h1>
           <p className="text-gray-600 dark:text-gray-300">
             Change the assumptions below to see how accrual, frontloading, carryover,
             annual use limits, and an optional 120-day waiting period affect an
-            employee&apos;s available time. No account or employee information is saved.
+            employee&apos;s available time. This public lab does not save account,
+            employee, or scenario information.
           </p>
         </div>
 
@@ -115,7 +116,7 @@ export default function GuidedFlow() {
               <label className="block">
                 <span className="mb-1 block text-sm font-medium">Employer method</span>
                 <select className="input w-full" value={method} onChange={(e) => setMethod(e.target.value as AccrualMethod)}>
-                  <option value="accrual">Accrual: 1 hour per 30 worked</option>
+                  <option value="accrual">Accrual: 1 hour per 30 hours worked</option>
                   <option value="frontload">Frontload annual minimum</option>
                 </select>
               </label>
@@ -185,7 +186,7 @@ export default function GuidedFlow() {
               <h2 className="mb-4 text-xl font-semibold">Why this result</h2>
               <ol className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
                 <li><strong>1.</strong> Employer size is determined using 10 or fewer employees as the small-business threshold.</li>
-                <li><strong>2.</strong> Under accrual, both employer sizes earn one hour for each 30 hours worked. The 40/72-hour values are annual use limits, not automatic accrual ceilings.</li>
+                <li><strong>2.</strong> Under accrual, both employer sizes earn 1 hour per 30 hours worked. The 40/72-hour values are annual use limits, not automatic accrual ceilings.</li>
                 <li><strong>3.</strong> This lab limits entered carryover to {result.carryoverLimit} hours for the selected employer size.</li>
                 <li><strong>4.</strong> The employee has been employed for {result.daysEmployed} calendar days. The optional waiting period is {result.waitingPeriodComplete ? 'complete or not applied' : 'not yet complete'}.</li>
                 <li><strong>5.</strong> “Usable now” is the lower of the current bank and the remaining annual use allowance, and becomes zero while an applied waiting period is incomplete.</li>
