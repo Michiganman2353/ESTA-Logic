@@ -116,7 +116,7 @@ export default function GuidedFlow() {
               <label className="block">
                 <span className="mb-1 block text-sm font-medium">Employer method</span>
                 <select className="input w-full" value={method} onChange={(e) => setMethod(e.target.value as AccrualMethod)}>
-                  <option value="accrual">Accrual: 1 hour per 30 hours worked</option>
+                  <option value="accrual">Accrual method</option>
                   <option value="frontload">Frontload annual minimum</option>
                 </select>
               </label>
