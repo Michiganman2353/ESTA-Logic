@@ -1,30 +1,3 @@
-/**
- * Settings Page
- *
- * Main settings page for ESTA Tracker that allows users to configure
- * their account, view security information, and manage preferences.
- *
- * Features:
- * - Account information display and editing
- * - Security and privacy information
- * - Notification preferences
- * - Integration settings
- * - Compliance certificate download
- * - Trust badges display
- * - Responsive tabs navigation
- * - Dark mode support
- *
- * Uses:
- * - SecuritySection component for security information
- * - TrustBadgeGroup for trust indicators
- * - Design system components (Button, Card)
- * - User context for current user data
- *
- * Navigation:
- * - Protected route (requires authentication)
- * - Accessible from main dashboard
- */
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User } from '@/types';
@@ -45,32 +18,34 @@ export default function Settings({ user }: SettingsProps) {
 
   const handleSave = async () => {
     setIsSaving(true);
-    // Simulate save operation
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSaving(false);
   };
 
-  const handleDownloadCertificate = () => {
-    // Generate compliance certificate
-    const certificateData = {
+  const handleDownloadSecuritySummary = () => {
+    const summaryData = {
       companyName: 'Sample Company',
-      certificationDate: new Date().toISOString(),
-      features: [
-        'Michigan ESTA Compliance',
-        'Bank-Level Encryption (AES-256-GCM)',
-        'Google Cloud KMS Key Management',
-        'Comprehensive Audit Logging',
-        '3-Year Record Retention',
+      generatedAt: new Date().toISOString(),
+      implementedControls: [
+        'Firebase Authentication',
+        'Firestore security rules',
+        'Role-aware protected routes',
+        'Selected audit-event records',
+        'Automated lint, test, claims, and build checks',
+      ],
+      limitations: [
+        'This file is a product security summary, not a certification.',
+        'Server-authoritative identity, audit, retention, and operational controls remain under active hardening.',
       ],
     };
 
-    const blob = new Blob([JSON.stringify(certificateData, null, 2)], {
+    const blob = new Blob([JSON.stringify(summaryData, null, 2)], {
       type: 'application/json',
     });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'esta-tracker-compliance-certificate.json';
+    link.download = 'esta-tracker-security-summary.json';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -86,7 +61,6 @@ export default function Settings({ user }: SettingsProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
       <nav className="bg-white shadow dark:bg-gray-800">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 justify-between">
@@ -123,26 +97,21 @@ export default function Settings({ user }: SettingsProps) {
             Settings
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Manage your account settings, security preferences, and integrations
+            Manage your account settings, security preferences, and integrations.
           </p>
         </div>
 
-        {/* Trust Badges */}
         <div className="mb-6">
           <TrustBadgeGroup
             badges={['security', 'compliance', 'verified']}
             size="md"
             showCertificate={true}
-            onDownloadCertificate={handleDownloadCertificate}
+            onDownloadCertificate={handleDownloadSecuritySummary}
           />
         </div>
 
-        {/* Tabs */}
         <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
-          <nav
-            className="flex space-x-8 overflow-x-auto"
-            aria-label="Settings tabs"
-          >
+          <nav className="flex space-x-8 overflow-x-auto" aria-label="Settings tabs">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
@@ -160,7 +129,6 @@ export default function Settings({ user }: SettingsProps) {
           </nav>
         </div>
 
-        {/* Tab Content */}
         <div className="space-y-6">
           {activeTab === 'account' && (
             <Card>
@@ -169,57 +137,28 @@ export default function Settings({ user }: SettingsProps) {
               </h2>
               <div className="space-y-4">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    defaultValue={user.name}
-                    className="input w-full"
-                    disabled
-                  />
+                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Full Name</label>
+                  <input type="text" defaultValue={user.name} className="input w-full" disabled />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    defaultValue={user.email}
-                    className="input w-full"
-                    disabled
-                  />
+                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Email Address</label>
+                  <input type="email" defaultValue={user.email} className="input w-full" disabled />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Role
-                  </label>
-                  <input
-                    type="text"
-                    defaultValue={user.role}
-                    className="input w-full"
-                    disabled
-                  />
+                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Role</label>
+                  <input type="text" defaultValue={user.role} className="input w-full" disabled />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Employer Size
-                  </label>
+                  <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Employer Size</label>
                   <input
                     type="text"
-                    defaultValue={
-                      user.employerSize === 'large'
-                        ? 'Large (≥10 employees)'
-                        : 'Small (<10 employees)'
-                    }
+                    defaultValue={user.employerSize === 'large' ? 'Large (≥10 employees)' : 'Small (<10 employees)'}
                     className="input w-full"
                     disabled
                   />
                 </div>
                 <div className="flex justify-end pt-4">
-                  <Button onClick={handleSave} isLoading={isSaving}>
-                    Save Changes
-                  </Button>
+                  <Button onClick={handleSave} isLoading={isSaving}>Save Changes</Button>
                 </div>
               </div>
             </Card>
@@ -229,59 +168,23 @@ export default function Settings({ user }: SettingsProps) {
 
           {activeTab === 'notifications' && (
             <Card>
-              <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
-                Notification Preferences
-              </h2>
+              <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">Notification Preferences</h2>
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      Email Notifications
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Receive email updates for PTO requests and approvals
-                    </p>
+                {[
+                  ['Email Notifications', 'Receive email updates for PTO requests and approvals'],
+                  ['Balance Alerts', 'Get notified when sick time balance is low'],
+                  ['Legislative Updates', 'Stay informed about Michigan ESTA changes'],
+                ].map(([title, description]) => (
+                  <div key={title} className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">{title}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">{description}</p>
+                    </div>
+                    <input type="checkbox" defaultChecked className="text-primary-600 focus:ring-primary-500 h-4 w-4 rounded border-gray-300" />
                   </div>
-                  <input
-                    type="checkbox"
-                    defaultChecked
-                    className="text-primary-600 focus:ring-primary-500 h-4 w-4 rounded border-gray-300"
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      Balance Alerts
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Get notified when sick time balance is low
-                    </p>
-                  </div>
-                  <input
-                    type="checkbox"
-                    defaultChecked
-                    className="text-primary-600 focus:ring-primary-500 h-4 w-4 rounded border-gray-300"
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      Compliance Updates
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Stay informed about Michigan ESTA law changes
-                    </p>
-                  </div>
-                  <input
-                    type="checkbox"
-                    defaultChecked
-                    className="text-primary-600 focus:ring-primary-500 h-4 w-4 rounded border-gray-300"
-                  />
-                </div>
+                ))}
                 <div className="flex justify-end pt-4">
-                  <Button onClick={handleSave} isLoading={isSaving}>
-                    Save Preferences
-                  </Button>
+                  <Button onClick={handleSave} isLoading={isSaving}>Save Preferences</Button>
                 </div>
               </div>
             </Card>
@@ -289,71 +192,10 @@ export default function Settings({ user }: SettingsProps) {
 
           {activeTab === 'integrations' && (
             <Card>
-              <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
-                Payroll Integrations
-              </h2>
-              <div className="space-y-4">
-                <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-                  <div className="mb-2 flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
-                        <span className="text-2xl">📊</span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900 dark:text-white">
-                          QuickBooks
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          Automatically sync hours worked from QuickBooks
-                        </p>
-                      </div>
-                    </div>
-                    <Button variant="secondary" size="sm">
-                      Connect
-                    </Button>
-                  </div>
-                </div>
-                <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-                  <div className="mb-2 flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                        <span className="text-2xl">💼</span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900 dark:text-white">
-                          ADP
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          Automatically sync hours worked from ADP
-                        </p>
-                      </div>
-                    </div>
-                    <Button variant="secondary" size="sm">
-                      Connect
-                    </Button>
-                  </div>
-                </div>
-                <div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-                  <div className="mb-2 flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-900/30">
-                        <span className="text-2xl">💵</span>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900 dark:text-white">
-                          Paychex
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          Automatically sync hours worked from Paychex
-                        </p>
-                      </div>
-                    </div>
-                    <Button variant="secondary" size="sm">
-                      Connect
-                    </Button>
-                  </div>
-                </div>
-              </div>
+              <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">Payroll Integrations</h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                Payroll integrations are planned and are not represented as connected until their authorization, synchronization, and reconciliation workflows are implemented and tested.
+              </p>
             </Card>
           )}
         </div>
