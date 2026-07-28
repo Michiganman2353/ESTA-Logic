@@ -101,13 +101,11 @@ export default function Settings({ user }: SettingsProps) {
           </p>
         </div>
 
-        <div className="mb-6">
-          <TrustBadgeGroup
-            badges={['security', 'calculation', 'pilot']}
-            size="md"
-            showCertificate={true}
-            onDownloadCertificate={handleDownloadSecuritySummary}
-          />
+        <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+          <TrustBadgeGroup badges={['security', 'calculation', 'pilot']} size="md" />
+          <Button variant="secondary" size="sm" onClick={handleDownloadSecuritySummary}>
+            Download Security Summary
+          </Button>
         </div>
 
         <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
