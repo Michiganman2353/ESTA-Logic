@@ -103,7 +103,7 @@ export default function Settings({ user }: SettingsProps) {
 
         <div className="mb-6">
           <TrustBadgeGroup
-            badges={['security', 'compliance', 'verified']}
+            badges={['security', 'calculation', 'pilot']}
             size="md"
             showCertificate={true}
             onDownloadCertificate={handleDownloadSecuritySummary}
