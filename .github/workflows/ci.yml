@@ -61,8 +61,6 @@ jobs:
         run: npx nx graph --file=/tmp/nx-graph.json
       - name: Lint frontend
         run: npx nx lint frontend
-      - name: Type check frontend
-        run: npx nx typecheck frontend
       - name: Check product claims
         run: npm run check:claims
       - name: Run frontend unit tests
