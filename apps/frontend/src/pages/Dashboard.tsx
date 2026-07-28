@@ -8,7 +8,16 @@ interface DashboardProps {
   user: User;
 }
 
-const dashboardCards = [
+type UserRole = User['role'];
+
+interface DashboardCard {
+  path: string;
+  title: string;
+  description: string;
+  roles: UserRole[];
+}
+
+const dashboardCards: DashboardCard[] = [
   {
     path: '/employee',
     title: 'Employee Workspace',
@@ -33,12 +42,10 @@ const dashboardCards = [
     description: 'Manage account preferences and review the current product security boundary.',
     roles: ['employee', 'employer', 'admin'],
   },
-] as const;
+];
 
 export default function Dashboard({ user }: DashboardProps) {
-  const visibleCards = dashboardCards.filter((card) =>
-    card.roles.includes(user.role as 'employee' | 'employer' | 'admin')
-  );
+  const visibleCards = dashboardCards.filter((card) => card.roles.includes(user.role));
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-white">
