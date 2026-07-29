@@ -18,6 +18,7 @@ env:
   NX_DAEMON: 'false'
   VERCEL_ORG_ID: 'team_IKgL6dN47vKTwgnMR5TLyVKs'
   VERCEL_PROJECT_ID: 'prj_TGjrQisZaxQ1v26bRBm2cPhhkNTc'
+  VERCEL_SCOPE: 'esta-pro-projects'
 
 jobs:
   lockfile-verify:
@@ -143,16 +144,16 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: test -n "$VERCEL_TOKEN"
-      - name: Link Vercel project
+      - name: Link and hydrate Vercel preview environment
         run: |
           mkdir -p .vercel
           printf '{"orgId":"%s","projectId":"%s"}\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID" > .vercel/project.json
-          cat .vercel/project.json
+          vercel pull --yes --environment=preview --scope="$VERCEL_SCOPE" --token='${{ secrets.VERCEL_TOKEN }}'
       - name: Build and deploy preview
         id: deploy
         run: |
-          vercel build --token='${{ secrets.VERCEL_TOKEN }}'
-          url=$(vercel deploy --prebuilt --token='${{ secrets.VERCEL_TOKEN }}')
+          vercel build --scope="$VERCEL_SCOPE" --token='${{ secrets.VERCEL_TOKEN }}'
+          url=$(vercel deploy --prebuilt --scope="$VERCEL_SCOPE" --token='${{ secrets.VERCEL_TOKEN }}')
           echo "url=$url" >> "$GITHUB_OUTPUT"
       - name: Smoke test preview
         run: |
@@ -181,16 +182,16 @@ jobs:
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: test -n "$VERCEL_TOKEN"
-      - name: Link Vercel project
+      - name: Link and hydrate Vercel production environment
         run: |
           mkdir -p .vercel
           printf '{"orgId":"%s","projectId":"%s"}\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID" > .vercel/project.json
-          cat .vercel/project.json
+          vercel pull --yes --environment=production --scope="$VERCEL_SCOPE" --token='${{ secrets.VERCEL_TOKEN }}'
       - name: Build and deploy production
         id: deploy
         run: |
-          vercel build --prod --token='${{ secrets.VERCEL_TOKEN }}'
-          url=$(vercel deploy --prebuilt --prod --token='${{ secrets.VERCEL_TOKEN }}')
+          vercel build --prod --scope="$VERCEL_SCOPE" --token='${{ secrets.VERCEL_TOKEN }}'
+          url=$(vercel deploy --prebuilt --prod --scope="$VERCEL_SCOPE" --token='${{ secrets.VERCEL_TOKEN }}')
           echo "url=$url" >> "$GITHUB_OUTPUT"
       - name: Smoke test production
         run: |
