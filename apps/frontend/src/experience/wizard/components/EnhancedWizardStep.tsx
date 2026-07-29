@@ -1,12 +1,7 @@
 /**
  * EnhancedWizardStep Component
  *
- * Wrapper component that adds TurboTax-style UX enhancements to wizard steps:
- * - Trust badges and security signals
- * - Decision explanations with confidence scores
- * - Psychological reassurance
- * - Legal assurance indicators
- * - Emotional UX writing
+ * Wrapper component that adds guided UX enhancements to wizard steps.
  */
 
 import { ReactNode } from 'react';
@@ -45,7 +40,6 @@ export default function EnhancedWizardStep({
       <div
         className={`enhanced-wizard-step mx-auto max-w-4xl px-4 py-8 ${className}`}
       >
-        {/* Progress Indicator */}
         {stepNumber !== undefined && totalSteps !== undefined && (
           <div className="mb-6">
             <div className="flex items-center justify-between text-sm text-gray-600">
@@ -65,7 +59,6 @@ export default function EnhancedWizardStep({
           </div>
         )}
 
-        {/* Header Section with Trust Elements */}
         <div className="mb-8">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
             <div className="flex-1">
@@ -73,30 +66,26 @@ export default function EnhancedWizardStep({
               {subtitle && <p className="text-lg text-gray-600">{subtitle}</p>}
             </div>
 
-            {/* Trust Badges */}
             {showTrustBadges && (
               <div className="flex items-center gap-2">
                 <TrustBadge variant="security" size="sm" />
-                <TrustBadge variant="compliance" size="sm" />
+                <TrustBadge variant="pilot" size="sm" />
               </div>
             )}
           </div>
 
-          {/* Security Signals */}
           {showSecuritySignals && (
             <div className="mt-4">
               <SecuritySignals />
             </div>
           )}
 
-          {/* Legal Assurance */}
           {showLegalAssurance && (
             <div className="mt-4">
               <LegalAssurance variant="inline" />
             </div>
           )}
 
-          {/* Confidence Score */}
           {confidenceScore !== undefined && (
             <div className="mt-4">
               <ConfidenceScoreBanner score={confidenceScore} />
@@ -104,10 +93,8 @@ export default function EnhancedWizardStep({
           )}
         </div>
 
-        {/* Main Content */}
         <div className="wizard-step-content">{children}</div>
 
-        {/* Footer Reassurance */}
         <div className="mt-8 rounded-lg border border-blue-200 bg-blue-50 p-4">
           <div className="flex items-start gap-3">
             <svg
@@ -125,8 +112,8 @@ export default function EnhancedWizardStep({
             </svg>
             <div className="flex-1">
               <p className="text-sm text-blue-900">
-                <strong>Your progress is automatically saved.</strong> You can
-                leave and return anytime without losing your work.
+                <strong>Your progress may be saved by the current workflow.</strong>{' '}
+                Review the final summary before relying on any setup information.
               </p>
             </div>
           </div>
@@ -136,9 +123,6 @@ export default function EnhancedWizardStep({
   );
 }
 
-/**
- * Confidence Score Banner Component
- */
 function ConfidenceScoreBanner({ score }: { score: number }) {
   const level = score >= 85 ? 'high' : score >= 65 ? 'medium' : 'low';
 
@@ -148,21 +132,21 @@ function ConfidenceScoreBanner({ score }: { score: number }) {
       border: 'border-green-200',
       text: 'text-green-900',
       icon: '✓',
-      message: 'Excellent! Your setup is on track.',
+      message: 'Your setup inputs are complete for this guided flow.',
     },
     medium: {
       bg: 'bg-yellow-50',
       border: 'border-yellow-200',
       text: 'text-yellow-900',
       icon: '◐',
-      message: 'Good progress. Keep going!',
+      message: 'Some setup inputs still need review.',
     },
     low: {
       bg: 'bg-orange-50',
       border: 'border-orange-200',
       text: 'text-orange-900',
       icon: '◯',
-      message: "Let's complete a few more details.",
+      message: 'Complete more inputs before using this setup summary.',
     },
   }[level];
 

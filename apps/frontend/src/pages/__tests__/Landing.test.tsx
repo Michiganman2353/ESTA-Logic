@@ -3,7 +3,6 @@ import { BrowserRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import Landing from '../Landing';
 
-// Mock useNavigate
 const mockNavigate = vi.fn();
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual('react-router-dom');
@@ -32,98 +31,76 @@ describe('Landing Page', () => {
   });
 
   describe('Rendering', () => {
-    it('should render the hero section with main headline', () => {
+    it('renders the main headline and development status', () => {
       renderLanding();
-      // Check for the main headline H1
-      expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument();
-    });
 
-    it('should render the ESTA Tracker branding', () => {
-      renderLanding();
-      const brandElements = screen.getAllByText('ESTA Tracker');
-      expect(brandElements.length).toBeGreaterThan(0);
-    });
-
-    it('should render call-to-action buttons', () => {
-      renderLanding();
-      const trialButtons = screen.getAllByText(/Start Your Free Trial/i);
-      expect(trialButtons.length).toBeGreaterThan(0);
-    });
-
-    it('should render navigation links', () => {
-      renderLanding();
-      const featureLinks = screen.getAllByText('Features');
-      expect(featureLinks.length).toBeGreaterThan(0);
-      const howItWorksLinks = screen.getAllByText('How It Works');
-      expect(howItWorksLinks.length).toBeGreaterThan(0);
-    });
-
-    it('should render feature cards', () => {
-      renderLanding();
+      expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
+        /Understand and track Michigan earned sick time/i
+      );
       expect(
-        screen.getByText('Automatic Accrual Tracking')
-      ).toBeInTheDocument();
-      expect(screen.getByText('100% ESTA Compliant')).toBeInTheDocument();
-      expect(screen.getByText('Employee Self-Service')).toBeInTheDocument();
-    });
-
-    it('should render trust indicators', () => {
-      renderLanding();
-      expect(screen.getByText('100%')).toBeInTheDocument();
-      expect(screen.getByText('24/7')).toBeInTheDocument();
-    });
-
-    it('should render how it works section', () => {
-      renderLanding();
-      expect(screen.getByText('Get Started in Minutes')).toBeInTheDocument();
-      expect(screen.getByText('Register Your Business')).toBeInTheDocument();
-      expect(screen.getByText('Add Your Employees')).toBeInTheDocument();
-      expect(
-        screen.getByText('Stay Compliant Automatically')
+        screen.getByText(/Michigan ESTA tools under active development/i)
       ).toBeInTheDocument();
     });
 
-    it('should render footer with support email', () => {
+    it('renders code-verifiable capability cards', () => {
       renderLanding();
-      expect(screen.getByText('support@estatracker.com')).toBeInTheDocument();
+
+      expect(
+        screen.getByText('Transparent ESTA calculations')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Code-enforced access controls')
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText('Deterministic calculation engine')
+      ).toBeInTheDocument();
+    });
+
+    it('states that the calculation lab does not save personal information', () => {
+      renderLanding();
+
+      expect(
+        screen.getByText(/does not save personal or employee information/i)
+      ).toBeInTheDocument();
+    });
+
+    it('describes implemented security without external certifications', () => {
+      renderLanding();
+
+      expect(
+        screen.getByRole('heading', {
+          name: /Security implemented within the application/i,
+        })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Firebase email\/password authentication/i)
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(/Claims intentionally limited/i)
+      ).toBeInTheDocument();
     });
   });
 
   describe('Navigation', () => {
-    it('should have hero get started button with test id', () => {
+    it('opens the public calculation lab from the hero', () => {
       renderLanding();
-      const heroButton = screen.getByTestId('hero-get-started');
-      expect(heroButton).toBeInTheDocument();
-      fireEvent.click(heroButton);
+
+      fireEvent.click(screen.getByTestId('hero-calculation-lab'));
+      expect(mockNavigate).toHaveBeenCalledWith('/guided-flow');
+    });
+
+    it('opens account registration from the hero', () => {
+      renderLanding();
+
+      fireEvent.click(screen.getByTestId('hero-test-registration'));
       expect(mockNavigate).toHaveBeenCalledWith('/register');
     });
 
-    it('should have CTA get started button with test id', () => {
+    it('opens the public calculation lab from the final call to action', () => {
       renderLanding();
-      const ctaButton = screen.getByTestId('cta-get-started');
-      expect(ctaButton).toBeInTheDocument();
-      fireEvent.click(ctaButton);
-      expect(mockNavigate).toHaveBeenCalledWith('/register');
-    });
 
-    it('should navigate when clicking pricing buttons', () => {
-      renderLanding();
-      const pricingButtons = screen.getAllByRole('button', {
-        name: /pricing/i,
-      });
-      if (pricingButtons.length > 0) {
-        fireEvent.click(pricingButtons[0]);
-        expect(mockNavigate).toHaveBeenCalledWith('/pricing');
-      }
-    });
-
-    it('should navigate when clicking sign in buttons', () => {
-      renderLanding();
-      const signInButtons = screen.getAllByRole('button', { name: /sign in/i });
-      if (signInButtons.length > 0) {
-        fireEvent.click(signInButtons[0]);
-        expect(mockNavigate).toHaveBeenCalledWith('/login');
-      }
+      fireEvent.click(screen.getByTestId('cta-calculation-lab'));
+      expect(mockNavigate).toHaveBeenCalledWith('/guided-flow');
     });
   });
 });
