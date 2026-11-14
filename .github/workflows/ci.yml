@@ -1,4 +1,4 @@
-name: ESTA Tracker CI/CD
+name: ESTA-Logic — Verify & Test
 
 on:
   push:
@@ -119,95 +119,8 @@ jobs:
           path: playwright-report/
           retention-days: 14
 
-  deploy-preview:
-    name: Deploy Preview
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    needs: [test, e2e]
-    permissions:
-      contents: read
-      pull-requests: write
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-          cache: npm
-          cache-dependency-path: package-lock.json
-      - name: Install dependencies
-        run: npm ci
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-      - name: Validate Vercel token
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: test -n "$VERCEL_TOKEN"
-      - name: Link Vercel project
-        run: |
-          mkdir -p .vercel
-          printf '{"orgId":"%s","projectId":"%s"}\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID" > .vercel/project.json
-      - name: Build and deploy preview
-        id: deploy
-        env:
-          NODE_ENV: production
-          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
-          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
-          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
-        run: |
-          vercel build --token='${{ secrets.VERCEL_TOKEN }}'
-          url=$(vercel deploy --prebuilt --token='${{ secrets.VERCEL_TOKEN }}')
-          echo "url=$url" >> "$GITHUB_OUTPUT"
-      - name: Smoke test preview
-        run: |
-          sleep 10
-          curl --fail --location '${{ steps.deploy.outputs.url }}' >/tmp/preview.html
-          grep -qi '<html' /tmp/preview.html
-
-  deploy-production:
-    name: Deploy to Production
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    needs: [test, e2e]
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-          cache: npm
-          cache-dependency-path: package-lock.json
-      - name: Install dependencies
-        run: npm ci
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-      - name: Validate Vercel token
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-        run: test -n "$VERCEL_TOKEN"
-      - name: Link Vercel project
-        run: |
-          mkdir -p .vercel
-          printf '{"orgId":"%s","projectId":"%s"}\n' "$VERCEL_ORG_ID" "$VERCEL_PROJECT_ID" > .vercel/project.json
-      - name: Build and deploy production
-        id: deploy
-        env:
-          NODE_ENV: production
-          VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
-          VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
-          VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
-          VITE_FIREBASE_STORAGE_BUCKET: ${{ secrets.VITE_FIREBASE_STORAGE_BUCKET }}
-          VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
-          VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
-        run: |
-          vercel build --prod --token='${{ secrets.VERCEL_TOKEN }}'
-          url=$(vercel deploy --prebuilt --prod --token='${{ secrets.VERCEL_TOKEN }}')
-          echo "url=$url" >> "$GITHUB_OUTPUT"
-      - name: Smoke test production
-        run: |
-          sleep 15
-          curl --fail --location '${{ steps.deploy.outputs.url }}' >/tmp/production.html
-          grep -qi '<html' /tmp/production.html
+# Deployments are managed by the Vercel Git integration for the reviewed
+# Michiganman2353/ESTA-Logic repository. GitHub Actions validates source code,
+# while Vercel creates branch previews and deploys the production branch.
+# This intentionally avoids duplicate releases, unpinned CLI installations,
+# unnecessary VERCEL_TOKEN exposure, and PR code running with deploy credentials.
