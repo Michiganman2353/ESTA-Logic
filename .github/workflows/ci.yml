@@ -67,6 +67,10 @@ jobs:
         run: npm run check:claims
       - name: Test public health monitor
         run: node --test scripts/public-health-monitor.test.mjs
+      - name: Validate ESTA accrual/use semantics
+        run: |
+          npx nx typecheck @esta/core
+          npx nx test @esta/core
       - name: Run frontend unit tests
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
