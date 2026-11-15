@@ -16,8 +16,9 @@ type Request = {
 };
 type SampleEmployee = { id: string; name: string; group: string; earned: number; used: number };
 
+const SAMPLE_EMPLOYEE_A: SampleEmployee = { id: 'sample-a', name: 'Sample Employee A', group: 'Operations', earned: 32, used: 8 };
 const SAMPLE_EMPLOYEES: SampleEmployee[] = [
-  { id: 'sample-a', name: 'Sample Employee A', group: 'Operations', earned: 32, used: 8 },
+  SAMPLE_EMPLOYEE_A,
   { id: 'sample-b', name: 'Sample Employee B', group: 'Customer Service', earned: 50, used: 12 },
   { id: 'sample-c', name: 'Sample Employee C', group: 'Facilities', earned: 18, used: 0 },
 ];
@@ -64,7 +65,7 @@ export default function WorkspaceDemo({ initialPerspective = 'employer', authent
   const [requestHours, setRequestHours] = useState('4');
   const [notice, setNotice] = useState('');
 
-  const employee = SAMPLE_EMPLOYEES.find((item) => item.id === selectedEmployeeId) ?? SAMPLE_EMPLOYEES[0];
+  const employee = SAMPLE_EMPLOYEES.find((item) => item.id === selectedEmployeeId) ?? SAMPLE_EMPLOYEE_A;
   const visibleEmployees = SAMPLE_EMPLOYEES.filter((item) => (item.name + ' ' + item.group).toLowerCase().includes(employeeSearch.toLowerCase()));
   const pending = requests.filter((item) => item.status === 'pending');
   const employeeRequests = requests.filter((item) => item.employeeId === 'sample-a');
@@ -219,8 +220,8 @@ export default function WorkspaceDemo({ initialPerspective = 'employer', authent
         ) : (
           <>
             <section aria-label="Sample employee overview" className="mt-7 grid gap-4 sm:grid-cols-3">
-              <StatCard label="Illustrative bank" value={displayHours(SAMPLE_EMPLOYEES[0].earned - SAMPLE_EMPLOYEES[0].used) + ' h'} description="Not verified eligibility or available time" accent />
-              <StatCard label="Illustrative earned" value={displayHours(SAMPLE_EMPLOYEES[0].earned) + ' h'} description="Synthetic example, not payroll data" />
+              <StatCard label="Illustrative bank" value={displayHours(SAMPLE_EMPLOYEE_A.earned - SAMPLE_EMPLOYEE_A.used) + ' h'} description="Not verified eligibility or available time" accent />
+              <StatCard label="Illustrative earned" value={displayHours(SAMPLE_EMPLOYEE_A.earned) + ' h'} description="Synthetic example, not payroll data" />
               <StatCard label="Your sample requests" value={String(employeeRequests.length)} description="Demo statuses; no employer notified" />
             </section>
             <div className="mt-7 grid gap-6 lg:grid-cols-[0.95fr_1.05fr]">
