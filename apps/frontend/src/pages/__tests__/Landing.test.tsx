@@ -89,11 +89,11 @@ describe('Landing Page', () => {
       expect(mockNavigate).toHaveBeenCalledWith('/guided-flow');
     });
 
-    it('opens account registration from the hero', () => {
+    it('opens pilot status from the hero', () => {
       renderLanding();
 
-      fireEvent.click(screen.getByTestId('hero-test-registration'));
-      expect(mockNavigate).toHaveBeenCalledWith('/register');
+      fireEvent.click(screen.getByTestId('hero-pilot-status'));
+      expect(mockNavigate).toHaveBeenCalledWith('/pricing');
     });
 
     it('opens the public calculation lab from the final call to action', () => {
