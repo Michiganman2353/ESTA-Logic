@@ -65,6 +65,8 @@ jobs:
         run: npx nx lint frontend
       - name: Check product claims
         run: npm run check:claims
+      - name: Test public health monitor
+        run: node --test scripts/public-health-monitor.test.mjs
       - name: Run frontend unit tests
         env:
           VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}

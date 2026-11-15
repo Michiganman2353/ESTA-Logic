@@ -1,0 +1,69 @@
+name: ESTA-Logic Public Health Monitor
+
+on:
+  schedule:
+    - cron: '*/20 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: esta-public-health-monitor
+  cancel-in-progress: false
+
+jobs:
+  public-health:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+      - name: Test monitor invariants
+        run: node --test scripts/public-health-monitor.test.mjs
+      - name: Probe public routes
+        id: health
+        continue-on-error: true
+        run: node scripts/public-health-monitor.mjs > health-report.json
+      - name: Identify existing incident
+        id: existing
+        if: steps.health.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          incident="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --limit 100 --json number,title --jq '.[] | select(.title == "Public health monitor: ESTA-Logic unavailable") | .number' | head -n 1)"
+          echo "number=$incident" >> "$GITHUB_OUTPUT"
+      - name: Produce safe advisory triage
+        if: steps.health.outcome == 'failure' && steps.existing.outputs.number == ''
+        env:
+          # Requires explicit opt-in; no account data or log bodies sent to AI.
+          ESTA_AI_TRIAGE_ENABLED: ${{ vars.ESTA_AI_TRIAGE_ENABLED }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          XAI_MODEL: ${{ vars.XAI_MODEL }}
+        run: node scripts/incident-triage.mjs health-report.json > incident-summary.md
+      - name: Create deduplicated incident
+        if: steps.health.outcome == 'failure' && steps.existing.outputs.number == ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            echo "Public production health check failed. No employee data was accessed."
+            echo
+            echo "Source: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            echo
+            echo '#### Public status report'
+            echo '~~~json'
+            cat health-report.json
+            echo '~~~'
+            echo
+            cat incident-summary.md
+          } > incident-body.md
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "Public health monitor: ESTA-Logic unavailable" --body-file incident-body.md
+      - name: Mark unhealthy probe failed
+        if: steps.health.outcome == 'failure'
+        run: exit 1
