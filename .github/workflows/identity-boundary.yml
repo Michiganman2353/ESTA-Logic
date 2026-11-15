@@ -1,0 +1,31 @@
+name: Identity Boundary Source Checks
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - 'firestore.rules'
+      - 'functions/src/**'
+      - 'scripts/identity-boundary.test.mjs'
+      - '.github/workflows/identity-boundary.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    name: Reject untrusted role/tenant bootstrap patterns
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Run source-only security regression checks
+        run: node --test scripts/identity-boundary.test.mjs
+      - name: Explain verification limits
+        run: |
+          echo 'Source checks are NOT Firestore authorization proofs.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Firebase Emulator Suite cross-tenant and staging integration tests are required before security rollout.' >> "$GITHUB_STEP_SUMMARY"
