@@ -1,626 +1,108 @@
-# ESTA-Logic Microkernel Architecture
+# ESTA Tracker — current architecture (November 2026)
 
-> **Single Source of Truth for System Architecture**
+**Status:** practical React + TypeScript + Firebase/Vercel application under active
+development. This file describes the **current intended production direction**,
+not the 2025 experimental microkernel specification.
 
-## Overview
+## Deployed web experience
 
-ESTA-Logic is a **domain operating system** built on a frozen, deterministic kernel where:
-
-- The **kernel IS the operating system** - Ring 0 authority over all computation
-- **Deployment invariance** guarantees identical execution across all environments
-- **Sandboxed WASM modules** perform deterministic compliance computation
-- **Services communicate only via IPC** - no direct imports
-- **All host access is mediated** through syscalls
-- **Capabilities control all resource access**
-
-### From Application to Operating System
-
-ESTA-Logic is **not compliance software**. It is:
-
-- **The first instruction set** for legal computation (ESTA-ISA)
-- **The first filesystem** for domain-specific truth
-- **The first proof domain** for auditable correctness
-
-What you are building is a **domain operating system** capable of hosting any reality where correctness, provability, and trust are non-negotiable.
-
-**Once the kernel is frozen:**
-- Laws become instructions
-- Domains become modules
-- Products become shells
-
-**Nothing above it can corrupt it.**  
-**Nothing below it can replace it.**
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                              ESTA-Logic System                               │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│   ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐       │
-│   │   Accrual   │  │ Compliance  │  │  Employee   │  │    Time     │       │
-│   │   Engine    │  │   Engine    │  │   Service   │  │   Service   │       │
-│   │   (WASM)    │  │   (WASM)    │  │   (WASM)    │  │   (WASM)    │       │
-│   └──────┬──────┘  └──────┬──────┘  └──────┬──────┘  └──────┬──────┘       │
-│          │                │                │                │               │
-│          └────────────────┼────────────────┼────────────────┘               │
-│                           │                │                                 │
-│                           ▼                ▼                                 │
-│   ┌─────────────────────────────────────────────────────────────────────┐   │
-│   │                         KERNEL IPC ROUTER                            │   │
-│   │              (Message Passing, Priority Queues, Routing)             │   │
-│   └─────────────────────────────────────────────────────────────────────┘   │
-│                           │                │                                 │
-│            ┌──────────────┼────────────────┼──────────────┐                 │
-│            ▼              ▼                ▼              ▼                 │
-│   ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐          │
-│   │  Scheduler  │ │ Capability  │ │   Module    │ │   Syscall   │          │
-│   │             │ │   Engine    │ │   Loader    │ │  Interface  │          │
-│   └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘          │
-│                                                                              │
-│   ┌─────────────────────────────────────────────────────────────────────┐   │
-│   │                         HOST SHELL (Tauri)                           │   │
-│   │        (File System, Network, Database, Clock, Notifications)        │   │
-│   └─────────────────────────────────────────────────────────────────────┘   │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+```text
+Browser (React + TypeScript)
+  |
+  +-- Public marketing homepage and Calculation Lab
+  +-- Public synthetic employer/employee workspace demo
+  +-- Authenticated routes (still under security and data hardening)
+  |
+  Vercel builds and serves apps/frontend/dist
 ```
 
-## Core Principles
+The Vercel production build runs `npm run build:frontend`. It does not build
+or execute a Rust kernel, a Gleam microkernel, a Tauri desktop shell, or a
+WASM engine. The public workspace intentionally uses **synthetic state only**.
+A working Vercel deployment does not establish working Firebase authorization
+or legally correct employee balances.
 
-### 1. Kernel is the Conductor
+## Target domain architecture
 
-Every module is an instrument. The kernel is the conductor. Nothing plays out of tune.
-
-- All scheduling decisions go through the kernel
-- All message routing goes through the kernel
-- All capability validation goes through the kernel
-- All host access goes through the kernel
-
-### 2. No Direct Service-to-Service Communication
-
-Services NEVER import from each other. All communication is via IPC messages:
-
-```typescript
-// ❌ WRONG - Direct import
-import { calculateAccrual } from '../accrual-engine';
-
-// ✅ CORRECT - IPC message
-const response = await kernel.send({
-  type: 'Command',
-  target: 'accrual-engine',
-  opcode: 'accrual.calculate',
-  payload: { employeeId, hoursWorked },
-});
+```text
+Frontend / guided workflow
+       |
+       v
+Trusted authentication & tenant-scoped application service
+       |
+       +-- Versioned Michigan ESTA rules engine
+       +-- Append-oriented employee accrual/usage ledger
+       +-- Decision Intelligence (historical replay, explanations, drift)
+       +-- Human-reviewed exceptions and approvals
+       |
+       v
+Authenticated persistence adapter + backups + audit records
 ```
 
-### 3. Capability-Based Security
-
-Every resource access requires a capability token:
-
-```typescript
-// Module manifest declares required capabilities
-{
-  requiredCapabilities: [
-    {
-      resourceType: 'channel',
-      resourcePattern: 'accrual.*',
-      rights: { read: true, write: true },
-      reason: 'Receive accrual requests',
-    },
-  ];
-}
-```
-
-### 4. Deployment Invariance (Ring 0 Guarantee)
-
-The kernel achieves **absolute deployment invariance**:
-
-- Executes identically across all environments (Browser, Node.js, Edge, Serverless)
-- No implicit system time - all time is explicit
-- No locale awareness - all formatting is deterministic
-- No floating-point nondeterminism - controlled precision
-- No runtime-specific branching - environment-agnostic
-- No environmental introspection - all context is explicit
-
-**Result:** Identical inputs produce bit-for-bit identical outputs across all environments and time.
-
-**See:** `DEPLOYMENT_INVARIANCE.md` for complete specification.
-
-### 5. Deterministic Execution
-
-All WASM modules must be deterministic:
-
-- No direct time access (use explicit `context.timestamp`)
-- No random number generation without explicit seed
-- No external I/O (all via syscalls)
-- Same inputs always produce same outputs
-
-### 6. Host Access via Syscalls Only
-
-Modules never access host resources directly:
-
-```typescript
-// ❌ WRONG - Direct host access
-const now = Date.now();
-const data = await fetch(url);
-
-// ✅ CORRECT - Syscall
-const now = await syscall({ syscall: 'sys.time.now' });
-const data = await syscall({ syscall: 'sys.net.fetch', url, method: 'GET' });
-```
-
-## UX Experience Contract Layer
-
-### Philosophy: UX Drives the Machine
-
-**"This is a calming, guided experience that just happens to be backed by advanced compliance technology."**
-
-The system must be:
-
-- **Correct** ✅ (we have this)
-- **Understandable** ✅ (now guaranteed)
-- **Emotionally Trustworthy** ✅ (now guaranteed)
-
-**📖 Complete Documentation: [UX Response API Guide](./docs/api/README.md)**
-
-### The Contract
-
-Every engine output MUST implement the `ExperienceResponse` interface:
-
-```typescript
-{
-  // Primary decision
-  decision: 'APPROVED' | 'DENIED' | 'NEEDS_INFORMATION' | ...,
-
-  // Human-readable WHY
-  explanation: "Based on Michigan ESTA regulations, you earned 2.5 hours...",
-
-  // What this specifically means for the user
-  humanMeaning: "Your sick time balance is now 15.5 hours, giving you peace of mind.",
-
-  // Risk transparency
-  riskLevel: 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL',
-
-  // Confidence transparency (0-100)
-  confidenceScore: 98,
-
-  // Emotional reassurance
-  reassuranceMessage: {
-    message: "You are fully compliant and on track.",
-    context: "All calculations follow Michigan ESTA 2025 exactly.",
-    tone: 'positive',
-    emphasize: true,
-  },
-
-  // Clear next steps
-  nextSteps: [
-    {
-      category: 'ACTION_REQUIRED' | 'INFORMATION' | 'RECOMMENDATION',
-      title: "Review your balance",
-      description: "View your complete sick time history.",
-      priority: 'low' | 'medium' | 'high' | 'urgent',
-      estimatedMinutes: 3,
-      helpLink: '/dashboard/sick-time',
-    }
-  ],
-
-  // Legal context in plain English
-  legalReferences: [
-    {
-      citation: "Michigan ESTA 2025, Section 3(a)",
-      summary: "Employees accrue 1 hour per 30 hours worked",
-      relevanceExplanation: "This law defines your accrual rate.",
-      officialLink: "https://...",
-    }
-  ],
-
-  // Raw engine output (optional, for advanced users)
-  technicalDetails: { ... },
-
-  // Metadata
-  timestamp: "2024-01-15T10:30:00Z",
-  sourceEngine: "accrual-engine",
-  responseId: "uuid",
-}
-```
-
-### Benefits
-
-1. **UX Never Interprets Raw Logic**
-   - No guesswork about what violations mean
-   - No custom mapping logic in frontend
-   - Consistent experience across all features
-
-2. **Trust Built Into Every Interaction**
-   - Every decision includes reassurance
-   - Confidence scores show transparency
-   - Risk levels set proper expectations
-
-3. **Users Never Feel Abandoned**
-   - Every response includes next steps
-   - Clear priorities guide action
-   - Help links provide depth when needed
-
-4. **Safe to Change Logic Without Breaking UX**
-   - Contract isolates engines from UI
-   - Changes to calculations don't require UI updates
-   - Experience layer adapts automatically
-
-### Usage Patterns
-
-#### For Raw Technical Responses
-
-```typescript
-// Old way - raw calculation
-const response = await kernel.send({
-  opcode: 'accrual.calculate',
-  payload: request,
-});
-// Result: { hoursAccrued: 2.5, newBalance: 15.5, ... }
-```
-
-#### For UX-Enhanced Responses
-
-```typescript
-// New way - experience-enhanced
-const response = await kernel.send({
-  opcode: 'accrual.calculate.experience',
-  payload: request,
-});
-// Result: Full ExperienceResponse with explanations, reassurance, next steps
-```
-
-Both are supported. Use `.experience` suffix for UX-facing operations.
-
-### Timing Guarantees
-
-The experience layer adds negligible overhead (< 1ms) because:
-
-- Transformations are pure functions
-- No async operations
-- No external calls
-- All text is pre-templated
-
-Performance metadata is included in every response:
-
-```typescript
-{
-  performance: {
-    computationTimeMs: 2.3,
-    wasCached: false,
-    exceededTargetTime: false,
-    targetTimeMs: 100,
-  }
-}
-```
-
-### Preventing Breaking Changes
-
-The contract ensures:
-
-1. **Engines can evolve independently** - Only the transformer needs updating
-2. **UX remains stable** - Interface never changes
-3. **No cascade failures** - Experience layer catches and explains errors
-4. **Safe experimentation** - Try new logic without touching UI
-
-This solves the branching complexity problem: changes are localized and tested independently.
-
-### Documentation
-
-For detailed implementation guides and examples:
-
-- **[UX Response API Guide](./docs/api/UX_RESPONSE_API_GUIDE.md)** — Complete specification and examples
-- **[Quick Reference](./docs/api/DECISION_EXPLANATION_QUICKREF.md)** — One-page cheat sheet
-- **[Integration Examples](./docs/api/INTEGRATION_EXAMPLES.md)** — Real-world patterns
-- **[Type Definitions](./libs/shared-types/src/ux-experience-contract.ts)** — TypeScript source
-
-## Directory Structure
-
-```
-/
-├── kernel/                      # Microkernel core
-│   ├── core/                    # Core kernel modules
-│   │   ├── scheduler.ts         # Process scheduling
-│   │   ├── ipc-router.ts        # Message routing
-│   │   ├── capability-engine.ts # Capability validation
-│   │   └── index.ts
-│   ├── abi/                     # WASM ABI definitions
-│   │   ├── messages.ts          # Canonical message schema
-│   │   └── index.ts
-│   ├── loader/                  # Module lifecycle
-│   │   ├── module-loader.ts     # Load, unload, hot-swap
-│   │   └── index.ts
-│   ├── syscalls/                # System call interface
-│   │   ├── syscalls.ts          # All syscall definitions
-│   │   └── index.ts
-│   ├── utils/                   # Shared utilities
-│   │   └── index.ts
-│   └── index.ts
-│
-├── services/                    # WASM service modules
-│   ├── accrual-engine/          # Sick time accrual
-│   │   ├── manifest.ts          # Module manifest
-│   │   ├── capabilities.json    # Capability declarations
-│   │   ├── handlers/            # Message handlers
-│   │   └── index.ts
-│   ├── compliance-engine/       # ESTA compliance checking
-│   │   ├── manifest.ts
-│   │   ├── capabilities.json
-│   │   ├── handlers/
-│   │   └── index.ts
-│   ├── employee-service/        # Employee management
-│   └── time-service/            # Time tracking
-│
-├── estalogic_kernel/            # Gleam kernel specifications
-│   └── src/
-│       ├── abi.gleam            # ABI types
-│       ├── isolation/           # Guardrails
-│       ├── runtime/             # WASM safety
-│       ├── realtime/            # Timing constraints
-│       ├── redundancy/          # Dual-core support
-│       └── security/            # Capability system
-│
-├── estalogic_protocol/          # Gleam protocol definitions
-│   └── src/
-│       ├── message.gleam        # Message types
-│       └── reliability.gleam    # Delivery guarantees
-│
-├── estalogic_drivers/           # Gleam driver contracts
-│   ├── kafka/
-│   ├── redis/
-│   └── postgres/
-│
-├── estalogic_observe/           # Gleam observability
-│   └── src/
-│       ├── log_integrity.gleam
-│       └── tracing.gleam
-│
-├── libs/                        # Shared libraries
-│   ├── kernel-boundary/         # TypeScript IPC/Capability types
-│   ├── accrual-engine/          # Reference implementation
-│   └── shared-types/            # Common TypeScript types
-│
-└── apps/                        # Applications
-    ├── frontend/                # React web app
-    ├── backend/                 # Express API server
-    └── desktop/                 # Tauri desktop app
-```
-
-## Message Schema
-
-All IPC messages follow this canonical schema:
-
-```typescript
-interface IPCMessage<T = unknown> {
-  type: 'Event' | 'Command' | 'Response' | 'Query' | 'System';
-  source: string; // Module ID
-  target: string | 'kernel';
-  opcode: string; // e.g., 'accrual.calculate'
-  payload: T;
-  metadata: {
-    messageId: string;
-    correlationId?: string; // For request/response
-    timestamp: string; // ISO 8601
-    priority: 'background' | 'low' | 'normal' | 'high' | 'critical';
-    ttlMs?: number;
-    trace?: TraceContext;
-    schemaVersion: number;
-  };
-}
-```
-
-## Capability Model
-
-Capabilities are unforgeable tokens that grant resource access:
-
-```typescript
-interface Capability {
-  id: CapabilityId;
-  resource: {
-    resourceType: ResourceType; // 'channel' | 'database' | 'file' | ...
-    resourcePath: string; // Pattern like 'accrual.*'
-    tenantId: string;
-  };
-  rights: {
-    read: boolean;
-    write: boolean;
-    delete: boolean;
-    execute: boolean;
-    create: boolean;
-    list: boolean;
-    delegate: boolean;
-    revoke: boolean;
-  };
-  validity: {
-    expiresAt?: number;
-    maxUseCount: number;
-    useCount: number;
-  };
-}
-```
-
-## Syscall Interface
-
-All host interactions go through syscalls:
-
-| Syscall            | Description              |
-| ------------------ | ------------------------ |
-| `sys.fs.read`      | Read file content        |
-| `sys.fs.write`     | Write file content       |
-| `sys.fs.delete`    | Delete file              |
-| `sys.net.fetch`    | HTTP request             |
-| `sys.net.socket.*` | Socket operations        |
-| `sys.time.now`     | Get current time         |
-| `sys.db.read`      | Read from database       |
-| `sys.db.write`     | Write to database        |
-| `sys.db.query`     | Query database           |
-| `sys.db.transact`  | Transaction              |
-| `sys.audit.log`    | Write audit log          |
-| `sys.proc.spawn`   | Spawn process            |
-| `sys.proc.kill`    | Kill process             |
-| `sys.crypto.*`     | Cryptographic operations |
-
-## Scheduling
-
-The kernel uses priority-based preemptive scheduling:
-
-| Priority   | Time Slice | Use Case              |
-| ---------- | ---------- | --------------------- |
-| `system`   | Unlimited  | Kernel operations     |
-| `realtime` | 10ms       | Compliance checks     |
-| `high`     | 15ms       | User requests         |
-| `normal`   | 25ms       | Background processing |
-| `low`      | 50ms       | Batch operations      |
-| `idle`     | 100ms      | Maintenance tasks     |
-
-Anti-starvation: Processes waiting >1s get priority boost.
-
-## Invariants
-
-These invariants must always hold:
-
-1. **No Direct Imports**: Services never import from other services
-2. **Capability Required**: All resource access requires valid capability
-3. **Kernel Mediation**: All host access goes through kernel syscalls
-4. **Deterministic WASM**: All WASM modules are deterministic
-5. **Audit Trail**: All compliance operations are logged
-6. **Message Validation**: All messages validated at kernel boundary
-7. **Resource Limits**: All modules have bounded memory and CPU
-
-## Testing
-
-Architecture tests verify these invariants:
-
-```typescript
-// Test: No forbidden imports
-test('services do not import from each other', () => {
-  // Scan import statements
-  // Verify no cross-service imports
-});
-
-// Test: All messages are valid
-test('messages pass schema validation', () => {
-  // Validate message structure
-  // Verify required fields
-});
-
-// Test: Capabilities are enforced
-test('resource access requires capability', () => {
-  // Attempt access without capability
-  // Verify rejection
-});
-```
-
-## Migration Path
-
-For existing code:
-
-1. Move business logic into services with manifests
-2. Replace direct imports with IPC messages
-3. Replace host calls with syscalls
-4. Add capability declarations to manifests
-5. Add architecture tests to CI
-
----
-
-## Kernel Freeze & Instruction Set Architecture
-
-### Ring 0 Foundation
-
-The ESTA-Kernel operates at **Ring 0** - the highest privilege level with absolute authority:
-
-- **Kernel Version:** 1.0.0 (FROZEN)
-- **Freeze Date:** 2026-01-12
-- **Status:** Permanent Freeze
-- **Breaking Changes:** Never Permitted
-
-### ESTA Instruction Set Architecture (ESTA-ISA v1.0)
-
-The kernel defines 48 primitive instructions for legal computation:
-
-| Category | Instructions | Purpose |
-|----------|-------------|---------|
-| **Arithmetic** | 12 ops | Basic mathematical operations |
-| **Temporal** | 8 ops | Time-based calculations |
-| **Validation** | 10 ops | Constraint checking |
-| **Transformation** | 6 ops | Type conversion |
-| **Aggregation** | 5 ops | Collection operations |
-| **Proof** | 7 ops | Evidence generation |
-
-**See:** `INSTRUCTION_SET.md` for complete instruction catalog.
-
-### Structural Guarantees
-
-The kernel's exclusions are transformed into positive, enforceable properties:
-
-1. **Execution Without Presence** - Not a web framework → Operates without network
-2. **State-Agnostic Truth** - Not a database ORM → Truth independent of storage
-3. **Human-Interface Neutrality** - Not a UI library → Semantic outputs only
-4. **Protocol Independence** - Not a REST API → Survives transport changes
-5. **Explicit Reality Modeling** - Not a configuration system → All inputs explicit
-6. **Rules as Physics** - Not a rules engine → Kernel IS the rules
-
-**See:** `STRUCTURAL_GUARANTEES.md` for complete specification.
-
-### Domain Expansion Contract
-
-New legal domains extend the kernel without modification:
-
-- **Current:** Michigan ESTA
-- **Future:** California PSL, New York Sick Leave, Federal FMLA, GDPR, etc.
-
-**Protocol:**
-- Each domain is isolated and self-contained
-- No cross-domain dependencies
-- Versioned and immutable
-- Complete statute mapping
-- 100% test coverage required
-
-**See:** `DOMAIN_EXPANSION_CONTRACT.md` for extension protocol.
-
-### Kernel Immutability Guarantees
-
-**We Promise:**
-
-1. **Historical Calculations Remain Valid** - Calculations from 2024 work identically in 2050
-2. **Cross-Environment Determinism** - Browser, Node, Edge, Serverless produce identical results
-3. **Audit Trail Permanence** - Proof objects remain valid forever
-4. **Domain Isolation** - Adding new domains doesn't affect existing ones
-
-**See:** `KERNEL_FREEZE_MANIFEST.md` for freeze declaration.
-
----
-
-## Key Documentation
-
-### Kernel Foundation
-- **[Kernel Specification](./KERNEL_SPEC.md)** - Complete kernel specification
-- **[Deployment Invariance](./DEPLOYMENT_INVARIANCE.md)** - Cross-environment guarantees
-- **[Structural Guarantees](./STRUCTURAL_GUARANTEES.md)** - Positive system properties
-- **[Instruction Set](./INSTRUCTION_SET.md)** - ESTA-ISA primitive operations
-- **[Domain Expansion](./DOMAIN_EXPANSION_CONTRACT.md)** - Extension protocol
-- **[Kernel Freeze Manifest](./KERNEL_FREEZE_MANIFEST.md)** - Freeze declaration
-
-### Supporting Documentation
-- **[Time Model](./TIME_MODEL.md)** - Temporal computation model
-- **[Constraints](./CONSTRAINTS.md)** - Type-level invariants
-- **[Proof Objects](./PROOF_OBJECTS.md)** - Evidence structure
-- **[Predictive Engine](./PREDICTIVE_ENGINE.md)** - Forecasting capabilities
-
-### Examples
-- **[Kernel Invariance Examples](./examples/kernel-invariance/)** - Cross-environment demonstrations
-
----
-
-## References
-
-- `kernel/` - TypeScript kernel implementation
-- `estalogic_kernel/` - Gleam kernel specifications
-- `services/` - WASM service modules
-- `libs/kernel-boundary/` - TypeScript IPC types
-
----
-
-**Last Updated:** 2026-01-12  
-**Architecture Version:** 3.0.0 (Domain Operating System)  
-**Kernel Version:** 1.0.0 (FROZEN)
+- `apps/frontend/`: active React/Vite UI.
+- `libs/accrual-engine/`: TypeScript accrual/rules implementations. Some
+  existing paths need correction and consolidation; do not treat all of them
+  as interchangeable.
+- `packages/esta-core/`: small, storage-independent domain models. Draft
+  next-generation ledger and decision-intelligence work is reviewed in
+  PR #381, **not shipped as authoritative business processing**.
+- `libs/esta-firebase/`, `functions/`, `firestore.rules`: Firebase-related
+  persistence/authentication work. Trusted role provisioning and negative
+  cross-tenant tests are still release blockers (PR #376).
+- `.github/workflows/ci.yml`: frontend CI with lint, tests, typecheck,
+  marketing-claims checks and selected browser tests. Production is
+  deployed through the connected Vercel Git integration.
+
+## Engineering requirements
+
+1. **Explicit ruleset version and effective dates.** No silent historical
+   re-interpretation when law or employer policy changes.
+2. **Replayable source records.** Corrections are new authorized events,
+   never unrecorded overwrites. Preserve both the business effective date
+   and the date a correction became known.
+3. **Evidence before claims.** Every customer-visible balance must explain
+   sources and calculation assumptions; unsupported legal scenarios receive
+   human review.
+4. **Trusted authorization.** Browser-selected `role`, `tenantId`, and
+   `actorId` values never grant access. Authentication, access control,
+   transaction atomicity, and idempotency belong on the server.
+5. **Honest security statements.** SHA hashes alone do not establish
+   authenticated, independently verified audit records. A frontend build
+   is not a Firebase integration test.
+6. **Separation of sign-in from domain logic.** Passkeys (WebAuthn) can be
+   introduced later via a verified-session service; the calculation model
+   does not need Firebase or access to passkey material.
+
+## Historical architecture and retirement status
+
+The repository once explored a domain operating system, kernel IPC and
+scheduling, Rust/WASM accrual, Gleam, Tauri, capability runtimes, proof objects,
+time capsules, and compliance drift services. These ideas were research,
+not verified production guarantees.
+
+**Retired in draft cleanup PR:** the experimental Rust/WASM accrual module and
+Rust kernel, their standalone build script and workflow, and their optional Nx
+build/test targets. Historical contents remain accessible in Git history and
+the `archive/pre-wasm-retirement-20261114` preservation branch.
+
+**Not yet deleted:** `kernel/`, `libs/kernel-boundary/`, Gleam workspace,
+Tauri research and some legacy shared utilities. Source references still
+exist, so these require dependency-by-dependency migration rather than
+a mass delete. Do not re-enable deprecated runtime dependencies by default.
+
+The useful architectural concepts are being reimplemented as small,
+framework-independent TypeScript models; see
+`docs/DECISION_INTELLIGENCE_ROLLOUT.md` once PR #381 is merged.
+
+## Release status and verification
+
+- The public demo, Calculation Lab, and homepage have passed selected CI
+  browser tests and Vercel deployment checks.
+- Core ledger, Decision Intelligence, full statutory scenario coverage,
+  trusted tenant onboarding, and passkey support are **not production-ready**.
+- Staging Firebase tests, secure identity, server-transactional persistence,
+  backups, audit export/retention, and external legal review remain necessary
+  before real employer operations can be supported.
+
+For scope and current blockers, see `README.md`,
+`docs/PRODUCT_IMPLEMENTATION_BACKLOG.md`, and open GitHub PRs/issues.
