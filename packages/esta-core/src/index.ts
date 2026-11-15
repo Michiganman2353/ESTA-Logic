@@ -74,3 +74,21 @@ export function calculateBalance(accrued: number, used: number): number {
 // Deterministic ledger event replay; persistence and authorization remain server-only.
 export { appendLedgerEvent, replayLedger } from './ledger.js';
 export type { LedgerEntry, LedgerInput, LedgerKind, LedgerSnapshot } from './ledger.js';
+
+
+// Versioned ledger model and explainable bitemporal projections.
+// These are framework-agnostic model primitives, not an authorization or
+// legally validated ESTA balance service.
+export { appendLedgerEvent, replayLedger } from './ledger';
+export type { LedgerInput, LedgerEntry, LedgerSnapshot, LedgerKind } from './ledger';
+export { rebuildBalance, verifyBalanceReceipt, detectBalanceDrift } from './decision-intelligence';
+export type {
+  ReconstructionQuery,
+  BalanceReceipt,
+  BalanceEvidence,
+  ReceiptVerification,
+  BalanceDrift,
+  LedgerScope,
+  IntelligenceFlag,
+  ReconstructionStatus,
+} from './decision-intelligence';
