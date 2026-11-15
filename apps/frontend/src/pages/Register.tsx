@@ -56,7 +56,7 @@ export default function Register() {
                 Manager / Employer
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Register your company and manage your employees' ESTA compliance
+                Employer enrollment is paused. Explore the workspace with fictional records before secure onboarding launches
               </p>
               <ul className="space-y-2 text-left text-sm text-gray-600 dark:text-gray-400">
                 <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
@@ -103,12 +103,19 @@ export default function Register() {
                 </li>
               </ul>
               <button
-                onClick={() => navigate('/register/manager')}
+                onClick={() => navigate('/workspace-demo')}
                 className="btn btn-primary group/btn relative mt-4 w-full overflow-hidden"
-                data-testid="register-as-manager-button"
+                data-testid="explore-manager-demo-button"
               >
-                <span className="relative z-10">Register as Manager</span>
+                <span className="relative z-10">Explore Manager Demo</span>
                 <span className="shimmer-bg absolute inset-0 opacity-0 transition-opacity group-hover/btn:opacity-100"></span>
+              </button>
+              <button
+                type="button"
+                className="text-sm font-medium text-sky-400 underline underline-offset-4 hover:text-sky-300"
+                onClick={() => navigate('/register/manager')}
+              >
+                Check employer enrollment status
               </button>
             </div>
           </div>
