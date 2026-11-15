@@ -287,7 +287,7 @@ export default function Landing() {
             <article className="rounded-3xl border border-amber-100 bg-amber-50/80 p-7 sm:p-9 dark:border-amber-900 dark:bg-amber-950/20">
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-white text-amber-700 shadow-sm"><Icon name="check" /></span>
               <h2 className="mt-5 text-xl font-bold">Claims intentionally limited</h2>
-              <p className="mt-4 text-sm leading-relaxed text-slate-700 dark:text-slate-200">The application is a software aid, not legal advice. We do not claim guaranteed compliance, external security certification, or complete production readiness. Employers remain responsible for their policies and decisions.</p>
+              <p className="mt-4 text-sm leading-relaxed text-slate-700 dark:text-slate-200">The application is a software aid, not legal advice. We do not certify legal outcomes, claim external security audits, or represent the product as production-ready. Employers remain responsible for their policies and decisions.</p>
             </article>
           </div>
         </section>
