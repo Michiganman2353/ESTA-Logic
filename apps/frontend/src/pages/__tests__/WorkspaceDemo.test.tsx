@@ -16,7 +16,7 @@ describe('Interactive Workspace Demo', () => {
     renderDemo();
     expect(screen.getByRole('heading', { name: 'Employer workspace' })).toBeInTheDocument();
     expect(screen.getByText(/Sample data — not your account/i)).toBeInTheDocument();
-    expect(screen.getByText(/No Firebase records are loaded, changed, or saved/i)).toBeInTheDocument();
+    expect(screen.getByText(/does not read or write real employer or employee balance records/i)).toBeInTheDocument();
     expect(screen.queryByText(/98%/)).not.toBeInTheDocument();
   });
 
