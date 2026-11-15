@@ -108,10 +108,10 @@ export function Navigation({ user, onLogout, className }: NavigationProps) {
                 Sign In
               </button>
               <button
-                onClick={() => navigate('/register')}
+                onClick={() => navigate('/pricing')}
                 className="btn btn-primary text-sm"
               >
-                Get Started
+                Pilot Status
               </button>
             </div>
           )}

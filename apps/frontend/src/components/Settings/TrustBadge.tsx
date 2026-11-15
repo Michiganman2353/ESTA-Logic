@@ -1,36 +1,12 @@
-/**
- * TrustBadge Component
- *
- * Displays a trust/security badge that can be placed in header or footer.
- * Provides visual assurance of security and compliance features.
- *
- * Features:
- * - Compact badge design
- * - Hover tooltip with details
- * - Optional compliance certificate download
- * - Multiple badge variants (security, compliance, verified)
- * - Responsive sizing
- * - Dark mode support
- *
- * Uses:
- * - Tooltip component for additional information
- * - Design system Button for certificate download
- * - SVG icons for visual appeal
- */
-
 import { Tooltip } from '@/components/DesignSystem/Tooltip';
 
 export interface TrustBadgeProps {
-  variant?: 'security' | 'compliance' | 'verified';
-  showCertificate?: boolean;
-  onDownloadCertificate?: () => void;
+  variant?: 'security' | 'calculation' | 'pilot';
   size?: 'sm' | 'md' | 'lg';
 }
 
 export function TrustBadge({
   variant = 'security',
-  showCertificate = false,
-  onDownloadCertificate,
   size = 'md',
 }: TrustBadgeProps) {
   const sizeClasses = {
@@ -47,48 +23,48 @@ export function TrustBadge({
           viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
         >
           <rect width="100" height="100" rx="8" fill="#3B82F6" />
           <path
             d="M50 20L30 30V50C30 62 40 70 50 80C60 70 70 62 70 50V30L50 20Z"
             fill="white"
           />
-          <path
-            d="M45 55L40 50L38 52L45 59L62 42L60 40L45 55Z"
-            fill="#3B82F6"
-          />
         </svg>
       ),
-      tooltip: 'Bank-level encryption with AES-256-GCM and Google Cloud KMS',
-      label: 'Secure',
+      tooltip:
+        'Uses Firebase Authentication, Firestore security rules, and role-aware application routes. Security controls remain subject to testing and review.',
+      label: 'Security Controls',
     },
-    compliance: {
+    calculation: {
       icon: (
         <svg
           className="h-full w-full"
           viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
         >
           <rect width="100" height="100" rx="8" fill="#10B981" />
           <circle cx="50" cy="50" r="25" fill="white" />
           <path
             d="M45 55L40 50L38 52L45 59L62 42L60 40L45 55Z"
             fill="#10B981"
-            strokeWidth="2"
           />
         </svg>
       ),
-      tooltip: '100% compliant with Michigan ESTA law requirements',
-      label: 'ESTA Compliant',
+      tooltip:
+        'Provides deterministic Michigan earned sick time calculations for the scenarios described in the Calculation Lab.',
+      label: 'Calculation Model',
     },
-    verified: {
+    pilot: {
       icon: (
         <svg
           className="h-full w-full"
           viewBox="0 0 100 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
         >
           <rect width="100" height="100" rx="8" fill="#8B5CF6" />
           <path
@@ -97,86 +73,37 @@ export function TrustBadge({
           />
         </svg>
       ),
-      tooltip: 'Verified security practices and audit-ready compliance',
-      label: 'Verified',
+      tooltip:
+        'Authenticated workflows, persistent ledgers, registration, and operational controls are still being hardened.',
+      label: 'Pilot Status',
     },
   };
 
   const badge = badges[variant];
 
-  const handleCertificateDownload = () => {
-    if (onDownloadCertificate) {
-      onDownloadCertificate();
-    } else {
-      // Default certificate download logic
-      const certificateUrl = '/api/compliance-certificate';
-      window.open(certificateUrl, '_blank');
-    }
-  };
-
-  const BadgeContent = (
-    <div className="inline-flex items-center space-x-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-      <div className={sizeClasses[size]}>{badge.icon}</div>
-      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-        {badge.label}
-      </span>
-      {showCertificate && (
-        <button
-          onClick={handleCertificateDownload}
-          className="text-primary-600 dark:text-primary-400 ml-2 text-xs hover:underline"
-          aria-label="Download compliance certificate"
-        >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            />
-          </svg>
-        </button>
-      )}
-    </div>
-  );
-
   return (
     <Tooltip content={badge.tooltip} position="top">
-      {BadgeContent}
+      <div className="inline-flex items-center space-x-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className={sizeClasses[size]}>{badge.icon}</div>
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          {badge.label}
+        </span>
+      </div>
     </Tooltip>
   );
 }
 
-/**
- * TrustBadgeGroup Component
- *
- * Displays multiple trust badges in a group
- */
 export function TrustBadgeGroup({
-  badges = ['security', 'compliance', 'verified'],
+  badges = ['security', 'calculation', 'pilot'],
   size = 'md',
-  showCertificate = false,
-  onDownloadCertificate,
 }: {
-  badges?: Array<'security' | 'compliance' | 'verified'>;
+  badges?: Array<'security' | 'calculation' | 'pilot'>;
   size?: 'sm' | 'md' | 'lg';
-  showCertificate?: boolean;
-  onDownloadCertificate?: () => void;
 }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {badges.map((badge) => (
-        <TrustBadge
-          key={badge}
-          variant={badge}
-          size={size}
-          showCertificate={showCertificate}
-          onDownloadCertificate={onDownloadCertificate}
-        />
+        <TrustBadge key={badge} variant={badge} size={size} />
       ))}
     </div>
   );

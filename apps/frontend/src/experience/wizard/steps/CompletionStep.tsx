@@ -1,6 +1,5 @@
 /**
- * CompletionStep - Final step showing completion status
- * Enhanced with final confidence score and trust signals
+ * CompletionStep - Final step showing completion status.
  */
 
 import { useWizard } from '../core/useWizard';
@@ -21,28 +20,25 @@ export default function CompletionStep() {
   };
 
   const handleGoToDashboard = () => {
-    // In a real app, this would navigate to the dashboard
     console.log('Navigating to dashboard...');
   };
 
   return (
     <EnhancedWizardStep
-      title={ToneEngine.celebratory('🎉 Setup Complete!')}
-      subtitle={`Congratulations, ${companyName}! Your ESTA compliance setup is now complete.`}
+      title={ToneEngine.celebratory('🎉 Setup Inputs Complete')}
+      subtitle={`${companyName || 'Your organization'} has completed this guided setup flow. Review the information before relying on it.`}
       showTrustBadges={false}
       showSecuritySignals={false}
       stepNumber={6}
       totalSteps={6}
     >
       <div className="space-y-6">
-        {/* Final Confidence Score */}
         <ConfidenceIndicator
           score={100}
-          label="Fully Configured"
+          label="Guided Inputs Complete"
           variant="dashboard"
         />
 
-        {/* Success Icon */}
         <div className="flex justify-center">
           <div className="flex h-24 w-24 items-center justify-center rounded-full bg-green-100">
             <svg
@@ -59,10 +55,9 @@ export default function CompletionStep() {
           </div>
         </div>
 
-        {/* What's Next */}
         <div className="rounded-xl bg-white p-8 shadow-lg">
           <h2 className="mb-6 text-2xl font-semibold text-gray-900">
-            What's Next?
+            What&apos;s Next?
           </h2>
 
           <div className="space-y-6">
@@ -72,11 +67,10 @@ export default function CompletionStep() {
               </div>
               <div className="ml-4">
                 <h3 className="mb-1 font-semibold text-gray-900">
-                  Access Your Dashboard
+                  Review the setup summary
                 </h3>
                 <p className="text-gray-600">
-                  View employee balances, track accruals, and manage sick time
-                  requests.
+                  Confirm employer size, policies, and dates before connecting records.
                 </p>
               </div>
             </div>
@@ -87,11 +81,10 @@ export default function CompletionStep() {
               </div>
               <div className="ml-4">
                 <h3 className="mb-1 font-semibold text-gray-900">
-                  Add Employees
+                  Prepare employee records
                 </h3>
                 <p className="text-gray-600">
-                  Import your employee roster (up to {employeeCount || 'your'}{' '}
-                  employees) to start tracking their sick time accruals.
+                  The workflow currently reflects {employeeCount || 'the entered'} employee count. Persistent employee imports remain under active hardening.
                 </p>
               </div>
             </div>
@@ -102,26 +95,23 @@ export default function CompletionStep() {
               </div>
               <div className="ml-4">
                 <h3 className="mb-1 font-semibold text-gray-900">
-                  Stay Compliant
+                  Validate policies and calculations
                 </h3>
                 <p className="text-gray-600">
-                  We'll automatically track everything and alert you to any
-                  compliance issues.
+                  Use the Calculation Lab and employer review before relying on account workflows.
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Trust Badges */}
         <div className="flex justify-center">
           <TrustBadgeGroup
-            badges={['security', 'compliance', 'verified']}
+            badges={['security', 'calculation', 'pilot']}
             size="lg"
           />
         </div>
 
-        {/* Security Reassurance */}
         <div className="rounded-lg border border-blue-200 bg-blue-50 p-6">
           <div className="flex items-start">
             <svg
@@ -139,17 +129,15 @@ export default function CompletionStep() {
             </svg>
             <div>
               <h3 className="mb-1 font-semibold text-blue-900">
-                Your Data is Secure
+                Current security boundary
               </h3>
               <p className="text-sm text-blue-800">
-                All your information is encrypted and stored securely. We take
-                your privacy seriously.
+                Firebase Authentication, security rules, and role-aware routes are implemented. Server-authoritative identity and tenant controls remain under active hardening.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Action Buttons */}
         <div className="flex flex-col gap-3 sm:flex-row">
           <button
             onClick={handleGoToDashboard}
