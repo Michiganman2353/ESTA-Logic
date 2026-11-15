@@ -1,0 +1,35 @@
+name: Legacy Runtime Retirement Guard
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - 'engine/esta-kernel/**'
+      - 'libs/accrual-engine-wasm/**'
+      - 'libs/accrual-engine/project.json'
+      - 'scripts/build-wasm.sh'
+      - 'scripts/legacy-retirement.test.mjs'
+      - '.github/workflows/wasm-build.yml'
+      - '.github/workflows/legacy-retirement.yml'
+      - 'package.json'
+      - 'ARCHITECTURE.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regression:
+    name: Validate retired research boundaries
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Assert retired Rust/WASM paths are inactive
+        run: node --test scripts/legacy-retirement.test.mjs
+      - name: Explain test scope
+        run: |
+          echo "Static boundaries are not a full dependency audit." >> "$GITHUB_STEP_SUMMARY"
+          echo "Production frontend CI and human review must pass before merging." >> "$GITHUB_STEP_SUMMARY"
