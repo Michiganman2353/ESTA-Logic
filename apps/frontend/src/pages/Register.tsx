@@ -18,13 +18,13 @@ export default function Register() {
       <div className="animate-fade-in-up relative z-10 w-full max-w-2xl space-y-8">
         <div className="text-center">
           <h2 className="gradient-header animate-fade-in-down mt-6 text-5xl font-extrabold">
-            Create Your ESTA Tracker Account
+            Explore ESTA Tracker
           </h2>
           <p
             className="animate-fade-in mt-4 text-lg text-gray-700 dark:text-gray-300"
             style={{ animationDelay: '0.2s' }}
           >
-            Choose your account type to get started
+            Try the example employer workspace while secure manager enrollment is being completed
           </p>
         </div>
 
@@ -71,7 +71,7 @@ export default function Register() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  Track employee sick time
+                  Explore sample sick-time balances
                 </li>
                 <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
                   <svg
@@ -85,7 +85,7 @@ export default function Register() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  Automated compliance reports
+                  Review example request activity
                 </li>
                 <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
                   <svg
@@ -99,7 +99,7 @@ export default function Register() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  Manage employee roster
+                  Search a fictional employee roster
                 </li>
               </ul>
               <button
