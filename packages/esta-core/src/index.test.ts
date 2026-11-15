@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
   calculateAccruedHours,
   calculateCappedAccrual,
+  calculateAnnualUseLimit,
+  calculateAvailableForUse,
   calculateBalance,
   HOURS_TO_ACCRUE_PER_HOUR,
   MAX_ACCRUAL_SMALL_EMPLOYER,
@@ -44,31 +46,32 @@ describe('calculateAccruedHours', () => {
   });
 });
 
-describe('calculateCappedAccrual', () => {
-  it('applies 40-hour cap for small employers (10 or fewer employees)', () => {
-    // 1800 hours worked = 60 hours accrued, but capped at 40
-    expect(calculateCappedAccrual(1800, 10)).toBe(40);
+describe('accrual versus annual use', () => {
+  it('does not cap earned hours for a small employer at 40', () => {
+    expect(calculateAccruedHours(1800)).toBe(60);
+    expect(calculateCappedAccrual(1800, 10)).toBe(60);
+    expect(calculateAnnualUseLimit(10)).toBe(40);
+    expect(calculateAvailableForUse(60, 0, 10)).toBe(40);
+    expect(calculateAvailableForUse(55, 30, 10)).toBe(10);
   });
 
-  it('applies 72-hour cap for large employers (more than 10 employees)', () => {
-    // 2700 hours worked = 90 hours accrued, but capped at 72
-    expect(calculateCappedAccrual(2700, 11)).toBe(72);
+  it('does not cap earned hours for other employers at 72', () => {
+    expect(calculateAccruedHours(2700)).toBe(90);
+    expect(calculateCappedAccrual(2700, 11)).toBe(90);
+    expect(calculateAnnualUseLimit(11)).toBe(72);
+    expect(calculateAvailableForUse(90, 18, 11)).toBe(54);
   });
 
-  it('does not cap when accrual is below the limit', () => {
-    expect(calculateCappedAccrual(300, 10)).toBeCloseTo(10, 6);
+  it('caps annual use, not the bank: a 30-hour bank permits only 30 hours', () => {
+    expect(calculateAvailableForUse(30, 0, 11)).toBe(30);
+    expect(calculateAvailableForUse(90, 73, 11)).toBe(0);
   });
 
-  it('throws on invalid employee count', () => {
-    expect(() => calculateCappedAccrual(100, 0)).toThrow(
-      'employeeCount must be a positive integer'
-    );
-  });
-
-  it('throws on negative employee count', () => {
-    expect(() => calculateCappedAccrual(100, -5)).toThrow(
-      'employeeCount must be a positive integer'
-    );
+  it('validates employer size and use inputs', () => {
+    expect(() => calculateAnnualUseLimit(0)).toThrow('positive integer');
+    expect(() => calculateCappedAccrual(100, -5)).toThrow('positive integer');
+    expect(() => calculateAnnualUseLimit(1.5)).toThrow('positive integer');
+    expect(() => calculateAvailableForUse(-1, 0, 11)).toThrow('non-negative');
   });
 });
 
@@ -103,11 +106,11 @@ describe('constants', () => {
     expect(HOURS_TO_ACCRUE_PER_HOUR).toBeCloseTo(1 / 30, 10);
   });
 
-  it('has correct small employer cap', () => {
+  it('has correct historical small-employer annual use alias', () => {
     expect(MAX_ACCRUAL_SMALL_EMPLOYER).toBe(40);
   });
 
-  it('has correct large employer cap', () => {
+  it('has correct historical standard-employer annual use alias', () => {
     expect(MAX_ACCRUAL_LARGE_EMPLOYER).toBe(72);
   });
 });
