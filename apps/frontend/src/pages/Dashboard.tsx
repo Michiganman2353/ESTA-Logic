@@ -1,93 +1,51 @@
 import { Link } from 'react-router-dom';
-import { User } from '@/types';
-import { Navigation } from '@/components/Navigation';
+import type { User } from '@/types';
+import { WorkspaceShell, WorkspacePanel, ConnectionNote } from '@/components/WorkspaceShell';
 import { Alert } from '@/components/Alert';
 
-interface DashboardProps {
-  user: User;
-}
-
-type UserRole = User['role'];
-
-interface DashboardCard {
-  path: string;
-  title: string;
-  description: string;
-  roles: UserRole[];
-}
-
-const dashboardCards: DashboardCard[] = [
-  {
-    path: '/employee',
-    title: 'Employee Workspace',
-    description: 'Explore a clearly labeled sample employee dashboard. Real balances and requests are not yet connected.',
-    roles: ['employee', 'admin'],
-  },
-  {
-    path: '/employer',
-    title: 'Employer Workspace',
-    description: 'Explore the example employer dashboard and simulated manager decisions. No real records are modified.',
-    roles: ['employer', 'admin'],
-  },
-  {
-    path: '/audit',
-    title: 'Audit Records',
-    description: 'Review selected account and workflow events recorded by the application.',
-    roles: ['employee', 'employer', 'admin'],
-  },
-  {
-    path: '/settings',
-    title: 'Settings',
-    description: 'Manage account preferences and review the current product security boundary.',
-    roles: ['employee', 'employer', 'admin'],
-  },
+type Role = User['role'];
+const destinations: Array<{ to: string; title: string; description: string; number: string; roles: Role[] }> = [
+  { to: '/employer', title: 'Company workspace', number: '01', description: 'Your employer workspace, request-review area and company setup.', roles: ['employer', 'admin'] },
+  { to: '/employee', title: 'My sick time', number: '02', description: 'Your personal leave record, balance explanation and request history.', roles: ['employee', 'admin'] },
+  { to: '/audit', title: 'Activity & records', number: '03', description: 'Review the current audit status and the roadmap for traceable records.', roles: ['employee', 'employer', 'admin'] },
+  { to: '/settings', title: 'Account settings', number: '04', description: 'Check your account profile, security status and planned connections.', roles: ['employee', 'employer', 'admin'] },
 ];
 
-export default function Dashboard({ user }: DashboardProps) {
-  const visibleCards = dashboardCards.filter((card) => card.roles.includes(user.role));
-
+export default function Dashboard({ user }: { user: User }) {
+  const visible = destinations.filter((item) => item.roles.includes(user.role));
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 dark:bg-gray-950 dark:text-white">
-      <Navigation user={user} />
-
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-        {user.role === 'employer' && user.status === 'pending' && (
-          <Alert variant="warning" title="Account Pending Approval" className="mb-6">
-            Some employer workflows remain unavailable until account approval is complete.
-          </Alert>
-        )}
-
-        <section className="mb-8">
-          <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-300">
-            Authenticated workspace
-          </p>
-          <h1 className="mb-3 text-3xl font-bold sm:text-4xl">Welcome back, {user.name}</h1>
-          <p className="max-w-3xl text-gray-600 dark:text-gray-300">
-            Your employer and employee dashboards are interactive previews with synthetic records only. They do not display or change actual sick-time balances. Authentication and secure persistence remain under development.
-          </p>
-        </section>
-
-
-        <section className="grid gap-6 md:grid-cols-2">
-          {visibleCards.map((card) => (
-            <Link
-              key={card.path}
-              to={card.path}
-              className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
-            >
-              <h2 className="mb-2 text-xl font-semibold">{card.title}</h2>
-              <p className="text-gray-600 dark:text-gray-300">{card.description}</p>
-            </Link>
-          ))}
-        </section>
-
-        <section className="mt-8 rounded-2xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-900 dark:bg-blue-950/30">
-          <h2 className="mb-2 text-lg font-semibold">Current product boundary</h2>
-          <p className="text-sm text-blue-900 dark:text-blue-100">
-            The public Calculation Lab models selected ESTA scenarios. Account dashboards currently show synthetic records only. Trusted identity, tenant isolation, authoritative calculations, retention, and durable recordkeeping require further verification before operational use.
-          </p>
-        </section>
-      </main>
-    </div>
+    <WorkspaceShell user={user} eyebrow="Your ESTA workspace" title={'Welcome back, ' + user.name.split(' ')[0]} description="A central place for your sick-time information, company activity and account tools. Live operational records will appear only after the trusted service is connected.">
+      {user.role === 'employer' && user.status === 'pending' && (
+        <Alert variant="warning" title="Account pending approval" className="mb-5">
+          Your employer account is pending. Tenant access must be verified before live records are available.
+        </Alert>
+      )}
+      <ConnectionNote message="Your account is signed in, but the employee-record service is not yet verified for this workspace. We will not substitute fictional balances, requests or compliance scores for your records." />
+      <div className="grid gap-4 md:grid-cols-2">
+        {visible.map((item) => (
+          <Link key={item.to} to={item.to} className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-blue-300 hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky-300">
+            <div className="mb-5 flex items-center justify-between">
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#102f68] font-extrabold text-sky-200">{item.number}</span>
+              <span aria-hidden="true" className="text-2xl text-blue-600 transition group-hover:translate-x-1">→</span>
+            </div>
+            <h2 className="text-xl font-bold text-slate-900">{item.title}</h2>
+            <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.description}</p>
+          </Link>
+        ))}
+      </div>
+      <div className="mt-6">
+        <WorkspacePanel title="What happens next?" description="The next operational milestone is verified account and data access, not another demonstration.">
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[['01','Identity & access','Verify organization membership and account permissions.'],['02','Connect records','Read authenticated balances and approved requests from the trusted backend.'],['03','Explain every hour','Reconstruct balances using the versioned ledger and applicable ruleset.']].map(([num,title,desc])=>(
+              <div key={num} className="rounded-xl bg-slate-50 p-4">
+                <span className="text-xs font-extrabold tracking-widest text-blue-600">STEP {num}</span>
+                <h3 className="mt-2 font-bold text-slate-800">{title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-slate-600">{desc}</p>
+              </div>
+            ))}
+          </div>
+        </WorkspacePanel>
+      </div>
+    </WorkspaceShell>
   );
 }
