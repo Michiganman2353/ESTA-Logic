@@ -1,3 +1,4 @@
+import { trackAccountEvent } from '@/lib/analytics';
 import { useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { signIn } from '@/lib/authService';
@@ -77,8 +78,10 @@ export default function Login({ onLogin }: LoginProps) {
       logger.debug('Attempting Firebase login');
       const user = await signIn(email, password);
       logger.info('Firebase login successful');
+      trackAccountEvent('login_succeeded');
       onLogin(user);
     } catch (err) {
+      trackAccountEvent('login_failed');
       logger.error('Login error', { error: err });
 
       if (err instanceof Error) {

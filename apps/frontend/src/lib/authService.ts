@@ -1,12 +1,13 @@
+import { loadApprovedAccount } from './accountAccess';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signOut,
   UserCredential,
 } from 'firebase/auth';
 import {
   doc,
   setDoc,
-  getDoc,
   collection,
   query,
   where,
@@ -718,62 +719,13 @@ export async function signIn(email: string, password: string): Promise<User> {
     );
     const { user: firebaseUser } = userCredential;
 
-    // Get user data from Firestore
-    const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-
-    if (!userDoc.exists()) {
-      throw new Error('User data not found. Please contact support.');
+    try {
+      return await loadApprovedAccount(firebaseUser);
+    } catch (error) {
+      // An Auth session alone must not leave an unapproved account signed in.
+      await signOut(auth);
+      throw error;
     }
-
-    const userData = userDoc.data() as User;
-
-    // FIXED: Auto-approve users regardless of email verification status
-    // Email verification is now optional, not a blocking requirement
-    // This allows users to access the system immediately after registration
-    if (userData.status === 'pending') {
-      logger.debug('Auto-approving user on first login');
-      try {
-        await setDoc(
-          doc(db, 'users', firebaseUser.uid),
-          {
-            ...userData,
-            status: 'approved',
-            emailVerified: firebaseUser.emailVerified,
-            verifiedAt: firebaseUser.emailVerified ? serverTimestamp() : null,
-            approvedAt: serverTimestamp(),
-            updatedAt: serverTimestamp(),
-          },
-          { merge: true }
-        );
-
-        userData.status = 'approved';
-
-        // Log the auto-approval
-        await setDoc(doc(collection(db, 'auditLogs')), {
-          userId: firebaseUser.uid,
-          employerId: userData.employerId,
-          action: 'auto_approved_on_login',
-          details: {
-            email: firebaseUser.email,
-            role: userData.role,
-            emailVerified: firebaseUser.emailVerified,
-          },
-          timestamp: serverTimestamp(),
-        });
-      } catch (activationError) {
-        logger.error('Error auto-approving user', { error: activationError });
-        // Continue - allow login even if approval fails
-      }
-    }
-
-    // Check if account has been explicitly rejected by an admin
-    if (userData.status === 'rejected') {
-      throw new Error(
-        'Your account has been rejected. Please contact support for more information.'
-      );
-    }
-
-    return userData;
   } catch (error: unknown) {
     logger.error('Sign in error', { error });
 
