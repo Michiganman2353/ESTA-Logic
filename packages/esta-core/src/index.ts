@@ -79,9 +79,7 @@ export type { LedgerEntry, LedgerInput, LedgerKind, LedgerSnapshot } from './led
 // Versioned ledger model and explainable bitemporal projections.
 // These are framework-agnostic model primitives, not an authorization or
 // legally validated ESTA balance service.
-export { appendLedgerEvent, replayLedger } from './ledger';
-export type { LedgerInput, LedgerEntry, LedgerSnapshot, LedgerKind } from './ledger';
-export { rebuildBalance, verifyBalanceReceipt, detectBalanceDrift } from './decision-intelligence';
+export { rebuildBalance, verifyBalanceReceipt, detectBalanceDrift } from './decision-intelligence.js';
 export type {
   ReconstructionQuery,
   BalanceReceipt,
