@@ -324,11 +324,11 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard user={user} />} />
                 <Route
                   path="/employee"
-                  element={<EmployeeDashboard user={user} />}
+                  element={user.role === 'employee' || user.role === 'admin' ? <EmployeeDashboard user={user} /> : <Navigate to="/dashboard" replace />}
                 />
                 <Route
                   path="/employer"
-                  element={<EmployerDashboard user={user} />}
+                  element={user.role === 'employer' || user.role === 'admin' ? <EmployerDashboard user={user} /> : <Navigate to="/dashboard" replace />}
                 />
                 <Route path="/audit" element={<AuditLog user={user} />} />
                 <Route path="/settings" element={<Settings user={user} />} />
