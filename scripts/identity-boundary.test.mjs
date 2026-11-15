@@ -13,7 +13,7 @@ const rules = readFileSync(new URL('../firestore.rules', import.meta.url), 'utf8
 const functions = readFileSync(new URL('../functions/src/index.ts', import.meta.url), 'utf8');
 
 function ruleSegment(collection) {
-  const marker = 'match /' + collection + '/';
+  const marker = 'match /' + collection;
   const start = rules.indexOf(marker);
   assert.notEqual(start, -1, 'missing Firestore collection rule: ' + collection);
   return rules.slice(start, start + 700);
