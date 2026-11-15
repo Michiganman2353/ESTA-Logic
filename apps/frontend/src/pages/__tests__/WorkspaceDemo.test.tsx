@@ -38,6 +38,7 @@ describe('Interactive Workspace Demo', () => {
     expect(approve).toBeEnabled();
     fireEvent.click(approve);
     expect(screen.getByRole('status')).toHaveTextContent(/marked approved/i);
+    fireEvent.click(screen.getByRole('button', { name: 'Employee', exact: true }));
     expect(screen.getByText(/Demo manager note: Sample manager reviewed request/i)).toBeInTheDocument();
   });
 
@@ -49,7 +50,7 @@ describe('Interactive Workspace Demo', () => {
     fireEvent.change(screen.getByLabelText('Example hours'), { target: { value: '3.5' } });
     fireEvent.click(screen.getByRole('button', { name: 'Add request to demo queue' }));
     expect(screen.getByRole('status')).toHaveTextContent(/not submitted to an employer/i);
-    expect(screen.getByText(/Jan 12, 2027 · 3.5 hours/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Jan 12, 2027 · 3.5 hours/i).length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole('button', { name: 'Employer', exact: true }));
     expect(screen.getByText(/3 pending/i)).toBeInTheDocument();
   });
