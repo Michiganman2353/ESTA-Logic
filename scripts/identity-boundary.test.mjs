@@ -60,3 +60,14 @@ test('admin claim assignment is allowlisted and does not accept the entire reque
   assert.match(assignment, /setCustomUserClaims\(uid,\s*safeClaims\)/);
   assert.doesNotMatch(assignment, /setCustomUserClaims\(uid,\s*claims\)/);
 });
+
+test('claim changes cannot self-elevate, cross tenants, or grant admin without platform authority', () => {
+  const start = functions.indexOf('export const setUserClaims');
+  const end = functions.indexOf('export const cleanupUnverifiedAccounts', start);
+  const assignment = functions.slice(start, end);
+  assert.match(assignment, /uid === operator\.uid/, 'no self-service authorization changes');
+  assert.match(assignment, /operator\.token\.tenantId !== claims\.tenantId/, 'tenant-scoped grants must match caller tenant');
+  assert.match(assignment, /claims\.role === 'admin' && !isPlatformOperator/, 'only platform operator can grant admin');
+  assert.match(assignment, /operator\.token\.platformAdmin === true/, 'platform authority is a signed claim');
+  assert.doesNotMatch(assignment.slice(assignment.indexOf('const safeClaims:')), /safeClaims\.platformAdmin\s*=/, 'platform operator bit must never be writable via this callable');
+});
