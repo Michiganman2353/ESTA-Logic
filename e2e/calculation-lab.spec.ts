@@ -7,12 +7,22 @@ test.describe('Public Calculation Lab', () => {
     await expect(
       page.getByRole('heading', {
         level: 1,
-        name: /understand and track michigan earned sick time/i,
+        name: /earned sick time.*finally easier to understand/i,
       })
     ).toBeVisible();
 
     await page.getByRole('button', { name: /open calculation lab/i }).click();
     await expect(page).toHaveURL(/\/guided-flow$/);
+  });
+
+  test('public preview responds to interaction without authentication', async ({ page }) => {
+    await page.goto('/');
+
+    await page.getByRole('button', { name: 'Employee view' }).click();
+    await expect(page.getByRole('heading', { name: 'Employee overview' })).toBeVisible();
+
+    await page.getByRole('button', { name: /Organize/i }).click();
+    await expect(page.getByRole('heading', { name: /Bring your people and balances into one place/i })).toBeVisible();
   });
 
   test('calculation lab is public and explains the modeled rule boundaries', async ({ page }) => {
