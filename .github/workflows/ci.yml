@@ -87,7 +87,7 @@ jobs:
 
   e2e:
     name: Public Product E2E
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: test
     steps:
       - uses: actions/checkout@v4
