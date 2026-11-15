@@ -102,7 +102,7 @@ export function Navigation({ user, onLogout, className }: NavigationProps) {
             </>
           ) : (
             <div className="hidden items-center gap-3 md:flex">
-              <Link to="/login" className="rounded-xl px-4 py-2 text-sm font-semibold text-blue-800 hover:bg-blue-50">Sign in</Link>
+              <Link to="/login" className="rounded-xl px-4 py-2 text-sm font-semibold text-blue-800 hover:bg-blue-50">Log in</Link>
               <Link to="/pricing" className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700">Pilot status</Link>
             </div>
           )}
@@ -128,7 +128,7 @@ export function Navigation({ user, onLogout, className }: NavigationProps) {
             </>
           ) : (
             <div className="grid gap-2">
-              <Link onClick={() => setMobileOpen(false)} to="/login" className="rounded-xl bg-blue-600 p-3 text-center font-bold text-white">Sign in</Link>
+              <Link onClick={() => setMobileOpen(false)} to="/login" className="rounded-xl bg-blue-600 p-3 text-center font-bold text-white">Log in</Link>
               <Link onClick={() => setMobileOpen(false)} to="/pricing" className="rounded-xl border border-blue-200 p-3 text-center font-semibold text-blue-800">Pilot status</Link>
             </div>
           )}
