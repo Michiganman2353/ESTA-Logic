@@ -50,3 +50,7 @@ authenticated, isolated staging tests and secure audit infrastructure.
    review, and human-approved production promotion.
 5. Define notification recipients, severity, rollback criteria and
    documented incident ownership before offering an uptime SLA.
+
+GitHub schedules are best-effort; execution may be delayed. This is a pilot
+availability signal, not a contractual uptime guarantee or a substitute for a
+professional external monitor.
