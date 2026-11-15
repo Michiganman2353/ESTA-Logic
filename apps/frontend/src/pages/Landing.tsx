@@ -60,11 +60,11 @@ export default function Landing() {
                   Open Calculation Lab
                 </button>
                 <button
-                  onClick={() => navigate('/register')}
+                  onClick={() => navigate('/pricing')}
                   className="btn btn-secondary px-8 py-4 text-lg"
-                  data-testid="hero-test-registration"
+                  data-testid="hero-pilot-status"
                 >
-                  Test Account Registration
+                  See Pilot Status
                 </button>
               </div>
               <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
