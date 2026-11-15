@@ -25,6 +25,10 @@ jobs:
           node-version: 22.x
       - name: Run source-only security regression checks
         run: node --test scripts/identity-boundary.test.mjs
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Compile Firebase Functions without connecting to a project
+        run: npm run build --workspace=functions
       - name: Explain verification limits
         run: |
           echo 'Source checks are NOT Firestore authorization proofs.' >> "$GITHUB_STEP_SUMMARY"
