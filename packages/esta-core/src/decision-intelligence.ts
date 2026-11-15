@@ -14,7 +14,7 @@
  * This separation preserves the difference between a correction that applies
  * to an older period and what the employer actually knew at that older date.
  */
-import { replayLedger, type LedgerEntry, type LedgerKind } from './ledger';
+import { replayLedger, type LedgerEntry, type LedgerKind } from './ledger.js';
 
 const SCALE = 1_000_000;
 
