@@ -26,7 +26,7 @@ const INITIAL_REQUESTS: Request[] = [
   { id: 'sample-2', employeeId: 'sample-a', date: '2026-10-28', hours: 4, status: 'approved', created: 'Example history', decisionNote: 'Illustrative manager approval' },
   { id: 'sample-3', employeeId: 'sample-b', date: '2026-12-09', hours: 8, status: 'pending', created: 'Example request' },
 ];
-const SAMPLE_WARNING = 'All names, balances, requests, and decisions below are simulated. No Firebase records are loaded, changed, or saved. Changes reset when you leave or reload this page.';
+const SAMPLE_WARNING = 'All names, balances, requests, and decisions below are simulated. The demo does not read or write real employer or employee balance records. Changes reset when you leave or reload this page.';
 
 function displayHours(value: number): string {
   return Number.isInteger(value) ? String(value) : value.toFixed(2).replace(/0+$/, '').replace(/\.$/, '');
