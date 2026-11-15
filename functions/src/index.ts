@@ -92,6 +92,33 @@ export const setUserClaims = functions.https.onCall(async (data, context) => {
     );
   }
 
+  // Tenant administrators cannot alter their own privileges, enroll users
+  // into other tenants, or mint new administrator credentials. The
+  // platformAdmin bit must be provisioned separately with the Admin SDK:
+  // this callable never accepts or writes it from user input.
+  const operator = context.auth;
+  const isPlatformOperator = operator.token.platformAdmin === true;
+  if (uid === operator.uid) {
+    throw new functions.https.HttpsError(
+      'permission-denied',
+      'Administrators cannot modify their own authorization.'
+    );
+  }
+  if (!isPlatformOperator &&
+      (typeof operator.token.tenantId !== 'string' ||
+        operator.token.tenantId !== claims.tenantId)) {
+    throw new functions.https.HttpsError(
+      'permission-denied',
+      'Tenant administrators cannot grant access to another tenant.'
+    );
+  }
+  if (claims.role === 'admin' && !isPlatformOperator) {
+    throw new functions.https.HttpsError(
+      'permission-denied',
+      'Administrator grants require separately provisioned platform authority.'
+    );
+  }
+
   try {
     // Copy only explicit, validated authorization fields.
     // Do not accept arbitrary custom claims from the request.
