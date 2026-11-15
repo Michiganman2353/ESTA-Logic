@@ -1,6 +1,6 @@
 import { useState, createContext, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { apiClient } from '@/lib/api';
+import { registerManager } from '@/lib/authService';
 import { Stepper } from './Stepper';
 import { TooltipIcon } from './Tooltip';
 import { PasswordField } from './PasswordField';
@@ -98,8 +98,8 @@ export function OnboardingWizard({
           setError('Company name is required');
           return false;
         }
-        const empCount = parseInt(data.employeeCount);
-        if (isNaN(empCount) || empCount < 1) {
+        const empCount = Number(data.employeeCount);
+        if (!Number.isInteger(empCount) || empCount < 1 || empCount > 100000) {
           setError('Please enter a valid employee count');
           return false;
         }
@@ -136,55 +136,18 @@ export function OnboardingWizard({
     setError('');
 
     try {
-      const empCount = parseInt(data.employeeCount);
+      const empCount = Number(data.employeeCount);
 
-      console.log('[DEBUG] Starting manager registration completion');
-      console.log('[DEBUG] Registration data:', {
-        name: data.name,
-        email: data.email,
-        companyName: data.companyName,
-        employeeCount: empCount,
-        // Don't log password for security
-      });
-
-      // Always use backend API for registration
-      const response = await apiClient.registerManager({
+      const { user } = await registerManager({
         name: data.name,
         email: data.email,
         password: data.password,
         companyName: data.companyName,
         employeeCount: empCount,
       });
-
-      console.log('[DEBUG] Manager registration API response:', {
-        hasToken: !!response.token,
-        hasUser: !!response.user,
-        userId: (response.user as { id?: string })?.id,
-        userRole: (response.user as { role?: string })?.role,
-      });
-
-      // Auto-login after successful registration
-      if (response.token && response.user) {
-        console.log('[DEBUG] Setting authentication token');
-        apiClient.setToken(response.token);
-
-        // Call the callback to update App state with the logged-in user
-        if (onRegisterSuccess) {
-          console.log('[DEBUG] Calling onRegisterSuccess callback');
-          onRegisterSuccess(response.user as User & Record<string, unknown>);
-        } else {
-          console.log(
-            '[DEBUG] No onRegisterSuccess callback, showing success screen'
-          );
-          // Fallback: show success screen
-          setSuccess(true);
-        }
-      } else {
-        console.log(
-          '[DEBUG] Response missing token or user, showing success screen'
-        );
-        setSuccess(true);
-      }
+      if (onRegisterSuccess)
+        onRegisterSuccess(user as unknown as User & Record<string, unknown>);
+      else setSuccess(true);
     } catch (err) {
       console.error('[DEBUG] Manager registration error:', err);
       console.error('[DEBUG] Error details:', {
@@ -227,7 +190,6 @@ export function OnboardingWizard({
       }
     } finally {
       setLoading(false);
-      console.log('[DEBUG] Manager registration flow completed');
     }
   };
 
@@ -568,7 +530,7 @@ function AccountInfoStep() {
 
 function CompanyInfoStep() {
   const { data, updateData } = useOnboarding();
-  const empCount = parseInt(data.employeeCount) || 0;
+  const empCount = Number(data.employeeCount) || 0;
   const isSmallEmployer = empCount > 0 && empCount < 10;
   const isLargeEmployer = empCount >= 10;
 
@@ -673,79 +635,18 @@ function CompanyInfoStep() {
 }
 
 function PolicySetupStep() {
-  const { data, updateData } = useOnboarding();
-
   return (
-    <div className="space-y-6">
-      <h3 className="animate-fade-in-down mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-        Policy Setup
-      </h3>
-
-      <div
-        className="glass-card from-primary-50/80 dark:from-primary-900/30 animate-fade-in-up bg-gradient-to-br to-purple-50/80 p-5 dark:to-purple-900/30"
-        style={{ animationDelay: '0.1s' }}
-      >
-        <h4 className="text-primary-900 dark:text-primary-100 mb-3 flex items-center text-sm font-semibold">
-          <svg className="mr-2 h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-            <path
-              fillRule="evenodd"
-              d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Michigan ESTA Compliance
-        </h4>
-        <ul className="text-primary-800 dark:text-primary-200 space-y-2 text-sm">
-          <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
-            <span className="mr-2">✓</span>
-            <span>Automatic accrual tracking</span>
-          </li>
-          <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
-            <span className="mr-2">✓</span>
-            <span>Year-to-year carryover (required)</span>
-          </li>
-          <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
-            <span className="mr-2">✓</span>
-            <span>Usage limits enforced automatically</span>
-          </li>
-          <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
-            <span className="mr-2">✓</span>
-            <span>3-year audit trail maintained</span>
-          </li>
-          <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
-            <span className="mr-2">✓</span>
-            <span>Anti-retaliation protections</span>
-          </li>
-        </ul>
-      </div>
-
-      <div className="animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-        <label
-          htmlFor="policyNotes"
-          className="mb-1 flex items-center text-sm font-medium text-gray-700 dark:text-gray-300"
-        >
-          Policy Notes (Optional)
-          <TooltipIcon content="Add any company-specific notes about your sick time policy" />
-        </label>
-        <textarea
-          id="policyNotes"
-          rows={4}
-          className="input focus:ring-primary-500 block w-full focus:ring-2"
-          placeholder="Any additional notes about your company's sick time policy..."
-          value={data.policyNotes}
-          onChange={(e) => updateData({ policyNotes: e.target.value })}
-        />
-      </div>
-
-      <div
-        className="animate-fade-in-up rounded-lg border-l-4 border-yellow-500 bg-yellow-50 p-4 dark:bg-yellow-900/20"
-        style={{ animationDelay: '0.3s' }}
-      >
-        <p className="text-sm text-yellow-800 dark:text-yellow-200">
-          <strong>Note:</strong> You can further customize your policy settings
-          in the dashboard after registration.
-        </p>
-      </div>
+    <div className="space-y-4">
+      <h3 className="text-lg font-semibold">Policy review</h3>
+      <p>
+        Your workspace records employer-maintained balances, leave requests and
+        decisions.
+      </p>
+      <p>
+        Before approving leave, review your company policy, eligibility and
+        applicable usage limits. Automatic accrual, carryover and policy
+        enforcement are not connected to these records yet.
+      </p>
     </div>
   );
 }
@@ -824,7 +725,7 @@ function CompleteStep() {
           </p>
           <p className="ml-12 text-sm text-gray-600 dark:text-gray-300">
             <strong>Type:</strong>{' '}
-            {parseInt(data.employeeCount) < 10
+            {Number(data.employeeCount) < 10
               ? 'Small Employer'
               : 'Large Employer'}
           </p>
@@ -848,8 +749,8 @@ function CompleteStep() {
             />
           </svg>
           <p className="text-sm text-green-800 dark:text-green-200">
-            <strong>You're all set!</strong> Click "Complete Registration" to
-            create your account and start tracking ESTA compliance.
+            <strong>Review your details.</strong> Click "Complete Registration"
+            to create your account and start tracking ESTA compliance.
           </p>
         </div>
       </div>

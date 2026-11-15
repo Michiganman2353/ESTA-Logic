@@ -12,7 +12,7 @@ import {
   FirebaseOptions,
 } from 'firebase/app';
 import { getAnalytics, isSupported, Analytics } from 'firebase/analytics';
-import { getAuth, Auth } from 'firebase/auth';
+import { getAuth, Auth, connectAuthEmulator } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 
@@ -193,6 +193,9 @@ export function getFirebaseAuth(): Auth {
   if (!auth) {
     const firebaseApp = getApp();
     auth = getAuth(firebaseApp);
+    if (import.meta.env?.DEV && import.meta.env?.VITE_USE_FIREBASE_EMULATORS === 'true') {
+      connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
+    }
   }
   return auth;
 }

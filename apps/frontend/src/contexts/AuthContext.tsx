@@ -66,8 +66,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, (identity) => {
       void resolve(identity);
     });
+    const lifecycleRevision = revision;
     return () => {
-      ++revision.current;
+      ++lifecycleRevision.current;
       unsubscribe();
     };
   }, [resolve]);

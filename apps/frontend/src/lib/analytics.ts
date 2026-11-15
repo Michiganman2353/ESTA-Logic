@@ -33,7 +33,10 @@ export function initializeAnalytics() {
   }
 }
 
-export function trackAccountEvent(event: 'login_succeeded' | 'login_failed') {
+export function trackAccountEvent(
+  event:
+    'login_succeeded' | 'login_failed' | 'signup_started' | 'signup_completed'
+) {
   if (!enabled) return;
   try {
     posthog.capture(event);

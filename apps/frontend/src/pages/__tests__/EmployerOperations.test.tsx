@@ -1,48 +1,79 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import EmployerDashboard from '../EmployerDashboard';
+import { workspaceCall } from '@/lib/workspaceClient';
 import type { User } from '@/types';
-
-const user: User = {
-  id: 'manager-1',
-  name: 'Example Manager',
-  email: 'manager@example.invalid',
+vi.mock('@/lib/workspaceClient', () => ({ workspaceCall: vi.fn() }));
+const user = {
+  id: 'owner',
+  name: 'Owner',
+  email: 'owner@example.test',
   role: 'employer',
-  employerSize: 'large',
   status: 'approved',
-  createdAt: '2026-01-01T00:00:00.000Z',
-  updatedAt: '2026-01-01T00:00:00.000Z',
+  employerSize: 'large',
+  createdAt: '2026-01-01',
+  updatedAt: '2026-01-01',
+} as User;
+const records = {
+  companyName: 'Test Company',
+  companyCode: 'INVITE',
+  members: [
+    {
+      id: 'worker',
+      name: 'Worker',
+      email: 'worker@example.test',
+      role: 'employee',
+      status: 'pending',
+    },
+  ],
+  requests: [],
+  history: [],
+  balances: [],
+  limited: false,
 };
-
-function view() {
-  return render(<MemoryRouter><EmployerDashboard user={user} /></MemoryRouter>);
-}
-
-describe('Employer operations dashboard', () => {
-  it('does not interpret missing data as a zero balance or a verified compliance status', () => {
+const view = () =>
+  render(
+    <MemoryRouter>
+      <EmployerDashboard user={user} />
+    </MemoryRouter>
+  );
+beforeEach(() => {
+  vi.mocked(workspaceCall).mockReset();
+  vi.mocked(workspaceCall).mockResolvedValue(records);
+});
+describe('connected employer workspace', () => {
+  it('loads real members and submits membership approval', async () => {
     view();
-    expect(screen.getByRole('heading', { name: 'Employer workspace' })).toBeInTheDocument();
-    expect(screen.getByText(/Counts and balances are shown as unavailable—not zero/i)).toBeInTheDocument();
-    expect(screen.getByText('Verified team members')).toBeInTheDocument();
-    expect(screen.queryByText(/98%/)).not.toBeInTheDocument();
-    expect(screen.queryByText('Sample Employee A')).not.toBeInTheDocument();
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Approve membership' })
+    );
+    await waitFor(() =>
+      expect(workspaceCall).toHaveBeenCalledWith(
+        'approveMember',
+        expect.objectContaining({
+          employeeId: 'worker',
+          operationId: expect.any(String),
+        })
+      )
+    );
+    expect(await screen.findByText('Saved successfully.')).toBeInTheDocument();
   });
-
-  it('switches to team, reviews and intelligence sections without synthetic transactions', () => {
+  it('shows an actionable failure instead of fabricated records', async () => {
+    vi.mocked(workspaceCall).mockRejectedValueOnce(new Error('Access denied'));
     view();
-    fireEvent.click(screen.getByRole('tab', { name: 'Team' }));
-    expect(screen.getByText('Roster connection required')).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('tab', { name: 'Leave requests' }));
-    expect(screen.getByText(/No leave decisions are made on this page today/i)).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Approve|Deny/i })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('tab', { name: 'Decision intelligence' }));
-    expect(screen.getByText(/Waiting for authorized ledger history/i)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Review audit status' })).toHaveAttribute('href', '/audit');
+    expect(await screen.findByRole('alert')).toHaveTextContent('Access denied');
+    expect(screen.queryByText('Worker')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }));
+    expect(await screen.findByText('Worker')).toBeInTheDocument();
   });
-
-  it('offers a working link to the public calculation engine without saving records', () => {
+  it('does not show missing approved employee balances as zero', async () => {
+    vi.mocked(workspaceCall).mockResolvedValue({
+      ...records,
+      members: [{ ...records.members[0], status: 'approved' }],
+    });
     view();
-    expect(screen.getByRole('link', { name: /Open Calculation Lab/i })).toHaveAttribute('href', '/guided-flow');
+    fireEvent.click(await screen.findByRole('tab', { name: 'Balances' }));
+    expect(screen.getByText(/Balance not recorded/)).toBeInTheDocument();
   });
 });

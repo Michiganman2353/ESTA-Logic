@@ -1,3 +1,4 @@
+import { sendEmailVerification } from 'firebase/auth';
 /**
  * App Component
  *
@@ -103,6 +104,7 @@ const PageLoaderFallback = () => (
 function App() {
   const {
     userData: user,
+    currentUser,
     loading,
     error,
     signOut,
@@ -152,7 +154,23 @@ function App() {
                   {error}
                 </p>
 
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
+                  {currentUser && !currentUser.emailVerified && (
+                    <button
+                      className="btn btn-secondary text-sm"
+                      onClick={() => {
+                        void sendEmailVerification(currentUser)
+                          .then(() => window.alert('Verification email sent.'))
+                          .catch(() =>
+                            window.alert(
+                              'Unable to send verification email. Please wait and try again.'
+                            )
+                          );
+                      }}
+                    >
+                      Resend verification email
+                    </button>
+                  )}
                   <button
                     onClick={() => {
                       void refreshUserData();

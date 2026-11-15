@@ -2,13 +2,13 @@
   "name": "functions",
   "version": "1.0.0",
   "description": "Firebase Cloud Functions for ESTA Tracker",
-  "main": "lib/index.js",
+  "main": "lib/workspace.js",
   "exports": {
     ".": {
-      "types": "./lib/index.d.ts",
-      "require": "./lib/index.js",
-      "import": "./lib/index.js",
-      "default": "./lib/index.js"
+      "types": "./lib/workspace.d.ts",
+      "require": "./lib/workspace.js",
+      "import": "./lib/workspace.js",
+      "default": "./lib/workspace.js"
     }
   },
   "scripts": {
@@ -16,11 +16,9 @@
     "test": "echo 'No tests configured'"
   },
   "engines": {
-    "node": "22.x"
+    "node": "22"
   },
   "dependencies": {
-    "@esta/firebase": "file:../libs/esta-firebase",
-    "@vercel/edge-config": "^1.4.3",
     "firebase-admin": "^12.0.0",
     "firebase-functions": "^4.5.0"
   },
