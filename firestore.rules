@@ -35,34 +35,31 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
     
-    // Get user data from Firestore (cached per request)
-    function getUserData() {
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
-    }
+    // Authorization relies on signed custom claims, never client-written user records.
     
     // Check if user has specific role
     function isRole(role) {
-      return isAuthenticated() && getUserData().role == role;
+      return isAuthenticated() && request.auth.token.role == role;
     }
     
     // Check tenant membership
     function belongsToTenant(tenantId) {
-      return isAuthenticated() && getUserData().tenantId == tenantId;
+      return isAuthenticated() && request.auth.token.tenantId == tenantId;
     }
     
     // Check if user is employer or admin
     function isEmployer() {
-      return isAuthenticated() && (getUserData().role == 'employer' || getUserData().role == 'admin');
+      return isRole('employer') || isRole('admin');
     }
     
     // Check if user is employee
     function isEmployee() {
-      return isAuthenticated() && getUserData().role == 'employee';
+      return isRole('employee');
     }
     
     // Check if employee belongs to specific employer
     function belongsToEmployer(employerId) {
-      return isAuthenticated() && getUserData().employerId == employerId;
+      return isAuthenticated() && request.auth.token.employerId == employerId;
     }
     
     // =====================================================
@@ -102,9 +99,8 @@ service cloud.firestore {
     // =====================================================
     match /employerProfiles/{employerId} {
       // Allow employer to create their own profile during registration
-      allow create: if isAuthenticated() && 
-        request.auth.uid == employerId &&
-        isWithinSizeLimit();
+      // Only the trusted backend creates employer profiles.
+      allow create: if false;
       
       // Employer can read/update their own profile
       allow read, update: if isAuthenticated() && request.auth.uid == employerId;
@@ -138,11 +134,9 @@ service cloud.firestore {
     // =====================================================
     match /users/{userId} {
       // Allow authenticated users to create their own document during registration
-      allow create: if isAuthenticated() && 
-        request.auth.uid == userId &&
-        isWithinSizeLimit() &&
-        // Prevent users from setting privileged fields on creation
-        (!('isAdmin' in request.resource.data) || request.resource.data.isAdmin == false);
+      // No self-created roles, tenant membership, or account status.
+      // A verified server flow must initialize this document.
+      allow create: if false;
       
       // Users can read their own document
       allow read: if isOwner(userId);
@@ -171,9 +165,8 @@ service cloud.firestore {
     // =====================================================
     match /tenants/{tenantId} {
       // Allow authenticated users to create tenant during registration
-      allow create: if isAuthenticated() && 
-        request.resource.data.ownerId == request.auth.uid &&
-        isWithinSizeLimit();
+      // Tenant identity is provisioned by trusted server code only.
+      allow create: if false;
       
       // Tenant owner can read/update
       allow read, update: if isAuthenticated() && 
@@ -271,8 +264,9 @@ service cloud.firestore {
     match /auditLogs/{logId} {
       // Allow authenticated users to create audit logs
       // Rate-limited at application level
-      allow create: if isAuthenticated() &&
-        isWithinSizeLimit();
+      // Client-side audit log creation permits forged records.
+      // Backend Admin SDK writes remain allowed.
+      allow create: if false;
       
       // Employers can read logs for their tenant
       allow read: if isEmployer() && 
