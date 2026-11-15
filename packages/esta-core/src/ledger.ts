@@ -97,10 +97,12 @@ export function replayLedger(entries: readonly LedgerEntry[]): LedgerSnapshot | 
   const ids = new Set<string>();
   const keys = new Set<string>();
   const scope = entries[0];
-  for (let index = 0; index < entries.length; index++) {
-    const entry = entries[index];
+  if (!scope) return null;
+  let index = 0;
+  for (const entry of entries) {
+    index++;
     validateInput(entry);
-    if (entry.sequence !== index + 1) throw new Error('Ledger sequence gap or reordering');
+    if (entry.sequence !== index) throw new Error('Ledger sequence gap or reordering');
     if (entry.tenantId !== scope.tenantId ||
         entry.employeeId !== scope.employeeId ||
         entry.benefitYear !== scope.benefitYear) {
@@ -108,6 +110,9 @@ export function replayLedger(entries: readonly LedgerEntry[]): LedgerSnapshot | 
     }
     if (ids.has(entry.entryId) || keys.has(entry.idempotencyKey)) {
       throw new Error('Duplicate ledger entry or idempotency key');
+    }
+    if (entry.kind === 'adjustment' && !ids.has(entry.referenceEntryId || '')) {
+      throw new Error('Correction reference must be an earlier ledger entry');
     }
     ids.add(entry.entryId);
     keys.add(entry.idempotencyKey);
