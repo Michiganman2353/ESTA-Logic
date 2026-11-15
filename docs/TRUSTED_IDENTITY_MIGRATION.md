@@ -43,6 +43,31 @@ a security boundary, not a completed registration repair. It must remain
 draft until the trusted registration replacement, emulator tests, and
 Firebase deployment access are available.
 
+## No-credential checks added to this draft
+
+The `Identity Boundary Source Checks` GitHub Action now checks the security
+rules and auth functions for known untrusted-bootstrap patterns and compiles
+Cloud Functions. These checks require **no Firebase login, API key, or live
+database access**. They are static regression checks, **not evidence that
+Firestore permissions have been verified**.
+
+The administrator grant callable additionally denies:
+- changes to the calling administrator's own role;
+- cross-tenant role assignments by tenant-scoped administrators;
+- creation of an administrator role unless a distinct signed
+  `platformAdmin` authority was provisioned outside this callable.
+
+The callable never accepts the `platformAdmin` bit from request input.
+Before enabling it, audit every existing admin, verify employer/tenant
+membership independently, and define restricted operator provisioning and
+revocation.
+
+**Unresolved:** independently verify `employerId` against the trusted
+employer/tenant relationship instead of treating a caller-supplied identifier
+as authoritative. The existing client-side request/work-log mutations and
+employer-member editing still require server-side ownership checks and
+emulator tests before real customer data is connected.
+
 ## Further security work
 
 - Restrict employee document access and uploads.
