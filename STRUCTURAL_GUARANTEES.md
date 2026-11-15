@@ -1,5 +1,8 @@
 # ESTA-Logic Structural Guarantees
 
+> **Historical design reference — not a current production guarantee.** These 2025 kernel concepts are being selectively rebuilt in the TypeScript Decision Intelligence engine (draft PR #381). Statements about immutable proofs, legal defensibility, deployment invariance, or certified compliance are design intentions, not verified properties of the live application.
+
+
 **Version:** 1.0.0  
 **Status:** Canonical  
 **Classification:** Ring 0 - Kernel Definition  
