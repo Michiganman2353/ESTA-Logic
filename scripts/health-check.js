@@ -81,28 +81,32 @@ async function runHealthCheck() {
       );
     }
 
-    // Test small employer cap (≤10 employees = 40 hour cap)
+    // Accrual is not capped at annual USE limits (MI LEO ESTA FAQ).
     totalTests++;
-    const smallEmployerAccrual = core.calculateCappedAccrual(2000, 10); // Would be 66.67 hours uncapped
-    if (smallEmployerAccrual === 40) {
-      log('green', '✓', 'Small employer cap (40 hours) applied correctly');
+    const smallEarned = core.calculateCappedAccrual(2000, 10);
+    if (Math.abs(smallEarned - 66.666667) < 0.000001) {
+      log('green', '✓', 'Small-employer accrual remains uncapped');
       passedTests++;
     } else {
-      failures.push(
-        `Small employer cap incorrect: expected 40, got ${smallEmployerAccrual}`
-      );
+      failures.push(`Incorrect small-employer accrual: ${smallEarned}`);
     }
 
-    // Test large employer cap (>10 employees = 72 hour cap)
     totalTests++;
-    const largeEmployerAccrual = core.calculateCappedAccrual(3000, 11); // Would be 100 hours uncapped
-    if (largeEmployerAccrual === 72) {
-      log('green', '✓', 'Large employer cap (72 hours) applied correctly');
+    const standardEarned = core.calculateCappedAccrual(3000, 11);
+    if (standardEarned === 100) {
+      log('green', '✓', 'Standard-employer accrual remains uncapped');
       passedTests++;
     } else {
-      failures.push(
-        `Large employer cap incorrect: expected 72, got ${largeEmployerAccrual}`
-      );
+      failures.push(`Incorrect standard-employer accrual: ${standardEarned}`);
+    }
+
+    totalTests++;
+    if (core.calculateAvailableForUse(66.666667, 0, 10) === 40 &&
+        core.calculateAvailableForUse(100, 0, 11) === 72) {
+      log('green', '✓', 'Annual use limits are independent of accrual');
+      passedTests++;
+    } else {
+      failures.push('Annual use limits incorrectly calculated');
     }
 
     // Test balance calculation
