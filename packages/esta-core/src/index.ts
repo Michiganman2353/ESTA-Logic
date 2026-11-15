@@ -70,3 +70,7 @@ export function calculateBalance(accrued: number, used: number): number {
   }
   return Math.max(0, accrued - used);
 }
+
+// Deterministic ledger event replay; persistence and authorization remain server-only.
+export { appendLedgerEvent, replayLedger } from './ledger.js';
+export type { LedgerEntry, LedgerInput, LedgerKind, LedgerSnapshot } from './ledger.js';
