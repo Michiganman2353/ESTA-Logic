@@ -13,54 +13,29 @@ const storage = admin.storage();
  * Automatically sets custom claims for role-based access control
  */
 export const onUserCreate = functions.auth.user().onCreate(async (user) => {
-  const { uid, email } = user;
-
-  console.log(`New user created: ${uid}, email: ${email}`);
-
+  // A new Auth user has no authorized employer or tenant. Never copy a
+  // self-submitted Firestore role into signed Firebase custom claims.
+  const uid = user.uid;
   try {
-    // Wait a bit for Firestore document to be created by the client
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // Get user document from Firestore
-    const userDocRef = db.collection('users').doc(uid);
-    const userDoc = await userDocRef.get();
-
-    if (!userDoc.exists) {
-      console.warn(
-        `User document not found for ${uid}. Will be set when available.`
-      );
-      return null;
-    }
-
-    const userData = userDoc.data();
-
-    // Set custom claims based on role
-    const claims: { [key: string]: any } = {
-      role: userData?.role || 'employee',
-      tenantId: userData?.tenantId || userData?.employerId,
-    };
-
-    await auth.setCustomUserClaims(uid, claims);
-
-    console.log(`Custom claims set for user ${uid}:`, claims);
-
-    // Create audit log
+    await auth.setCustomUserClaims(uid, { role: 'pending' });
+    await db.collection('users').doc(uid).set(
+      {
+        role: 'pending',
+        status: 'pending',
+        // Existing untrusted tenant fields are intentionally NOT used for claims.
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
     await db.collection('auditLogs').add({
       userId: uid,
-      employerId: userData?.employerId || userData?.tenantId,
-      action: 'user_created',
-      details: {
-        email: email,
-        role: userData?.role,
-        claimsSet: true,
-      },
+      action: 'auth_user_created_pending',
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
     });
-
     return null;
   } catch (error) {
-    console.error('Error in onUserCreate:', error);
-    return null;
+    console.error('Failed to initialize pending user:', error);
+    throw error;
   }
 });
 
@@ -69,62 +44,26 @@ export const onUserCreate = functions.auth.user().onCreate(async (user) => {
  * Called by the client after login to ensure claims are up to date
  */
 export const refreshUserClaims = functions.https.onCall(
-  async (data, context) => {
-    // Verify the user is authenticated
+  async (_data, context) => {
     if (!context.auth) {
       throw new functions.https.HttpsError(
         'unauthenticated',
-        'User must be authenticated to call this function.'
+        'User must be authenticated.'
       );
     }
-
-    const uid = context.auth.uid;
-
-    try {
-      // Get user document from Firestore
-      const userDocRef = db.collection('users').doc(uid);
-      const userDoc = await userDocRef.get();
-
-      if (!userDoc.exists) {
-        throw new functions.https.HttpsError(
-          'not-found',
-          'User document not found in Firestore.'
-        );
-      }
-
-      const userData = userDoc.data();
-
-      // Set custom claims based on role
-      const claims: { [key: string]: any } = {
-        role: userData?.role || 'employee',
-        tenantId: userData?.tenantId || userData?.employerId,
-      };
-
-      await auth.setCustomUserClaims(uid, claims);
-
-      // Get the current user's auth record
-      const userRecord = await auth.getUser(uid);
-
-      console.log(`User ${uid} claims refreshed`);
-
-      return {
-        success: true,
-        message: 'Claims refreshed successfully',
-        user: {
-          id: uid,
-          email: userRecord.email,
-          role: userData?.role,
-          status: userData?.status,
-        },
-      };
-    } catch (error) {
-      console.error('Error refreshing user claims:', error);
-      throw new functions.https.HttpsError(
-        'internal',
-        'Failed to refresh user claims',
-        error
-      );
-    }
+    // A read-only refresh: only trusted administrator workflows may assign
+    // claims. Do not derive privileged roles or tenancy from a user document.
+    const record = await auth.getUser(context.auth.uid);
+    const trusted = record.customClaims || {};
+    return {
+      success: true,
+      message: 'Claim status retrieved. Refresh your Firebase ID token client-side.',
+      user: {
+        id: record.uid,
+        email: record.email,
+        role: trusted.role || 'pending',
+      },
+    };
   }
 );
 
@@ -143,7 +82,10 @@ export const setUserClaims = functions.https.onCall(async (data, context) => {
 
   const { uid, claims } = data;
 
-  if (!uid || !claims) {
+  const validRole = ['employee', 'employer', 'admin'].includes(claims?.role);
+  const validTenant = typeof claims?.tenantId === 'string' &&
+    claims.tenantId.length > 0 && claims.tenantId.length <= 128;
+  if (!uid || typeof uid !== 'string' || !validRole || !validTenant) {
     throw new functions.https.HttpsError(
       'invalid-argument',
       'Missing uid or claims in request.'
@@ -151,10 +93,22 @@ export const setUserClaims = functions.https.onCall(async (data, context) => {
   }
 
   try {
-    await auth.setCustomUserClaims(uid, claims);
+    // Copy only explicit, validated authorization fields.
+    // Do not accept arbitrary custom claims from the request.
+    const safeClaims: Record<string, string> = {
+      role: claims.role,
+      tenantId: claims.tenantId,
+    };
+    if (typeof claims.employerId === 'string' && claims.employerId.length <= 128) {
+      safeClaims.employerId = claims.employerId;
+    }
+    await auth.setCustomUserClaims(uid, safeClaims);
 
     // Update Firestore document
     await db.collection('users').doc(uid).update({
+      role: safeClaims.role,
+      tenantId: safeClaims.tenantId,
+      ...(safeClaims.employerId ? { employerId: safeClaims.employerId } : {}),
       status: 'approved',
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
@@ -164,7 +118,7 @@ export const setUserClaims = functions.https.onCall(async (data, context) => {
       userId: uid,
       action: 'claims_updated',
       details: {
-        claims,
+        claims: safeClaims,
         performedBy: context.auth.uid,
       },
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
