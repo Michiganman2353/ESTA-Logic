@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { User } from '@/types';
 import { Navigation } from '@/components/Navigation';
 import { Alert } from '@/components/Alert';
-import { TrustBadgeGroup } from '@/components/Settings';
 
 interface DashboardProps {
   user: User;
@@ -21,13 +20,13 @@ const dashboardCards: DashboardCard[] = [
   {
     path: '/employee',
     title: 'Employee Workspace',
-    description: 'Review balances, requests, and accrual history available to the signed-in employee.',
+    description: 'Explore a clearly labeled sample employee dashboard. Real balances and requests are not yet connected.',
     roles: ['employee', 'admin'],
   },
   {
     path: '/employer',
     title: 'Employer Workspace',
-    description: 'Manage employer workflows that are currently implemented and under active hardening.',
+    description: 'Explore the example employer dashboard and simulated manager decisions. No real records are modified.',
     roles: ['employer', 'admin'],
   },
   {
@@ -64,13 +63,10 @@ export default function Dashboard({ user }: DashboardProps) {
           </p>
           <h1 className="mb-3 text-3xl font-bold sm:text-4xl">Welcome back, {user.name}</h1>
           <p className="max-w-3xl text-gray-600 dark:text-gray-300">
-            ESTA Tracker provides calculation, record, and workflow tools for Michigan earned sick time. Authenticated features remain under active hardening and should be reviewed before operational reliance.
+            Your employer and employee dashboards are interactive previews with synthetic records only. They do not display or change actual sick-time balances. Authentication and secure persistence remain under development.
           </p>
         </section>
 
-        <div className="mb-8">
-          <TrustBadgeGroup badges={['security', 'calculation', 'pilot']} size="sm" />
-        </div>
 
         <section className="grid gap-6 md:grid-cols-2">
           {visibleCards.map((card) => (
@@ -88,7 +84,7 @@ export default function Dashboard({ user }: DashboardProps) {
         <section className="mt-8 rounded-2xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-900 dark:bg-blue-950/30">
           <h2 className="mb-2 text-lg font-semibold">Current product boundary</h2>
           <p className="text-sm text-blue-900 dark:text-blue-100">
-            Firebase Authentication, Firestore rules, role-aware routes, deterministic calculations, and selected audit records are implemented. Server-authoritative identity, tenant enforcement, retention, and operational controls remain planned work.
+            The public Calculation Lab models selected ESTA scenarios. Account dashboards currently show synthetic records only. Trusted identity, tenant isolation, authoritative calculations, retention, and durable recordkeeping require further verification before operational use.
           </p>
         </section>
       </main>

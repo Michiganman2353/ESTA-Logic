@@ -64,6 +64,7 @@ const Settings = lazy(() => import('@/pages/Settings'));
 const Pricing = lazy(() => import('@/pages/Pricing'));
 const UIShowcase = lazy(() => import('@/pages/UIShowcase'));
 const GuidedFlow = lazy(() => import('@/pages/GuidedFlow'));
+const WorkspaceDemo = lazy(() => import('@/pages/WorkspaceDemo'));
 const PerformanceDashboard = lazy(() => import('@/pages/PerformanceDashboard'));
 
 /**
@@ -309,6 +310,7 @@ function App() {
 
             {/* Guided Flow - TurboTax-Style Wizard */}
             <Route path="/guided-flow" element={<GuidedFlow />} />
+            <Route path="/workspace-demo" element={<WorkspaceDemo />} />
 
             {/* UI Showcase (Development/Design) */}
             <Route path="/ui-showcase" element={<UIShowcase />} />

@@ -106,12 +106,15 @@ export default function Landing() {
               <p className="mt-7 max-w-xl text-base leading-relaxed text-slate-200 sm:text-lg">
                 A more connected way to explore Michigan&apos;s earned sick time rules. Try real calculation scenarios today while we finish the account and record-keeping experience.
               </p>
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <button type="button" onClick={() => navigate('/guided-flow')} data-testid="hero-calculation-lab" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 font-bold text-[#103c91] shadow-xl shadow-blue-950/25 transition hover:-translate-y-0.5 hover:bg-sky-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky-300">
                   Open Calculation Lab <Icon name="arrow" className="h-5 w-5" />
                 </button>
                 <button type="button" onClick={() => navigate('/pricing')} data-testid="hero-pilot-status" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/30 bg-white/10 px-6 py-3 font-semibold text-white transition hover:bg-white/20 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky-300">
                   See Pilot Status
+                </button>
+                <button type="button" onClick={() => navigate('/workspace-demo')} data-testid="hero-workspace-demo" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-sky-300/50 bg-sky-400/15 px-6 py-3 font-semibold text-white transition hover:bg-sky-400/25 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky-300">
+                  Explore Workspace Demo
                 </button>
               </div>
               <div className="mt-6 flex items-start gap-2 text-sm text-blue-100/85">
