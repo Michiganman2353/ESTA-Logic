@@ -31,8 +31,8 @@ export default function Pricing() {
             <Button variant="ghost" onClick={() => navigate('/guided-flow')}>
               Open Calculation Lab
             </Button>
-            <Button variant="primary" onClick={() => navigate('/register')}>
-              Test Registration
+            <Button variant="primary" onClick={() => navigate('/')}>
+              Return Home
             </Button>
           </div>
         </div>
