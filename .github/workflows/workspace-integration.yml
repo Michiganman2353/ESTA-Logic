@@ -22,5 +22,6 @@ jobs:
           java-version: '21'
       - run: npm ci
       - run: npm run build --workspace functions
+      - run: npx playwright install --with-deps chromium
       - name: Verify real callable authentication, tenant isolation and transactions
-        run: npx --yes firebase-tools@15.36.0 emulators:exec --only auth,firestore,functions --project demo-esta-workspace --config firebase.workspace-test.json 'node --test tests/workspace/integration.mjs'
+        run: npx --yes firebase-tools@15.36.0 emulators:exec --only auth,firestore,functions --project demo-esta-workspace --config firebase.workspace-test.json 'node --test tests/workspace/integration.mjs && node tests/workspace/browser.mjs'

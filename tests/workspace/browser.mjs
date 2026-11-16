@@ -10,14 +10,17 @@ if (
   !process.env.FIREBASE_AUTH_EMULATOR_HOST
 )
   throw new Error('Demo emulators required');
-const require = createRequire(import.meta.url);
-const express = require('express');
-const { workspaceApi } = require('../../functions/lib/workspace.js');
-const handler = express();
-handler.use(express.json());
-handler.use(workspaceApi);
-const server = createServer(handler);
-await new Promise((resolve) => server.listen(5001, '127.0.0.1', resolve));
+let server;
+if (process.env.WORKSPACE_HTTP_HARNESS === 'true') {
+  const require = createRequire(import.meta.url);
+  const express = require('express');
+  const { workspaceApi } = require('../../functions/lib/workspace.js');
+  const handler = express();
+  handler.use(express.json());
+  handler.use(workspaceApi);
+  server = createServer(handler);
+  await new Promise((resolve) => server.listen(5001, '127.0.0.1', resolve));
+}
 const vite = spawn(
   './node_modules/.bin/vite',
   [
@@ -51,7 +54,7 @@ try {
     await new Promise((r) => setTimeout(r, 500));
   }
   browser = await chromium.launch({
-    executablePath: process.env.CHROMIUM_PATH || '/usr/bin/chromium',
+    ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}),
     headless: true,
     args: ['--no-sandbox'],
   });
@@ -69,12 +72,12 @@ try {
     await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   }
   await login(manager, 'ownerA@example.test');
-  await manager.goto('http://127.0.0.1:5173/employer');
+  await manager.waitForURL('**/employer');
   await manager
     .getByRole('heading', { name: 'Employee directory', exact: true })
     .waitFor();
   await login(employee, 'workerA@example.test');
-  await employee.goto('http://127.0.0.1:5173/employee');
+  await employee.waitForURL('**/employee');
   await employee.getByText('3 hours', { exact: true }).waitFor();
   await employee.reload();
   await employee.getByText('3 hours', { exact: true }).waitFor();
@@ -112,6 +115,6 @@ try {
 } finally {
   await browser?.close();
   vite.kill('SIGTERM');
-  await new Promise((resolve) => server.close(resolve));
+  if (server) await new Promise((resolve) => server.close(resolve));
   await Promise.all(admin.apps.map((app) => app.delete()));
 }
