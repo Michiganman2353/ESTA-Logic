@@ -108,7 +108,7 @@ try {
   );
   await employee.getByRole('button', { name: 'Sign out', exact: true }).click();
   await employee
-    .getByRole('link', { name: 'Sign in', exact: true })
+    .getByRole('link', { name: 'Log in', exact: true })
     .first()
     .waitFor();
   console.log(
