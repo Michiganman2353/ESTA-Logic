@@ -31,6 +31,8 @@ jobs:
           node-version: 22.x
           cache: npm
           cache-dependency-path: package-lock.json
+      - name: Pin npm to repo version
+        run: npm install -g npm@10.2.3
       - name: Validate lockfile
         run: |
           test -f package-lock.json

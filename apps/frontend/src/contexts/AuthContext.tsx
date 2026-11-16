@@ -1,17 +1,25 @@
-import { createContext, useEffect, useState, ReactNode } from 'react';
+import {
+  createContext,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  ReactNode,
+} from 'react';
 import {
   User as FirebaseUser,
   onAuthStateChanged,
   signOut as firebaseSignOut,
 } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '@/services/firebase';
-import { User } from '@/types';
+import { auth } from '@/services/firebase';
+import { loadApprovedAccount } from '@/lib/accountAccess';
+import type { User } from '@/types';
 
 interface AuthContextType {
   currentUser: FirebaseUser | null;
   userData: User | null;
   loading: boolean;
+  error: string | null;
   signOut: () => Promise<void>;
   refreshUserData: () => Promise<void>;
 }
@@ -21,131 +29,80 @@ export const AuthContext = createContext<AuthContextType | undefined>(
   undefined
 );
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-export function AuthProvider({ children }: AuthProviderProps) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [userData, setUserData] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const revision = useRef(0);
 
-  async function fetchUserData(firebaseUser: FirebaseUser) {
-    if (!db) {
-      console.warn('Firestore not configured, skipping user data fetch');
-      return null;
-    }
-
+  const resolve = useCallback(async (identity: FirebaseUser | null) => {
+    const request = ++revision.current;
+    setCurrentUser(identity);
+    setUserData(null);
+    setError(null);
+    setLoading(true);
     try {
-      console.log('Fetching user data for:', firebaseUser.uid);
-
-      // Force token refresh to get updated custom claims
-      await firebaseUser.getIdToken(true);
-
-      const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
-      if (userDoc.exists()) {
-        const data = userDoc.data() as User;
-
-        console.log('User data fetched:', {
-          uid: data.id,
-          email: data.email,
-          role: data.role,
-          status: data.status,
-        });
-
-        // Ensure user data is current by merging with any updates
-        if (data.status === 'pending') {
-          console.warn('User status is still pending - this may block access');
-        }
-
-        return data;
-      } else {
-        console.error(
-          'User document not found in Firestore for uid:',
-          firebaseUser.uid
+      const account = identity ? await loadApprovedAccount(identity) : null;
+      if (request === revision.current) setUserData(account);
+    } catch (failure) {
+      if (request === revision.current) {
+        setError(
+          failure instanceof Error
+            ? failure.message
+            : 'Unable to load your account. Please try again.'
         );
-        return null;
       }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-      const err = error as { code?: string; message?: string };
-
-      // Provide more specific error logging
-      if (err.code === 'permission-denied') {
-        console.error(
-          'Permission denied - user may not have access to their own document'
-        );
-      } else if (err.code === 'unavailable') {
-        console.error('Firestore unavailable - check network connection');
-      }
-
-      return null;
+    } finally {
+      if (request === revision.current) setLoading(false);
     }
-  }
-
-  async function refreshUserData() {
-    if (currentUser) {
-      try {
-        console.log('Refreshing user data...');
-        // Force token refresh to get updated custom claims
-        await currentUser.getIdToken(true);
-
-        const data = await fetchUserData(currentUser);
-        setUserData(data);
-        console.log('User data refreshed successfully');
-      } catch (error) {
-        console.error('Error refreshing user data:', error);
-      }
-    }
-  }
+  }, []);
 
   useEffect(() => {
     if (!auth) {
-      console.warn('Firebase Auth not configured');
       setLoading(false);
       return;
     }
-
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setCurrentUser(user);
-
-      if (user) {
-        // Fetch user data from Firestore
-        const data = await fetchUserData(user);
-        setUserData(data);
-
-        // Log for debugging
-        console.log('Auth state changed:', {
-          uid: user.uid,
-          email: user.email,
-          emailVerified: user.emailVerified,
-          userData: data,
-        });
-      } else {
-        setUserData(null);
-      }
-
-      setLoading(false);
+    const unsubscribe = onAuthStateChanged(auth, (identity) => {
+      void resolve(identity);
     });
+    const lifecycleRevision = revision;
+    return () => {
+      ++lifecycleRevision.current;
+      unsubscribe();
+    };
+  }, [resolve]);
 
-    return unsubscribe;
-  }, []);
-
-  async function signOut() {
-    if (!auth) {
-      throw new Error('Firebase Auth not configured');
-    }
-    await firebaseSignOut(auth);
-    setUserData(null);
+  async function refreshUserData() {
+    await resolve(auth?.currentUser ?? null);
   }
 
-  const value = {
-    currentUser,
-    userData,
-    loading,
-    signOut,
-    refreshUserData,
-  };
+  async function signOut() {
+    if (!auth) throw new Error('Firebase Auth not configured');
+    ++revision.current;
+    setUserData(null);
+    try {
+      await firebaseSignOut(auth);
+      setCurrentUser(null);
+      setError(null);
+    } catch {
+      setError('Sign-out could not be completed. Please try again.');
+    }
+    setLoading(false);
+  }
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider
+      value={{
+        currentUser,
+        userData,
+        loading,
+        error,
+        signOut,
+        refreshUserData,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }

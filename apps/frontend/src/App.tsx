@@ -1,3 +1,4 @@
+import { sendEmailVerification } from 'firebase/auth';
 /**
  * App Component
  *
@@ -38,10 +39,9 @@ import {
   Navigate,
   useLocation,
 } from 'react-router-dom';
-import { useEffect, useState, lazy, Suspense } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { useAuth } from '@/contexts/useAuth';
 import { SecurityProvider } from '@/contexts/SecurityContext';
-import { User } from '@/types';
 import { MaintenanceMode } from '@/components/MaintenanceMode';
 import { DebugPanel } from '@/components/DebugPanel';
 import { SkipLinks, FocusAnchor } from '@/components/SkipLinks';
@@ -102,66 +102,25 @@ const PageLoaderFallback = () => (
 );
 
 function App() {
-  const { userData, currentUser, loading: authLoading } = useAuth();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
+  const {
+    userData: user,
+    currentUser,
+    loading,
+    error,
+    signOut,
+    refreshUserData,
+  } = useAuth();
 
-  // Initialize performance monitoring on app load
   useEffect(() => {
     initWebVitalsTracking();
   }, []);
-
-  // Log authentication state changes for debugging
-  useEffect(() => {
-    console.log('=== Auth State Change ===');
-    console.log('Firebase User:', currentUser?.email);
-    console.log(
-      'User Data:',
-      userData?.email,
-      userData?.role,
-      userData?.status
-    );
-    console.log('Auth Loading:', authLoading);
-    console.log('========================');
-  }, [currentUser, userData, authLoading]);
-
-  useEffect(() => {
-    // Wait for Firebase auth to initialize
-    if (authLoading) {
-      return;
-    }
-
-    // If we have user data, use it
-    if (userData) {
-      console.log('Using Firebase user data:', userData);
-      setUser(userData);
-      setLoading(false);
-      setError(null);
-      return;
-    }
-
-    // If no user, clear state and stop loading
-    if (!userData && !currentUser) {
-      console.log('No Firebase user, showing login');
-      setUser(null);
-      setLoading(false);
-      setError(null);
-      return;
-    }
-
-    setLoading(false);
-  }, [currentUser, userData, authLoading]);
 
   // Enhanced loading screen with progress indicator
   if (loading) {
     return (
       <PageLoader
         message="Loading ESTA Tracker"
-        hint={
-          authLoading ? 'Checking authentication...' : 'Connecting to server...'
-        }
+        hint={'Checking account access...'}
         overlay={false}
       />
     );
@@ -189,47 +148,46 @@ function App() {
               </div>
               <div className="ml-3 flex-1">
                 <h3 className="mb-2 text-base font-semibold text-red-800 dark:text-red-200">
-                  Connection Error
+                  Account access unavailable
                 </h3>
                 <p className="mb-4 text-sm text-red-700 dark:text-red-300">
                   {error}
                 </p>
 
-                <div className="mb-4">
-                  <h4 className="mb-2 text-sm font-semibold text-red-800 dark:text-red-200">
-                    What you can try:
-                  </h4>
-                  <ul className="list-inside list-disc space-y-1 text-sm text-red-700 dark:text-red-300">
-                    <li>Check your internet connection</li>
-                    <li>Refresh your browser</li>
-                    <li>Clear your browser cache</li>
-                    <li>Try a different browser</li>
-                  </ul>
-                </div>
-
-                <div className="flex gap-3">
+                <div className="flex flex-wrap gap-3">
+                  {currentUser && !currentUser.emailVerified && (
+                    <button
+                      className="btn btn-secondary text-sm"
+                      onClick={() => {
+                        void sendEmailVerification(currentUser)
+                          .then(() => window.alert('Verification email sent.'))
+                          .catch(() =>
+                            window.alert(
+                              'Unable to send verification email. Please wait and try again.'
+                            )
+                          );
+                      }}
+                    >
+                      Resend verification email
+                    </button>
+                  )}
                   <button
                     onClick={() => {
-                      setError(null);
-                      setLoading(true);
-                      setRetryCount(retryCount + 1);
-                      // Retry will happen via useEffect
-                      setLoading(false);
+                      void refreshUserData();
                     }}
                     className="btn btn-primary text-sm"
                   >
-                    Retry Connection
+                    Check account again
                   </button>
                   <a
                     href="/login"
                     onClick={(e) => {
                       e.preventDefault();
-                      setError(null);
-                      setUser(null);
+                      void signOut();
                     }}
                     className="btn btn-secondary text-sm"
                   >
-                    Go to Login
+                    Sign out
                   </a>
                 </div>
               </div>
@@ -276,7 +234,11 @@ function App() {
               path="/login"
               element={
                 !user ? (
-                  <Login onLogin={setUser} />
+                  <Login
+                    onLogin={() => {
+                      void refreshUserData();
+                    }}
+                  />
                 ) : (
                   <Navigate to="/dashboard" />
                 )
@@ -290,7 +252,11 @@ function App() {
               path="/register/employee"
               element={
                 !user ? (
-                  <RegisterEmployee onRegister={setUser} />
+                  <RegisterEmployee
+                    onRegister={() => {
+                      void refreshUserData();
+                    }}
+                  />
                 ) : (
                   <Navigate to="/dashboard" />
                 )
@@ -300,7 +266,11 @@ function App() {
               path="/register/manager"
               element={
                 !user ? (
-                  <RegisterManager onRegister={setUser} />
+                  <RegisterManager
+                    onRegister={() => {
+                      void refreshUserData();
+                    }}
+                  />
                 ) : (
                   <Navigate to="/dashboard" />
                 )
@@ -324,11 +294,23 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard user={user} />} />
                 <Route
                   path="/employee"
-                  element={user.role === 'employee' || user.role === 'admin' ? <EmployeeDashboard user={user} /> : <Navigate to="/dashboard" replace />}
+                  element={
+                    user.role === 'employee' || user.role === 'admin' ? (
+                      <EmployeeDashboard user={user} />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
                 />
                 <Route
                   path="/employer"
-                  element={user.role === 'employer' || user.role === 'admin' ? <EmployerDashboard user={user} /> : <Navigate to="/dashboard" replace />}
+                  element={
+                    user.role === 'employer' || user.role === 'admin' ? (
+                      <EmployerDashboard user={user} />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
                 />
                 <Route path="/audit" element={<AuditLog user={user} />} />
                 <Route path="/settings" element={<Settings user={user} />} />

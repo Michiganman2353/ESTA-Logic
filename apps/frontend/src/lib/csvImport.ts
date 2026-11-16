@@ -471,7 +471,7 @@ export function validateHoursBusinessRules(
     }
 
     // Check for weekend work (potential data entry error)
-    const dayOfWeek = entryDate.getDay();
+    const dayOfWeek = entryDate.getUTCDay();
     if (dayOfWeek === 0 || dayOfWeek === 6) {
       warnings.push(
         `Row ${rowNumber}: Date ${entry.date} is a weekend day (Saturday or Sunday)`

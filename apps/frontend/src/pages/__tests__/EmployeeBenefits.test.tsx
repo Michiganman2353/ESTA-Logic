@@ -1,42 +1,86 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import EmployeeDashboard from '../EmployeeDashboard';
+import { workspaceCall } from '@/lib/workspaceClient';
 import type { User } from '@/types';
-
-const employee: User = {
-  id: 'employee-1',
-  name: 'Example Employee',
-  email: 'employee@example.invalid',
+vi.mock('@/lib/workspaceClient', () => ({ workspaceCall: vi.fn() }));
+const employee = {
+  id: 'worker',
+  name: 'Worker',
+  email: 'worker@example.test',
   role: 'employee',
-  employerSize: 'large',
   status: 'approved',
-  createdAt: '2026-01-01T00:00:00.000Z',
-  updatedAt: '2026-01-01T00:00:00.000Z',
+  employerSize: 'large',
+  createdAt: '2026-01-01',
+  updatedAt: '2026-01-01',
+} as User;
+const records = {
+  companyName: 'Test Company',
+  companyCode: null,
+  members: [],
+  requests: [],
+  history: [],
+  balances: [],
+  limited: false,
 };
-const view = () => render(<MemoryRouter><EmployeeDashboard user={employee} /></MemoryRouter>);
-
-describe('Employee benefits dashboard', () => {
-  it('shows unavailable, not invented or zero, balance information', () => {
+const view = () =>
+  render(
+    <MemoryRouter>
+      <EmployeeDashboard user={employee} />
+    </MemoryRouter>
+  );
+beforeEach(() => {
+  vi.mocked(workspaceCall).mockReset();
+  vi.mocked(workspaceCall).mockResolvedValue(records);
+});
+describe('connected employee workspace', () => {
+  it('distinguishes missing balances from recorded zero', async () => {
     view();
-    expect(screen.getByRole('heading', { name: 'My earned sick time' })).toBeInTheDocument();
-    expect(screen.getByLabelText('Current available hours not yet available')).toHaveTextContent('—');
-    expect(screen.getByText(/figures below are unavailable—not zero/i)).toBeInTheDocument();
-    expect(screen.queryByText('Sample Employee A')).not.toBeInTheDocument();
+    expect(await screen.findByText('Balance not recorded')).toBeInTheDocument();
+    vi.mocked(workspaceCall).mockResolvedValue({
+      ...records,
+      balances: [{ employeeId: 'worker', bankMinutes: 0 }],
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Refresh' }));
+    expect(await screen.findByText('0 hours')).toBeInTheDocument();
   });
-
-  it('has functional requests and history tabs but never submits mock leave', () => {
+  it('preserves the operation ID when retrying an uncertain submission', async () => {
     view();
-    fireEvent.click(screen.getByRole('tab', { name: 'My requests' }));
-    expect(screen.getByText(/Request submission isn't connected/i)).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /Submit request|Approve in demo/i })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('tab', { name: 'History' }));
-    expect(screen.getByText(/Explainable receipts are awaiting integration/i)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'View recordkeeping status' })).toHaveAttribute('href', '/audit');
+    fireEvent.click(await screen.findByRole('tab', { name: 'My requests' }));
+    fireEvent.change(screen.getByLabelText('Leave date'), {
+      target: { value: '2026-12-01' },
+    });
+    fireEvent.change(screen.getByLabelText('Requested hours'), {
+      target: { value: '2' },
+    });
+    vi.mocked(workspaceCall).mockRejectedValueOnce(
+      new Error('Connection interrupted')
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Submit request' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Connection interrupted'
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Submit request' }));
+    await waitFor(() =>
+      expect(screen.getByText('Saved successfully.')).toBeInTheDocument()
+    );
+    const submissions = vi
+      .mocked(workspaceCall)
+      .mock.calls.filter(([action]) => action === 'requestLeave');
+    expect(submissions).toHaveLength(2);
+    expect(submissions[0][1]).toEqual(submissions[1][1]);
+    expect(submissions[0][1]).toMatchObject({
+      date: '2026-12-01',
+      minutes: 120,
+    });
   });
-
-  it('links to the public Calculation Lab without modifying employee records', () => {
+  it('does not expose employer controls', async () => {
     view();
-    expect(screen.getByRole('link', { name: /Explore the Calculation Lab/i })).toHaveAttribute('href', '/guided-flow');
+    await screen.findByText('Balance not recorded');
+    expect(screen.queryByRole('tab', { name: 'Team' })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole('button', { name: 'Record adjustment' })
+    ).not.toBeInTheDocument();
   });
 });

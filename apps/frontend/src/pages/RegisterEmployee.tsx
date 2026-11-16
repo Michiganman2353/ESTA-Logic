@@ -63,7 +63,7 @@ export default function RegisterEmployee({
         role: user.role,
       });
 
-      // Email verification is disabled for development - auto-login immediately
+      // Refresh the server-verified account; pending members see recovery instructions.
       logger.debug(
         'Auto-login after registration, skipping email verification'
       );
@@ -139,7 +139,7 @@ export default function RegisterEmployee({
           </div>
         </div>
       ) : (
-        // Email verification bypassed - users auto-login after registration
+        // Registration requires email verification and employer approval.
         <div className="w-full max-w-md space-y-8">
           <div>
             <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
@@ -200,9 +200,10 @@ export default function RegisterEmployee({
                   htmlFor="tenantCode"
                   className="block text-sm font-medium text-gray-700 dark:text-gray-300"
                 >
-                  Company Code (Optional)
+                  Company Code
                 </label>
                 <input
+                  required
                   id="tenantCode"
                   name="tenantCode"
                   type="text"
