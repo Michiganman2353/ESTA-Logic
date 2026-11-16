@@ -72,12 +72,14 @@ try {
     await page.getByRole('button', { name: 'Sign in', exact: true }).click();
   }
   await login(manager, 'ownerA@example.test');
-  await manager.waitForURL('**/employer');
+  await manager.waitForURL('**/dashboard');
+  await manager.goto('http://127.0.0.1:5173/employer');
   await manager
     .getByRole('heading', { name: 'Employee directory', exact: true })
     .waitFor();
   await login(employee, 'workerA@example.test');
-  await employee.waitForURL('**/employee');
+  await employee.waitForURL('**/dashboard');
+  await employee.goto('http://127.0.0.1:5173/employee');
   await employee.getByText('3 hours', { exact: true }).waitFor();
   await employee.reload();
   await employee.getByText('3 hours', { exact: true }).waitFor();
