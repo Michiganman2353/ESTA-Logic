@@ -85,7 +85,7 @@ export default function Register() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  Automated compliance reports
+                  Review recorded sick-time balances
                 </li>
                 <li className="flex transform items-start transition-transform duration-200 hover:translate-x-1">
                   <svg
@@ -183,7 +183,7 @@ export default function Register() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  Track your hours
+                  Review your recorded balance
                 </li>
               </ul>
               <button
@@ -198,6 +198,11 @@ export default function Register() {
           </div>
         </div>
 
+        <p className="rounded-xl bg-white/90 p-5 text-center text-sm text-slate-800">
+          Bookkeepers: create an employer account for your practice, verify your
+          email, then ask each company owner to grant access to that email. Your
+          Companies page keeps authorized businesses together under one sign-in.
+        </p>
         <div
           className="animate-fade-in text-center"
           style={{ animationDelay: '0.5s' }}

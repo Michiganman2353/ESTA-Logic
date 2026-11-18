@@ -53,6 +53,9 @@ import Login from '@/pages/Login';
 
 // Lazy load other pages for better performance
 const Landing = lazy(() => import('@/pages/Landing'));
+const Learn = lazy(() => import('@/pages/Learn'));
+const Companies = lazy(() => import('@/pages/Companies'));
+const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Register = lazy(() => import('@/pages/Register'));
 const RegisterEmployee = lazy(() => import('@/pages/RegisterEmployee'));
@@ -148,7 +151,11 @@ function App() {
               </div>
               <div className="ml-3 flex-1">
                 <h3 className="mb-2 text-base font-semibold text-red-800 dark:text-red-200">
-                  Account access unavailable
+                  {currentUser && !currentUser.emailVerified
+                    ? 'Verify your email'
+                    : error.includes('approve your company membership')
+                      ? 'Waiting for employer approval'
+                      : 'Account access unavailable'}
                 </h3>
                 <p className="mb-4 text-sm text-red-700 dark:text-red-300">
                   {error}
@@ -225,6 +232,8 @@ function App() {
 
         <Suspense fallback={<PageLoaderFallback />}>
           <Routes>
+            <Route path="/learn" element={<Learn />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             {/* Public routes - accessible without authentication */}
             <Route
               path="/"
@@ -292,6 +301,16 @@ function App() {
             {user ? (
               <>
                 <Route path="/dashboard" element={<Dashboard user={user} />} />
+                <Route
+                  path="/companies"
+                  element={
+                    user.role === 'employer' ? (
+                      <Companies user={user} />
+                    ) : (
+                      <Navigate to="/dashboard" replace />
+                    )
+                  }
+                />
                 <Route
                   path="/employee"
                   element={

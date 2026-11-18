@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useSearchParams } from 'react-router-dom';
 import clsx from 'clsx';
 import { AuthContext } from '@/contexts/AuthContext';
 
@@ -19,6 +19,8 @@ interface NavigationProps {
 const menu: ReadonlyArray<{ to: string; label: string; roles: WorkspaceRole[] }> = [
   { to: '/dashboard', label: 'Overview', roles: ['employee', 'employer', 'admin'] },
   { to: '/employer', label: 'Company', roles: ['employer', 'admin'] },
+  { to: '/companies', label: 'Companies', roles: ['employer'] },
+  { to: '/learn', label: 'Learn ESTA', roles: ['employee', 'employer', 'admin'] },
   { to: '/employee', label: 'My time', roles: ['employee', 'admin'] },
   { to: '/audit', label: 'Activity', roles: ['employee', 'employer', 'admin'] },
   { to: '/settings', label: 'Settings', roles: ['employee', 'employer', 'admin'] },
@@ -39,6 +41,7 @@ function Icon({ name }: { name: 'menu' | 'close' | 'logout' }) {
 
 export function Navigation({ user, onLogout, className }: NavigationProps) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   // Allows isolated public component tests to render without Firebase.
   // An actual authenticated sign-out must use the central AuthProvider.
   const authContext = useContext(AuthContext);
@@ -46,7 +49,8 @@ export function Navigation({ user, onLogout, className }: NavigationProps) {
   const [signingOut, setSigningOut] = useState(false);
   const [signOutError, setSignOutError] = useState('');
   const role: WorkspaceRole | null = user?.role === 'employee' || user?.role === 'employer' || user?.role === 'admin' ? user.role : null;
-  const links = role ? menu.filter((item) => item.roles.includes(role)) : [];
+  const selectedCompany = role === 'employer' ? searchParams.get('company') : null;
+  const links = role ? menu.filter((item) => item.roles.includes(role)).map((item) => ({ ...item, to: selectedCompany && ['/employer', '/audit'].includes(item.to) ? `${item.to}?company=${encodeURIComponent(selectedCompany)}` : item.to })) : [];
 
   async function handleLogout() {
     setSignOutError('');

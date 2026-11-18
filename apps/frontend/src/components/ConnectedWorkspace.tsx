@@ -8,6 +8,10 @@ import {
 import { WorkspaceShell, WorkspacePanel } from './WorkspaceShell';
 import { workspaceCall, type WorkspaceData } from '@/lib/workspaceClient';
 import type { User } from '@/types';
+import { Link, useSearchParams } from 'react-router-dom';
+import { PayrollImport } from './PayrollImport';
+import { BookkeeperAccess, WorkspaceFeedback } from './WorkspaceSupport';
+import { ProgramSetup } from './ProgramSetup';
 
 const hours = (value: number) =>
   (value / 60).toLocaleString(undefined, { maximumFractionDigits: 2 });
@@ -20,6 +24,8 @@ export function ConnectedWorkspace({
   initialTab?: string;
 }) {
   const manager = user.role === 'employer';
+  const [searchParams] = useSearchParams();
+  const tenantId = manager ? searchParams.get('company') : null;
   const [data, setData] = useState<WorkspaceData | null>(null);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
@@ -39,7 +45,10 @@ export function ConnectedWorkspace({
   const refresh = useCallback(async () => {
     const current = ++revision.current;
     try {
-      const result = await workspaceCall<WorkspaceData>('workspace');
+      const result = await workspaceCall<WorkspaceData>(
+        'workspace',
+        tenantId ? { tenantId } : {}
+      );
       if (revision.current === current) {
         setData(result);
         setError('');
@@ -50,14 +59,19 @@ export function ConnectedWorkspace({
           failure instanceof Error ? failure.message : 'Unable to load records.'
         );
     }
-  }, []);
+  }, [tenantId]);
   useEffect(() => {
+    setData(null);
+    setNotice('');
+    setError('');
+    setTab(initialTab ?? (manager ? 'Team' : 'My balance'));
+    pending.current = null;
     void refresh();
     const lifecycleRevision = revision;
     return () => {
       ++lifecycleRevision.current;
     };
-  }, [refresh, user.id]);
+  }, [refresh, user.id, initialTab, manager]);
 
   async function mutate(action: string, payload: Record<string, unknown>) {
     if (busyRef.current) return;
@@ -71,6 +85,7 @@ export function ConnectedWorkspace({
     try {
       await workspaceCall(action, {
         ...payload,
+        ...(tenantId ? { tenantId } : {}),
         operationId: pending.current.id,
       });
       pending.current = null;
@@ -107,8 +122,17 @@ export function ConnectedWorkspace({
     );
   }
   const tabs = manager
-    ? ['Team', 'Leave requests', 'Balances', 'History']
-    : ['My balance', 'My requests', 'History'];
+    ? [
+        'Program setup',
+        'Team',
+        'Leave requests',
+        'Balances',
+        'Payroll import',
+        ...(data?.isOwner ? ['Bookkeeper access'] : []),
+        'History',
+        'Feedback',
+      ]
+    : ['My balance', 'My requests', 'History', 'Feedback'];
   const balance = data?.balances.find((row) => row.employeeId === user.id);
   return (
     <WorkspaceShell
@@ -134,6 +158,14 @@ export function ConnectedWorkspace({
           Refresh
         </button>
       </div>
+      {manager && (
+        <Link
+          className="mb-5 inline-block font-semibold text-blue-800 underline"
+          to="/companies"
+        >
+          Switch company / bookkeeper workspace
+        </Link>
+      )}
       {error && (
         <div
           role="alert"
@@ -184,17 +216,91 @@ export function ConnectedWorkspace({
             ))}
           </div>
           <div role="tabpanel" aria-label={tab}>
+            {tab === 'Program setup' && (
+              <ProgramSetup key={data.tenantId} data={data} refresh={refresh} />
+            )}
+            {tab === 'Payroll import' && (
+              <PayrollImport
+                key={data.tenantId}
+                data={data}
+                refresh={refresh}
+              />
+            )}
+            {tab === 'Bookkeeper access' && data.isOwner && (
+              <BookkeeperAccess
+                key={data.tenantId}
+                data={data}
+                refresh={refresh}
+              />
+            )}
+            {tab === 'Feedback' && (
+              <WorkspaceFeedback key={data.tenantId} data={data} />
+            )}
             {tab === 'Team' && (
               <WorkspacePanel
                 title="Employee directory"
                 description="Employees verify their email and request membership using your company code."
               >
+                <div className="mb-5 rounded-xl bg-blue-50 p-4">
+                  <h3 className="font-bold">Company setup checklist</h3>
+                  <ul className="mt-2 space-y-2 text-sm">
+                    <li>
+                      {data.policy ? (
+                        '✓ Sick-time program settings recorded.'
+                      ) : (
+                        <button
+                          className="text-blue-800 underline"
+                          onClick={() => setTab('Program setup')}
+                        >
+                          Next: document your sick-time program settings.
+                        </button>
+                      )}
+                    </li>
+                    <li>✓ Company workspace created and email verified.</li>
+                    <li>
+                      {data.members.some(
+                        (row) =>
+                          row.role === 'employee' && row.status === 'approved'
+                      )
+                        ? '✓ Employee membership approved.'
+                        : 'Next: invite employees and review their membership requests.'}
+                    </li>
+                    <li>
+                      {data.balances.length
+                        ? '✓ Opening balances started. Review each approved employee in Balances.'
+                        : 'Next: record opening balances and their source in Balances.'}
+                    </li>
+                    <li>
+                      <Link className="text-blue-800 underline" to="/learn">
+                        Review your policy, benefit year and recordkeeping
+                        process.
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
                 <p className="mb-5">
                   Company code{' '}
                   <strong className="break-all font-mono">
                     {data.companyCode}
                   </strong>
                 </p>
+                <label className="mb-5 block">
+                  Employee invitation link
+                  <input
+                    className="input mt-1 w-full"
+                    readOnly
+                    value={`${window.location.origin}/register/employee?code=${encodeURIComponent(data.companyCode ?? '')}`}
+                    onFocus={(event) => event.target.select()}
+                  />
+                </label>
+                <ol className="mb-5 list-inside list-decimal space-y-2 text-sm">
+                  <li>Share this link directly with your employees.</li>
+                  <li>Employees create an account and verify their email.</li>
+                  <li>
+                    Approve each employee below, then record their opening
+                    sick-time balance.
+                  </li>
+                </ol>
                 {data.members.filter((row) => row.role === 'employee')
                   .length === 0 && <p>No employees have joined yet.</p>}
                 <ul className="space-y-3">
@@ -234,11 +340,24 @@ export function ConnectedWorkspace({
                 description="These are employer-maintained records. Eligibility, annual use limits and policy must be reviewed before a decision."
               >
                 {!manager && (
-                  <p className="my-5 text-4xl font-bold">
-                    {balance
-                      ? `${hours(balance.bankMinutes)} hours`
-                      : 'Balance not recorded'}
-                  </p>
+                  <>
+                    <p className="my-5 text-4xl font-bold">
+                      {balance
+                        ? `${hours(balance.bankMinutes)} hours`
+                        : 'Balance not recorded'}
+                    </p>
+                    {data.policy && (
+                      <div className="mb-5 rounded-xl bg-blue-50 p-4">
+                        <h3 className="font-bold">Company sick-time process</h3>
+                        <p>
+                          Benefit year starts: {data.policy.benefitYearStart}
+                        </p>
+                        <p className="whitespace-pre-wrap">
+                          {data.policy.notes}
+                        </p>
+                      </div>
+                    )}
+                  </>
                 )}
                 {manager && (
                   <>

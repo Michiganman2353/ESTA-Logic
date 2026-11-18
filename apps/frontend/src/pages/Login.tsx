@@ -257,6 +257,12 @@ export default function Login({ onLogin }: LoginProps) {
 
               <div className="text-center">
                 <Link
+                  className="mb-4 block font-medium text-blue-800 underline"
+                  to="/forgot-password"
+                >
+                  Forgot your password?
+                </Link>
+                <Link
                   to="/register"
                   className="text-royal-600 hover:text-royal-500 dark:text-royal-400 font-medium transition-all hover:underline"
                 >

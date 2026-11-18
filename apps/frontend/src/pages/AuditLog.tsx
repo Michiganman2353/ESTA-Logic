@@ -1,5 +1,13 @@
 import { ConnectedWorkspace } from '@/components/ConnectedWorkspace';
 import type { User } from '@/types';
+import { useSearchParams } from 'react-router-dom';
 export default function AuditLog({ user }: { user: User }) {
-  return <ConnectedWorkspace user={user} initialTab="History" />;
+  const [params] = useSearchParams();
+  return (
+    <ConnectedWorkspace
+      key={`${user.id}:${params.get('company') ?? ''}`}
+      user={user}
+      initialTab="History"
+    />
+  );
 }

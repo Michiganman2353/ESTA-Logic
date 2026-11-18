@@ -57,6 +57,14 @@ export interface HistoryEntry {
   createdAt: string;
 }
 export interface WorkspaceData {
+  tenantId: string;
+  isOwner: boolean;
+  policy: {
+    benefitYearStart: string;
+    method: 'accrual' | 'frontload' | 'manual';
+    notes: string;
+    version: number;
+  } | null;
   companyName: string;
   companyCode: string | null;
   members: Member[];
@@ -64,4 +72,18 @@ export interface WorkspaceData {
   history: HistoryEntry[];
   balances: { employeeId: string; bankMinutes: number }[];
   limited: boolean;
+  payrollEmployees: {
+    id: string;
+    name: string;
+    email: string;
+    payrollId: string;
+    employeeId: string | null;
+  }[];
+  bookkeepers: { id: string; email: string }[];
+  feedback: {
+    id: string;
+    message: string;
+    createdAt: string;
+    status: string;
+  }[];
 }

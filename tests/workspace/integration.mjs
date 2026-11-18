@@ -124,10 +124,196 @@ after(async () => {
   await Promise.all(admin.apps.map((instance) => instance.delete()));
 });
 
+test('bookkeeper access is company-specific, owner-controlled and revocable', async () => {
+  await denied(call('ownerB', 'workspace', { tenantId: 'company_ownerA' }));
+  await denied(call('workerA', 'companies'));
+  await call('ownerA', 'bookkeeperAccess', {
+    email: 'ownerB@example.test',
+    active: true,
+  });
+  const companies = (await call('ownerB', 'companies')).companies;
+  assert.equal(companies.length, 2);
+  assert.equal(
+    companies.find((row) => row.id === 'company_ownerA').access,
+    'bookkeeper'
+  );
+  const client = await call('ownerB', 'workspace', {
+    tenantId: 'company_ownerA',
+  });
+  assert.equal(client.companyName, 'ownerA');
+  assert.equal(client.isOwner, false);
+  assert.deepEqual(client.bookkeepers, []);
+  await denied(
+    call('ownerB', 'bookkeeperAccess', {
+      tenantId: 'company_ownerA',
+      email: 'outsider@example.test',
+      active: true,
+    })
+  );
+  await call('ownerA', 'bookkeeperAccess', {
+    email: 'ownerB@example.test',
+    active: false,
+  });
+  assert.equal((await call('ownerB', 'companies')).companies.length, 1);
+  await denied(call('ownerB', 'workspace', { tenantId: 'company_ownerA' }));
+  await denied(
+    call('ownerB', 'feedback', {
+      tenantId: 'company_ownerA',
+      operationId: 'revoked',
+      message: 'No access',
+    })
+  );
+});
+
+test('payroll review detects duplicates, conflicts, stale reviews and retries without changing balances', async () => {
+  const rows = [
+    { name: 'Worker A', email: 'workerA@example.test', payrollId: 'PAY-01' },
+  ];
+  const before = (await call('ownerA', 'workspace')).balances;
+  await denied(call('workerA', 'previewImport', { rows }));
+  await denied(
+    call('ownerA', 'previewImport', {
+      rows: [...rows, { ...rows[0], email: 'WORKERA@example.test' }],
+    })
+  );
+  const preview = await call('ownerA', 'previewImport', { rows });
+  assert.equal(preview.review[0].action, 'create');
+  assert.equal(preview.review[0].employeeId, 'workerA');
+  const input = {
+    rows,
+    previewToken: preview.previewToken,
+    operationId: 'roster-first',
+  };
+  await denied(call('ownerB', 'commitImport', input));
+  await call('ownerA', 'commitImport', input);
+  await call('ownerA', 'commitImport', input);
+  await denied(
+    call('ownerA', 'commitImport', {
+      ...input,
+      rows: [{ ...rows[0], name: 'Changed' }],
+    })
+  );
+  const records = await call('ownerA', 'workspace');
+  assert.equal(records.payrollEmployees.length, 1);
+  assert.deepEqual(records.balances, before);
+  assert.equal(
+    records.history.filter((row) => row.action === 'payroll_roster_imported')
+      .length,
+    1
+  );
+  const conflict = await call('ownerA', 'previewImport', {
+    rows: [
+      { name: 'Different', email: 'other@example.test', payrollId: 'PAY-01' },
+    ],
+  });
+  assert.match(conflict.review[0].conflict, /another email/);
+  await denied(
+    call('ownerA', 'commitImport', {
+      rows: [
+        { name: 'Different', email: 'other@example.test', payrollId: 'PAY-01' },
+      ],
+      previewToken: conflict.previewToken,
+      operationId: 'conflict',
+    })
+  );
+  const changedRows = [{ ...rows[0], name: 'Corrected name' }];
+  const review = await call('ownerA', 'previewImport', { rows: changedRows });
+  await call('ownerA', 'commitImport', {
+    rows: changedRows,
+    previewToken: review.previewToken,
+    operationId: 'roster-update',
+  });
+  await denied(
+    call('ownerA', 'commitImport', {
+      rows: changedRows,
+      previewToken: review.previewToken,
+      operationId: 'stale-review',
+    })
+  );
+  assert.equal((await call('ownerB', 'workspace')).payrollEmployees.length, 0);
+});
+
+test('authorized bookkeepers import only into granted companies and feedback is persisted once', async () => {
+  await call('ownerA', 'bookkeeperAccess', {
+    email: 'ownerB@example.test',
+    active: true,
+  });
+  const rows = [
+    {
+      name: 'Payroll only',
+      email: 'payroll@example.test',
+      payrollId: 'PAY-02',
+    },
+  ];
+  const review = await call('ownerB', 'previewImport', {
+    tenantId: 'company_ownerA',
+    rows,
+  });
+  assert.equal(review.review[0].employeeId, null);
+  await call('ownerB', 'commitImport', {
+    tenantId: 'company_ownerA',
+    rows,
+    previewToken: review.previewToken,
+    operationId: 'client-import',
+  });
+  await call('ownerA', 'feedback', {
+    message: 'Please improve the balance explanation.',
+    operationId: 'feedback-1',
+  });
+  await call('ownerA', 'feedback', {
+    message: 'Please improve the balance explanation.',
+    operationId: 'feedback-1',
+  });
+  await denied(
+    call('ownerA', 'feedback', {
+      message: 'Different message',
+      operationId: 'feedback-1',
+    })
+  );
+  assert.equal((await call('ownerA', 'workspace')).feedback.length, 1);
+  assert.equal((await call('ownerB', 'workspace')).feedback.length, 0);
+  await call('ownerA', 'bookkeeperAccess', {
+    email: 'ownerB@example.test',
+    active: false,
+  });
+  await denied(
+    call('ownerB', 'commitImport', {
+      tenantId: 'company_ownerA',
+      rows,
+      previewToken: review.previewToken,
+      operationId: 'after-revoke',
+    })
+  );
+});
+
 test('unauthenticated and unapproved callers cannot read records', async () => {
   await denied(call(null, 'workspace'));
   await denied(call('workerA', 'workspace'));
   await denied(call('outsider', 'workspace'));
+});
+
+test('program settings are versioned, audited, tenant-scoped and retry-safe', async () => {
+  const input = {
+    benefitYearStart: '2026-01-01',
+    method: 'manual',
+    notes: 'Opening balances come from payroll; the owner reviews requests.',
+    version: 0,
+    operationId: 'policy-v1',
+  };
+  await denied(call('workerA', 'savePolicy', input));
+  await denied(
+    call('ownerA', 'savePolicy', { ...input, benefitYearStart: '2026-02-30' })
+  );
+  await call('ownerA', 'savePolicy', input);
+  await call('ownerA', 'savePolicy', input);
+  await denied(
+    call('ownerA', 'savePolicy', { ...input, notes: 'Changed content' })
+  );
+  await denied(
+    call('ownerA', 'savePolicy', { ...input, operationId: 'stale-policy' })
+  );
+  assert.equal((await call('ownerA', 'workspace')).policy.version, 1);
+  assert.equal((await call('ownerB', 'workspace')).policy, null);
 });
 test('membership requires verified email and the correct employer', async () => {
   await denied(call('ownerA', 'approveMember', { employeeId: 'workerB' }));

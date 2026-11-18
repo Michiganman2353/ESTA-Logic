@@ -42,9 +42,10 @@ const vite = spawn(
       VITE_FIREBASE_APP_ID: 'demo-app',
       VITE_USE_FIREBASE_EMULATORS: 'true',
     },
-    stdio: 'ignore',
+    stdio: ['ignore', 'pipe', 'pipe'],
   }
 );
+vite.stderr.on('data', (chunk) => process.stderr.write(chunk));
 let browser;
 try {
   for (let i = 0; i < 60; i++) {
@@ -54,17 +55,21 @@ try {
     await new Promise((r) => setTimeout(r, 500));
   }
   browser = await chromium.launch({
-    ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}),
+    ...(process.env.CHROMIUM_PATH
+      ? { executablePath: process.env.CHROMIUM_PATH }
+      : {}),
     headless: true,
     args: ['--no-sandbox'],
   });
   const manager = await browser.newPage();
   const employee = await browser.newPage();
-  manager.setDefaultTimeout(20000);
-  employee.setDefaultTimeout(20000);
+  manager.setDefaultTimeout(30000);
+  employee.setDefaultTimeout(30000);
   // Existing emulator identities from the integration suite exercise persisted sessions.
   async function login(page, email) {
-    await page.goto('http://127.0.0.1:5173/login');
+    await page.goto('http://127.0.0.1:5173/login', {
+      waitUntil: 'domcontentloaded',
+    });
     await page.getByPlaceholder('Email address').fill(email);
     await page
       .getByPlaceholder('Password', { exact: true })
@@ -73,15 +78,19 @@ try {
   }
   await login(manager, 'ownerA@example.test');
   await manager.waitForURL('**/dashboard');
-  await manager.goto('http://127.0.0.1:5173/employer');
+  await manager.goto('http://127.0.0.1:5173/employer', {
+    waitUntil: 'domcontentloaded',
+  });
   await manager
     .getByRole('heading', { name: 'Employee directory', exact: true })
     .waitFor();
   await login(employee, 'workerA@example.test');
   await employee.waitForURL('**/dashboard');
-  await employee.goto('http://127.0.0.1:5173/employee');
+  await employee.goto('http://127.0.0.1:5173/employee', {
+    waitUntil: 'domcontentloaded',
+  });
   await employee.getByText('3 hours', { exact: true }).waitFor();
-  await employee.reload();
+  await employee.reload({ waitUntil: 'domcontentloaded' });
   await employee.getByText('3 hours', { exact: true }).waitFor();
   await employee.getByRole('tab', { name: 'My requests', exact: true }).click();
   await employee.getByLabel('Leave date').fill('2026-12-15');
@@ -98,9 +107,123 @@ try {
   await row.getByLabel('Decision reason').fill('Verified browser test');
   await row.getByRole('button', { name: 'Approve', exact: true }).click();
   await manager.getByText('Saved successfully.', { exact: true }).waitFor();
-  await employee.reload();
+  await employee.reload({ waitUntil: 'domcontentloaded' });
   await employee.getByText('2 hours', { exact: true }).waitFor();
-  await employee.goto('http://127.0.0.1:5173/employer');
+  await manager
+    .getByRole('tab', { name: 'Program setup', exact: true })
+    .click();
+  await manager
+    .getByLabel('Policy and process notes')
+    .fill('Browser verified company process.');
+  await manager
+    .getByRole('button', { name: 'Save program settings', exact: true })
+    .click();
+  await manager.getByText('Program settings saved.', { exact: true }).waitFor();
+  await manager.reload({ waitUntil: 'domcontentloaded' });
+  await manager
+    .getByRole('tab', { name: 'Program setup', exact: true })
+    .click();
+  assert.equal(
+    await manager.getByLabel('Policy and process notes').inputValue(),
+    'Browser verified company process.'
+  );
+  await manager
+    .getByRole('tab', { name: 'Bookkeeper access', exact: true })
+    .click();
+  await manager
+    .getByLabel('Bookkeeper account email')
+    .fill('ownerB@example.test');
+  await manager
+    .getByRole('button', { name: 'Grant company access', exact: true })
+    .click();
+  await manager
+    .getByText('Bookkeeper access granted.', { exact: true })
+    .waitFor();
+  const bookkeeper = await browser.newPage();
+  await login(bookkeeper, 'ownerB@example.test');
+  await bookkeeper.waitForURL('**/dashboard');
+  await bookkeeper.goto('http://127.0.0.1:5173/companies', {
+    waitUntil: 'domcontentloaded',
+  });
+  await bookkeeper
+    .getByRole('link', { name: /ownerA.*Bookkeeper access/ })
+    .click();
+  await bookkeeper
+    .getByRole('heading', { name: 'Employee directory', exact: true })
+    .waitFor();
+  assert.equal(
+    await bookkeeper
+      .getByRole('tab', { name: 'Bookkeeper access', exact: true })
+      .count(),
+    0
+  );
+  await bookkeeper
+    .getByRole('tab', { name: 'Payroll import', exact: true })
+    .click();
+  await bookkeeper
+    .getByLabel('Payroll CSV')
+    .setInputFiles({
+      name: 'quickbooks-roster.csv',
+      mimeType: 'text/csv',
+      buffer: Buffer.from(
+        'name,email,payrollId\nBrowser Employee,browser@example.test,QB-browser'
+      ),
+    });
+  await bookkeeper
+    .getByRole('button', { name: 'Review 1 employee records', exact: true })
+    .click();
+  await bookkeeper
+    .getByRole('heading', {
+      name: 'Review every match before saving',
+      exact: true,
+    })
+    .waitFor();
+  assert.equal(
+    await bookkeeper
+      .getByRole('button', { name: 'Save reviewed import', exact: true })
+      .isDisabled(),
+    true
+  );
+  await bookkeeper.getByRole('checkbox').check();
+  await bookkeeper
+    .getByRole('button', { name: 'Save reviewed import', exact: true })
+    .click();
+  await bookkeeper
+    .getByText('1 employee records saved.', { exact: false })
+    .waitFor();
+  await bookkeeper.reload({ waitUntil: 'domcontentloaded' });
+  await bookkeeper
+    .getByRole('tab', { name: 'Payroll import', exact: true })
+    .click();
+  await bookkeeper
+    .getByText(/Browser Employee · browser@example.test/)
+    .waitFor();
+  await manager
+    .getByRole('button', { name: 'Revoke access', exact: true })
+    .click();
+  await manager
+    .getByText('Bookkeeper access revoked.', { exact: true })
+    .waitFor();
+  await bookkeeper.reload({ waitUntil: 'domcontentloaded' });
+  await bookkeeper
+    .getByRole('alert')
+    .filter({ hasText: 'You do not have access to this company.' })
+    .waitFor();
+  await employee.getByRole('tab', { name: 'Feedback', exact: true }).click();
+  await employee
+    .getByLabel('What should we improve?')
+    .fill('Show clearer explanations of recorded balances.');
+  await employee
+    .getByRole('button', { name: 'Send feedback', exact: true })
+    .click();
+  await employee
+    .getByText('Feedback saved for your company administrators. Thank you.', {
+      exact: true,
+    })
+    .waitFor();
+  await employee.goto('http://127.0.0.1:5173/employer', {
+    waitUntil: 'domcontentloaded',
+  });
   await employee.getByRole('heading', { name: /Welcome back/ }).waitFor();
   assert.equal(
     await employee.getByRole('button', { name: 'Approve membership' }).count(),
@@ -111,8 +234,20 @@ try {
     .getByRole('link', { name: 'Log in', exact: true })
     .first()
     .waitFor();
+  await employee.goto('http://127.0.0.1:5173/learn', {
+    waitUntil: 'domcontentloaded',
+  });
+  await employee
+    .getByRole('heading', {
+      name: 'Understand ESTA. Set up a practical process.',
+      exact: true,
+    })
+    .waitFor();
+  await employee
+    .getByRole('link', { name: 'Set up company records', exact: true })
+    .waitFor();
   console.log(
-    'PASS browser: login, refresh persistence, request, approval, balance, role route, sign-out'
+    'PASS browser: login, persisted policy and balances, request, approval, company switch, reviewed payroll import, bookkeeper revocation, feedback, role route, sign-out, employer guide'
   );
 } finally {
   await browser?.close();

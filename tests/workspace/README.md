@@ -31,8 +31,8 @@ emulator endpoints are set. Tests exercise auth tokens, pending memberships, cro
 reads/writes, role escalation, duplicate and concurrent requests, balance changes, audit
 records, invalid dates and direct Firestore access denial.
 
-An additional browser script is provided but was NOT verified in the managed workspace:
-Chromium cannot start because Unix sockets are prohibited. With Chromium installed, run:
+The browser script was verified in the current managed workspace against isolated Auth and
+Firestore emulators using Chromium at `/usr/bin/chromium`. Run:
 
 ```sh
 npx firebase-tools@15.36.0 emulators:exec --only auth,firestore --project demo-esta-workspace --config firebase.workspace-test.json 'WORKSPACE_HTTP_HARNESS=true node --test tests/workspace/integration.mjs && node tests/workspace/browser.mjs'
@@ -40,7 +40,8 @@ npx firebase-tools@15.36.0 emulators:exec --only auth,firestore --project demo-e
 
 Set CHROMIUM_PATH if Chromium is not `/usr/bin/chromium`. The browser scenario uses emulator
 accounts seeded by the preceding integration tests and checks login, reload, leave submission,
-approval, balance persistence, employee route isolation and sign-out. Also manually verify
+approval, balance persistence, employee route isolation, program settings, company selection,
+reviewed payroll import, bookkeeper revocation, feedback, the employer guide and sign-out. Also manually verify
 fresh employer/employee registration, verification email delivery, and pending approval in
 the configured preview before promoting production.
 
@@ -64,7 +65,9 @@ the configured preview before promoting production.
    VITE_FIREBASE_STORAGE_BUCKET, VITE_FIREBASE_MESSAGING_SENDER_ID, VITE_FIREBASE_APP_ID.
    Configure VITE_POSTHOG_PROJECT_TOKEN and VITE_POSTHOG_HOST from PostHog project 738071.
    Do not set VITE_USE_FIREBASE_EMULATORS outside local development.
-   Vercel environment writes currently return HTTP 403; CLI login is expired.
+   Vercel CLI authentication and project linking are now verified. Production was read and still
+   points to `esta-tracker`, where `workspaceApi` returns HTTP 404. Earlier write-permission
+   failures have not been retested; no production environment writes were made.
 5. Redeploy preview, complete both fresh-user flows and a leave decision, and confirm the
    four named PostHog account events arrive without email, passwords, company codes or leave
    details. Replay, autocapture and exception capture are disabled in the SDK configuration.
@@ -74,8 +77,20 @@ the configured preview before promoting production.
 ## Known functional scope
 
 Balances are employer-maintained; approval atomically subtracts requested minutes once.
-Automatic accrual, carryover, waiting-period/annual-cap policy enforcement, payroll imports,
-exports, account recovery/password-reset UI and notification delivery beyond verification
-emails are not implemented in this increment. The calculation lab is separate from this ledger.
+Automatic accrual, carryover, waiting-period/annual-cap policy enforcement, live payroll
+synchronization, exports and notification delivery beyond verification emails are not implemented.
+Reviewed CSV roster imports, bookkeeper company grants, versioned program settings, company
+feedback and password-reset UI are now implemented. See `docs/PRODUCT-DELIVERY.md` for scope. The calculation lab is separate from this ledger.
 Workspace lists are capped at 200 rows per section and show a warning; pagination/export
 must be added before relying on this view for larger historical datasets.
+
+## Current verification
+
+- Frontend: 44 test files, 500 tests passed, 8 skipped.
+- Workspace API: 11 emulator integration tests passed.
+- Browser: employer, employee and bookkeeper flows passed with demo data.
+- Frontend build, functions build, frontend typecheck, lint and product-claims check passed.
+- Browser test logs included optional Edge Config proxy failures because no local backend
+  was listening on port 3001; the application used its existing fallback.
+- Production account creation, verification/reset email delivery and workspace operations
+  remain unverified because the configured live workspace API returns 404.
