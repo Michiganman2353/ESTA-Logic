@@ -217,3 +217,5 @@ lerna.json
 # ==================== #
 **/target/
 Cargo.lock
+/.vercel/
+/.env.local

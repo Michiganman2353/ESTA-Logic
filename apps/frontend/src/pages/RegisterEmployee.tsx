@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { registerEmployee } from '@/lib/authService';
 import { User } from '@/types';
 import { useRegistrationStatus } from '@/hooks/useEdgeConfig';
@@ -20,7 +20,10 @@ export default function RegisterEmployee({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [tenantCode, setTenantCode] = useState('');
+  const [searchParams] = useSearchParams();
+  const [tenantCode, setTenantCode] = useState(
+    () => searchParams.get('code')?.slice(0, 64) ?? ''
+  );
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -64,9 +67,7 @@ export default function RegisterEmployee({
       });
 
       // Refresh the server-verified account; pending members see recovery instructions.
-      logger.debug(
-        'Auto-login after registration, skipping email verification'
-      );
+      logger.debug('Refreshing registration and verification status');
       onRegister(user);
     } catch (err) {
       logger.error('Employee registration error', { error: err });

@@ -1,6 +1,7 @@
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
 import { randomBytes, createHash } from 'crypto';
+import { payrollRows, importDigest } from './payroll-import';
 
 if (!admin.apps.length) admin.initializeApp();
 const db = admin.firestore();
@@ -181,9 +182,334 @@ export async function handleWorkspace(
 ) {
   if (input.action === 'register') return register(uid, input);
   if (input.action === 'account') return getAccount(uid);
-  const actor = await authorized(uid);
+  let actor = await authorized(uid);
+  if (input.action === 'companies') {
+    if (actor.role !== 'employer')
+      return fail(
+        'permission-denied',
+        'Employer or bookkeeper access is required.'
+      );
+    const grants = await accountRef(uid).collection('companies').get();
+    const ids = [...new Set([actor.tenantId, ...grants.docs.map((d) => d.id)])];
+    const companies = await Promise.all(
+      ids.map(async (tenantId) => {
+        const [company, grant] = await Promise.all([
+          root(tenantId).get(),
+          root(tenantId).collection('bookkeepers').doc(uid).get(),
+        ]);
+        const owner = company.get('ownerId') === uid;
+        return company.exists &&
+          company.get('status') === 'active' &&
+          (owner || grant.get('active') === true)
+          ? {
+              id: tenantId,
+              name: company.get('name'),
+              access: owner ? 'owner' : 'bookkeeper',
+            }
+          : null;
+      })
+    );
+    return { companies: companies.filter(Boolean) };
+  }
+  if (input.tenantId !== undefined && input.tenantId !== actor.tenantId) {
+    const tenantId = id(input.tenantId);
+    const grant = await root(tenantId).collection('bookkeepers').doc(uid).get();
+    if (actor.role !== 'employer' || grant.get('active') !== true)
+      return fail(
+        'permission-denied',
+        'You do not have access to this company.'
+      );
+    actor = { ...actor, tenantId };
+  }
   const company = root(actor.tenantId);
   const manager = actor.role === 'employer';
+  // Recheck membership and delegated access inside every write transaction, including retries.
+  const transact = <T>(body: (tx: admin.firestore.Transaction) => Promise<T>) =>
+    db.runTransaction(async (tx) => {
+      const fresh = await tx.get(accountRef(uid));
+      const workspace = await tx.get(company);
+      if (
+        fresh.get('status') !== 'approved' ||
+        workspace.get('status') !== 'active' ||
+        fresh.get('role') !== actor.role
+      )
+        return fail(
+          'permission-denied',
+          'Active company membership is required.'
+        );
+      if (fresh.get('tenantId') !== actor.tenantId) {
+        const grant = await tx.get(company.collection('bookkeepers').doc(uid));
+        if (!manager || grant.get('active') !== true)
+          return fail('permission-denied', 'Company access has been revoked.');
+      }
+      return body(tx);
+    });
+  if (input.action === 'bookkeeperAccess') {
+    if (!manager)
+      return fail('permission-denied', 'Employer access is required.');
+    if ((await company.get()).get('ownerId') !== uid)
+      return fail(
+        'permission-denied',
+        'Only the company owner can change bookkeeper access.'
+      );
+    const email = text(input.email, 'bookkeeper email', 254).toLowerCase();
+    const target = await auth
+      .getUserByEmail(email)
+      .catch(() =>
+        fail(
+          'not-found',
+          'Ask this bookkeeper to create and verify an employer account first.'
+        )
+      );
+    const active = input.active;
+    if (typeof active !== 'boolean' || target.uid === uid)
+      return fail(
+        'invalid-argument',
+        'Choose another account and an access setting.'
+      );
+    await transact(async (tx) => {
+      const [workspace, account] = await Promise.all([
+        tx.get(company),
+        tx.get(accountRef(target.uid)),
+      ]);
+      if (workspace.get('ownerId') !== uid)
+        return fail(
+          'permission-denied',
+          'Only the company owner can change bookkeeper access.'
+        );
+      if (
+        active &&
+        (!target.emailVerified ||
+          account.get('role') !== 'employer' ||
+          account.get('status') !== 'approved')
+      )
+        return fail(
+          'failed-precondition',
+          'A verified, active employer account is required for bookkeeper access.'
+        );
+      const now = new Date().toISOString();
+      tx.set(company.collection('bookkeepers').doc(target.uid), {
+        active,
+        email,
+        updatedAt: now,
+      });
+      tx.set(accountRef(target.uid).collection('companies').doc(company.id), {
+        active,
+      });
+      tx.create(company.collection('history').doc(), {
+        employeeId: target.uid,
+        actorId: uid,
+        action: active
+          ? 'bookkeeper_access_granted'
+          : 'bookkeeper_access_revoked',
+        createdAt: now,
+      });
+    });
+    return { success: true };
+  }
+  if (input.action === 'feedback') {
+    const message = text(input.message, 'feedback', 2000);
+    const operationId = id(input.operationId);
+    await transact(async (tx) => {
+      const ref = company.collection('feedback').doc(`${uid}_${operationId}`);
+      const existing = await tx.get(ref);
+      if (existing.exists) {
+        if (existing.get('message') !== message)
+          return fail(
+            'already-exists',
+            'Operation identifier was already used.'
+          );
+        return;
+      }
+      tx.create(ref, {
+        message,
+        actorId: uid,
+        role: actor.role,
+        status: 'new',
+        createdAt: new Date().toISOString(),
+      });
+    });
+    return { success: true };
+  }
+  if (input.action === 'savePolicy') {
+    if (!manager)
+      return fail(
+        'permission-denied',
+        'Employer or bookkeeper access is required.'
+      );
+    const benefitYearStart = text(
+      input.benefitYearStart,
+      'benefit year start',
+      10
+    );
+    if (
+      !/^\d{4}-\d{2}-\d{2}$/.test(benefitYearStart) ||
+      !Number.isFinite(Date.parse(benefitYearStart)) ||
+      new Date(benefitYearStart).toISOString().slice(0, 10) !== benefitYearStart
+    )
+      return fail('invalid-argument', 'Enter a valid benefit year start date.');
+    const method = input.method;
+    if (method !== 'accrual' && method !== 'frontload' && method !== 'manual')
+      return fail('invalid-argument', 'Choose a recordkeeping method.');
+    const notes = text(input.notes, 'policy and recordkeeping notes', 2000);
+    const operationId = id(input.operationId);
+    const payloadHash = importDigest({ benefitYearStart, method, notes });
+    await transact(async (tx) => {
+      const [workspace, previous] = await Promise.all([
+        tx.get(company),
+        tx.get(company.collection('history').doc(`policy_${operationId}`)),
+      ]);
+      if (previous.exists) {
+        if (
+          previous.get('payloadHash') !== payloadHash ||
+          previous.get('actorId') !== uid
+        )
+          return fail(
+            'already-exists',
+            'Operation identifier was already used.'
+          );
+        return;
+      }
+      const version = Number(workspace.get('policy.version') ?? 0);
+      if (input.version !== version)
+        return fail(
+          'failed-precondition',
+          'Another administrator changed the policy. Refresh before saving.'
+        );
+      const now = new Date().toISOString();
+      const policy = {
+        benefitYearStart,
+        method,
+        notes,
+        version: version + 1,
+        updatedAt: now,
+        updatedBy: uid,
+      };
+      tx.update(company, { policy });
+      tx.create(company.collection('history').doc(`policy_${operationId}`), {
+        employeeId: uid,
+        actorId: uid,
+        action: 'company_policy_updated',
+        payloadHash,
+        previousPolicy: workspace.get('policy') ?? null,
+        policy,
+        createdAt: now,
+      });
+    });
+    return { success: true };
+  }
+  if (input.action === 'previewImport' || input.action === 'commitImport') {
+    if (!manager)
+      return fail(
+        'permission-denied',
+        'Employer or bookkeeper access is required.'
+      );
+    let rows: ReturnType<typeof payrollRows>;
+    try {
+      rows = payrollRows(input.rows);
+    } catch (error) {
+      return fail('invalid-argument', (error as Error).message);
+    }
+    const operationId =
+      input.action === 'commitImport' ? id(input.operationId) : '';
+    return transact(async (tx) => {
+      const receiptRef = company
+        .collection('imports')
+        .doc(operationId || 'preview');
+      const receipt = operationId ? await tx.get(receiptRef) : null;
+      const payloadHash = importDigest({
+        rows,
+        previewToken: input.previewToken ?? null,
+      });
+      if (receipt?.exists) {
+        if (
+          receipt.get('payloadHash') !== payloadHash ||
+          receipt.get('actorId') !== uid
+        )
+          return fail(
+            'already-exists',
+            'Operation identifier was already used.'
+          );
+        return { success: true, count: receipt.get('count') };
+      }
+      // A bounded review covers the entire payroll directory to detect external-ID conflicts.
+      const [directory, members] = await Promise.all([
+        tx.get(company.collection('payrollEmployees').limit(1001)),
+        tx.get(
+          company
+            .collection('members')
+            .where('role', '==', 'employee')
+            .limit(1001)
+        ),
+      ]);
+      if (directory.size > 1000 || members.size > 1000)
+        return fail(
+          'resource-exhausted',
+          'This company needs a larger-directory import workflow. Contact support.'
+        );
+      const review = rows.map((row) => {
+        const existing = directory.docs.find((d) => d.id === hash(row.email));
+        const conflicts = directory.docs.filter(
+          (d) =>
+            row.payrollId &&
+            d.get('payrollId') === row.payrollId &&
+            d.id !== hash(row.email)
+        );
+        const matches = members.docs.filter(
+          (d) => String(d.get('email')).toLowerCase() === row.email
+        );
+        return {
+          ...row,
+          action: existing ? 'update' : 'create',
+          previous: existing?.data() ?? null,
+          employeeId: matches.length === 1 ? matches[0].id : null,
+          conflict:
+            conflicts.length > 0
+              ? 'Payroll ID already belongs to another email. Correct the source file.'
+              : matches.length > 1
+                ? 'More than one account matches this email.'
+                : null,
+        };
+      });
+      const previewToken = importDigest(review);
+      if (input.action === 'previewImport') return { review, previewToken };
+      if (input.previewToken !== previewToken)
+        return fail(
+          'failed-precondition',
+          'Company records changed. Review the import again before saving.'
+        );
+      if (review.some((row) => row.conflict))
+        return fail(
+          'failed-precondition',
+          'Resolve all matching conflicts before saving.'
+        );
+      const now = new Date().toISOString();
+      for (const row of review)
+        tx.set(company.collection('payrollEmployees').doc(hash(row.email)), {
+          name: row.name,
+          email: row.email,
+          payrollId: row.payrollId,
+          employeeId: row.employeeId,
+          version: Number(row.previous?.version ?? 0) + 1,
+          updatedAt: now,
+          updatedBy: uid,
+        });
+      tx.create(receiptRef, {
+        payloadHash,
+        actorId: uid,
+        count: review.length,
+        createdAt: now,
+      });
+      tx.create(company.collection('history').doc(`import_${operationId}`), {
+        employeeId: uid,
+        actorId: uid,
+        action: 'payroll_roster_imported',
+        reason: `${review.length} reviewed employee records imported; balances unchanged.`,
+        createdAt: now,
+      });
+      return { success: true, count: review.length };
+    });
+  }
   if (input.action === 'workspace') {
     const requestsQuery = manager
       ? company.collection('requests')
@@ -191,29 +517,67 @@ export async function handleWorkspace(
     const historyQuery = manager
       ? company.collection('history')
       : company.collection('history').where('employeeId', '==', uid);
-    const [companyDoc, members, requests, history, balances] =
-      await Promise.all([
-        company.get(),
-        manager
-          ? company.collection('members').limit(200).get()
-          : company.collection('members').where('id', '==', uid).get(),
-        requestsQuery.limit(200).get(),
-        historyQuery.limit(200).get(),
-        manager
-          ? company.collection('balances').limit(200).get()
-          : company.collection('balances').where('employeeId', '==', uid).get(),
-      ]);
+    const [
+      companyDoc,
+      members,
+      requests,
+      history,
+      balances,
+      payroll,
+      bookkeepers,
+      feedback,
+    ] = await Promise.all([
+      company.get(),
+      manager
+        ? company.collection('members').limit(200).get()
+        : company.collection('members').where('id', '==', uid).get(),
+      requestsQuery.limit(200).get(),
+      historyQuery.limit(200).get(),
+      manager
+        ? company.collection('balances').limit(200).get()
+        : company.collection('balances').where('employeeId', '==', uid).get(),
+      manager
+        ? company
+            .collection('payrollEmployees')
+            .orderBy('email')
+            .limit(200)
+            .get()
+        : null,
+      manager
+        ? company
+            .collection('bookkeepers')
+            .where('active', '==', true)
+            .limit(200)
+            .get()
+        : null,
+      manager
+        ? company
+            .collection('feedback')
+            .orderBy('createdAt', 'desc')
+            .limit(50)
+            .get()
+        : null,
+    ]);
     const rows = (s: admin.firestore.QuerySnapshot) =>
       s.docs.map((d) => ({ ...d.data(), id: d.id }));
     return {
       companyName: companyDoc.get('name'),
+      tenantId: company.id,
+      isOwner: companyDoc.get('ownerId') === uid,
+      policy: companyDoc.get('policy') ?? null,
       companyCode: manager ? companyDoc.get('companyCode') : null,
       members: rows(members),
       requests: rows(requests),
       history: rows(history),
       balances: rows(balances),
-      limited: [members, requests, history, balances].some(
-        (s) => s.size >= 200
+      payrollEmployees: payroll ? rows(payroll) : [],
+      bookkeepers:
+        companyDoc.get('ownerId') === uid && bookkeepers
+          ? rows(bookkeepers)
+          : [],
+      feedback: feedback ? rows(feedback) : [],
+      limited: [members, requests, history, balances, payroll].some(
+        (s) => s !== null && s.size >= 200
       ),
     };
   }
@@ -227,7 +591,7 @@ export async function handleWorkspace(
         'failed-precondition',
         'The employee must verify their email first.'
       );
-    await db.runTransaction(async (tx) => {
+    await transact(async (tx) => {
       const member = await tx.get(accountRef(target));
       if (
         member.get('tenantId') !== actor.tenantId ||
@@ -261,7 +625,7 @@ export async function handleWorkspace(
     const delta = minutes(input.minutes, true);
     const reason = text(input.reason, 'adjustment reason', 500);
     const eventRef = company.collection('history').doc(`adjust_${operationId}`);
-    await db.runTransaction(async (tx) => {
+    await transact(async (tx) => {
       const [member, event, balance] = await Promise.all([
         tx.get(accountRef(target)),
         tx.get(eventRef),
@@ -330,7 +694,7 @@ export async function handleWorkspace(
     )
       return fail('invalid-argument', 'Enter a valid date.');
     const ref = company.collection('requests').doc(`${uid}_${operationId}`);
-    await db.runTransaction(async (tx) => {
+    await transact(async (tx) => {
       const existing = await tx.get(ref);
       if (existing.exists) {
         if (existing.get('minutes') !== amount || existing.get('date') !== date)
@@ -368,7 +732,7 @@ export async function handleWorkspace(
     if (decision !== 'approved' && decision !== 'denied')
       return fail('invalid-argument', 'Choose approve or deny.');
     const reason = text(input.reason, 'decision reason', 500);
-    await db.runTransaction(async (tx) => {
+    await transact(async (tx) => {
       const ref = company.collection('requests').doc(requestId);
       const request = await tx.get(ref);
       if (!request.exists)

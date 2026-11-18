@@ -16,6 +16,13 @@ const destinations: Array<{
   roles: Role[];
 }> = [
   {
+    to: '/companies',
+    title: 'Companies & bookkeeper access',
+    number: '01',
+    description: 'Switch between businesses that have authorized your account.',
+    roles: ['employer'],
+  },
+  {
     to: '/employer',
     title: 'Company workspace',
     number: '01',
