@@ -53,6 +53,7 @@ import Login from '@/pages/Login';
 
 // Lazy load other pages for better performance
 const Landing = lazy(() => import('@/pages/Landing'));
+const InteractiveWorld = lazy(() => import('@/pages/InteractiveWorld'));
 const Learn = lazy(() => import('@/pages/Learn'));
 const Companies = lazy(() => import('@/pages/Companies'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
@@ -104,7 +105,7 @@ const PageLoaderFallback = () => (
   />
 );
 
-function App() {
+function WorkspaceApp() {
   const {
     userData: user,
     currentUser,
@@ -207,140 +208,155 @@ function App() {
 
   return (
     <SecurityProvider>
-      <BrowserRouter
-        future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true,
-        }}
-      >
-        {/* Skip Links for keyboard navigation - WCAG 2.4.1 */}
-        <SkipLinks
-          targets={[
-            { id: 'main-content', label: 'Skip to main content' },
-            { id: 'main-navigation', label: 'Skip to navigation' },
-          ]}
-        />
+      {/* Skip Links for keyboard navigation - WCAG 2.4.1 */}
+      <SkipLinks
+        targets={[
+          { id: 'main-content', label: 'Skip to main content' },
+          { id: 'main-navigation', label: 'Skip to navigation' },
+        ]}
+      />
 
-        {/* Focus management for route changes - WCAG 2.4.3 */}
-        <FocusManager />
+      {/* Focus management for route changes - WCAG 2.4.3 */}
+      <FocusManager />
 
-        <MaintenanceMode />
-        <DebugPanel />
+      <MaintenanceMode />
+      <DebugPanel />
 
-        {/* Main content area with focus anchor */}
-        <FocusAnchor id="main-content" label="Main content" />
+      {/* Main content area with focus anchor */}
+      <FocusAnchor id="main-content" label="Main content" />
 
-        <Suspense fallback={<PageLoaderFallback />}>
-          <Routes>
-            <Route path="/learn" element={<Learn />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            {/* Public routes - accessible without authentication */}
-            <Route
-              path="/"
-              element={!user ? <Landing /> : <Navigate to="/dashboard" />}
-            />
-            <Route
-              path="/login"
-              element={
-                !user ? (
-                  <Login
-                    onLogin={() => {
-                      void refreshUserData();
-                    }}
-                  />
-                ) : (
-                  <Navigate to="/dashboard" />
-                )
-              }
-            />
-            <Route
-              path="/register"
-              element={!user ? <Register /> : <Navigate to="/dashboard" />}
-            />
-            <Route
-              path="/register/employee"
-              element={
-                !user ? (
-                  <RegisterEmployee
-                    onRegister={() => {
-                      void refreshUserData();
-                    }}
-                  />
-                ) : (
-                  <Navigate to="/dashboard" />
-                )
-              }
-            />
-            <Route
-              path="/register/manager"
-              element={
-                !user ? (
-                  <RegisterManager
-                    onRegister={() => {
-                      void refreshUserData();
-                    }}
-                  />
-                ) : (
-                  <Navigate to="/dashboard" />
-                )
-              }
-            />
-            <Route path="/pricing" element={<Pricing />} />
-
-            {/* Guided Flow - TurboTax-Style Wizard */}
-            <Route path="/guided-flow" element={<GuidedFlow />} />
-            <Route path="/workspace-demo" element={<WorkspaceDemo />} />
-
-            {/* UI Showcase (Development/Design) */}
-            <Route path="/ui-showcase" element={<UIShowcase />} />
-
-            {/* Performance Dashboard (Development/Monitoring) */}
-            <Route path="/performance" element={<PerformanceDashboard />} />
-
-            {/* Protected routes - require authentication */}
-            {user ? (
-              <>
-                <Route path="/dashboard" element={<Dashboard user={user} />} />
-                <Route
-                  path="/companies"
-                  element={
-                    user.role === 'employer' ? (
-                      <Companies user={user} />
-                    ) : (
-                      <Navigate to="/dashboard" replace />
-                    )
-                  }
+      <Suspense fallback={<PageLoaderFallback />}>
+        <Routes>
+          <Route path="/learn" element={<Learn />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          {/* Public routes - accessible without authentication */}
+          <Route
+            path="/"
+            element={!user ? <Landing /> : <Navigate to="/dashboard" />}
+          />
+          <Route
+            path="/login"
+            element={
+              !user ? (
+                <Login
+                  onLogin={() => {
+                    void refreshUserData();
+                  }}
                 />
-                <Route
-                  path="/employee"
-                  element={
-                    user.role === 'employee' || user.role === 'admin' ? (
-                      <EmployeeDashboard user={user} />
-                    ) : (
-                      <Navigate to="/dashboard" replace />
-                    )
-                  }
+              ) : (
+                <Navigate to="/dashboard" />
+              )
+            }
+          />
+          <Route
+            path="/register"
+            element={!user ? <Register /> : <Navigate to="/dashboard" />}
+          />
+          <Route
+            path="/register/employee"
+            element={
+              !user ? (
+                <RegisterEmployee
+                  onRegister={() => {
+                    void refreshUserData();
+                  }}
                 />
-                <Route
-                  path="/employer"
-                  element={
-                    user.role === 'employer' || user.role === 'admin' ? (
-                      <EmployerDashboard user={user} />
-                    ) : (
-                      <Navigate to="/dashboard" replace />
-                    )
-                  }
+              ) : (
+                <Navigate to="/dashboard" />
+              )
+            }
+          />
+          <Route
+            path="/register/manager"
+            element={
+              !user ? (
+                <RegisterManager
+                  onRegister={() => {
+                    void refreshUserData();
+                  }}
                 />
-                <Route path="/audit" element={<AuditLog user={user} />} />
-                <Route path="/settings" element={<Settings user={user} />} />
-              </>
-            ) : (
-              <Route path="*" element={<Navigate to="/" />} />
-            )}
-          </Routes>
-        </Suspense>
-      </BrowserRouter>
+              ) : (
+                <Navigate to="/dashboard" />
+              )
+            }
+          />
+          <Route path="/pricing" element={<Pricing />} />
+
+          {/* Guided Flow - TurboTax-Style Wizard */}
+          <Route path="/guided-flow" element={<GuidedFlow />} />
+          <Route path="/workspace-demo" element={<WorkspaceDemo />} />
+
+          {/* UI Showcase (Development/Design) */}
+          <Route path="/ui-showcase" element={<UIShowcase />} />
+
+          {/* Performance Dashboard (Development/Monitoring) */}
+          <Route path="/performance" element={<PerformanceDashboard />} />
+
+          {/* Protected routes - require authentication */}
+          {user ? (
+            <>
+              <Route path="/dashboard" element={<Dashboard user={user} />} />
+              <Route
+                path="/companies"
+                element={
+                  user.role === 'employer' ? (
+                    <Companies user={user} />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )
+                }
+              />
+              <Route
+                path="/employee"
+                element={
+                  user.role === 'employee' || user.role === 'admin' ? (
+                    <EmployeeDashboard user={user} />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )
+                }
+              />
+              <Route
+                path="/employer"
+                element={
+                  user.role === 'employer' || user.role === 'admin' ? (
+                    <EmployerDashboard user={user} />
+                  ) : (
+                    <Navigate to="/dashboard" replace />
+                  )
+                }
+              />
+              <Route path="/audit" element={<AuditLog user={user} />} />
+              <Route path="/settings" element={<Settings user={user} />} />
+            </>
+          ) : (
+            <Route path="*" element={<Navigate to="/" />} />
+          )}
+        </Routes>
+      </Suspense>
     </SecurityProvider>
+  );
+}
+
+// The public academy does not wait for an account lookup or a workspace API.
+// Keep one router so links back to the real application retain normal navigation.
+function App() {
+  return (
+    <BrowserRouter
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
+      <Routes>
+        <Route
+          path="/interactive-world"
+          element={
+            <Suspense fallback={<PageLoaderFallback />}>
+              <InteractiveWorld />
+            </Suspense>
+          }
+        />
+        <Route path="*" element={<WorkspaceApp />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
