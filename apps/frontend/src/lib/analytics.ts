@@ -44,3 +44,20 @@ export function trackAccountEvent(
     /* Analytics must not interrupt sign-in. */
   }
 }
+
+/** Fixed educational event names only. Never capture choices, sample details or account data. */
+export function trackAcademyEvent(
+  event:
+    | 'academy_entered'
+    | 'academy_conversation_started'
+    | 'academy_scenario_completed'
+    | 'academy_tour_completed'
+    | 'academy_workspace_clicked'
+) {
+  if (!enabled) return;
+  try {
+    posthog.capture(event);
+  } catch {
+    /* Education remains usable without analytics. */
+  }
+}
